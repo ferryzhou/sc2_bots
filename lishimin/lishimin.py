@@ -80,7 +80,8 @@ class LiShiMinBot(BotAI):
                 building = UnitTypeId.PHOTONCANNON if self.state.psionic_matrix.covers(pos) else UnitTypeId.PYLON
                 await self.build(building, near=pos)
 
-        if (self.structures(UnitTypeId.PHOTONCANNON).amount > 10):
+        # If we have more than 5 cannons, build them (up to 3) at random location near our nexus to defend
+        if (self.structures(UnitTypeId.PHOTONCANNON).amount > 5):
             if self.can_afford(UnitTypeId.PHOTONCANNON) and self.structures(UnitTypeId.PHOTONCANNON).closer_than(20, nexus).amount < 3:
                 await self.build(UnitTypeId.PHOTONCANNON, near=self.structures(UnitTypeId.PYLON).closest_to(nexus))
                 return
