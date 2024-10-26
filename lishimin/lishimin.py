@@ -72,6 +72,12 @@ class LiShiMinBot(BotAI):
                     await self.build(UnitTypeId.PHOTONCANNON, near=pylon)
                     return
 
+        # If we have more than 5 cannons, build them (up to 3) at random location near our nexus to defend
+        if (self.structures(UnitTypeId.PHOTONCANNON).amount > 5):
+            if self.can_afford(UnitTypeId.PHOTONCANNON) and self.structures(UnitTypeId.PHOTONCANNON).closer_than(20, nexus).amount < 3:
+                await self.build(UnitTypeId.PHOTONCANNON, near=self.structures(UnitTypeId.PYLON).closest_to(nexus))
+                return
+
         # Decide if we should make pylon or cannons, then build them at random location near enemy spawn
         if self.can_afford(UnitTypeId.PYLON) and self.can_afford(UnitTypeId.PHOTONCANNON):
             # Ensure "fair" decision
@@ -79,12 +85,6 @@ class LiShiMinBot(BotAI):
                 pos = self.find_best_location_to_attack().random_on_distance(random.randrange(5, 12))
                 building = UnitTypeId.PHOTONCANNON if self.state.psionic_matrix.covers(pos) else UnitTypeId.PYLON
                 await self.build(building, near=pos)
-
-        # If we have more than 5 cannons, build them (up to 3) at random location near our nexus to defend
-        if (self.structures(UnitTypeId.PHOTONCANNON).amount > 5):
-            if self.can_afford(UnitTypeId.PHOTONCANNON) and self.structures(UnitTypeId.PHOTONCANNON).closer_than(20, nexus).amount < 3:
-                await self.build(UnitTypeId.PHOTONCANNON, near=self.structures(UnitTypeId.PYLON).closest_to(nexus))
-                return
 
 
     def find_best_location_to_attack(self) -> Point2:
