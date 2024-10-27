@@ -30,5 +30,6 @@ if __name__ == "__main__":
             #[bot, opponent],
             [bot, Computer(Race.Protoss, Difficulty.VeryHard)],
             realtime=False,
-            disable_fog=False
+            disable_fog=False,
+            save_replay_as="lishimin.SC2Replay"
         )

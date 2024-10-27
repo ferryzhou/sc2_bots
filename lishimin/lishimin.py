@@ -77,14 +77,31 @@ class LiShiMinBot(BotAI):
                 await self.build(UnitTypeId.PHOTONCANNON, near=self.structures(UnitTypeId.PYLON).closest_to(nexus))
                 return
 
+        # await self.build_next_pylon_or_cannon_for_attack_with_single_worker()
+        await self.build_next_pylon_or_cannon_for_attack_random()
+
+    async def build_next_pylon_or_cannon_for_attack_with_single_worker(self):
+        if self.can_afford(UnitTypeId.PYLON) and self.can_afford(UnitTypeId.PHOTONCANNON):
+            probe = self.workers.closest_to(self.enemy_start_locations[0])
+            if self.already_pending(UnitTypeId.PYLON) == 0 and self.already_pending(UnitTypeId.PHOTONCANNON) == 0:
+                pos = self.find_best_location_to_attack().random_on_distance(random.randrange(5, 12))
+                building = UnitTypeId.PHOTONCANNON if self.state.psionic_matrix.covers(pos) else UnitTypeId.PYLON
+                print(f"building {building} at {pos} with worker {probe}")
+                await self.build(building, near=pos, build_worker=probe)
+            else:
+                print(f"pylon already pending, worker {probe} not used")
+                pass
+        else:
+            print("cannot afford pylon or cannon")
+
+    async def build_next_pylon_or_cannon_for_attack_random(self):
         # Decide if we should make pylon or cannons, then build them at random location near enemy spawn
         if self.can_afford(UnitTypeId.PYLON) and self.can_afford(UnitTypeId.PHOTONCANNON):
             # Ensure "fair" decision
             for _ in range(20):
-                pos = self.find_best_location_to_attack().random_on_distance(random.randrange(5, 12))
+                pos = self.enemy_start_locations[0].random_on_distance(random.randrange(5, 12))
                 building = UnitTypeId.PHOTONCANNON if self.state.psionic_matrix.covers(pos) else UnitTypeId.PYLON
                 await self.build(building, near=pos)
-
 
     def find_best_location_to_attack(self) -> Point2:
         # Return the best location to build pylon and cannon to attack. 
