@@ -67,10 +67,9 @@ class LiShiMinBot(BotAI):
         # and build them near enemy start location
         if not self.structures(UnitTypeId.PHOTONCANNON):
             if self.structures(UnitTypeId.PYLON).ready.amount >= 2 and self.can_afford(UnitTypeId.PHOTONCANNON):
-                if (self.structures(UnitTypeId.PHOTONCANNON).closer_than(20, self.enemy_start_locations[0]).amount < 20):
-                    pylon = self.structures(UnitTypeId.PYLON).closer_than(20, self.enemy_start_locations[0]).random
-                    await self.build(UnitTypeId.PHOTONCANNON, near=pylon)
-                    return
+                pylon = self.structures(UnitTypeId.PYLON).closer_than(20, self.enemy_start_locations[0]).random
+                await self.build(UnitTypeId.PHOTONCANNON, near=pylon)
+                return
 
         # If we have more than 5 cannons, build them (up to 3) at random location near our nexus to defend
         if (self.structures(UnitTypeId.PHOTONCANNON).amount > 5):
@@ -91,8 +90,19 @@ class LiShiMinBot(BotAI):
         # Return the best location to build pylon and cannon to attack. 
         # Starting with start location, then closest to enemy nexus, then visible enemy buildings
         if not self.enemy_structures:
-            return self.enemy_start_locations[0]
+            # Didn't see any enemy structures, so build near start location
+            #print("no enemy structures")
+            # Cap max cannons near start location at 20.
+            if (self.structures(UnitTypeId.PHOTONCANNON).closer_than(20, self.enemy_start_locations[0]).amount < 20):
+                return self.enemy_start_locations[0]
+            else:
+                #print("too many cannons near start location")
+                return self.enemy_start_locations[0].towards(self.game_info.map_center, random.randrange(8, 35))
+            
+        #print("enemy structure found")
         if self.enemy_structures(UnitTypeId.NEXUS):
+            #print("enemy nexus found, attack nexus first")
             return self.enemy_structures(UnitTypeId.NEXUS)[0].position
         else:
+            #print("other enemy structure found, attack structure")
             return self.enemy_structures[0].position

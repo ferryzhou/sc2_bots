@@ -34,8 +34,8 @@ class MultiPylonBot(BotAI):
 
         nexus = self.townhalls.random
 
-        # Make probes until we have 16 total
-        if self.supply_workers < 16 and nexus.is_idle:
+        # Make probes until we have 10 total
+        if self.supply_workers < 10 and nexus.is_idle:
             if self.can_afford(UnitTypeId.PROBE):
                 nexus.train(UnitTypeId.PROBE)
                 return
@@ -46,10 +46,10 @@ class MultiPylonBot(BotAI):
                 await self.build(UnitTypeId.PYLON, near=nexus)
                 return
 
-        # If we have less than 2 pylons, build one at next expansion location
-        if self.structures(UnitTypeId.PYLON).amount < 2:
-            if self.can_afford(UnitTypeId.PYLON) and self.already_pending(UnitTypeId.PYLON) < 2:
-                location = await self.get_next_expansion()
+        # If we have less than 5 pylons, build one at next expansion location
+        if self.structures(UnitTypeId.PYLON).amount < 5:
+            if self.can_afford(UnitTypeId.PYLON) and self.already_pending(UnitTypeId.PYLON) < 5:
+                location = random.choice(self.expansion_locations_list)
                 await self.build(UnitTypeId.PYLON, near=location)
                 return
 

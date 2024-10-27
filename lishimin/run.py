@@ -27,7 +27,8 @@ if __name__ == "__main__":
         print("Starting local game...")
         run_game(
             maps.get("CatalystLE"),
-            [bot, opponent],
-            #[bot, Computer(Race.Protoss, Difficulty.VeryHard)],
-            realtime=False
+            #[bot, opponent],
+            [bot, Computer(Race.Protoss, Difficulty.VeryHard)],
+            realtime=False,
+            disable_fog=False
         )
