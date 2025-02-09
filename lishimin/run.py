@@ -11,12 +11,15 @@ from sc2 import maps
 from sc2.data import Difficulty, Race
 from sc2.main import run_game
 from sc2.player import Bot, Computer
+from loguru import logger
 
 bot = Bot(Race.Protoss, LiShiMinBot())
 opponent = Bot(Race.Protoss, MultiPylonBot())
 
 # Start game
 if __name__ == "__main__":
+    # logger.add(sys.stderr, level="DEBUG")
+    logger.add("file.log", rotation="500 MB", format="{time} {level} {message}")
     if "--LadderServer" in sys.argv:
         # Ladder game started by LadderManager
         print("Starting ladder game...")
