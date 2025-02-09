@@ -48,7 +48,7 @@ class SC2MLBot(BotAI):
             layers.Dense(512, input_shape=(10,), activation='relu'),
             layers.Dense(512, activation='relu'),
             layers.Dense(256, activation='relu'),
-            layers.Dense(4, activation='linear')
+            layers.Dense(5, activation='linear')
         ])
         model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate),
                      loss='mse')
@@ -72,12 +72,12 @@ class SC2MLBot(BotAI):
     def choose_action(self, state):
         try:
             if np.random.rand() <= self.epsilon:
-                return random.randrange(4)
+                return random.randrange(5)
             act_values = self.model.predict(state.reshape(1, -1), verbose=0)
             return np.argmax(act_values[0])
         except Exception as e:
             print(f"Error choosing action: {e}")
-            return random.randrange(4)  # Return random action in case of error
+            return random.randrange(5)  # Return random action in case of error
 
     async def execute_action(self, action):
         try:
@@ -89,6 +89,8 @@ class SC2MLBot(BotAI):
                 await self.expand()
             elif action == 3:  # Attack
                 await self.manage_army()
+            elif action == 4:  # Build SCV
+                await self.train_worker()
         except Exception as e:
             print(f"Error executing action {action}: {e}")
 
@@ -336,6 +338,14 @@ class SC2MLBot(BotAI):
             print(f"Saved training history to {history_path}")
         except Exception as e:
             print(f"Error saving training history: {e}")
+
+    async def train_worker(self):
+        try:
+            for cc in self.townhalls.ready.idle:
+                if self.can_afford(UnitTypeId.SCV) and self.supply_left > 0:
+                    cc.train(UnitTypeId.SCV)
+        except Exception as e:
+            print(f"Error training worker: {e}")
 
 def main():
     # Train the bot over multiple games
