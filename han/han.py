@@ -80,6 +80,7 @@ class SC2MLBot(BotAI):
             return random.randrange(5)  # Return random action in case of error
 
     async def execute_action(self, action):
+        print (f"executing action {action}")
         try:
             if action == 0:  # Build Marines
                 await self.train_military(UnitTypeId.MARINE)
@@ -96,9 +97,14 @@ class SC2MLBot(BotAI):
 
     async def train_military(self, unit_type):
         try:
-            for barracks in self.units(UnitTypeId.BARRACKS).ready.idle:
+            print (f"training military {unit_type}")
+            for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
+                print (f"found idle barracks, training military {unit_type}")
                 if self.can_afford(unit_type) and self.supply_left > 2:
+                    print (f"can afford {unit_type}, training")
                     barracks.train(unit_type)
+                else:
+                    print (f"cannot afford {unit_type}, or supply left is {self.supply_left}")
         except Exception as e:
             print(f"Error training military: {e}")
 
