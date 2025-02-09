@@ -247,7 +247,8 @@ class SC2MLBot(BotAI):
         self.last_action = action
         
         # Additional game management
-        if iteration % 100 == 0:  # Every 100 iterations
+        if iteration % 10 == 0:  # Every 100 iterations
+            print (f"iteration {iteration}")
             await self.manage_army()
             await self.manage_production()
 
@@ -277,6 +278,27 @@ class SC2MLBot(BotAI):
         ):
             await self.build(UnitTypeId.SUPPLYDEPOT, near=self.townhalls.first)
 
+        # Build refineries (on nearby vespene) when at least one barracks is in construction
+        if (
+            self.structures(UnitTypeId.BARRACKS).ready.amount + self.already_pending(UnitTypeId.BARRACKS) > 0
+            and self.already_pending(UnitTypeId.REFINERY) < 1
+        ):
+            # Loop over all townhalls that are 100% complete
+            for th in self.townhalls.ready:
+                # Find all vespene geysers that are closer than range 10 to this townhall
+                vgs = self.vespene_geyser.closer_than(10, th)
+                for vg in vgs:
+                    if await self.can_place_single(UnitTypeId.REFINERY, vg.position) and self.can_afford(
+                        UnitTypeId.REFINERY
+                    ):
+                        workers = self.workers.gathering
+                        if workers:  # same condition as above
+                            worker = workers.closest_to(vg)
+                            # Caution: the target for the refinery has to be the vespene geyser, not its position!
+                            worker.build_gas(vg)
+
+                            # Dont build more than one each frame
+                            break
         # Build barracks if needed
         if (
             len(self.units(UnitTypeId.BARRACKS)) < 3
@@ -284,6 +306,7 @@ class SC2MLBot(BotAI):
             and not self.already_pending(UnitTypeId.BARRACKS)
         ):
             await self.build(UnitTypeId.BARRACKS, near=self.townhalls.first)
+
 
     async def on_end(self, result):
         # Calculate final reward based on game result
