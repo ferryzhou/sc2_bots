@@ -22,3 +22,6 @@ venv/
 # Training history
 training_history/
 models/
+
+# Log files
+.log
