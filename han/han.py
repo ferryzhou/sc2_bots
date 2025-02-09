@@ -256,7 +256,7 @@ class SC2MLBot(BotAI):
         military_units = self.units(UnitTypeId.MARINE) | self.units(UnitTypeId.MARAUDER)
         
         # Attack logic based on army size
-        if military_units.amount > 15:
+        if military_units.amount > 5:
             target = None
             if self.enemy_units:
                 target = self.enemy_units.random
@@ -266,7 +266,7 @@ class SC2MLBot(BotAI):
                 target = self.enemy_start_locations[0]
                 
             for unit in military_units:
-                await self.do(unit.attack(target))
+                unit.attack(target)
 
     async def manage_production(self):
         # Build supply depots if needed
