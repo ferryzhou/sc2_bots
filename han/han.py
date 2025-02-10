@@ -254,21 +254,23 @@ class SC2MLBot(BotAI):
             await self.manage_production()
 
     async def manage_army(self):
+        if not self.should_attack():
+            return
+
+        # Should attack.
         # Get all military units
         military_units = self.units(UnitTypeId.MARINE) | self.units(UnitTypeId.MARAUDER)
-        
-        # Attack logic based on army size
-        if military_units.amount > 15:
-            target = None
-            if self.enemy_units:
-                target = self.enemy_units.random
-            elif self.enemy_structures:
-                target = self.enemy_structures.random
-            else:
-                target = self.enemy_start_locations[0]
-                
-            for unit in military_units:
-                unit.attack(target)
+        target = None
+        if self.enemy_units:
+            target = self.enemy_units.random
+        elif self.enemy_structures:
+            target = self.enemy_structures.random
+        else:
+            target = self.enemy_start_locations[0]
+            
+        print (f"attacking {target}")
+        for unit in military_units:
+            unit.attack(target)
 
     async def manage_production(self):
         print (f"manage_production")
@@ -431,12 +433,49 @@ class SC2MLBot(BotAI):
             print(f"Error saving training history: {e}")
 
     async def train_worker(self):
+        # Stop at 20 * townhalls workers
+        if self.workers.amount >= 20 * self.townhalls.amount:
+            return
+        
         try:
             for cc in self.townhalls.ready.idle:
                 if self.can_afford(UnitTypeId.SCV) and self.supply_left > 0:
                     cc.train(UnitTypeId.SCV)
         except Exception as e:
             print(f"Error training worker: {e}")
+
+    def should_attack(self):
+        # Count total military units
+        military_units = self.units.filter(
+            lambda unit: unit.type_id in {
+                UnitTypeId.MARINE,
+                UnitTypeId.MARAUDER,
+                UnitTypeId.REAPER
+            }
+        )
+        
+        # Check if we have enough military units
+        if len(military_units) > 15:
+            print (f"enough military units, attacking")
+            return True
+            
+        # Check if enemy is close to our base
+        if self.townhalls:
+            main_base = self.townhalls.first
+            enemy_units = self.enemy_units | self.enemy_structures
+            if enemy_units:
+                closest_enemy = enemy_units.closest_to(main_base)
+                if closest_enemy.distance_to(main_base) < 30:  # Defensive radius
+                    print (f"enemy is close, attacking")
+                    return True
+                    
+        # Check if we're at max supply (indicating a strong army)
+        if self.supply_used > 190:
+            print (f"supply used is max, attacking")
+            return True
+        
+        print (f"not attacking")
+        return False
 
 def main():
     # Train the bot over multiple games
