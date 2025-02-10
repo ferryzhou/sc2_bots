@@ -285,6 +285,17 @@ class SC2MLBot(BotAI):
         ):
             await self.build(UnitTypeId.SUPPLYDEPOT, near=self.townhalls.first)
 
+        # Lower completed supply depots
+        for depot in self.structures(UnitTypeId.SUPPLYDEPOT).ready:
+            depot(AbilityId.MORPH_SUPPLYDEPOT_LOWER)
+        
+        # Raise if enemies nearby
+        for depot in self.structures(UnitTypeId.SUPPLYDEPOTLOWERED).ready:
+            if self.enemy_units:
+                closest_enemy = self.enemy_units.closest_to(depot)
+                if closest_enemy.distance_to(depot) < 10:
+                    depot(AbilityId.MORPH_SUPPLYDEPOT_RAISE)
+
         await self.build_gas_if_needed()
 
         await self.build_barracks_if_needed()
@@ -455,7 +466,7 @@ class SC2MLBot(BotAI):
         )
         
         # Check if we have enough military units
-        if len(military_units) > 15:
+        if len(military_units) > 20 * self.townhalls.amount:
             print (f"enough military units, attacking")
             return True
             
