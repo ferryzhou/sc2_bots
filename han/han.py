@@ -276,12 +276,20 @@ class SC2MLBot(BotAI):
         print (f"manage_production")
         # Build supply depots if needed
         if (
-            self.supply_left < 5 
+            self.supply_left < 5 * self.townhalls.amount
             and not self.already_pending(UnitTypeId.SUPPLYDEPOT)
             and self.can_afford(UnitTypeId.SUPPLYDEPOT)
         ):
             await self.build(UnitTypeId.SUPPLYDEPOT, near=self.townhalls.first)
 
+        await self.build_gas_if_needed()
+
+        await self.build_barracks_if_needed()
+
+        # Add Tech Lab to Barracks for Marauders
+        await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
+
+    async def build_gas_if_needed(self):
         # Build refineries (on nearby vespene) when at least one barracks is in construction
         if (
             self.structures(UnitTypeId.BARRACKS).ready.amount + self.already_pending(UnitTypeId.BARRACKS) > 0
@@ -303,17 +311,6 @@ class SC2MLBot(BotAI):
 
                             # Dont build more than one each frame
                             break
-        
-        # Build barracks if needed
-        if (
-            len(self.units(UnitTypeId.BARRACKS)) < 3
-            and self.can_afford(UnitTypeId.BARRACKS)
-            and not self.already_pending(UnitTypeId.BARRACKS)
-        ):
-            await self.build(UnitTypeId.BARRACKS, near=self.townhalls.first)
-
-        # Add Tech Lab to Barracks for Marauders
-        await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
 
     async def append_addon(self, building_type, building_flying_type, add_on_type):
         def points_to_build_addon(building_position: Point2) -> list[Point2]:
@@ -476,6 +473,23 @@ class SC2MLBot(BotAI):
         
         print (f"not attacking")
         return False
+
+    async def build_barracks_if_needed(self):
+        # Don't build if we can't afford it
+        if not self.can_afford(UnitTypeId.BARRACKS):
+            return
+            
+        # Get count of existing and in-progress barracks
+        barracks_count = self.structures(UnitTypeId.BARRACKS).amount
+        barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
+        
+        # Build if we have less than 3 barracks (including those in progress)
+        if barracks_count + barracks_pending < 3:
+            if self.townhalls:
+                cc = self.townhalls.first
+                # Try to build near command center
+                pos = cc.position.towards(self.game_info.map_center, 8)
+                await self.build(UnitTypeId.BARRACKS, near=pos)
 
 def main():
     # Train the bot over multiple games
