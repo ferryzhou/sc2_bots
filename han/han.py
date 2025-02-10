@@ -1,12 +1,13 @@
 import sc2
 from sc2 import maps
 from sc2.ids.unit_typeid import UnitTypeId
-from sc2.position import Point2
+from sc2.position import Point2, Point3
 
 from sc2.bot_ai import BotAI
 from sc2.data import Difficulty, Race
 from sc2.main import run_game
 from sc2.player import Bot, Computer
+from sc2.ids.ability_id import AbilityId
 
 import numpy as np
 import tensorflow as tf
@@ -80,7 +81,7 @@ class SC2MLBot(BotAI):
             return random.randrange(5)  # Return random action in case of error
 
     async def execute_action(self, action):
-        print (f"executing action {action}")
+        #  print (f"executing action {action}")
         try:
             if action == 0:  # Build Marines
                 await self.train_military(UnitTypeId.MARINE)
@@ -97,7 +98,7 @@ class SC2MLBot(BotAI):
 
     async def train_military(self, unit_type):
         try:
-            print (f"training military {unit_type}")
+            # print (f"training military {unit_type}")
             for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
                 print (f"found idle barracks, training military {unit_type}")
                 if self.can_afford(unit_type) and self.supply_left > 2:
@@ -247,7 +248,7 @@ class SC2MLBot(BotAI):
         self.last_action = action
         
         # Additional game management
-        if iteration % 10 == 0:  # Every 100 iterations
+        if iteration % 10 == 0:  # Every 10 iterations
             print (f"iteration {iteration}")
             await self.manage_army()
             await self.manage_production()
@@ -257,7 +258,7 @@ class SC2MLBot(BotAI):
         military_units = self.units(UnitTypeId.MARINE) | self.units(UnitTypeId.MARAUDER)
         
         # Attack logic based on army size
-        if military_units.amount > 5:
+        if military_units.amount > 15:
             target = None
             if self.enemy_units:
                 target = self.enemy_units.random
@@ -270,6 +271,7 @@ class SC2MLBot(BotAI):
                 unit.attack(target)
 
     async def manage_production(self):
+        print (f"manage_production")
         # Build supply depots if needed
         if (
             self.supply_left < 5 
@@ -299,6 +301,7 @@ class SC2MLBot(BotAI):
 
                             # Dont build more than one each frame
                             break
+        
         # Build barracks if needed
         if (
             len(self.units(UnitTypeId.BARRACKS)) < 3
@@ -307,6 +310,65 @@ class SC2MLBot(BotAI):
         ):
             await self.build(UnitTypeId.BARRACKS, near=self.townhalls.first)
 
+        # Add Tech Lab to Barracks for Marauders
+        await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
+
+    async def append_addon(self, building_type, building_flying_type, add_on_type):
+        def points_to_build_addon(building_position: Point2) -> list[Point2]:
+            """Return all points that need to be checked when trying to build an addon. Returns 4 points."""
+            addon_offset: Point2 = Point2((2.5, -0.5))
+            addon_position: Point2 = building_position + addon_offset
+            addon_points = [
+                (addon_position + Point2((x - 0.5, y - 0.5))).rounded for x in range(0, 2) for y in range(0, 2)
+            ]
+            return addon_points
+
+        for building in self.structures(building_type).ready.idle:
+            print (f"{building} has_add_on {building.has_add_on}")
+            if not building.has_add_on and self.can_afford(add_on_type):
+                print (f"no add on, can aford, try building tech lab")
+                addon_points = points_to_build_addon(building.position)
+                if all(
+                    self.in_map_bounds(addon_point)
+                    and self.in_placement_grid(addon_point)
+                    and self.in_pathing_grid(addon_point)
+                    for addon_point in addon_points
+                ):
+                    print (f"all points are valid, building tech lab")
+                    building.build(add_on_type)
+                else:
+                    print (f"points are not valid, lifting")
+                    building(AbilityId.LIFT)
+            else:
+                print (f"has_add_on {building.has_add_on} and cannot afford tech lab")
+
+        def land_positions(position: Point2) -> list[Point2]:
+            """Return all points that need to be checked when trying to land at a location where there is enough space to build an addon. Returns 13 points."""
+            land_positions = [(position + Point2((x, y))).rounded for x in range(-1, 2) for y in range(-1, 2)]
+            return land_positions + points_to_build_addon(position)
+
+        # Find a position to land for a flying starport so that it can build an addon
+        for building in self.structures(building_flying_type).idle:
+            possible_land_positions_offset = sorted(
+                (Point2((x, y)) for x in range(-10, 10) for y in range(-10, 10)),
+                key=lambda point: point.x**2 + point.y**2,
+            )
+            offset_point: Point2 = Point2((-0.5, -0.5))
+            possible_land_positions = (building.position.rounded + offset_point + p for p in possible_land_positions_offset)
+            for target_land_position in possible_land_positions:
+                land_and_addon_points: list[Point2] = land_positions(target_land_position)
+                if all(
+                    self.in_map_bounds(land_pos) and self.in_placement_grid(land_pos) and self.in_pathing_grid(land_pos)
+                    for land_pos in land_and_addon_points
+                ):
+                    building(AbilityId.LAND, target_land_position)
+                    break
+
+        # Show where it is flying to and show grid
+        for sp in self.structures(building_type).filter(lambda unit: not unit.is_idle):
+            if isinstance(sp.order_target, Point2):
+                p = Point3((*sp.order_target, self.get_terrain_z_height(sp.order_target)))
+                self.client.debug_box2_out(p, color=Point3((255, 0, 0)))
 
     async def on_end(self, result):
         # Calculate final reward based on game result
