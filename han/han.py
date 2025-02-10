@@ -262,7 +262,10 @@ class SC2MLBot(BotAI):
         military_units = self.units(UnitTypeId.MARINE) | self.units(UnitTypeId.MARAUDER)
         target = None
         if self.enemy_units:
-            target = self.enemy_units.random
+            for unit in military_units:
+                closest_enemy = self.enemy_units.closest_to(unit)
+                unit.attack(closest_enemy)
+            return
         elif self.enemy_structures:
             target = self.enemy_structures.random
         else:
@@ -471,7 +474,6 @@ class SC2MLBot(BotAI):
             print (f"supply used is max, attacking")
             return True
         
-        print (f"not attacking")
         return False
 
     async def build_barracks_if_needed(self):
@@ -484,7 +486,8 @@ class SC2MLBot(BotAI):
         barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
         
         # Build if we have less than 3 barracks (including those in progress)
-        if barracks_count + barracks_pending < 3:
+        if barracks_count + barracks_pending < 3 * self.townhalls.amount:
+            print (f"{barracks_count} + {barracks_pending} < {3 * self.townhalls.amount}, building barracks")
             if self.townhalls:
                 cc = self.townhalls.first
                 # Try to build near command center
