@@ -474,7 +474,7 @@ class SC2MLBot(BotAI):
         )
         
         # Check if we have enough military units
-        if len(military_units) > 15 * self.townhalls.ready.amount:
+        if len(military_units) > 10 * self.townhalls.ready.amount:
             print (f"enough military units, attacking")
             return True
             
@@ -529,7 +529,7 @@ def main():
             maps.get(current_map),
             [
                 Bot(Race.Terran, bot),
-                Computer(Race.Random, Difficulty.Medium)
+                Computer(Race.Random, Difficulty.Hard)
             ],
             realtime=False
         )
