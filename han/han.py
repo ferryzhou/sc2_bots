@@ -464,6 +464,13 @@ class SC2MLBot(BotAI):
             print(f"Error training worker: {e}")
 
     def should_attack(self):
+        military_supply = self.get_military_supply()
+        
+        # Attack if we have significant military supply
+        if military_supply > 20 * self.townhalls.ready.amount:
+            print(f"Military supply {military_supply} > 20 * {self.townhalls.ready.amount}, attacking")
+            return True
+            
         # Count total military units
         military_units = self.units.filter(
             lambda unit: unit.type_id in {
@@ -517,6 +524,16 @@ class SC2MLBot(BotAI):
                 # Try to build near command center
                 pos = cc.position.towards(self.game_info.map_center, 8)
                 await self.build(UnitTypeId.BARRACKS, near=pos)
+
+    def get_military_supply(self):
+        military_supply = 0
+        # Marines cost 1 supply
+        military_supply += self.units(UnitTypeId.MARINE).amount * 1
+        # Marauders cost 2 supply
+        military_supply += self.units(UnitTypeId.MARAUDER).amount * 2
+        # Reapers cost 1 supply
+        military_supply += self.units(UnitTypeId.REAPER).amount * 1
+        return military_supply
 
 def main():
     # Train the bot over multiple games
