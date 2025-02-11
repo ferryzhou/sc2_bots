@@ -72,7 +72,8 @@ class SC2MLBot(BotAI):
 
     def choose_action(self, state):
         try:
-            if np.random.rand() <= self.epsilon:
+            # Always take random action for now
+            if np.random.rand() <= 1: # self.epsilon:
                 return random.randrange(5)
             act_values = self.model.predict(state.reshape(1, -1), verbose=0)
             return np.argmax(act_values[0])
@@ -496,7 +497,7 @@ class SC2MLBot(BotAI):
                     return True
                     
         # Check if we're at max supply (indicating a strong army)
-        if self.supply_used > 120:
+        if self.supply_used > 180:
             print (f"supply used is max, attacking")
             return True
         
@@ -511,17 +512,22 @@ class SC2MLBot(BotAI):
         barracks_count = self.structures(UnitTypeId.BARRACKS).amount
         barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
 
-        # Stop building if have MAX_BARRACKS
-        MAX_BARRACKS = 10
-        if barracks_count + barracks_pending >= MAX_BARRACKS:
-            return
+        total_barracks = barracks_count + barracks_pending
         
-        # Build if we have less than 3 barracks (including those in progress)
-        if barracks_count + barracks_pending < 3 * self.townhalls.ready.amount:
-            print (f"{barracks_count} + {barracks_pending} < {3 * self.townhalls.amount}, building barracks")
+        # Early game limit: max 2 barracks with single base
+        if self.townhalls.ready.amount < 3:
+            if total_barracks >= 2:
+                return
+        else:
+            # Late game limit
+            MAX_BARRACKS = 15
+            if total_barracks >= MAX_BARRACKS:
+                return
+        
+        # Build if we have less than 3 barracks per base (except for early game)
+        if total_barracks < 3 * self.townhalls.ready.amount:
             if self.townhalls:
                 cc = self.townhalls.first
-                # Try to build near command center
                 pos = cc.position.towards(self.game_info.map_center, 8)
                 await self.build(UnitTypeId.BARRACKS, near=pos)
 
