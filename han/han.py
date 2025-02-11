@@ -278,13 +278,28 @@ class SC2MLBot(BotAI):
 
     async def manage_production(self):
         print (f"manage_production")
-        # Build supply depots if needed
-        if (
-            self.supply_left < 5 * self.townhalls.amount
-            and not self.already_pending(UnitTypeId.SUPPLYDEPOT)
-            and self.can_afford(UnitTypeId.SUPPLYDEPOT)
-        ):
-            await self.build(UnitTypeId.SUPPLYDEPOT, near=self.townhalls.first)
+        await self.build_supply_depot_if_needed()
+
+        await self.build_gas_if_needed()
+
+        await self.build_barracks_if_needed()
+
+        # Add Tech Lab to Barracks for Marauders
+        await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
+
+    async def build_supply_depot_if_needed(self):
+        if self.supply_left < 5 * self.townhalls.amount:
+            # Determine how many depots to build
+            max_concurrent = 2 if self.townhalls.ready.amount > 2 else 1
+            pending_depots = self.already_pending(UnitTypeId.SUPPLYDEPOT)
+            
+            # Build depots if we can afford them and aren't already building max_concurrent
+            while (
+                pending_depots < max_concurrent 
+                and self.can_afford(UnitTypeId.SUPPLYDEPOT)
+            ):
+                await self.build(UnitTypeId.SUPPLYDEPOT, near=self.townhalls.first)
+                pending_depots += 1
 
         # Lower completed supply depots
         for depot in self.structures(UnitTypeId.SUPPLYDEPOT).ready:
@@ -297,12 +312,6 @@ class SC2MLBot(BotAI):
                 if closest_enemy.distance_to(depot) < 10:
                     depot(AbilityId.MORPH_SUPPLYDEPOT_RAISE)
 
-        await self.build_gas_if_needed()
-
-        await self.build_barracks_if_needed()
-
-        # Add Tech Lab to Barracks for Marauders
-        await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
 
     async def build_gas_if_needed(self):
         # Build refineries (on nearby vespene) when at least one barracks is in construction
@@ -338,9 +347,7 @@ class SC2MLBot(BotAI):
             return addon_points
 
         for building in self.structures(building_type).ready.idle:
-            print (f"{building} has_add_on {building.has_add_on}")
             if not building.has_add_on and self.can_afford(add_on_type):
-                print (f"no add on, can aford, try building tech lab")
                 addon_points = points_to_build_addon(building.position)
                 if all(
                     self.in_map_bounds(addon_point)
@@ -348,13 +355,9 @@ class SC2MLBot(BotAI):
                     and self.in_pathing_grid(addon_point)
                     for addon_point in addon_points
                 ):
-                    print (f"all points are valid, building tech lab")
                     building.build(add_on_type)
                 else:
-                    print (f"points are not valid, lifting")
                     building(AbilityId.LIFT)
-            else:
-                print (f"has_add_on {building.has_add_on} and cannot afford tech lab")
 
         def land_positions(position: Point2) -> list[Point2]:
             """Return all points that need to be checked when trying to land at a location where there is enough space to build an addon. Returns 13 points."""
@@ -449,8 +452,8 @@ class SC2MLBot(BotAI):
         if self.workers.amount >= 80:
             return
         
-        # Also stop at 15 * townhalls workers (existing logic)
-        if self.workers.amount >= 15 * self.townhalls.amount:
+        # Also stop at 20 * townhalls workers (existing logic)
+        if self.workers.amount >= 20 * self.townhalls.ready.amount:
             return
         
         try:
@@ -471,7 +474,7 @@ class SC2MLBot(BotAI):
         )
         
         # Check if we have enough military units
-        if len(military_units) > 20 * self.townhalls.amount:
+        if len(military_units) > 15 * self.townhalls.ready.amount:
             print (f"enough military units, attacking")
             return True
             
@@ -486,7 +489,7 @@ class SC2MLBot(BotAI):
                     return True
                     
         # Check if we're at max supply (indicating a strong army)
-        if self.supply_used > 190:
+        if self.supply_used > 120:
             print (f"supply used is max, attacking")
             return True
         
@@ -507,7 +510,7 @@ class SC2MLBot(BotAI):
             return
         
         # Build if we have less than 3 barracks (including those in progress)
-        if barracks_count + barracks_pending < 3 * self.townhalls.amount:
+        if barracks_count + barracks_pending < 3 * self.townhalls.ready.amount:
             print (f"{barracks_count} + {barracks_pending} < {3 * self.townhalls.amount}, building barracks")
             if self.townhalls:
                 cc = self.townhalls.first
