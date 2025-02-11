@@ -111,7 +111,8 @@ class SC2MLBot(BotAI):
 
     async def expand(self):
         try:
-            if self.can_afford(UnitTypeId.COMMANDCENTER):
+            MAX_BASES = 8
+            if len(self.townhalls) < MAX_BASES and self.can_afford(UnitTypeId.COMMANDCENTER):
                 await self.expand_now()
         except Exception as e:
             print(f"Error expanding: {e}")
@@ -444,8 +445,12 @@ class SC2MLBot(BotAI):
             print(f"Error saving training history: {e}")
 
     async def train_worker(self):
-        # Stop at 20 * townhalls workers
-        if self.workers.amount >= 20 * self.townhalls.amount:
+        # Hard cap at 80 workers total
+        if self.workers.amount >= 80:
+            return
+        
+        # Also stop at 15 * townhalls workers (existing logic)
+        if self.workers.amount >= 15 * self.townhalls.amount:
             return
         
         try:
@@ -495,6 +500,11 @@ class SC2MLBot(BotAI):
         # Get count of existing and in-progress barracks
         barracks_count = self.structures(UnitTypeId.BARRACKS).amount
         barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
+
+        # Stop building if have MAX_BARRACKS
+        MAX_BARRACKS = 10
+        if barracks_count + barracks_pending >= MAX_BARRACKS:
+            return
         
         # Build if we have less than 3 barracks (including those in progress)
         if barracks_count + barracks_pending < 3 * self.townhalls.amount:
