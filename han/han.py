@@ -115,7 +115,7 @@ class SC2MLBot(BotAI):
             MAX_BASES = 8
             
             # Check if current bases are saturated
-            for th in self.townhalls.ready:
+            for th in self.townhalls:
                 if len(self.workers.closer_than(10, th)) < 16:  # Less than optimal saturation
                     return  # Don't expand if current bases aren't fully utilized
             
@@ -264,12 +264,23 @@ class SC2MLBot(BotAI):
             await self.manage_production()
 
     async def manage_army(self):
-        if not self.should_attack():
-            return
-
-        # Should attack.
         # Get all military units
         military_units = self.units(UnitTypeId.MARINE) | self.units(UnitTypeId.MARAUDER)
+                
+        if not self.should_attack():
+            # If not attacking, gather units at the ramp
+            if military_units:
+                # Get main ramp position
+                ramp = self.main_base_ramp
+                rally_point = ramp.top_center
+                
+                # If units are too spread out, gather them at the ramp
+                for unit in military_units:
+                    if unit.distance_to(rally_point) > 3:  # Units further than 15 distance should move to ramp
+                        unit.move(rally_point)
+                        return  # Wait for army to assemble before attacking
+            return
+        # Original attack logic
         target = None
         if self.enemy_units:
             for unit in military_units:
@@ -277,11 +288,14 @@ class SC2MLBot(BotAI):
                 unit.attack(closest_enemy)
             return
         elif self.enemy_structures:
-            target = self.enemy_structures.random
+            for unit in military_units:
+                closest_enemy = self.enemy_structures.closest_to(unit)
+                unit.attack(closest_enemy)
+            return
         else:
             target = self.enemy_start_locations[0]
             
-        print (f"attacking {target}")
+        print(f"attacking {target}")
         for unit in military_units:
             unit.attack(target)
 
@@ -499,7 +513,7 @@ class SC2MLBot(BotAI):
         )
         
         # Check if we have enough military units
-        if len(military_units) > 10 * self.townhalls.ready.amount:
+        if len(military_units) > 15 * self.townhalls.ready.amount:
             print (f"enough military units, attacking")
             return True
             
@@ -531,18 +545,19 @@ class SC2MLBot(BotAI):
 
         total_barracks = barracks_count + barracks_pending
         
-        # Early game limit: max 2 barracks with single base
-        if self.townhalls.ready.amount < 3:
-            if total_barracks >= 2:
+        # Early game limit: max 2 barracks with single base.
+        # Expand if we have more than 2 bases.
+        if self.townhalls.amount < 3:
+            if total_barracks >= 3:
                 return
-        else:
-            # Late game limit
-            MAX_BARRACKS = 15
-            if total_barracks >= MAX_BARRACKS:
-                return
-        
+#        else:
+        # Late game limit
+#        MAX_BARRACKS = 15
+#        if total_barracks >= MAX_BARRACKS:
+#            return
+    
         # Build if we have less than 3 barracks per base (except for early game)
-        if total_barracks < 3 * self.townhalls.ready.amount:
+        if total_barracks < self.workers.amount // 6:
             if self.townhalls:
                 cc = self.townhalls.first
                 pos = cc.position.towards(self.game_info.map_center, 8)
