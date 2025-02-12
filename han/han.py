@@ -113,8 +113,16 @@ class SC2MLBot(BotAI):
     async def expand(self):
         try:
             MAX_BASES = 8
+            
+            # Check if current bases are saturated
+            for th in self.townhalls.ready:
+                if len(self.workers.closer_than(10, th)) < 16:  # Less than optimal saturation
+                    return  # Don't expand if current bases aren't fully utilized
+            
+            # Expand if we can afford it and haven't hit the base limit
             if len(self.townhalls) < MAX_BASES and self.can_afford(UnitTypeId.COMMANDCENTER):
                 await self.expand_now()
+                
         except Exception as e:
             print(f"Error expanding: {e}")
 
@@ -315,27 +323,36 @@ class SC2MLBot(BotAI):
 
 
     async def build_gas_if_needed(self):
-        # Build refineries (on nearby vespene) when at least one barracks is in construction
-        if (
-            self.structures(UnitTypeId.BARRACKS).ready.amount + self.already_pending(UnitTypeId.BARRACKS) > 0
-            and self.already_pending(UnitTypeId.REFINERY) < 1
-        ):
-            # Loop over all townhalls that are 100% complete
-            for th in self.townhalls.ready:
-                # Find all vespene geysers that are closer than range 10 to this townhall
-                vgs = self.vespene_geyser.closer_than(10, th)
-                for vg in vgs:
-                    if await self.can_place_single(UnitTypeId.REFINERY, vg.position) and self.can_afford(
-                        UnitTypeId.REFINERY
-                    ):
-                        workers = self.workers.gathering
-                        if workers:  # same condition as above
-                            worker = workers.closest_to(vg)
-                            # Caution: the target for the refinery has to be the vespene geyser, not its position!
-                            worker.build_gas(vg)
+        # Only build gas if we have barracks
+        if self.structures(UnitTypeId.BARRACKS).ready.amount + self.already_pending(UnitTypeId.BARRACKS) == 0:
+            return
 
-                            # Dont build more than one each frame
-                            break
+        # Count existing and pending refineries
+        total_refineries = self.structures(UnitTypeId.REFINERY).amount + self.already_pending(UnitTypeId.REFINERY)
+        
+        # Early game: only 1 gas
+        if self.townhalls.ready.amount == 1:
+            if total_refineries >= 1:
+                return
+
+        if self.townhalls.ready.amount == 2:
+            if total_refineries >= 3:
+                return
+
+        # Late game: 1 gas per base
+        if total_refineries >= self.townhalls.ready.amount + 2:
+            return
+
+        # Build refinery if we can
+        for th in self.townhalls.ready:
+            vgs = self.vespene_geyser.closer_than(10, th)
+            for vg in vgs:
+                if await self.can_place_single(UnitTypeId.REFINERY, vg.position) and self.can_afford(UnitTypeId.REFINERY):
+                    workers = self.workers.gathering
+                    if workers:
+                        worker = workers.closest_to(vg)
+                        worker.build_gas(vg)
+                        return  # Only build one at a time
 
     async def append_addon(self, building_type, building_flying_type, add_on_type):
         def points_to_build_addon(building_position: Point2) -> list[Point2]:
