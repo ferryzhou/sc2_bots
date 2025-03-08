@@ -25,17 +25,36 @@ class SC2Bot(BotAI):
     async def manage_army(self):
         # Get all military units
         military_units = self.units(UnitTypeId.MARINE) | self.units(UnitTypeId.MARAUDER)
+        tanks = self.units(UnitTypeId.SIEGETANK) | self.units(UnitTypeId.SIEGETANKSIEGED)
                 
         if not self.should_attack():
             # If not attacking, gather units at the ramp
-            if military_units:
+            if military_units or tanks:
                 ramp = self.main_base_ramp
                 rally_point = ramp.top_center
                 
                 for unit in military_units:
                     if unit.distance_to(rally_point) > 3:
                         unit.move(rally_point)
-                        return
+                
+                # Handle tank micro
+                for tank in tanks:
+                    enemies = self.enemy_units | self.enemy_structures
+                    if enemies:
+                        closest_enemy = enemies.closest_to(tank)
+                        # Siege if enemy is in range
+                        if closest_enemy.distance_to(tank) < 13 and tank.type_id == UnitTypeId.SIEGETANK:
+                            tank(AbilityId.SIEGEMODE_SIEGEMODE)
+                        # Unsiege if enemy is too far
+                        elif closest_enemy.distance_to(tank) > 15 and tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+                            tank(AbilityId.UNSIEGE_UNSIEGE)
+                    else:
+                        # No enemies, unsiege and move to rally
+                        if tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+                            tank(AbilityId.UNSIEGE_UNSIEGE)
+                        elif tank.distance_to(rally_point) > 3:
+                            tank.move(rally_point)
+                return
             return
 
         # Attack logic
@@ -44,17 +63,36 @@ class SC2Bot(BotAI):
             for unit in military_units:
                 closest_enemy = self.enemy_units.closest_to(unit)
                 unit.attack(closest_enemy)
+            
+            # Tank micro during attack
+            for tank in tanks:
+                closest_enemy = self.enemy_units.closest_to(tank)
+                if closest_enemy.distance_to(tank) < 13 and tank.type_id == UnitTypeId.SIEGETANK:
+                    tank(AbilityId.SIEGEMODE_SIEGEMODE)
+                elif closest_enemy.distance_to(tank) > 15 and tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+                    tank(AbilityId.UNSIEGE_UNSIEGE)
+                else:
+                    tank.attack(closest_enemy)
             return
+            
         elif self.enemy_structures:
             for unit in military_units:
                 closest_enemy = self.enemy_structures.closest_to(unit)
                 unit.attack(closest_enemy)
+            
+            # Tank micro for structures
+            for tank in tanks:
+                closest_enemy = self.enemy_structures.closest_to(tank)
+                if closest_enemy.distance_to(tank) < 13 and tank.type_id == UnitTypeId.SIEGETANK:
+                    tank(AbilityId.SIEGEMODE_SIEGEMODE)
+                elif tank.type_id == UnitTypeId.SIEGETANK:
+                    tank.attack(closest_enemy)
             return
         else:
             target = self.enemy_start_locations[0]
             
         print(f"attacking {target}")
-        for unit in military_units:
+        for unit in military_units | tanks:
             unit.attack(target)
 
     async def manage_production(self):
@@ -137,13 +175,21 @@ class SC2Bot(BotAI):
                 await self.build(UnitTypeId.BARRACKS, near=pos)
 
     async def train_military_units(self):
+        # Build tanks if we have enough military units and a factory with tech lab
+        if self.get_military_supply() >= 20:
+            for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
+                if factory.has_add_on:
+                    if factory.add_on_tag in self.structures(UnitTypeId.FACTORYTECHLAB).tags:
+                        if self.can_afford(UnitTypeId.SIEGETANK) and self.supply_left > 2:
+                            factory.train(UnitTypeId.SIEGETANK)
+
+        # Existing barracks training logic
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
             if barracks.has_add_on:
                 if barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSTECHLAB).tags:
                     if self.can_afford(UnitTypeId.MARAUDER) and self.supply_left > 2:
                         barracks.train(UnitTypeId.MARAUDER)
                 elif barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSREACTOR).tags:
-                    # Train two marines at once with reactor
                     for _ in range(2):
                         if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
                             barracks.train(UnitTypeId.MARINE)
@@ -173,7 +219,9 @@ class SC2Bot(BotAI):
             lambda unit: unit.type_id in {
                 UnitTypeId.MARINE,
                 UnitTypeId.MARAUDER,
-                UnitTypeId.REAPER
+                UnitTypeId.REAPER,
+                UnitTypeId.SIEGETANK,
+                UnitTypeId.SIEGETANKSIEGED
             }
         )
         
@@ -202,15 +250,23 @@ class SC2Bot(BotAI):
         military_supply += self.units(UnitTypeId.MARINE).amount * 1
         military_supply += self.units(UnitTypeId.MARAUDER).amount * 2
         military_supply += self.units(UnitTypeId.REAPER).amount * 1
+        military_supply += self.units(UnitTypeId.SIEGETANK).amount * 3  # Siege Tank costs 3 supply
+        military_supply += self.units(UnitTypeId.SIEGETANKSIEGED).amount * 3  # Include sieged tanks
         return military_supply
 
     async def append_addons(self):
-        """Manage add-ons for barracks, randomly choosing between tech lab and reactor."""
+        """Manage add-ons for barracks and factory."""
+        # Handle barracks add-ons
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
             if not barracks.has_add_on and random.random() < 0.5:
                 await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
             else:
                 await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSREACTOR)
+
+        # Add tech lab to factory for tanks
+        for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
+            if not factory.has_add_on:
+                await self.append_addon(UnitTypeId.FACTORY, UnitTypeId.FACTORYFLYING, UnitTypeId.FACTORYTECHLAB)
 
     async def append_addon(self, building_type, building_flying_type, add_on_type):
         def points_to_build_addon(building_position: Point2) -> list[Point2]:
