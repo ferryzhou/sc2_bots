@@ -9,6 +9,7 @@ from sc2.main import run_game
 from sc2.player import Bot, Computer
 from sc2.ids.ability_id import AbilityId
 import random
+from sc2.ids.upgrade_id import UpgradeId
 
 class SC2Bot(BotAI):
     async def on_step(self, iteration):
@@ -28,11 +29,9 @@ class SC2Bot(BotAI):
         if not self.should_attack():
             # If not attacking, gather units at the ramp
             if military_units:
-                # Get main ramp position
                 ramp = self.main_base_ramp
                 rally_point = ramp.top_center
                 
-                # If units are too spread out, gather them at the ramp
                 for unit in military_units:
                     if unit.distance_to(rally_point) > 3:
                         unit.move(rally_point)
@@ -64,6 +63,7 @@ class SC2Bot(BotAI):
         await self.build_gas_if_needed()
         await self.build_barracks_if_needed()
         await self.append_addons()
+        await self.upgrade_army()
         await self.train_military_units()
         await self.train_workers()
         await self.expand_base()
@@ -280,6 +280,60 @@ class SC2Bot(BotAI):
                 
         except Exception as e:
             print(f"Error expanding base: {e}")
+
+    async def upgrade_army(self):
+        # Only start upgrades when we have enough units
+        if self.get_military_supply() < 30:
+            return
+
+        # Build Engineering Bays if we don't have them and can afford it
+        if (len(self.structures(UnitTypeId.ENGINEERINGBAY)) + self.already_pending(UnitTypeId.ENGINEERINGBAY) < 2 and 
+            self.can_afford(UnitTypeId.ENGINEERINGBAY) and 
+            self.townhalls.ready):
+            await self.build(UnitTypeId.ENGINEERINGBAY, near=self.townhalls.first)
+            return
+
+        # Build Factory if we don't have one (required for Armory)
+        if (self.structures(UnitTypeId.BARRACKS).ready and
+            not self.structures(UnitTypeId.FACTORY) and
+            not self.already_pending(UnitTypeId.FACTORY) and
+            self.can_afford(UnitTypeId.FACTORY)):
+            await self.build(UnitTypeId.FACTORY, near=self.townhalls.first)
+            return
+
+        # Build Armory for level 2 and 3 upgrades
+        if (self.structures(UnitTypeId.ENGINEERINGBAY).ready and 
+            self.structures(UnitTypeId.FACTORY).ready and  # Factory must be ready
+            not self.structures(UnitTypeId.ARMORY) and 
+            not self.already_pending(UnitTypeId.ARMORY) and 
+            self.can_afford(UnitTypeId.ARMORY)):
+            await self.build(UnitTypeId.ARMORY, near=self.townhalls.first)
+            return
+
+        # Get Engineering Bays
+        ebays = self.structures(UnitTypeId.ENGINEERINGBAY).ready
+        if not ebays:
+            return
+
+        has_armory = self.structures(UnitTypeId.ARMORY).ready.exists
+
+        # Use first ebay for weapons
+        if len(ebays) >= 1:
+            if not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYWEAPONSLEVEL1):
+                ebays[0].research(UpgradeId.TERRANINFANTRYWEAPONSLEVEL1)
+            elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYWEAPONSLEVEL2):
+                ebays[0].research(UpgradeId.TERRANINFANTRYWEAPONSLEVEL2)
+            elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYWEAPONSLEVEL3):
+                ebays[0].research(UpgradeId.TERRANINFANTRYWEAPONSLEVEL3)
+
+        # Use second ebay for armor
+        if len(ebays) >= 2:
+            if not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYARMORSLEVEL1):
+                ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL1)
+            elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYARMORSLEVEL2):
+                ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL2)
+            elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYARMORSLEVEL3):
+                ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL3)
 
 def main():
     bot = SC2Bot()
