@@ -26,6 +26,8 @@ class SC2Bot(BotAI):
         # Get all military units
         military_units = self.units(UnitTypeId.MARINE) | self.units(UnitTypeId.MARAUDER)
         tanks = self.units(UnitTypeId.SIEGETANK) | self.units(UnitTypeId.SIEGETANKSIEGED)
+        medivacs = self.units(UnitTypeId.MEDIVAC)
+        await self.manage_medivacs(medivacs, military_units)
                 
         if not self.should_attack():
             # If not attacking, gather units at the ramp
@@ -94,6 +96,40 @@ class SC2Bot(BotAI):
         print(f"attacking {target}")
         for unit in military_units | tanks:
             unit.attack(target)
+        await self.manage_medivacs(medivacs, military_units)
+
+    async def manage_medivacs(self, medivacs, military_units):
+        """Manage medivac movement to follow army units."""
+        if not medivacs or not military_units:
+            return
+
+        enemies = self.enemy_units | self.enemy_structures
+        if not enemies:
+            # If no enemies, follow army center as before
+            center = military_units.center
+            for medivac in medivacs:
+                if medivac.distance_to(center) > 5:
+                    medivac.move(center)
+            return
+
+        # Get units that are close to enemies
+        forward_units = military_units.filter(
+            lambda unit: enemies.closest_to(unit).distance_to(unit) < 15
+        )
+
+        if not forward_units:
+            # If no units close to enemies, follow army center
+            center = military_units.center
+            for medivac in medivacs:
+                if medivac.distance_to(center) > 5:
+                    medivac.move(center)
+            return
+
+        # Assign each medivac to a random forward unit
+        for medivac in medivacs:
+            target_unit = random.choice(forward_units)
+            if medivac.distance_to(target_unit) > 3:
+                medivac.move(target_unit.position)
 
     async def manage_production(self):
         print(f"manage_production")
@@ -101,6 +137,7 @@ class SC2Bot(BotAI):
         await self.build_gas_if_needed()
         await self.build_barracks_if_needed()
         await self.build_factory_if_needed()
+        await self.build_starport_if_needed()
         await self.append_addons()
         await self.upgrade_army()
         await self.train_military_units()
@@ -201,6 +238,28 @@ class SC2Bot(BotAI):
                 # Fallback to building near command center
                 await self.build(UnitTypeId.FACTORY, near=self.townhalls.first)
 
+    async def build_starport_if_needed(self):
+        # Need at least one factory before starport
+        if not self.structures(UnitTypeId.FACTORY).ready:
+            return
+
+        # Check if we already have starports or one is in progress
+        total_starports = (self.structures(UnitTypeId.STARPORT).amount + 
+                         self.already_pending(UnitTypeId.STARPORT))
+        if total_starports >= 2:
+            return
+
+        # Build starport if we can afford it
+        if self.can_afford(UnitTypeId.STARPORT):
+            # Try to build near the factory
+            if self.structures(UnitTypeId.FACTORY).ready:
+                factory = self.structures(UnitTypeId.FACTORY).ready.first
+                await self.build(UnitTypeId.STARPORT, 
+                               near=factory.position.towards(self.game_info.map_center, 6))
+            else:
+                # Fallback to building near command center
+                await self.build(UnitTypeId.STARPORT, near=self.townhalls.first)
+
     async def train_military_units(self):
         # Build tanks if we have enough military units and a factory with tech lab
         if self.get_military_supply() >= 20:
@@ -209,6 +268,18 @@ class SC2Bot(BotAI):
                     if factory.add_on_tag in self.structures(UnitTypeId.FACTORYTECHLAB).tags:
                         if self.can_afford(UnitTypeId.SIEGETANK) and self.supply_left > 2:
                             factory.train(UnitTypeId.SIEGETANK)
+
+        # Build medivacs based on ground unit count
+        ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
+        desired_medivacs = ground_units // 8  # One medivac for every 8 ground units
+        current_medivacs = self.units(UnitTypeId.MEDIVAC).amount
+
+        if current_medivacs < desired_medivacs:
+            for starport in self.structures(UnitTypeId.STARPORT).ready.idle:
+                if starport.has_add_on:
+                    if starport.add_on_tag in self.structures(UnitTypeId.STARPORTREACTOR).tags:
+                        if self.can_afford(UnitTypeId.MEDIVAC) and self.supply_left > 2:
+                            starport.train(UnitTypeId.MEDIVAC)
 
         # Existing barracks training logic
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
@@ -282,7 +353,7 @@ class SC2Bot(BotAI):
         return military_supply
 
     async def append_addons(self):
-        """Manage add-ons for barracks and factory."""
+        """Manage add-ons for barracks, factory, and starport."""
         # Handle barracks add-ons
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
             if not barracks.has_add_on and random.random() < 0.5:
@@ -294,6 +365,11 @@ class SC2Bot(BotAI):
         for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
             if not factory.has_add_on:
                 await self.append_addon(UnitTypeId.FACTORY, UnitTypeId.FACTORYFLYING, UnitTypeId.FACTORYTECHLAB)
+
+        # Add reactor to starport for faster production
+        for starport in self.structures(UnitTypeId.STARPORT).ready.idle:
+            if not starport.has_add_on:
+                await self.append_addon(UnitTypeId.STARPORT, UnitTypeId.STARPORTFLYING, UnitTypeId.STARPORTREACTOR)
 
     async def append_addon(self, building_type, building_flying_type, add_on_type):
         def points_to_build_addon(building_position: Point2) -> list[Point2]:
