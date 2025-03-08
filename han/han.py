@@ -100,6 +100,7 @@ class SC2Bot(BotAI):
         await self.build_supply_depot_if_needed()
         await self.build_gas_if_needed()
         await self.build_barracks_if_needed()
+        await self.build_factory_if_needed()
         await self.append_addons()
         await self.upgrade_army()
         await self.train_military_units()
@@ -173,6 +174,32 @@ class SC2Bot(BotAI):
                 cc = self.townhalls.first
                 pos = cc.position.towards(self.game_info.map_center, 8)
                 await self.build(UnitTypeId.BARRACKS, near=pos)
+
+    async def build_factory_if_needed(self):
+        # Only build factory when we have enough military units
+        if self.get_military_supply() < 10:
+            return
+
+        # Need barracks before factory
+        if not self.structures(UnitTypeId.BARRACKS).ready:
+            return
+
+        # Check if we already have max factories or one is in progress
+        total_factories = (self.structures(UnitTypeId.FACTORY).amount + 
+                         self.already_pending(UnitTypeId.FACTORY))
+        if total_factories >= 2:  # Changed from 1 to 2
+            return
+
+        # Build factory if we can afford it
+        if self.can_afford(UnitTypeId.FACTORY):
+            # Try to build near the first barracks
+            if self.structures(UnitTypeId.BARRACKS).ready:
+                barracks = self.structures(UnitTypeId.BARRACKS).ready.first
+                await self.build(UnitTypeId.FACTORY, 
+                               near=barracks.position.towards(self.game_info.map_center, 6))
+            else:
+                # Fallback to building near command center
+                await self.build(UnitTypeId.FACTORY, near=self.townhalls.first)
 
     async def train_military_units(self):
         # Build tanks if we have enough military units and a factory with tech lab
