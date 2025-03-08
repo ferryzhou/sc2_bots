@@ -62,10 +62,10 @@ class SC2Bot(BotAI):
         await self.build_supply_depot_if_needed()
         await self.build_gas_if_needed()
         await self.build_barracks_if_needed()
+        await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
         await self.train_military_units()
         await self.train_workers()
         await self.expand_base()
-        await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
 
     async def build_supply_depot_if_needed(self):
         if self.supply_left < 5 * self.townhalls.amount:
