@@ -8,6 +8,7 @@ from sc2.data import Difficulty, Race
 from sc2.main import run_game
 from sc2.player import Bot, Computer
 from sc2.ids.ability_id import AbilityId
+import random
 
 class SC2Bot(BotAI):
     async def on_step(self, iteration):
@@ -62,7 +63,7 @@ class SC2Bot(BotAI):
         await self.build_supply_depot_if_needed()
         await self.build_gas_if_needed()
         await self.build_barracks_if_needed()
-        await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
+        await self.append_addons()
         await self.train_military_units()
         await self.train_workers()
         await self.expand_base()
@@ -138,8 +139,14 @@ class SC2Bot(BotAI):
     async def train_military_units(self):
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
             if barracks.has_add_on:
-                if self.can_afford(UnitTypeId.MARAUDER) and self.supply_left > 2:
-                    barracks.train(UnitTypeId.MARAUDER)
+                if barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSTECHLAB).tags:
+                    if self.can_afford(UnitTypeId.MARAUDER) and self.supply_left > 2:
+                        barracks.train(UnitTypeId.MARAUDER)
+                elif barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSREACTOR).tags:
+                    # Train two marines at once with reactor
+                    for _ in range(2):
+                        if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
+                            barracks.train(UnitTypeId.MARINE)
             else:
                 if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
                     barracks.train(UnitTypeId.MARINE)
@@ -196,6 +203,14 @@ class SC2Bot(BotAI):
         military_supply += self.units(UnitTypeId.MARAUDER).amount * 2
         military_supply += self.units(UnitTypeId.REAPER).amount * 1
         return military_supply
+
+    async def append_addons(self):
+        """Manage add-ons for barracks, randomly choosing between tech lab and reactor."""
+        for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
+            if not barracks.has_add_on and random.random() < 0.5:
+                await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
+            else:
+                await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSREACTOR)
 
     async def append_addon(self, building_type, building_flying_type, add_on_type):
         def points_to_build_addon(building_position: Point2) -> list[Point2]:
