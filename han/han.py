@@ -30,73 +30,120 @@ class SC2Bot(BotAI):
         await self.manage_medivacs(medivacs, military_units)
                 
         if not self.should_attack():
-            # If not attacking, gather units at the ramp
-            if military_units or tanks:
-                ramp = self.main_base_ramp
-                rally_point = ramp.top_center
-                
-                for unit in military_units:
-                    if unit.distance_to(rally_point) > 3:
-                        unit.move(rally_point)
-                
-                # Handle tank micro
-                for tank in tanks:
-                    enemies = self.enemy_units | self.enemy_structures
-                    if enemies:
-                        closest_enemy = enemies.closest_to(tank)
-                        # Siege if enemy is in range
-                        if closest_enemy.distance_to(tank) < 13 and tank.type_id == UnitTypeId.SIEGETANK:
-                            tank(AbilityId.SIEGEMODE_SIEGEMODE)
-                        # Unsiege if enemy is too far
-                        elif closest_enemy.distance_to(tank) > 15 and tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-                            tank(AbilityId.UNSIEGE_UNSIEGE)
-                    else:
-                        # No enemies, unsiege and move to rally
-                        if tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-                            tank(AbilityId.UNSIEGE_UNSIEGE)
-                        elif tank.distance_to(rally_point) > 3:
-                            tank.move(rally_point)
-                return
+            print(f"not attacking")
+            await self.execute_defense(military_units, tanks)
             return
 
-        # Attack logic
-        target = None
-        if self.enemy_units:
-            for unit in military_units:
-                closest_enemy = self.enemy_units.closest_to(unit)
-                unit.attack(closest_enemy)
+        print(f"attacking")
+        await self.execute_attack(military_units, tanks)
+
+    async def execute_defense(self, military_units, tanks):
+        """Execute defensive positioning and micro for all military units."""
+        if not (military_units or tanks):
+            return
             
-            # Tank micro during attack
-            for tank in tanks:
-                closest_enemy = self.enemy_units.closest_to(tank)
+        ramp = self.main_base_ramp
+        rally_point = ramp.top_center
+        
+        # Position infantry at rally point
+        for unit in military_units:
+            if unit.distance_to(rally_point) > 3:
+                unit.move(rally_point)
+        
+        # Handle tank micro
+        for tank in tanks:
+            enemies = self.enemy_units | self.enemy_structures
+            if enemies:
+                closest_enemy = enemies.closest_to(tank)
+                # Siege if enemy is in range
+                if closest_enemy.distance_to(tank) < 13 and tank.type_id == UnitTypeId.SIEGETANK:
+                    tank(AbilityId.SIEGEMODE_SIEGEMODE)
+                # Unsiege if enemy is too far
+                elif closest_enemy.distance_to(tank) > 15 and tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+                    tank(AbilityId.UNSIEGE_UNSIEGE)
+            else:
+                # No enemies, unsiege and move to rally
+                if tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+                    tank(AbilityId.UNSIEGE_UNSIEGE)
+                elif tank.distance_to(rally_point) > 3:
+                    tank.move(rally_point)
+
+    async def execute_attack(self, military_units, tanks):
+        """Execute attack logic for all military units."""
+        # Split our forces based on enemy presence
+        enemy_units = self.enemy_units
+        enemy_structures = self.enemy_structures
+        
+        # Determine how many units to allocate to fighting enemy units
+        if enemy_units:
+            print(f"attacking units")
+            # Calculate how many units we need to handle enemy units
+            enemy_strength = sum(unit.health_max for unit in enemy_units)
+            our_strength = sum(unit.health_max for unit in military_units)
+            
+            # Allocate between 40-60% of our forces to handle enemy units
+            allocation_ratio = min(0.6, max(0.4, enemy_strength / (our_strength * 1.5)))
+            units_for_combat = int(len(military_units) * allocation_ratio)
+            
+            # Select units for combat (closest to enemy units)
+            if units_for_combat > 0:
+                combat_units = military_units.sorted_by_distance_to(enemy_units.center)[:units_for_combat]
+                remaining_units = [unit for unit in military_units if unit not in combat_units]
+                
+                # Send combat units to attack enemy units
+                for unit in combat_units:
+                    closest_enemy = enemy_units.closest_to(unit)
+                    print(f"attacking unit {unit} to {closest_enemy}")
+                    unit.attack(closest_enemy)
+            else:
+                remaining_units = military_units
+        else:
+            remaining_units = military_units
+        
+        # Handle tank micro during attack
+        for tank in tanks:
+            if enemy_units:
+                closest_enemy = enemy_units.closest_to(tank)
                 if closest_enemy.distance_to(tank) < 13 and tank.type_id == UnitTypeId.SIEGETANK:
                     tank(AbilityId.SIEGEMODE_SIEGEMODE)
                 elif closest_enemy.distance_to(tank) > 15 and tank.type_id == UnitTypeId.SIEGETANKSIEGED:
                     tank(AbilityId.UNSIEGE_UNSIEGE)
                 else:
                     tank.attack(closest_enemy)
-            return
-            
-        elif self.enemy_structures:
-            for unit in military_units:
-                closest_enemy = self.enemy_structures.closest_to(unit)
-                unit.attack(closest_enemy)
-            
-            # Tank micro for structures
-            for tank in tanks:
-                closest_enemy = self.enemy_structures.closest_to(tank)
-                if closest_enemy.distance_to(tank) < 13 and tank.type_id == UnitTypeId.SIEGETANK:
+            elif enemy_structures:
+                closest_structure = enemy_structures.closest_to(tank)
+                if closest_structure.distance_to(tank) < 13 and tank.type_id == UnitTypeId.SIEGETANK:
                     tank(AbilityId.SIEGEMODE_SIEGEMODE)
                 elif tank.type_id == UnitTypeId.SIEGETANK:
-                    tank.attack(closest_enemy)
-            return
-        else:
-            target = self.enemy_start_locations[0]
-            
-        print(f"attacking {target}")
-        for unit in military_units | tanks:
-            unit.attack(target)
-        await self.manage_medivacs(medivacs, military_units)
+                    tank.attack(closest_structure)
+            else:
+                # No enemies, attack base
+                target = self.enemy_start_locations[0]
+                tank.attack(target)
+        
+        # Send remaining units to attack structures or enemy base
+        if remaining_units:
+            if enemy_structures:
+                print(f"attacking structures with remaining units")
+                # Split remaining units to attack different structures
+                structure_targets = enemy_structures.random_group_of(min(len(remaining_units), len(enemy_structures)))
+                
+                for i, unit in enumerate(remaining_units):
+                    if i < len(structure_targets):
+                        unit.attack(structure_targets[i].position)
+                    else:
+                        # If we have more units than targets, send extras to random structures
+                        unit.attack(enemy_structures.random.position)
+            else:
+                print(f"attacking start location with remaining units")
+                # No structures, attack enemy base
+                target = self.enemy_start_locations[0]
+                
+                # Send units to different parts of the base to spread damage
+                for i, unit in enumerate(remaining_units):
+                    offset = Point2((i % 5 - 2, i // 5 - 2))  # Create a grid of attack points
+                    attack_point = target + offset * 2  # Spread units around the target
+                    unit.attack(attack_point)
 
     async def manage_medivacs(self, medivacs, military_units):
         """Manage medivac movement to follow army units."""
@@ -502,7 +549,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Random, Difficulty.Hard)
+            Computer(Race.Protoss, Difficulty.Hard)
         ],
         realtime=False
     )
