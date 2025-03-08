@@ -9,257 +9,14 @@ from sc2.main import run_game
 from sc2.player import Bot, Computer
 from sc2.ids.ability_id import AbilityId
 
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras import layers, models
-from collections import deque
-import random
-import os
-import json
-from datetime import datetime
-
-class SC2MLBot(BotAI):
-    def __init__(self, model_name="sc2_ml_model"):
-        super().__init__()
-        self.model_name = model_name
-        self.memory = deque(maxlen=10000)
-        self.gamma = 0.95
-        self.epsilon = 1.0
-        self.epsilon_min = 0.01
-        self.epsilon_decay = 0.995
-        self.learning_rate = 0.001
-        self.batch_size = 32
-        
-        # State and action tracking
-        self.last_state = None
-        self.last_action = None
-        self.current_game_memory = []
-        
-        # Metrics
-        self.games_played = 0
-        self.wins = 0
-        self.total_score = 0
-        self.training_history = []
-        self.load_training_history()
-
-        self.model = self._build_or_load_model()
-
-    def _build_model(self):
-        model = models.Sequential([
-            layers.Dense(512, input_shape=(10,), activation='relu'),
-            layers.Dense(512, activation='relu'),
-            layers.Dense(256, activation='relu'),
-            layers.Dense(5, activation='linear')
-        ])
-        model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=self.learning_rate),
-                     loss='mse')
-        return model
-
-    def _build_or_load_model(self):
-        model_path = f"models/{self.model_name}"
-        if os.path.exists(model_path):
-            try:
-                print(f"Loading existing model from {model_path}")
-                return models.load_model(model_path)
-            except Exception as e:
-                print(f"Error loading model: {e}")
-                print("Creating new model instead")
-                return self._build_model()
-        else:
-            print("Creating new model")
-            os.makedirs("models", exist_ok=True)
-            return self._build_model()
-
-    def choose_action(self, state):
-        try:
-            # Always take random action for now
-            if np.random.rand() <= 1: # self.epsilon:
-                return random.randrange(5)
-            act_values = self.model.predict(state.reshape(1, -1), verbose=0)
-            return np.argmax(act_values[0])
-        except Exception as e:
-            print(f"Error choosing action: {e}")
-            return random.randrange(5)  # Return random action in case of error
-
-    async def execute_action(self, action):
-        #  print (f"executing action {action}")
-        try:
-            if action == 0:  # Build Marines
-                await self.train_military(UnitTypeId.MARINE)
-            elif action == 1:  # Build Marauders
-                await self.train_military(UnitTypeId.MARAUDER)
-            elif action == 2:  # Expand
-                await self.expand()
-            elif action == 3:  # Attack
-                await self.manage_army()
-            elif action == 4:  # Build SCV
-                await self.train_worker()
-        except Exception as e:
-            print(f"Error executing action {action}: {e}")
-
-    async def train_military(self, unit_type):
-        try:
-            # print (f"training military {unit_type}")
-            for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
-                print (f"found idle barracks, training military {unit_type}")
-                if self.can_afford(unit_type) and self.supply_left > 2:
-                    print (f"can afford {unit_type}, training")
-                    barracks.train(unit_type)
-                else:
-                    print (f"cannot afford {unit_type}, or supply left is {self.supply_left}")
-        except Exception as e:
-            print(f"Error training military: {e}")
-
-    async def expand(self):
-        try:
-            MAX_BASES = 8
-            
-            # Check if current bases are saturated
-            for th in self.townhalls:
-                if len(self.workers.closer_than(10, th)) < 16:  # Less than optimal saturation
-                    return  # Don't expand if current bases aren't fully utilized
-            
-            # Expand if we can afford it and haven't hit the base limit
-            if len(self.townhalls) < MAX_BASES and self.can_afford(UnitTypeId.COMMANDCENTER):
-                await self.expand_now()
-                
-        except Exception as e:
-            print(f"Error expanding: {e}")
-
-    async def train_batch(self):
-        if len(self.memory) < self.batch_size:
-            return
-        
-        minibatch = random.sample(self.memory, self.batch_size)
-        states = np.array([transition[0] for transition in minibatch])
-        actions = np.array([transition[1] for transition in minibatch])
-        rewards = np.array([transition[2] for transition in minibatch])
-        next_states = np.array([transition[3] for transition in minibatch])
-        dones = np.array([transition[4] for transition in minibatch])
-
-        # Current Q-values for all actions in the batch
-        targets = self.model.predict(states, verbose=0)
-        # Next Q-values for all actions in the batch
-        next_q_values = self.model.predict(next_states, verbose=0)
-
-        # Update Q-values for the actions that were taken
-        for i in range(self.batch_size):
-            if dones[i]:
-                targets[i][actions[i]] = rewards[i]
-            else:
-                targets[i][actions[i]] = rewards[i] + self.gamma * np.max(next_q_values[i])
-
-        # Train the model with updated Q-values
-        self.model.fit(states, targets, epochs=1, verbose=0)
-
-        # Decay epsilon
-        if self.epsilon > self.epsilon_min:
-            self.epsilon *= self.epsilon_decay
-
-    async def get_state(self):
-        try:
-            state = [
-                self.minerals/1000,
-                self.vespene/1000,
-                self.supply_used/200,
-                self.supply_cap/200,
-                len(self.units(UnitTypeId.MARINE))/50,
-                len(self.units(UnitTypeId.MARAUDER))/30,
-                len(self.units(UnitTypeId.BARRACKS))/10,
-                len(self.townhalls)/5,
-                len(self.enemy_units)/50,
-                self.time/1000
-            ]
-            return np.array(state)
-        except Exception as e:
-            print(f"Error getting state: {e}")
-            return np.zeros(10)  # Return zero state in case of error
-
-
-    def calculate_reward(self, current_state):
-        # Base reward components
-        military_value = (
-            len(self.units(UnitTypeId.MARINE)) * 50 +
-            len(self.units(UnitTypeId.MARAUDER)) * 100
-        )
-        
-        economy_value = (
-            self.minerals/100 +
-            self.vespene/100 +
-            len(self.workers) * 50
-        )
-        
-        # Combat performance
-        killed_value = (
-            self.state.score.killed_minerals_army +
-            self.state.score.killed_vespene_army
-        ) / 100
-        
-        lost_value = (
-            self.state.score.lost_minerals_army +
-            self.state.score.lost_vespene_army
-        ) / 100
-        
-        # Final reward calculation
-        reward = (
-            military_value +
-            economy_value +
-            killed_value -
-            lost_value
-        )
-        
-        # Additional rewards/penalties
-        if len(self.townhalls) == 0:  # Severe penalty for losing all bases
-            reward -= 5000
-        
-        if self.supply_used == self.supply_cap:  # Penalty for supply block
-            reward -= 100
-            
-        return reward
-
+class SC2Bot(BotAI):
     async def on_step(self, iteration):
         # Basic economy management
         await self.distribute_workers()
         
-        # Get current state
-        current_state = await self.get_state()
-        
-        # Choose action
-        action = self.choose_action(current_state)
-        
-        # Execute chosen action
-        await self.execute_action(action)
-        
-        # Calculate reward
-        reward = self.calculate_reward(current_state)
-        
-        # Store transition in current game memory
-        if self.last_state is not None:
-            self.current_game_memory.append((
-                self.last_state,
-                self.last_action,
-                reward,
-                current_state,
-                False  # not done yet
-            ))
-            
-            # Add to main memory and train
-            self.memory.append((
-                self.last_state,
-                self.last_action,
-                reward,
-                current_state,
-                False
-            ))
-            await self.train_batch()
-        
-        # Update state and action
-        self.last_state = current_state
-        self.last_action = action
-        
         # Additional game management
         if iteration % 10 == 0:  # Every 10 iterations
-            print (f"iteration {iteration}")
+            print(f"iteration {iteration}")
             await self.manage_army()
             await self.manage_production()
 
@@ -276,11 +33,12 @@ class SC2MLBot(BotAI):
                 
                 # If units are too spread out, gather them at the ramp
                 for unit in military_units:
-                    if unit.distance_to(rally_point) > 3:  # Units further than 15 distance should move to ramp
+                    if unit.distance_to(rally_point) > 3:
                         unit.move(rally_point)
-                        return  # Wait for army to assemble before attacking
+                        return
             return
-        # Original attack logic
+
+        # Attack logic
         target = None
         if self.enemy_units:
             for unit in military_units:
@@ -300,23 +58,20 @@ class SC2MLBot(BotAI):
             unit.attack(target)
 
     async def manage_production(self):
-        print (f"manage_production")
+        print(f"manage_production")
         await self.build_supply_depot_if_needed()
-
         await self.build_gas_if_needed()
-
         await self.build_barracks_if_needed()
-
-        # Add Tech Lab to Barracks for Marauders
+        await self.train_military_units()
+        await self.train_workers()
+        await self.expand_base()
         await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
 
     async def build_supply_depot_if_needed(self):
         if self.supply_left < 5 * self.townhalls.amount:
-            # Determine how many depots to build
             max_concurrent = 2 if self.townhalls.ready.amount > 2 else 1
             pending_depots = self.already_pending(UnitTypeId.SUPPLYDEPOT)
             
-            # Build depots if we can afford them and aren't already building max_concurrent
             while (
                 pending_depots < max_concurrent 
                 and self.can_afford(UnitTypeId.SUPPLYDEPOT)
@@ -335,16 +90,12 @@ class SC2MLBot(BotAI):
                 if closest_enemy.distance_to(depot) < 10:
                     depot(AbilityId.MORPH_SUPPLYDEPOT_RAISE)
 
-
     async def build_gas_if_needed(self):
-        # Only build gas if we have barracks
         if self.structures(UnitTypeId.BARRACKS).ready.amount + self.already_pending(UnitTypeId.BARRACKS) == 0:
             return
 
-        # Count existing and pending refineries
         total_refineries = self.structures(UnitTypeId.REFINERY).amount + self.already_pending(UnitTypeId.REFINERY)
         
-        # Early game: only 1 gas
         if self.townhalls.ready.amount == 1:
             if total_refineries >= 1:
                 return
@@ -353,11 +104,9 @@ class SC2MLBot(BotAI):
             if total_refineries >= 3:
                 return
 
-        # Late game: 1 gas per base
         if total_refineries >= self.townhalls.ready.amount + 2:
             return
 
-        # Build refinery if we can
         for th in self.townhalls.ready:
             vgs = self.vespene_geyser.closer_than(10, th)
             for vg in vgs:
@@ -366,11 +115,90 @@ class SC2MLBot(BotAI):
                     if workers:
                         worker = workers.closest_to(vg)
                         worker.build_gas(vg)
-                        return  # Only build one at a time
+                        return
+
+    async def build_barracks_if_needed(self):
+        if not self.can_afford(UnitTypeId.BARRACKS):
+            return
+            
+        barracks_count = self.structures(UnitTypeId.BARRACKS).amount
+        barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
+        total_barracks = barracks_count + barracks_pending
+        
+        if self.townhalls.amount < 3:
+            if total_barracks >= 3:
+                return
+    
+        if total_barracks < self.workers.amount // 6:
+            if self.townhalls:
+                cc = self.townhalls.first
+                pos = cc.position.towards(self.game_info.map_center, 8)
+                await self.build(UnitTypeId.BARRACKS, near=pos)
+
+    async def train_military_units(self):
+        for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
+            if barracks.has_add_on:
+                if self.can_afford(UnitTypeId.MARAUDER) and self.supply_left > 2:
+                    barracks.train(UnitTypeId.MARAUDER)
+            else:
+                if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
+                    barracks.train(UnitTypeId.MARINE)
+
+    async def train_workers(self):
+        if self.workers.amount >= 80:
+            return
+        
+        if self.workers.amount >= 20 * self.townhalls.ready.amount:
+            return
+        
+        for cc in self.townhalls.ready.idle:
+            if self.can_afford(UnitTypeId.SCV) and self.supply_left > 0:
+                cc.train(UnitTypeId.SCV)
+
+    def should_attack(self):
+        military_supply = self.get_military_supply()
+        
+        if military_supply > 20 * self.townhalls.ready.amount:
+            print(f"Military supply {military_supply} > 20 * {self.townhalls.ready.amount}, attacking")
+            return True
+            
+        military_units = self.units.filter(
+            lambda unit: unit.type_id in {
+                UnitTypeId.MARINE,
+                UnitTypeId.MARAUDER,
+                UnitTypeId.REAPER
+            }
+        )
+        
+        if len(military_units) > 15 * self.townhalls.ready.amount:
+            print(f"enough military units, attacking")
+            return True
+            
+        # Check if enemy is close to our base
+        if self.townhalls:
+            main_base = self.townhalls.first
+            enemy_units = self.enemy_units | self.enemy_structures
+            if enemy_units:
+                closest_enemy = enemy_units.closest_to(main_base)
+                if closest_enemy.distance_to(main_base) < 30:
+                    print(f"enemy is close, attacking")
+                    return True
+                    
+        if self.supply_used > 180:
+            print(f"supply used is max, attacking")
+            return True
+        
+        return False
+
+    def get_military_supply(self):
+        military_supply = 0
+        military_supply += self.units(UnitTypeId.MARINE).amount * 1
+        military_supply += self.units(UnitTypeId.MARAUDER).amount * 2
+        military_supply += self.units(UnitTypeId.REAPER).amount * 1
+        return military_supply
 
     async def append_addon(self, building_type, building_flying_type, add_on_type):
         def points_to_build_addon(building_position: Point2) -> list[Point2]:
-            """Return all points that need to be checked when trying to build an addon. Returns 4 points."""
             addon_offset: Point2 = Point2((2.5, -0.5))
             addon_position: Point2 = building_position + addon_offset
             addon_points = [
@@ -392,11 +220,9 @@ class SC2MLBot(BotAI):
                     building(AbilityId.LIFT)
 
         def land_positions(position: Point2) -> list[Point2]:
-            """Return all points that need to be checked when trying to land at a location where there is enough space to build an addon. Returns 13 points."""
             land_positions = [(position + Point2((x, y))).rounded for x in range(-1, 2) for y in range(-1, 2)]
             return land_positions + points_to_build_addon(position)
 
-        # Find a position to land for a flying starport so that it can build an addon
         for building in self.structures(building_flying_type).idle:
             possible_land_positions_offset = sorted(
                 (Point2((x, y)) for x in range(-10, 10) for y in range(-10, 10)),
@@ -413,181 +239,45 @@ class SC2MLBot(BotAI):
                     building(AbilityId.LAND, target_land_position)
                     break
 
-        # Show where it is flying to and show grid
-        for sp in self.structures(building_type).filter(lambda unit: not unit.is_idle):
-            if isinstance(sp.order_target, Point2):
-                p = Point3((*sp.order_target, self.get_terrain_z_height(sp.order_target)))
-                self.client.debug_box2_out(p, color=Point3((255, 0, 0)))
-
-    async def on_end(self, result):
-        # Calculate final reward based on game result
-        final_reward = 5000 if result == sc2.Result.Victory else -5000
-        
-        # Add final transitions with done=True
-        if self.current_game_memory:
-            last_transition = self.current_game_memory[-1]
-            final_transition = (
-                last_transition[0],  # state
-                last_transition[1],  # action
-                final_reward,        # reward
-                last_transition[3],  # next_state
-                True                 # done
-            )
-            self.memory.append(final_transition)
-        
-        # Update metrics
-        self.games_played += 1
-        if result == sc2.Result.Victory:
-            self.wins += 1
-        
-        # Save progress
-        self.save_model()
-        self.save_training_history()
-        
-        # Clear current game memory
-        self.current_game_memory = []
-        self.last_state = None
-        self.last_action = None
-        
-        # Print game summary
-        print(f"\nGame {self.games_played} finished!")
-        print(f"Result: {result}")
-        print(f"Win rate: {(self.wins/self.games_played)*100:.2f}%")
-        print(f"Current epsilon: {self.epsilon}")
-
-    def load_training_history(self):
-        history_path = f"training_history/{self.model_name}_history.json"
-        if os.path.exists(history_path):
-            try:
-                with open(history_path, 'r') as f:
-                    self.training_history = json.load(f)
-                print(f"Loaded training history from {history_path}")
-            except Exception as e:
-                print(f"Error loading training history: {e}")
-                self.training_history = []
-        else:
-            print("No training history found, starting fresh")
-            os.makedirs("training_history", exist_ok=True)
-            self.training_history = []
-
-    def save_training_history(self):
-        history_path = f"training_history/{self.model_name}_history.json"
+    async def expand_base(self):
         try:
-            with open(history_path, 'w') as f:
-                json.dump(self.training_history, f)
-            print(f"Saved training history to {history_path}")
-        except Exception as e:
-            print(f"Error saving training history: {e}")
-
-    async def train_worker(self):
-        # Hard cap at 80 workers total
-        if self.workers.amount >= 80:
-            return
-        
-        # Also stop at 20 * townhalls workers (existing logic)
-        if self.workers.amount >= 20 * self.townhalls.ready.amount:
-            return
-        
-        try:
-            for cc in self.townhalls.ready.idle:
-                if self.can_afford(UnitTypeId.SCV) and self.supply_left > 0:
-                    cc.train(UnitTypeId.SCV)
-        except Exception as e:
-            print(f"Error training worker: {e}")
-
-    def should_attack(self):
-        military_supply = self.get_military_supply()
-        
-        # Attack if we have significant military supply
-        if military_supply > 20 * self.townhalls.ready.amount:
-            print(f"Military supply {military_supply} > 20 * {self.townhalls.ready.amount}, attacking")
-            return True
+            MAX_BASES = 8
             
-        # Count total military units
-        military_units = self.units.filter(
-            lambda unit: unit.type_id in {
-                UnitTypeId.MARINE,
-                UnitTypeId.MARAUDER,
-                UnitTypeId.REAPER
-            }
-        )
-        
-        # Check if we have enough military units
-        if len(military_units) > 15 * self.townhalls.ready.amount:
-            print (f"enough military units, attacking")
-            return True
-            
-        # Check if enemy is close to our base
-        if self.townhalls:
-            main_base = self.townhalls.first
-            enemy_units = self.enemy_units | self.enemy_structures
-            if enemy_units:
-                closest_enemy = enemy_units.closest_to(main_base)
-                if closest_enemy.distance_to(main_base) < 30:  # Defensive radius
-                    print (f"enemy is close, attacking")
-                    return True
-                    
-        # Check if we're at max supply (indicating a strong army)
-        if self.supply_used > 180:
-            print (f"supply used is max, attacking")
-            return True
-        
-        return False
-
-    async def build_barracks_if_needed(self):
-        # Don't build if we can't afford it
-        if not self.can_afford(UnitTypeId.BARRACKS):
-            return
-            
-        # Get count of existing and in-progress barracks
-        barracks_count = self.structures(UnitTypeId.BARRACKS).amount
-        barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
-
-        total_barracks = barracks_count + barracks_pending
-        
-        # Early game limit: max 2 barracks with single base.
-        # Expand if we have more than 2 bases.
-        if self.townhalls.amount < 3:
-            if total_barracks >= 3:
+            # Don't expand if we can't afford it
+            if not self.can_afford(UnitTypeId.COMMANDCENTER):
                 return
-#        else:
-        # Late game limit
-#        MAX_BARRACKS = 15
-#        if total_barracks >= MAX_BARRACKS:
-#            return
-    
-        # Build if we have less than 3 barracks per base (except for early game)
-        if total_barracks < self.workers.amount // 6:
-            if self.townhalls:
-                cc = self.townhalls.first
-                pos = cc.position.towards(self.game_info.map_center, 8)
-                await self.build(UnitTypeId.BARRACKS, near=pos)
-
-    def get_military_supply(self):
-        military_supply = 0
-        # Marines cost 1 supply
-        military_supply += self.units(UnitTypeId.MARINE).amount * 1
-        # Marauders cost 2 supply
-        military_supply += self.units(UnitTypeId.MARAUDER).amount * 2
-        # Reapers cost 1 supply
-        military_supply += self.units(UnitTypeId.REAPER).amount * 1
-        return military_supply
+                
+            # Don't expand if we're at max bases
+            if len(self.townhalls) >= MAX_BASES:
+                return
+                
+            # Check if current bases are saturated (16 workers per base is optimal)
+            for th in self.townhalls.ready:
+                if len(self.workers.closer_than(10, th)) < 16:
+                    return  # Don't expand if current bases aren't fully utilized
+                    
+            # Check if we're already expanding
+            if self.already_pending(UnitTypeId.COMMANDCENTER):
+                return
+                
+            # All checks passed, try to expand
+            await self.expand_now()
+                
+        except Exception as e:
+            print(f"Error expanding base: {e}")
 
 def main():
-    # Train the bot over multiple games
-    bot = SC2MLBot()
+    bot = SC2Bot()
     maps_pool = ["CatalystLE"]
     
-    for _ in range(1):  # Train for 100 games
-        current_map = random.choice(maps_pool)
-        run_game(
-            maps.get(current_map),
-            [
-                Bot(Race.Terran, bot),
-                Computer(Race.Random, Difficulty.Hard)
-            ],
-            realtime=False
-        )
+    run_game(
+        maps.get(maps_pool[0]),
+        [
+            Bot(Race.Terran, bot),
+            Computer(Race.Random, Difficulty.Hard)
+        ],
+        realtime=False
+    )
 
 if __name__ == "__main__":
     import asyncio
