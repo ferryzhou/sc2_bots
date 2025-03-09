@@ -10,17 +10,31 @@ from sc2.player import Bot, Computer
 from sc2.ids.ability_id import AbilityId
 import random
 from sc2.ids.upgrade_id import UpgradeId
+import math
 
 class SC2Bot(BotAI):
     async def on_step(self, iteration):
         # Basic economy management
         await self.distribute_workers()
+        await self.build_supply_depot_if_needed()
+        await self.train_workers()
+        await self.expand_base()
         
         # Additional game management
         if iteration % 10 == 0:  # Every 10 iterations
             print(f"iteration {iteration}")
-            await self.manage_army()
             await self.manage_production()
+            await self.manage_army()
+
+    async def manage_production(self):
+        print(f"manage_production")
+        await self.build_gas_if_needed()
+        await self.build_barracks_if_needed()
+        await self.build_factory_if_needed()
+        await self.build_starport_if_needed()
+        await self.append_addons()
+        await self.upgrade_army()
+        await self.train_military_units()
 
     async def manage_army(self):
         # Get all military units
@@ -45,8 +59,21 @@ class SC2Bot(BotAI):
         if not (military_units or tanks):
             return
             
-        ramp = self.main_base_ramp
-        rally_point = ramp.top_center
+        # Determine rally point based on army size
+        if self.get_military_supply() > 15:
+            # Rally at the townhall closest to map center (most forward base)
+            if self.townhalls.ready:
+                forward_base = self.townhalls.ready.closest_to(self.game_info.map_center)
+                rally_point = forward_base.position.towards(self.game_info.map_center, 8)
+                print(f"Rallying at forward base: {rally_point}")
+            else:
+                # Fallback to main base ramp if no bases
+                ramp = self.main_base_ramp
+                rally_point = ramp.top_center
+        else:
+            # Default rally at main base ramp for smaller armies
+            ramp = self.main_base_ramp
+            rally_point = ramp.top_center
         
         # Position infantry at rally point
         for unit in military_units:
@@ -65,11 +92,26 @@ class SC2Bot(BotAI):
                 elif closest_enemy.distance_to(tank) > 15 and tank.type_id == UnitTypeId.SIEGETANKSIEGED:
                     tank(AbilityId.UNSIEGE_UNSIEGE)
             else:
-                # No enemies, unsiege and move to rally
-                if tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-                    tank(AbilityId.UNSIEGE_UNSIEGE)
-                elif tank.distance_to(rally_point) > 3:
-                    tank.move(rally_point)
+                # No enemies, but still manage tank positioning
+                if tank.distance_to(rally_point) > 5:
+                    # If tank is far from rally point, unsiege and move closer
+                    if tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+                        tank(AbilityId.UNSIEGE_UNSIEGE)
+                    elif tank.type_id == UnitTypeId.SIEGETANK:
+                        tank.move(rally_point)
+                else:
+                    # Tank is at rally point, siege up for defense
+                    if tank.type_id == UnitTypeId.SIEGETANK:
+                        # Create a spread of siege positions around the rally point
+                        tank_index = list(tanks).index(tank)
+                        offset = Point2((tank_index % 3 - 1, tank_index // 3 - 1)) * 2
+                        siege_position = rally_point + offset
+                        
+                        # Move to siege position then siege
+                        if tank.distance_to(siege_position) > 1:
+                            tank.move(siege_position)
+                        else:
+                            tank(AbilityId.SIEGEMODE_SIEGEMODE)
 
     async def execute_attack(self, military_units, tanks):
         """Execute attack logic for all military units."""
@@ -125,7 +167,7 @@ class SC2Bot(BotAI):
                 elif tank.type_id == UnitTypeId.SIEGETANK:
                     tank.attack(closest_structure)
             else:
-                # No enemies, attack base
+                # No visible enemies, attack enemy base
                 target = self.enemy_start_locations[0]
                 tank.attack(target)
         
@@ -219,22 +261,9 @@ class SC2Bot(BotAI):
             if raven.distance_to(target_unit) > 5:
                 raven.move(target_unit.position)
 
-    async def manage_production(self):
-        print(f"manage_production")
-        await self.build_supply_depot_if_needed()
-        await self.build_gas_if_needed()
-        await self.build_barracks_if_needed()
-        await self.build_factory_if_needed()
-        await self.build_starport_if_needed()
-        await self.append_addons()
-        await self.upgrade_army()
-        await self.train_military_units()
-        await self.train_workers()
-        await self.expand_base()
-
     async def build_supply_depot_if_needed(self):
-        if self.supply_left < 5 * self.townhalls.amount:
-            max_concurrent = 2 if self.townhalls.ready.amount > 2 else 1
+        if self.supply_left < 6 * self.townhalls.amount:
+            max_concurrent = 2 if self.townhalls.ready.amount > 1 else 1
             pending_depots = self.already_pending(UnitTypeId.SUPPLYDEPOT)
             
             while (
@@ -297,13 +326,57 @@ class SC2Bot(BotAI):
     
         if total_barracks < self.workers.amount // 6:
             if self.townhalls:
+                # Get main base and its position
                 cc = self.townhalls.first
-                pos = cc.position.towards(self.game_info.map_center, 8)
-                await self.build(UnitTypeId.BARRACKS, near=pos)
+                base_pos = cc.position
+                
+                # Create a list of potential positions around the base
+                # Use a wider spread with increasing distance from base
+                spread_distance = 8 + (total_barracks * 2)  # Increase distance for each new barracks
+                angle_step = 45  # Degrees between potential positions
+                
+                potential_positions = []
+                for angle in range(0, 360, angle_step):
+                    # Convert angle to radians
+                    radians = angle * 0.0174533
+                    # Calculate position at this angle and distance
+                    x = base_pos.x + (spread_distance * math.cos(radians))
+                    y = base_pos.y + (spread_distance * math.sin(radians))
+                    potential_positions.append(Point2((x, y)))
+                
+                # Filter positions to ensure they're not too close to existing barracks
+                existing_barracks = self.structures(UnitTypeId.BARRACKS)
+                valid_positions = []
+                
+                for pos in potential_positions:
+                    # Check if position is valid (in bounds and placeable)
+                    if not self.in_map_bounds(pos) or not self.in_placement_grid(pos):
+                        continue
+                        
+                    # Check distance to existing barracks
+                    too_close = False
+                    for barracks in existing_barracks:
+                        if barracks.distance_to(pos) < 6:  # Minimum distance between barracks
+                            too_close = True
+                            break
+                            
+                    if not too_close:
+                        valid_positions.append(pos)
+                
+                # If we have valid positions, build at the first one
+                if valid_positions:
+                    await self.build(UnitTypeId.BARRACKS, near=valid_positions[0])
+                else:
+                    # Fallback to building near command center if no valid positions
+                    fallback_pos = cc.position.towards(self.game_info.map_center, 8)
+                    await self.build(UnitTypeId.BARRACKS, near=fallback_pos)
 
     async def build_factory_if_needed(self):
         # Need barracks before factory
         if not self.structures(UnitTypeId.BARRACKS).ready:
+            return
+        
+        if not self.can_afford(UnitTypeId.FACTORY):
             return
 
         # Get current factory count (including flying factories)
@@ -314,29 +387,30 @@ class SC2Bot(BotAI):
 
         # Always build first factory when we have enough military units
         if total_factories == 0 and self.get_military_supply() >= 10:
-            if self.can_afford(UnitTypeId.FACTORY):
-                if self.structures(UnitTypeId.BARRACKS).ready:
-                    barracks = self.structures(UnitTypeId.BARRACKS).ready.first
-                    await self.build(UnitTypeId.FACTORY, 
-                                   near=barracks.position.towards(self.game_info.map_center, 6))
-                else:
-                    await self.build(UnitTypeId.FACTORY, near=self.townhalls.first)
+            # Build near the last (most recently built) barracks instead of the first
+            barracks_list = self.structures(UnitTypeId.BARRACKS).ready
+            if barracks_list:
+                # Get the last barracks in the list
+                last_barracks = barracks_list[-1]
+                await self.build(UnitTypeId.FACTORY, 
+                                near=last_barracks.position.towards(self.game_info.map_center, 6))
                 return
 
         # Only build second factory when we have a large ground army
         ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
         if total_factories == 1 and ground_units >= 30:
-            if self.can_afford(UnitTypeId.FACTORY):
-                if self.structures(UnitTypeId.FACTORY).ready:
-                    existing_factory = self.structures(UnitTypeId.FACTORY).ready.first
-                    await self.build(UnitTypeId.FACTORY, 
-                                   near=existing_factory.position.towards(self.game_info.map_center, 6))
-                else:
-                    await self.build(UnitTypeId.FACTORY, near=self.townhalls.first)
+            barracks_list = self.structures(UnitTypeId.BARRACKS).ready
+            if barracks_list:
+                last_barracks = barracks_list[-1]
+                await self.build(UnitTypeId.FACTORY, 
+                                near=last_barracks.position.towards(self.game_info.map_center, 6))
 
     async def build_starport_if_needed(self):
         # Need at least one factory before starport
         if not self.structures(UnitTypeId.FACTORY).ready:
+            return
+    
+        if not self.can_afford(UnitTypeId.STARPORT):
             return
 
         # Check if we already have starports or one is in progress (including flying)
@@ -348,24 +422,24 @@ class SC2Bot(BotAI):
         if total_starports >= 2:
             return
 
-        # Build starport if we can afford it
-        if self.can_afford(UnitTypeId.STARPORT):
-            # Try to build near the factory
-            if self.structures(UnitTypeId.FACTORY).ready:
-                factory = self.structures(UnitTypeId.FACTORY).ready.first
-                await self.build(UnitTypeId.STARPORT, 
-                               near=factory.position.towards(self.game_info.map_center, 6))
-            else:
-                # Fallback to building near command center
-                await self.build(UnitTypeId.STARPORT, near=self.townhalls.first)
+        # Try to build near the last factory instead of the first
+        factory_list = self.structures(UnitTypeId.FACTORY).ready
+        if factory_list:
+            # Get the last factory in the list
+            last_factory = factory_list[-1]
+            await self.build(UnitTypeId.STARPORT, 
+                            near=last_factory.position.towards(self.game_info.map_center, 6))
+        else:
+            # Fallback to building near command center
+            await self.build(UnitTypeId.STARPORT, near=self.townhalls.first)
 
     async def train_military_units(self):
         # Build tanks if we have enough military units and a factory with tech lab
-        if self.get_military_supply() >= 20:
+        if self.get_military_supply() >= 10:
             for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
                 if factory.has_add_on:
                     if factory.add_on_tag in self.structures(UnitTypeId.FACTORYTECHLAB).tags:
-                        if self.can_afford(UnitTypeId.SIEGETANK) and self.supply_left > 2:
+                        if self.can_afford(UnitTypeId.SIEGETANK) and self.supply_left > 4:
                             factory.train(UnitTypeId.SIEGETANK)
 
         # Build Ravens (up to 2)
@@ -456,8 +530,8 @@ class SC2Bot(BotAI):
         military_supply += self.units(UnitTypeId.MARINE).amount * 1
         military_supply += self.units(UnitTypeId.MARAUDER).amount * 2
         military_supply += self.units(UnitTypeId.REAPER).amount * 1
-        military_supply += self.units(UnitTypeId.SIEGETANK).amount * 3  # Siege Tank costs 3 supply
-        military_supply += self.units(UnitTypeId.SIEGETANKSIEGED).amount * 3  # Include sieged tanks
+        military_supply += self.units(UnitTypeId.SIEGETANK).amount * 4  # Siege Tank costs 3 supply
+        military_supply += self.units(UnitTypeId.SIEGETANKSIEGED).amount * 4  # Include sieged tanks
         return military_supply
 
     async def append_addons(self):
@@ -619,7 +693,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Terran, Difficulty.Hard)
+            Computer(Race.Random, Difficulty.Hard)
         ],
         realtime=False
     )
