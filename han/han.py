@@ -550,22 +550,88 @@ class SC2Bot(BotAI):
                 cc.train(UnitTypeId.SCV)
 
     def should_attack(self):
-        military_supply = self.get_military_supply()
-        
-        if military_supply > 20 * self.townhalls.ready.amount:
-            print(f"Military supply {military_supply} > 20 * {self.townhalls.ready.amount}, attacking")
-            return True
-            
+        # Get our military units
         military_units = self.units.filter(
             lambda unit: unit.type_id in {
                 UnitTypeId.MARINE,
                 UnitTypeId.MARAUDER,
                 UnitTypeId.REAPER,
                 UnitTypeId.SIEGETANK,
-                UnitTypeId.SIEGETANKSIEGED
+                UnitTypeId.SIEGETANKSIEGED,
+                UnitTypeId.MEDIVAC,
+                UnitTypeId.RAVEN
             }
         )
         
+        # Define worker unit types
+        worker_types = {
+            UnitTypeId.SCV,
+            UnitTypeId.PROBE,
+            UnitTypeId.DRONE,
+            UnitTypeId.MULE
+        }
+        
+        # Define supply costs for common units
+        supply_costs = {
+            UnitTypeId.MARINE: 1,
+            UnitTypeId.MARAUDER: 2,
+            UnitTypeId.REAPER: 1,
+            UnitTypeId.SIEGETANK: 3,
+            UnitTypeId.SIEGETANKSIEGED: 3,
+            UnitTypeId.MEDIVAC: 2,
+            UnitTypeId.RAVEN: 2,
+            UnitTypeId.SCV: 1,
+            UnitTypeId.PROBE: 1,
+            UnitTypeId.DRONE: 1,
+            UnitTypeId.ZEALOT: 2,
+            UnitTypeId.STALKER: 2,
+            UnitTypeId.IMMORTAL: 4,
+            UnitTypeId.COLOSSUS: 6,
+            UnitTypeId.ZERGLING: 0.5,
+            UnitTypeId.ROACH: 2,
+            UnitTypeId.HYDRALISK: 2,
+            UnitTypeId.ULTRALISK: 6
+        }
+        
+        # Filter out workers and structures from enemy units
+        enemy_combat_units = self.enemy_units.filter(
+            lambda unit: not unit.is_structure and unit.type_id not in worker_types
+        )
+        
+        # Check for numerical advantage based on military supply
+        if len(enemy_combat_units) > 5:
+            # Calculate military supply of enemy units
+            enemy_military_supply = sum(
+                supply_costs.get(unit.type_id, 2)  # Default to 2 supply if unknown
+                for unit in enemy_combat_units
+            )
+            
+            # Only count our units that are close enough to the enemy (within 30 distance)
+            if enemy_combat_units:
+                enemy_center = enemy_combat_units.center
+                nearby_military_units = military_units.filter(
+                    lambda unit: unit.distance_to(enemy_center) < 30
+                )
+                
+                # Calculate our nearby military supply
+                our_nearby_military_supply = sum(
+                    supply_costs.get(unit.type_id, 2)  # Default to 2 supply if unknown
+                    for unit in nearby_military_units
+                )
+                
+                # Attack if we have a significant supply advantage
+                if our_nearby_military_supply > enemy_military_supply * 1.5:
+                    print(f"Numerical advantage detected: {our_nearby_military_supply} supply vs {enemy_military_supply} supply, attacking")
+                    return True
+        
+        # Get total military supply for other conditions
+        military_supply = self.get_military_supply()
+        
+        # Original attack conditions
+        if military_supply > 20 * self.townhalls.ready.amount:
+            print(f"Military supply {military_supply} > 20 * {self.townhalls.ready.amount}, attacking")
+            return True
+            
         if len(military_units) > 15 * min(4, self.townhalls.ready.amount):
             print(f"enough military units, attacking")
             return True
@@ -847,7 +913,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Protoss, Difficulty.Hard)
+            Computer(Race.Terran, Difficulty.Hard)
         ],
         realtime=False
     )
