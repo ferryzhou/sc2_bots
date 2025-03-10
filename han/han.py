@@ -503,6 +503,16 @@ class SC2Bot(BotAI):
                         if self.can_afford(UnitTypeId.SIEGETANK) and self.supply_left > 4:
                             factory.train(UnitTypeId.SIEGETANK)
 
+        # Build medivacs based on ground unit count
+        ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
+        desired_medivacs = ground_units // 8  # One medivac for every 8 ground units
+        current_medivacs = self.units(UnitTypeId.MEDIVAC).amount
+
+        if current_medivacs < desired_medivacs:
+            for starport in self.structures(UnitTypeId.STARPORT).ready.idle:
+                if self.can_afford(UnitTypeId.MEDIVAC) and self.supply_left > 2:
+                    starport.train(UnitTypeId.MEDIVAC)
+
         # Build Ravens (up to 2)
         current_ravens = self.units(UnitTypeId.RAVEN).amount
         desired_ravens = 2
@@ -513,16 +523,6 @@ class SC2Bot(BotAI):
                     if starport.add_on_tag in self.structures(UnitTypeId.STARPORTTECHLAB).tags:
                         if self.can_afford(UnitTypeId.RAVEN) and self.supply_left > 2:
                             starport.train(UnitTypeId.RAVEN)
-
-        # Build medivacs based on ground unit count
-        ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
-        desired_medivacs = ground_units // 8  # One medivac for every 8 ground units
-        current_medivacs = self.units(UnitTypeId.MEDIVAC).amount
-
-        if current_medivacs < desired_medivacs:
-            for starport in self.structures(UnitTypeId.STARPORT).ready.idle:
-                if self.can_afford(UnitTypeId.MEDIVAC) and self.supply_left > 2:
-                    starport.train(UnitTypeId.MEDIVAC)
 
         # Existing barracks training logic
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
