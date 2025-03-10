@@ -32,6 +32,7 @@ class SC2Bot(BotAI):
         await self.build_barracks_if_needed()
         await self.build_factory_if_needed()
         await self.build_starport_if_needed()
+        await self.build_engineering_bay_if_needed()
         await self.append_addons()
         await self.upgrade_army()
         await self.train_military_units()
@@ -140,7 +141,6 @@ class SC2Bot(BotAI):
                     # Send combat units to attack enemy units
                     for unit in combat_units:
                         closest_enemy = enemy_units.closest_to(unit)
-                        print(f"attacking unit {unit} to {closest_enemy}")
                         unit.attack(closest_enemy)
                 else:
                     remaining_units = military_units
@@ -321,55 +321,50 @@ class SC2Bot(BotAI):
         total_barracks = barracks_count + barracks_flying + barracks_pending
         
         if self.townhalls.amount < 3:
-            if total_barracks >= 3:
+            if total_barracks >= 4:
                 return
     
-        if total_barracks < self.workers.amount // 6:
-            if self.townhalls:
-                # Get main base and its position
-                cc = self.townhalls.first
-                base_pos = cc.position
-                
-                # Create a list of potential positions around the base
-                # Use a wider spread with increasing distance from base
-                spread_distance = 8 + (total_barracks * 2)  # Increase distance for each new barracks
-                angle_step = 45  # Degrees between potential positions
-                
-                potential_positions = []
-                for angle in range(0, 360, angle_step):
-                    # Convert angle to radians
-                    radians = angle * 0.0174533
-                    # Calculate position at this angle and distance
-                    x = base_pos.x + (spread_distance * math.cos(radians))
-                    y = base_pos.y + (spread_distance * math.sin(radians))
-                    potential_positions.append(Point2((x, y)))
-                
-                # Filter positions to ensure they're not too close to existing barracks
-                existing_barracks = self.structures(UnitTypeId.BARRACKS)
-                valid_positions = []
-                
-                for pos in potential_positions:
-                    # Check if position is valid (in bounds and placeable)
-                    if not self.in_map_bounds(pos) or not self.in_placement_grid(pos):
-                        continue
-                        
-                    # Check distance to existing barracks
-                    too_close = False
-                    for barracks in existing_barracks:
-                        if barracks.distance_to(pos) < 6:  # Minimum distance between barracks
-                            too_close = True
-                            break
-                            
-                    if not too_close:
-                        valid_positions.append(pos)
-                
-                # If we have valid positions, build at the first one
-                if valid_positions:
-                    await self.build(UnitTypeId.BARRACKS, near=valid_positions[0])
-                else:
-                    # Fallback to building near command center if no valid positions
-                    fallback_pos = cc.position.towards(self.game_info.map_center, 8)
+        if total_barracks >= self.workers.amount // 7:
+            return
+        
+        if total_barracks >= 8:
+            return
+        
+        if not self.townhalls:
+            return
+        
+        # Get main base and its position
+        cc = self.townhalls.first
+        base_pos = cc.position
+        
+        # Try primary placement method
+        pos = await self.find_placement(
+            UnitTypeId.BARRACKS,
+            near_position=base_pos,
+            min_distance=6,
+            max_distance=25,
+            addon_space=True
+        )
+        
+        if pos:
+            print(f"Building barracks at position {pos}")
+            await self.build(UnitTypeId.BARRACKS, near=pos)
+        else:
+            # Fallback method 1: Try direct placement
+            print("Fallback: Using direct placement for barracks")
+            potential_positions = [
+                base_pos.towards(self.game_info.map_center, 8),
+                base_pos.towards(self.game_info.map_center, 12),
+                base_pos.towards(self.game_info.map_center, 16)
+            ]
+            
+            for fallback_pos in potential_positions:
+                if await self.can_place(UnitTypeId.BARRACKS, fallback_pos):
                     await self.build(UnitTypeId.BARRACKS, near=fallback_pos)
+                    return
+            
+            # Fallback method 2: Just try the standard build method near base
+            await self.build(UnitTypeId.BARRACKS, near=base_pos)
 
     async def build_factory_if_needed(self):
         # Need barracks before factory
@@ -377,6 +372,9 @@ class SC2Bot(BotAI):
             return
         
         if not self.can_afford(UnitTypeId.FACTORY):
+            return
+        
+        if not self.townhalls:
             return
 
         # Get current factory count (including flying factories)
@@ -387,23 +385,46 @@ class SC2Bot(BotAI):
 
         # Always build first factory when we have enough military units
         if total_factories == 0 and self.get_military_supply() >= 10:
-            # Build near the last (most recently built) barracks instead of the first
-            barracks_list = self.structures(UnitTypeId.BARRACKS).ready
-            if barracks_list:
-                # Get the last barracks in the list
-                last_barracks = barracks_list[-1]
-                await self.build(UnitTypeId.FACTORY, 
-                                near=last_barracks.position.towards(self.game_info.map_center, 6))
-                return
+            # Find placement for factory with addon space
+            pos = await self.find_placement(
+                UnitTypeId.FACTORY,
+                near_position=self.townhalls.first.position,
+                min_distance=6,
+                max_distance=25,
+                addon_space=True
+            )
+            
+            if pos:
+                print(f"Building factory at position {pos}")
+                await self.build(UnitTypeId.FACTORY, near=pos)
+            else:
+                print("Fallback: Using direct placement for factory")
+                # Fallback: build near any barracks
+                barracks = self.structures(UnitTypeId.BARRACKS).ready
+                if barracks:
+                    await self.build(UnitTypeId.FACTORY, near=barracks.random.position.towards(self.game_info.map_center, 7))
+                else:
+                    await self.build(UnitTypeId.FACTORY, near=self.townhalls.first)
+            return
 
         # Only build second factory when we have a large ground army
         ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
         if total_factories == 1 and ground_units >= 30:
-            barracks_list = self.structures(UnitTypeId.BARRACKS).ready
-            if barracks_list:
-                last_barracks = barracks_list[-1]
-                await self.build(UnitTypeId.FACTORY, 
-                                near=last_barracks.position.towards(self.game_info.map_center, 6))
+            pos = await self.find_placement(
+                UnitTypeId.FACTORY,
+                near_position=self.townhalls.first.position,
+                min_distance=6,
+                max_distance=25,
+                addon_space=True
+            )
+            
+            if pos:
+                await self.build(UnitTypeId.FACTORY, near=pos)
+            else:
+                # Fallback: build near any barracks
+                barracks = self.structures(UnitTypeId.BARRACKS).ready
+                if barracks:
+                    await self.build(UnitTypeId.FACTORY, near=barracks.random.position.towards(self.game_info.map_center, 7))
 
     async def build_starport_if_needed(self):
         # Need at least one factory before starport
@@ -411,6 +432,9 @@ class SC2Bot(BotAI):
             return
     
         if not self.can_afford(UnitTypeId.STARPORT):
+            return
+        
+        if not self.townhalls:
             return
 
         # Check if we already have starports or one is in progress (including flying)
@@ -422,16 +446,53 @@ class SC2Bot(BotAI):
         if total_starports >= 2:
             return
 
-        # Try to build near the last factory instead of the first
-        factory_list = self.structures(UnitTypeId.FACTORY).ready
-        if factory_list:
-            # Get the last factory in the list
-            last_factory = factory_list[-1]
-            await self.build(UnitTypeId.STARPORT, 
-                            near=last_factory.position.towards(self.game_info.map_center, 8))
+        # Find placement for starport with addon space
+        pos = await self.find_placement(
+            UnitTypeId.STARPORT,
+            near_position=self.townhalls.first.position,
+            min_distance=6,
+            max_distance=25,
+            addon_space=True
+        )
+        
+        if pos:
+            print(f"Building starport at position {pos}")
+            await self.build(UnitTypeId.STARPORT, near=pos)
         else:
-            # Fallback to building near command center
-            await self.build(UnitTypeId.STARPORT, near=self.townhalls.first)
+            print("Fallback: Using direct placement for starport")
+            # Fallback: build near factory or barracks
+            if self.structures(UnitTypeId.FACTORY).ready:
+                await self.build(UnitTypeId.STARPORT, near=self.structures(UnitTypeId.FACTORY).ready.random.position)
+            elif self.structures(UnitTypeId.BARRACKS).ready:
+                await self.build(UnitTypeId.STARPORT, near=self.structures(UnitTypeId.BARRACKS).ready.random.position)
+            else:
+                await self.build(UnitTypeId.STARPORT, near=self.townhalls.first)
+
+    async def build_engineering_bay_if_needed(self):
+        # Only start upgrades when we have enough units
+        if self.get_military_supply() < 30:
+            return
+
+        # Build Engineering Bays if we don't have them and can afford it
+        if (len(self.structures(UnitTypeId.ENGINEERINGBAY)) + self.already_pending(UnitTypeId.ENGINEERINGBAY) < 2 and 
+            self.can_afford(UnitTypeId.ENGINEERINGBAY)):
+            
+            # Find placement for engineering bay (no addon needed)
+            pos = await self.find_placement(
+                UnitTypeId.ENGINEERINGBAY,
+                near_position=self.townhalls.first.position,
+                min_distance=5,
+                max_distance=20,
+                addon_space=False
+            )
+            
+            if pos:
+                print(f"Building engineering bay at position {pos}")
+                await self.build(UnitTypeId.ENGINEERINGBAY, near=pos)
+            else:
+                print("Fallback: Using direct placement for engineering bay")
+                # Fallback method for engineering bay
+                await self.build(UnitTypeId.ENGINEERINGBAY, near=self.townhalls.first.position.towards(self.game_info.map_center, 8))
 
     async def train_military_units(self):
         # Build tanks if we have enough military units and a factory with tech lab
@@ -638,9 +699,8 @@ class SC2Bot(BotAI):
 
         # Build Engineering Bays if we don't have them and can afford it
         if (len(self.structures(UnitTypeId.ENGINEERINGBAY)) + self.already_pending(UnitTypeId.ENGINEERINGBAY) < 2 and 
-            self.can_afford(UnitTypeId.ENGINEERINGBAY) and 
-            self.townhalls.ready):
-            await self.build(UnitTypeId.ENGINEERINGBAY, near=self.townhalls.first)
+            self.can_afford(UnitTypeId.ENGINEERINGBAY)):
+            await self.build_engineering_bay_if_needed()
             return
 
         # Build Factory if we don't have one (required for Armory)
@@ -648,7 +708,7 @@ class SC2Bot(BotAI):
             not self.structures(UnitTypeId.FACTORY) and
             not self.already_pending(UnitTypeId.FACTORY) and
             self.can_afford(UnitTypeId.FACTORY)):
-            await self.build(UnitTypeId.FACTORY, near=self.townhalls.first)
+            await self.build_factory_if_needed()
             return
 
         # Build Armory for level 2 and 3 upgrades
@@ -657,7 +717,19 @@ class SC2Bot(BotAI):
             not self.structures(UnitTypeId.ARMORY) and 
             not self.already_pending(UnitTypeId.ARMORY) and 
             self.can_afford(UnitTypeId.ARMORY)):
-            await self.build(UnitTypeId.ARMORY, near=self.townhalls.first)
+            
+            # Find placement for armory (no addon needed)
+            if self.townhalls:
+                pos = await self.find_placement(
+                    UnitTypeId.ARMORY,
+                    near_position=self.townhalls.first.position,
+                    min_distance=5,
+                    max_distance=20,
+                    addon_space=False
+                )
+                
+                if pos:
+                    await self.build(UnitTypeId.ARMORY, near=pos)
             return
 
         # Get Engineering Bays
@@ -684,6 +756,45 @@ class SC2Bot(BotAI):
                 ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL2)
             elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYARMORSLEVEL3):
                 ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL3)
+
+    async def find_placement(self, building_type, near_position, min_distance=5, max_distance=20, addon_space=False, placement_step=2):
+        """
+        Find a suitable placement for a building that ensures proper spacing.
+        
+        Args:
+            building_type: The type of building to place
+            near_position: The reference position to build near
+            min_distance: Minimum distance from other buildings
+            max_distance: Maximum distance from reference position
+            addon_space: Whether to reserve space for an addon
+            placement_step: Step size for the placement grid
+            
+        Returns:
+            A Point2 position or None if no valid position found
+        """
+        # For buildings that need addon space, we need extra checking
+        if addon_space:
+            # Create a list of potential positions in a spiral pattern
+            positions = []
+            for distance in range(5, max_distance, placement_step):
+                for angle in range(0, 360, 30):  # Check every 30 degrees
+                    radians = math.radians(angle)
+                    x = near_position.x + (distance * math.cos(radians))
+                    y = near_position.y + (distance * math.sin(radians))
+                    positions.append(Point2((x, y)))
+            
+            # Check these positions for both building and addon placement
+            for pos in positions:
+                # First check if we can place the building here
+                if await self.can_place(building_type, pos):
+                    # Then check if we can place an addon (use supply depot as a proxy for addon size)
+                    addon_pos = Point2((pos.x + 2.5, pos.y - 0.5))
+                    if await self.can_place(UnitTypeId.SUPPLYDEPOT, addon_pos):
+                        return pos
+        
+        # If we get here, either addon_space is False or we couldn't find a position with addon space
+        # Fall back to standard placement
+        return await super().find_placement(building_type, near=near_position, placement_step=placement_step)
 
 def main():
     bot = SC2Bot()
