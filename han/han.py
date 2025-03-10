@@ -129,7 +129,7 @@ class SC2Bot(BotAI):
             # Prevent division by zero
             if our_strength > 0:
                 # Allocate between 40-60% of our forces to handle enemy units
-                allocation_ratio = min(0.6, max(0.4, enemy_strength / (our_strength * 1.5)))
+                allocation_ratio = min(0.6, max(1.0, enemy_strength / (our_strength * 1.5)))
                 units_for_combat = int(len(military_units) * allocation_ratio)
                 
                 # Select units for combat (closest to enemy units)
@@ -428,7 +428,7 @@ class SC2Bot(BotAI):
             # Get the last factory in the list
             last_factory = factory_list[-1]
             await self.build(UnitTypeId.STARPORT, 
-                            near=last_factory.position.towards(self.game_info.map_center, 6))
+                            near=last_factory.position.towards(self.game_info.map_center, 8))
         else:
             # Fallback to building near command center
             await self.build(UnitTypeId.STARPORT, near=self.townhalls.first)
