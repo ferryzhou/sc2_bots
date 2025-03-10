@@ -566,7 +566,7 @@ class SC2Bot(BotAI):
             }
         )
         
-        if len(military_units) > 15 * self.townhalls.ready.amount:
+        if len(military_units) > 15 * min(4, self.townhalls.ready.amount):
             print(f"enough military units, attacking")
             return True
             
