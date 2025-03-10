@@ -324,7 +324,7 @@ class SC2Bot(BotAI):
             if total_barracks >= 4:
                 return
     
-        if total_barracks >= self.workers.amount // 7:
+        if total_barracks >= self.workers.amount // 6:
             return
         
         if total_barracks >= 8:
@@ -757,9 +757,9 @@ class SC2Bot(BotAI):
             elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYARMORSLEVEL3):
                 ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL3)
 
-    async def find_placement(self, building_type, near_position, min_distance=5, max_distance=20, addon_space=False, placement_step=2):
+    async def find_placement(self, building_type, near_position, min_distance=7, max_distance=30, addon_space=False, placement_step=2):
         """
-        Find a suitable placement for a building that ensures proper spacing.
+        Find a suitable placement for a building that ensures proper spacing and unit pathing.
         
         Args:
             building_type: The type of building to place
@@ -772,28 +772,71 @@ class SC2Bot(BotAI):
         Returns:
             A Point2 position or None if no valid position found
         """
+        # Increase min_distance to ensure better spacing between buildings
+        # Original was 5-6, now using 7 by default (allows tanks to move through)
+        
+        # Create a list of potential positions in a spiral pattern
+        positions = []
+        for distance in range(7, max_distance, placement_step):
+            for angle in range(0, 360, 20):  # Check every 20 degrees for more options
+                radians = math.radians(angle)
+                x = near_position.x + (distance * math.cos(radians))
+                y = near_position.y + (distance * math.sin(radians))
+                positions.append(Point2((x, y)))
+        
+        # Shuffle positions for more varied building placement
+        random.shuffle(positions)
+        
+        # Get existing buildings
+        existing_buildings = self.structures.not_flying
+        
         # For buildings that need addon space, we need extra checking
         if addon_space:
-            # Create a list of potential positions in a spiral pattern
-            positions = []
-            for distance in range(5, max_distance, placement_step):
-                for angle in range(0, 360, 30):  # Check every 30 degrees
-                    radians = math.radians(angle)
-                    x = near_position.x + (distance * math.cos(radians))
-                    y = near_position.y + (distance * math.sin(radians))
-                    positions.append(Point2((x, y)))
-            
             # Check these positions for both building and addon placement
             for pos in positions:
                 # First check if we can place the building here
                 if await self.can_place(building_type, pos):
-                    # Then check if we can place an addon (use supply depot as a proxy for addon size)
-                    addon_pos = Point2((pos.x + 2.5, pos.y - 0.5))
-                    if await self.can_place(UnitTypeId.SUPPLYDEPOT, addon_pos):
-                        return pos
+                    # Check distance to other buildings (needs to be larger for better pathing)
+                    if all(building.distance_to(pos) > min_distance for building in existing_buildings):
+                        # Then check if we can place an addon (use supply depot as a proxy for addon size)
+                        addon_pos = Point2((pos.x + 2.5, pos.y - 0.5))
+                        if await self.can_place(UnitTypeId.SUPPLYDEPOT, addon_pos):
+                            # Final check: verify pathing in the surrounding area
+                            # Create a grid of points around the building to check for pathing
+                            path_check_points = []
+                            for x_offset in [-3, 0, 3]:
+                                for y_offset in [-3, 0, 3]:
+                                    if x_offset == 0 and y_offset == 0:
+                                        continue  # Skip the center point (where building will be)
+                                    path_check_points.append(Point2((pos.x + x_offset, pos.y + y_offset)))
+                            
+                            # Check if most of these points are in the pathing grid
+                            valid_path_points = sum(1 for p in path_check_points if self.in_pathing_grid(p))
+                            if valid_path_points >= 6:  # At least 6 of 8 points should be pathable
+                                print(f"Found good placement for {building_type} with addon space at {pos}")
+                                return pos
+        else:
+            # Regular building (no addon)
+            for pos in positions:
+                if await self.can_place(building_type, pos):
+                    # Check distance to other buildings (needs to be larger for better pathing)
+                    if all(building.distance_to(pos) > min_distance for building in existing_buildings):
+                        # Verify pathing in the surrounding area
+                        path_check_points = []
+                        for x_offset in [-3, 0, 3]:
+                            for y_offset in [-3, 0, 3]:
+                                if x_offset == 0 and y_offset == 0:
+                                    continue  # Skip the center
+                                path_check_points.append(Point2((pos.x + x_offset, pos.y + y_offset)))
+                        
+                        valid_path_points = sum(1 for p in path_check_points if self.in_pathing_grid(p))
+                        if valid_path_points >= 6:
+                            print(f"Found good placement for {building_type} at {pos}")
+                            return pos
         
-        # If we get here, either addon_space is False or we couldn't find a position with addon space
-        # Fall back to standard placement
+        # If we get here, we couldn't find a position with our enhanced criteria
+        print(f"Falling back to standard placement for {building_type}")
+        # Fall back to standard placement but still with increased min_distance
         return await super().find_placement(building_type, near=near_position, placement_step=placement_step)
 
 def main():
@@ -804,7 +847,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Random, Difficulty.Hard)
+            Computer(Race.Protoss, Difficulty.Hard)
         ],
         realtime=False
     )
