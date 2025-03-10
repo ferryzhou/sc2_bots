@@ -571,38 +571,16 @@ class SC2Bot(BotAI):
             UnitTypeId.MULE
         }
         
-        # Define supply costs for common units
-        supply_costs = {
-            UnitTypeId.MARINE: 1,
-            UnitTypeId.MARAUDER: 2,
-            UnitTypeId.REAPER: 1,
-            UnitTypeId.SIEGETANK: 3,
-            UnitTypeId.SIEGETANKSIEGED: 3,
-            UnitTypeId.MEDIVAC: 2,
-            UnitTypeId.RAVEN: 2,
-            UnitTypeId.SCV: 1,
-            UnitTypeId.PROBE: 1,
-            UnitTypeId.DRONE: 1,
-            UnitTypeId.ZEALOT: 2,
-            UnitTypeId.STALKER: 2,
-            UnitTypeId.IMMORTAL: 4,
-            UnitTypeId.COLOSSUS: 6,
-            UnitTypeId.ZERGLING: 0.5,
-            UnitTypeId.ROACH: 2,
-            UnitTypeId.HYDRALISK: 2,
-            UnitTypeId.ULTRALISK: 6
-        }
-        
         # Filter out workers and structures from enemy units
         enemy_combat_units = self.enemy_units.filter(
             lambda unit: not unit.is_structure and unit.type_id not in worker_types
         )
         
-        # Check for numerical advantage based on military supply
+        # Check for numerical advantage based on unit cost (minerals + gas)
         if len(enemy_combat_units) > 5:
-            # Calculate military supply of enemy units
-            enemy_military_supply = sum(
-                supply_costs.get(unit.type_id, 2)  # Default to 2 supply if unknown
+            # Calculate total value of enemy units
+            enemy_army_value = sum(
+                sum(self.get_unit_mineral_and_gas_cost(unit.type_id))  # Sum of minerals and gas
                 for unit in enemy_combat_units
             )
             
@@ -613,15 +591,15 @@ class SC2Bot(BotAI):
                     lambda unit: unit.distance_to(enemy_center) < 30
                 )
                 
-                # Calculate our nearby military supply
-                our_nearby_military_supply = sum(
-                    supply_costs.get(unit.type_id, 2)  # Default to 2 supply if unknown
+                # Calculate our nearby military value
+                our_nearby_army_value = sum(
+                    sum(self.get_unit_mineral_and_gas_cost(unit.type_id))  # Sum of minerals and gas
                     for unit in nearby_military_units
                 )
                 
-                # Attack if we have a significant supply advantage
-                if our_nearby_military_supply > enemy_military_supply * 1.5:
-                    print(f"Numerical advantage detected: {our_nearby_military_supply} supply vs {enemy_military_supply} supply, attacking")
+                # Attack if we have a significant army value advantage
+                if our_nearby_army_value > enemy_army_value * 1.5:
+                    print(f"Resource advantage detected: {our_nearby_army_value} vs {enemy_army_value}, attacking")
                     return True
         
         # Get total military supply for other conditions
@@ -905,6 +883,94 @@ class SC2Bot(BotAI):
         # Fall back to standard placement but still with increased min_distance
         return await super().find_placement(building_type, near=near_position, placement_step=placement_step)
 
+    def get_unit_mineral_and_gas_cost(self, unit_type_id: UnitTypeId) -> tuple[int, int]:
+        """
+        Get the mineral and gas cost of a unit type.
+        Uses game data when possible, falls back to a comprehensive dictionary.
+        
+        Args:
+            unit_type_id: The unit type ID to get costs for
+            
+        Returns:
+            Tuple of (mineral_cost, gas_cost)
+        """
+        # Try to get from game data first
+        try:
+            unit_data = self._game_data.units[unit_type_id.value]
+            if hasattr(unit_data, 'cost'):
+                return (unit_data.cost.minerals, unit_data.cost.vespene)
+        except (KeyError, AttributeError):
+            pass
+        
+        # Comprehensive dictionary of unit costs (mineral, gas)
+        unit_costs = {
+            # Terran
+            UnitTypeId.SCV: (50, 0),
+            UnitTypeId.MARINE: (50, 0),
+            UnitTypeId.MARAUDER: (100, 25),
+            UnitTypeId.REAPER: (50, 50),
+            UnitTypeId.GHOST: (150, 125),
+            UnitTypeId.HELLION: (100, 0),
+            UnitTypeId.HELLIONTANK: (100, 0),
+            UnitTypeId.SIEGETANK: (150, 125),
+            UnitTypeId.SIEGETANKSIEGED: (150, 125),
+            UnitTypeId.CYCLONE: (150, 100),
+            UnitTypeId.WIDOWMINE: (75, 25),
+            UnitTypeId.WIDOWMINEBURROWED: (75, 25),
+            UnitTypeId.THOR: (300, 200),
+            UnitTypeId.THORAP: (300, 200),
+            UnitTypeId.VIKINGFIGHTER: (150, 75),
+            UnitTypeId.VIKINGASSAULT: (150, 75),
+            UnitTypeId.MEDIVAC: (100, 100),
+            UnitTypeId.LIBERATOR: (150, 150),
+            UnitTypeId.LIBERATORAG: (150, 150),
+            UnitTypeId.RAVEN: (100, 200),
+            UnitTypeId.BANSHEE: (150, 100),
+            UnitTypeId.BATTLECRUISER: (400, 300),
+            
+            # Protoss
+            UnitTypeId.PROBE: (50, 0),
+            UnitTypeId.ZEALOT: (100, 0),
+            UnitTypeId.STALKER: (125, 50),
+            UnitTypeId.SENTRY: (50, 100),
+            UnitTypeId.ADEPT: (100, 25),
+            UnitTypeId.HIGHTEMPLAR: (50, 150),
+            UnitTypeId.DARKTEMPLAR: (125, 125),
+            UnitTypeId.IMMORTAL: (275, 100),
+            UnitTypeId.COLOSSUS: (300, 200),
+            UnitTypeId.DISRUPTOR: (150, 150),
+            UnitTypeId.ARCHON: (100, 300),  # Approximation (2 HTs)
+            UnitTypeId.OBSERVER: (25, 75),
+            UnitTypeId.WARPPRISM: (200, 0),
+            UnitTypeId.PHOENIX: (150, 100),
+            UnitTypeId.VOIDRAY: (250, 150),
+            UnitTypeId.ORACLE: (150, 150),
+            UnitTypeId.CARRIER: (350, 250),
+            UnitTypeId.TEMPEST: (250, 175),
+            UnitTypeId.MOTHERSHIP: (400, 400),
+            
+            # Zerg
+            UnitTypeId.DRONE: (50, 0),
+            UnitTypeId.ZERGLING: (25, 0),
+            UnitTypeId.BANELING: (25, 25),  # Plus zergling cost
+            UnitTypeId.ROACH: (75, 25),
+            UnitTypeId.RAVAGER: (75, 75),  # Plus roach cost
+            UnitTypeId.HYDRALISK: (100, 50),
+            UnitTypeId.LURKER: (50, 100),  # Plus hydra cost
+            UnitTypeId.INFESTOR: (100, 150),
+            UnitTypeId.SWARMHOSTMP: (100, 75),
+            UnitTypeId.ULTRALISK: (300, 200),
+            UnitTypeId.OVERLORD: (100, 0),
+            UnitTypeId.OVERSEER: (50, 50),  # Plus overlord cost
+            UnitTypeId.MUTALISK: (100, 100),
+            UnitTypeId.CORRUPTOR: (150, 100),
+            UnitTypeId.BROODLORD: (150, 150),  # Plus corruptor cost
+            UnitTypeId.VIPER: (100, 200),
+        }
+        
+        # Return from dictionary if available, otherwise default to (100, 25)
+        return unit_costs.get(unit_type_id, (100, 25))
+
 def main():
     bot = SC2Bot()
     maps_pool = ["CatalystLE"]
@@ -913,7 +979,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Terran, Difficulty.Hard)
+            Computer(Race.Protoss, Difficulty.Hard)
         ],
         realtime=False
     )
