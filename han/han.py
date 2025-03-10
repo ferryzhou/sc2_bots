@@ -598,8 +598,14 @@ class SC2Bot(BotAI):
                 )
                 
                 # Attack if we have a significant army value advantage
-                if our_nearby_army_value > enemy_army_value * 1.5:
-                    print(f"Resource advantage detected: {our_nearby_army_value} vs {enemy_army_value}, attacking")
+                advantage_ratio = 2.0
+                if len(nearby_military_units) > 10:
+                    advantage_ratio = 1.5
+                elif len(nearby_military_units) > 15:
+                    advantage_ratio = 1.3
+
+                if our_nearby_army_value > enemy_army_value * advantage_ratio:
+                    print(f"Army value advantage detected: {our_nearby_army_value} vs {enemy_army_value}, attacking")
                     return True
         
         # Get total military supply for other conditions
@@ -610,9 +616,9 @@ class SC2Bot(BotAI):
             print(f"Military supply {military_supply} > 20 * {self.townhalls.ready.amount}, attacking")
             return True
             
-        if len(military_units) > 15 * min(4, self.townhalls.ready.amount):
-            print(f"enough military units, attacking")
-            return True
+#        if len(military_units) > 15 * min(4, self.townhalls.ready.amount):
+#            print(f"enough military units, attacking")
+#            return True
             
         # Check if enemy is close to our base
         if self.townhalls:
