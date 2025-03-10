@@ -29,8 +29,8 @@ class SC2Bot(BotAI):
     async def manage_production(self):
         print(f"manage_production")
         await self.build_gas_if_needed()
-        await self.build_barracks_if_needed()
         await self.build_factory_if_needed()
+        await self.build_barracks_if_needed()
         await self.build_starport_if_needed()
         await self.build_engineering_bay_if_needed()
         await self.append_addons()
@@ -129,8 +129,8 @@ class SC2Bot(BotAI):
             
             # Prevent division by zero
             if our_strength > 0:
-                # Allocate between 40-60% of our forces to handle enemy units
-                allocation_ratio = min(0.6, max(1.0, enemy_strength / (our_strength * 1.5)))
+                # Allocate between 40-100% of our forces to handle enemy units
+                allocation_ratio = min(1.0, max(0.4, enemy_strength * 1.5 / our_strength))
                 units_for_combat = int(len(military_units) * allocation_ratio)
                 
                 # Select units for combat (closest to enemy units)
