@@ -19,6 +19,7 @@ class SC2Bot(BotAI):
         await self.build_supply_depot_if_needed()
         await self.train_workers()
         await self.expand_base()
+        await self.manage_mules()
         
         # Additional game management
         if iteration % 10 == 0:  # Every 10 iterations
@@ -47,6 +48,17 @@ class SC2Bot(BotAI):
         await self.manage_medivacs(medivacs, military_units)
         await self.manage_ravens(ravens, military_units)
                 
+        # Check for enemies near our bases first
+        if self.townhalls:
+            for base in self.townhalls:
+                nearby_enemies = self.enemy_units.filter(
+                    lambda unit: unit.distance_to(base) < 30
+                )
+                if nearby_enemies:
+                    print(f"Defending against enemies near base!")
+                    await self.execute_defense(military_units, tanks)
+                    return
+
         if not self.should_attack():
             print(f"not attacking")
             await self.execute_defense(military_units, tanks)
@@ -331,6 +343,9 @@ class SC2Bot(BotAI):
                         return
 
     async def build_barracks_if_needed(self):
+        if not self.townhalls.ready:
+            return
+            
         if not self.can_afford(UnitTypeId.BARRACKS):
             return
             
@@ -558,7 +573,11 @@ class SC2Bot(BotAI):
                     barracks.train(UnitTypeId.MARINE)
 
     async def train_workers(self):
-        if self.workers.amount >= 80:
+        # Modified to account for MULE income
+        mule_count = self.units(UnitTypeId.MULE).amount
+        effective_worker_count = self.workers.amount + (mule_count * 4)  # Each MULE mines like ~4 SCVs
+        
+        if effective_worker_count >= 80:
             return
         
         if self.workers.amount >= 20 * self.townhalls.ready.amount:
@@ -595,6 +614,31 @@ class SC2Bot(BotAI):
             lambda unit: not unit.is_structure and unit.type_id not in worker_types
         )
         
+        # Check for enemies near our bases first
+        if self.townhalls:
+            for base in self.townhalls:
+                nearby_enemies = enemy_combat_units.filter(
+                    lambda unit: unit.distance_to(base) < 30
+                )
+                if nearby_enemies:
+                    # If we have a significant force near the threatened base, counter-attack
+                    nearby_defenders = military_units.filter(
+                        lambda unit: unit.distance_to(base) < 40
+                    )
+                    if len(nearby_defenders) > len(nearby_enemies) * 1.5:
+                        print(f"Counter-attacking near base with superior force!")
+                        return True
+                    return False  # Defend if we don't have superior numbers
+        
+        # Original attack conditions
+        if self.get_military_supply() > 20 * self.townhalls.ready.amount:
+            print(f"Military supply {self.get_military_supply()} > 20 * {self.townhalls.ready.amount}, attacking")
+            return True
+            
+        if self.supply_used > 180:
+            print(f"supply used is max, attacking")
+            return True
+        
         # Check for numerical advantage based on unit cost (minerals + gas)
         if len(enemy_combat_units) > 5:
             # Calculate total value of enemy units
@@ -626,32 +670,6 @@ class SC2Bot(BotAI):
                 if our_nearby_army_value > enemy_army_value * advantage_ratio:
                     print(f"Army value advantage detected: {our_nearby_army_value} vs {enemy_army_value}, attacking")
                     return True
-        
-        # Get total military supply for other conditions
-        military_supply = self.get_military_supply()
-        
-        # Original attack conditions
-        if military_supply > 20 * self.townhalls.ready.amount:
-            print(f"Military supply {military_supply} > 20 * {self.townhalls.ready.amount}, attacking")
-            return True
-            
-#        if len(military_units) > 15 * min(4, self.townhalls.ready.amount):
-#            print(f"enough military units, attacking")
-#            return True
-            
-        # Check if enemy is close to our base
-        if self.townhalls:
-            main_base = self.townhalls.first
-            enemy_units = self.enemy_units | self.enemy_structures
-            if enemy_units:
-                closest_enemy = enemy_units.closest_to(main_base)
-                if closest_enemy.distance_to(main_base) < 30:
-                    print(f"enemy is close, attacking")
-                    return True
-                    
-        if self.supply_used > 180:
-            print(f"supply used is max, attacking")
-            return True
         
         return False
 
@@ -996,6 +1014,31 @@ class SC2Bot(BotAI):
         # Return from dictionary if available, otherwise default to (100, 25)
         return unit_costs.get(unit_type_id, (100, 25))
 
+    async def manage_mules(self):
+        # Transform Command Center to Orbital Command if possible
+        for cc in self.structures(UnitTypeId.COMMANDCENTER).ready.idle:
+            if self.can_afford(UnitTypeId.ORBITALCOMMAND):
+                cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND)
+
+        """Manage MULE production and optimal mineral mining."""
+        # Check for Orbital Commands
+        for oc in self.structures(UnitTypeId.ORBITALCOMMAND).ready:
+            # Only call down MULE if we have enough energy
+            if oc.energy >= 50:
+                # Find the best mineral field to drop MULE on
+                mineral_fields = self.mineral_field.closer_than(10, oc)
+                if mineral_fields:
+                    # Prioritize mineral fields with more minerals remaining
+                    best_mineral = max(
+                        mineral_fields,
+                        key=lambda mineral: (
+                            mineral.mineral_contents,
+                            -oc.distance_to(mineral)  # Secondary sort by distance
+                        )
+                    )
+                    # Call down MULE
+                    oc(AbilityId.CALLDOWNMULE_CALLDOWNMULE, best_mineral)
+
 def main():
     bot = SC2Bot()
     maps_pool = ["CatalystLE"]
@@ -1004,7 +1047,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Random, Difficulty.Hard)
+            Computer(Race.Protoss, Difficulty.Hard)
         ],
         realtime=False
     )
