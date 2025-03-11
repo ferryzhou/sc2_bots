@@ -702,9 +702,19 @@ class SC2Bot(BotAI):
                 return
                 
             # Check if current bases are saturated (16 workers per base is optimal)
+            # Only consider bases with significant minerals remaining
             for th in self.townhalls.ready:
+                # Get nearby mineral fields
+                mineral_fields = self.mineral_field.closer_than(10, th)
+                
+                # Skip this base if it's nearly mined out
+                total_minerals = sum(mf.mineral_contents for mf in mineral_fields)
+                if total_minerals < 1000:  # Skip bases with less than 1000 minerals remaining
+                    continue
+                
+                # Check worker saturation for viable bases
                 if len(self.workers.closer_than(10, th)) < 16:
-                    return  # Don't expand if current bases aren't fully utilized
+                    return  # Don't expand if current viable bases aren't fully utilized
                     
             # Check if we're already expanding
             if self.already_pending(UnitTypeId.COMMANDCENTER):
