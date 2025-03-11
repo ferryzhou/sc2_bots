@@ -56,7 +56,7 @@ class SC2Bot(BotAI):
                 )
                 if nearby_enemies:
                     print(f"Defending against enemies near base!")
-                    await self.execute_defense(military_units, tanks)
+                    await self.execute_attack(military_units, tanks)
                     return
 
         if not self.should_attack():
@@ -984,7 +984,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Random, Difficulty.Hard)
+            Computer(Race.Random, Difficulty.VeryHard)
         ],
         realtime=False
     )
