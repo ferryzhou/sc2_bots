@@ -131,26 +131,8 @@ class SC2Bot(BotAI):
                 # Attack nearest structure if no units nearby
                 closest_structure = enemy_structures.closest_to(unit)
                 unit.attack(closest_structure)
-            elif unit.is_idle:  # Check for idle units
-                # Create spread formation when attacking enemy base
-                offset = Point2((hash(unit.tag) % 5 - 2, hash(unit.tag) // 5 % 5 - 2))
-                attack_point = enemy_start + offset * 2
-                
-                # If unit is far from its assigned attack point, move to it
-                if unit.distance_to(attack_point) > 5:
-                    unit.attack(attack_point)
-                else:
-                    # Search for enemies in different directions
-                    search_positions = [
-                        self.game_info.map_center,
-                        Point2((self.game_info.map_center.x, enemy_start.y)),
-                        Point2((enemy_start.x, self.game_info.map_center.y)),
-                        Point2((self.game_info.map_center.x, self.start_location.y)),
-                        Point2((self.start_location.x, self.game_info.map_center.y))
-                    ]
-                    # Choose closest unexplored position
-                    search_point = min(search_positions, key=lambda pos: unit.distance_to(pos))
-                    unit.attack(search_point)
+            else:
+                unit.attack(enemy_start)
         
         # Enhanced tank micro for attacking
         for tank in tanks:
@@ -178,27 +160,8 @@ class SC2Bot(BotAI):
                         tank(AbilityId.SIEGEMODE_SIEGEMODE)
                     else:
                         tank.attack(closest_structure)
-            elif tank.is_idle:  # Check for idle tanks
-                if tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-                    tank(AbilityId.UNSIEGE_UNSIEGE)
-                else:
-                    # Create spread formation for tanks
-                    tank_index = list(tanks).index(tank)
-                    offset = Point2((tank_index % 3 - 1, tank_index // 3 - 1)) * 3
-                    attack_point = enemy_start + offset
-                    
-                    # If tank is far from its assigned position, move to it
-                    if tank.distance_to(attack_point) > 5:
-                        tank.attack(attack_point)
-                    else:
-                        # Search different positions like infantry
-                        search_positions = [
-                            self.game_info.map_center,
-                            Point2((self.game_info.map_center.x, enemy_start.y)),
-                            Point2((enemy_start.x, self.game_info.map_center.y))
-                        ]
-                        search_point = min(search_positions, key=lambda pos: tank.distance_to(pos))
-                        tank.attack(search_point)
+            else:
+                tank.attack(enemy_start)
 
     async def manage_medivacs(self, medivacs, military_units):
         """Manage medivac movement to follow army units."""
@@ -1021,7 +984,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Protoss, Difficulty.Hard)
+            Computer(Race.Random, Difficulty.Hard)
         ],
         realtime=False
     )
