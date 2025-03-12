@@ -52,7 +52,7 @@ class SC2Bot(BotAI):
         if self.townhalls:
             for base in self.townhalls:
                 nearby_enemies = self.enemy_units.filter(
-                    lambda unit: unit.distance_to(base) < 30
+                    lambda unit: unit.distance_to(base) < 30 and not unit.is_structure
                 )
                 if nearby_enemies:
                     print(f"Defending against enemies near base!")
@@ -107,7 +107,7 @@ class SC2Bot(BotAI):
         for unit in military_units:
             # Find nearby enemies
             nearby_enemies = enemy_units.filter(
-                lambda enemy: enemy.distance_to(unit) < 15
+                lambda enemy: enemy.distance_to(unit) < 30
             )
             
             if nearby_enemies:
@@ -620,13 +620,27 @@ class SC2Bot(BotAI):
         return military_supply
 
     async def append_addons(self):
-        """Manage add-ons for barracks, factory, and starport."""
-        # Handle barracks add-ons
+        """Manage add-ons for barracks, maintaining a 6:4 ratio of tech labs to reactors."""
+        # Count current add-ons
+        techlab_count = self.structures(UnitTypeId.BARRACKSTECHLAB).amount
+        reactor_count = self.structures(UnitTypeId.BARRACKSREACTOR).amount
+        total_addons = techlab_count + reactor_count
+        
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
-            if not barracks.has_add_on and random.random() < 0.5:
-                await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
-            else:
-                await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSREACTOR)
+            if not barracks.has_add_on:
+                # Calculate desired ratio (6:4)
+                desired_techlab_ratio = 0.6
+                current_techlab_ratio = techlab_count / (total_addons + 1) if total_addons > 0 else 0
+                
+                # If current techlab ratio is below 0.6, build techlab
+                if current_techlab_ratio < desired_techlab_ratio:
+                    await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSTECHLAB)
+                    techlab_count += 1
+                # Otherwise build reactor
+                else:
+                    await self.append_addon(UnitTypeId.BARRACKS, UnitTypeId.BARRACKSFLYING, UnitTypeId.BARRACKSREACTOR)
+                    reactor_count += 1
+                total_addons += 1
 
         # Add tech lab to factory for tanks
         for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
