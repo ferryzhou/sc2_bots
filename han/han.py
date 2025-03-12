@@ -298,7 +298,7 @@ class SC2Bot(BotAI):
         if total_barracks >= self.workers.amount // 6:
             return
         
-        if total_barracks >= 8:
+        if total_barracks >= 12:
             return
         
         if not self.townhalls:
