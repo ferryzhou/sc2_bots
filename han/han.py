@@ -23,8 +23,8 @@ class HanBot(BotAI):
         await self.manage_army()
 
         # Stop production to allow more expansion        
-        if iteration % 100 == 0 or iteration % 110 == 0:
-           print("stop production for 30 iterations for base expansion")
+        if iteration % 100 == 0 or (iteration - 10) % 100 == 0:
+           print("stop production for 20 percent of iterations for base expansion")
            return
         
         # Additional game management
@@ -526,7 +526,7 @@ class HanBot(BotAI):
         if effective_worker_count >= 80:
             return
         
-        if self.workers.amount >= 20 * self.townhalls.ready.amount:
+        if effective_worker_count >= 20 * self.townhalls.ready.amount:
             return
         
         for cc in self.townhalls.ready.idle:
