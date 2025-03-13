@@ -17,15 +17,20 @@ class HanBot(BotAI):
         # Basic economy management
         await self.distribute_workers()
         await self.build_supply_depot_if_needed()
-        await self.train_workers()
         await self.expand_base()
+        await self.train_workers()
         await self.manage_mules()
+        await self.manage_army()
+
+        # Stop production to allow more expansion        
+        if iteration % 100 == 0 or iteration % 110 == 0:
+           print("stop production for 30 iterations for base expansion")
+           return
         
         # Additional game management
         if iteration % 10 == 0:  # Every 10 iterations
             print(f"iteration {iteration}")
             await self.manage_production()
-            await self.manage_army()
 
     async def manage_production(self):
         print(f"manage_production")
@@ -55,16 +60,16 @@ class HanBot(BotAI):
                     lambda unit: unit.distance_to(base) < 30 and not unit.is_structure
                 )
                 if nearby_enemies:
-                    print(f"Defending against enemies near base!")
+                    #print(f"Defending against enemies near base!")
                     await self.execute_attack(military_units, tanks)
                     return
 
         if not self.should_attack():
-            print(f"not attacking")
+            #print(f"not attacking")
             await self.execute_defense(military_units, tanks)
             return
 
-        print(f"attacking")
+        #print(f"attacking")
         await self.execute_attack(military_units, tanks)
 
     async def execute_defense(self, military_units, tanks):
@@ -567,17 +572,17 @@ class HanBot(BotAI):
                         lambda unit: unit.distance_to(base) < 40
                     )
                     if len(nearby_defenders) > len(nearby_enemies) * 1.5:
-                        print(f"Counter-attacking near base with superior force!")
+                        # print(f"Counter-attacking near base with superior force!")
                         return True
                     return False  # Defend if we don't have superior numbers
         
         # Original attack conditions
         if self.get_military_supply() > 20 * self.townhalls.ready.amount:
-            print(f"Military supply {self.get_military_supply()} > 20 * {self.townhalls.ready.amount}, attacking")
+            #print(f"Military supply {self.get_military_supply()} > 20 * {self.townhalls.ready.amount}, attacking")
             return True
             
         if self.supply_used > 180:
-            print(f"supply used is max, attacking")
+            # print(f"supply used is max, attacking")
             return True
         
         # Check for numerical advantage based on unit cost (minerals + gas)
