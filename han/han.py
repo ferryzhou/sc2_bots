@@ -259,14 +259,14 @@ class SC2Bot(BotAI):
         total_refineries = self.structures(UnitTypeId.REFINERY).amount + self.already_pending(UnitTypeId.REFINERY)
         
         if self.townhalls.ready.amount == 1:
-            if total_refineries >= 1:
+            if total_refineries >= 2:
                 return
 
         if self.townhalls.ready.amount == 2:
-            if total_refineries >= 3:
+            if total_refineries >= 4:
                 return
 
-        if total_refineries >= self.townhalls.ready.amount + 2:
+        if total_refineries >= self.townhalls.ready.amount * 1.5 + 2:
             return
 
         for th in self.townhalls.ready:
