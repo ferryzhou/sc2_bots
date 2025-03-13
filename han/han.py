@@ -16,8 +16,8 @@ class HanBot(BotAI):
     async def on_step(self, iteration):
         # Basic economy management
         await self.distribute_workers()
-        await self.build_supply_depot_if_needed()
         await self.expand_base()
+        await self.build_supply_depot_if_needed()
         await self.train_workers()
         await self.manage_mules()
         await self.manage_army()
@@ -1017,7 +1017,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Zerg, Difficulty.VeryHard)
+            Computer(Race.Protoss, Difficulty.VeryHard)
         ],
         realtime=False
     )
