@@ -25,3 +25,6 @@ models/
 
 # Log files
 .log
+
+# Replays
+replays/

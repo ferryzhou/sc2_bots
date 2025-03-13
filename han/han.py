@@ -12,7 +12,7 @@ import random
 from sc2.ids.upgrade_id import UpgradeId
 import math
 
-class SC2Bot(BotAI):
+class HanBot(BotAI):
     async def on_step(self, iteration):
         # Basic economy management
         await self.distribute_workers()
@@ -107,7 +107,7 @@ class SC2Bot(BotAI):
         for unit in military_units:
             # Find nearby enemies
             nearby_enemies = enemy_units.filter(
-                lambda enemy: enemy.distance_to(unit) < 30
+                lambda enemy: enemy.distance_to(unit) < 50
             )
             
             if nearby_enemies:
@@ -291,9 +291,13 @@ class SC2Bot(BotAI):
         barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
         total_barracks = barracks_count + barracks_flying + barracks_pending
         
-        if self.townhalls.amount < 3:
-            if total_barracks >= 4:
+        if self.townhalls.amount == 1:
+            if total_barracks >= 2:
                 return
+            
+#        if self.townhalls.amount == 2:
+#            if total_barracks >= 4:
+#                return
     
         if total_barracks >= self.workers.amount // 6:
             return
@@ -1001,14 +1005,14 @@ class SC2Bot(BotAI):
                     oc(AbilityId.CALLDOWNMULE_CALLDOWNMULE, best_mineral)
 
 def main():
-    bot = SC2Bot()
+    bot = HanBot()
     maps_pool = ["CatalystLE"]
     
     run_game(
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Random, Difficulty.VeryHard)
+            Computer(Race.Zerg, Difficulty.VeryHard)
         ],
         realtime=False
     )
