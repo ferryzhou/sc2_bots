@@ -143,32 +143,30 @@ class HanBot(BotAI):
         
         # Enhanced tank micro for attacking
         for tank in tanks:
+            target = enemy_start
             if enemy_units:
-                closest_enemy = enemy_units.closest_to(tank)
-                enemy_distance = closest_enemy.distance_to(tank)
-                
-                if tank.type_id == UnitTypeId.SIEGETANK:
-                    if enemy_distance < 13:  # Optimal siege range
-                        tank(AbilityId.SIEGEMODE_SIEGEMODE)
-                    else:
-                        # Move closer while avoiding getting too close
-                        desired_position = closest_enemy.position.towards(tank.position, 12)
-                        tank.move(desired_position)
-                elif tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-                    if enemy_distance > 15:  # Enemy moved out of range
-                        tank(AbilityId.UNSIEGE_UNSIEGE)
-                    # Otherwise stay sieged and let default attack handle it
+                target = enemy_units.closest_to(tank)
             elif enemy_structures:
-                closest_structure = enemy_structures.closest_to(tank)
-                structure_distance = closest_structure.distance_to(tank)
-                
-                if tank.type_id == UnitTypeId.SIEGETANK:
-                    if structure_distance < 13:
-                        tank(AbilityId.SIEGEMODE_SIEGEMODE)
-                    else:
-                        tank.attack(closest_structure)
+                target = enemy_structures.closest_to(tank)
+            
+            await self.manage_attacking_tank(tank, target)
+    
+    async def manage_attacking_tank(self, tank, target):
+        """Manage tank positioning and siege mode during attacks."""
+        enemy_distance = target.distance_to(tank)
+        
+        if tank.type_id == UnitTypeId.SIEGETANK:
+            if enemy_distance < 13:  # Optimal siege range
+                tank(AbilityId.SIEGEMODE_SIEGEMODE)
             else:
-                tank.attack(enemy_start)
+                # Move closer while avoiding getting too close
+                desired_position = target.position.towards(tank.position, 12)
+                tank.move(desired_position)
+        elif tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+            if enemy_distance > 15:  # Enemy moved out of range
+                tank(AbilityId.UNSIEGE_UNSIEGE)
+            # Otherwise stay sieged and let default attack handle it
+    
 
     async def manage_medivacs(self, medivacs, military_units):
         """Manage medivac movement to follow army units."""
@@ -742,7 +740,7 @@ class HanBot(BotAI):
                     return  # Don't expand if current viable bases aren't fully utilized
                     
             # Check if we're already expanding
-            if self.already_pending(UnitTypeId.COMMANDCENTER):
+            if self.already_pending(UnitTypeId.COMMANDCENTER) > 1:
                 return
                 
             # All checks passed, try to expand
