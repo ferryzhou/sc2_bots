@@ -25,6 +25,8 @@ class HanBot(BotAI):
         # Stop production to allow more expansion        
         if iteration % 100 == 0 or (iteration - 10) % 100 == 0:
            print("stop production for 20 percent of iterations for base expansion")
+           # Print our current mineral bank
+           print(f"Available minerals for production: {self.minerals}")
            return
         
         # Additional game management
@@ -736,7 +738,7 @@ class HanBot(BotAI):
                     continue
                 
                 # Check worker saturation for viable bases
-                if len(self.workers.closer_than(10, th)) < 16:
+                if len(self.workers.closer_than(10, th)) < 14:
                     return  # Don't expand if current viable bases aren't fully utilized
                     
             # Check if we're already expanding
