@@ -731,7 +731,7 @@ class HanBot(BotAI):
                 
                 # Skip this base if it's nearly mined out
                 total_minerals = sum(mf.mineral_contents for mf in mineral_fields)
-                if total_minerals < 1000:  # Skip bases with less than 1000 minerals remaining
+                if total_minerals < 2000:  # Skip bases with less than 2000 minerals remaining
                     continue
                 
                 # Check worker saturation for viable bases
@@ -1061,7 +1061,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Terran, Difficulty.VeryHard)
+            Computer(Race.Zerg, Difficulty.CheatVision)
         ],
         realtime=False
     )
