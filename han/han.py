@@ -54,27 +54,234 @@ class HanBot(BotAI):
         
         await self.manage_medivacs(medivacs, military_units)
         await self.manage_ravens(ravens, military_units)
-                
-        # Check for enemies near our bases first
+
+        if self.detected_cheese():
+            print(f"detected cheese")
+            await self.handle_early_game_defense(military_units, tanks)
+            return
+        
+        # Normal army management for mid/late game
         if self.townhalls:
             for base in self.townhalls:
                 nearby_enemies = self.enemy_units.filter(
-                    lambda unit: unit.distance_to(base) < 30 and not unit.is_structure
+                    lambda unit: unit.distance_to(base) < 30
                 )
                 if nearby_enemies:
-                    #print(f"Defending against enemies near base!")
+                    print(f"Defending against enemies near base!")
                     await self.execute_attack(military_units, tanks)
                     return
 
         if not self.should_attack():
-            #print(f"not attacking")
-            await self.execute_defense(military_units, tanks)
+            print(f"not attacking")
+            await self.rally(military_units, tanks)
             return
 
-        #print(f"attacking")
+        print(f"attacking")
         await self.execute_attack(military_units, tanks)
 
-    async def execute_defense(self, military_units, tanks):
+    def detected_cheese(self):
+        if self.time >= 300: # First 5 minutes
+            return False
+        
+        # Get base townhall
+        th = self.townhalls.first
+
+        # Check for both enemy units and structures
+        nearby_enemies = self.enemy_units.filter(
+            lambda unit: (
+                unit.distance_to(th) < 30 and  # Close to our base
+                not unit.is_structure and      # Not a building
+                unit.type_id not in {UnitTypeId.PROBE, UnitTypeId.SCV, UnitTypeId.DRONE}  # Not a worker
+            )
+        )
+        
+        nearby_structures = self.enemy_structures.filter(
+            lambda structure: structure.distance_to(th) < 30  # Close to our base
+        )
+        
+        # If we spot enemy units or structures near our base
+        if nearby_enemies or nearby_structures:
+            return True
+        
+        return False
+
+    async def handle_early_game_defense(self, military_units, tanks):
+        """Handle early game defense while maintaining economy and counter-attacking."""
+        for th in self.townhalls:
+            # Check for both enemy units and structures
+            nearby_enemies = self.enemy_units.filter(
+                lambda unit: (
+                    unit.distance_to(th) < 30 and
+                    not unit.is_structure and
+                    unit.type_id not in {UnitTypeId.PROBE, UnitTypeId.SCV, UnitTypeId.DRONE}
+                )
+            )
+            
+            # Separate workers from other enemy units
+            nearby_enemy_workers = self.enemy_units.filter(
+                lambda unit: (
+                    unit.distance_to(th) < 30 and
+                    unit.type_id in {UnitTypeId.PROBE, UnitTypeId.SCV, UnitTypeId.DRONE}
+                )
+            )
+            
+            # Identify offensive structures (those that can attack)
+            offensive_structures = self.enemy_structures.filter(
+                lambda structure: (
+                    structure.distance_to(th) < 30 and
+                    structure.type_id in {
+                        UnitTypeId.PHOTONCANNON, UnitTypeId.SPINECRAWLER, 
+                        UnitTypeId.SPORECRAWLER, UnitTypeId.BUNKER,
+                        UnitTypeId.PLANETARYFORTRESS
+                    }
+                )
+            )
+            
+            # Other nearby structures
+            other_structures = self.enemy_structures.filter(
+                lambda structure: (
+                    structure.distance_to(th) < 30 and
+                    structure.type_id not in {
+                        UnitTypeId.PHOTONCANNON, UnitTypeId.SPINECRAWLER, 
+                        UnitTypeId.SPORECRAWLER, UnitTypeId.BUNKER,
+                        UnitTypeId.PLANETARYFORTRESS
+                    }
+                )
+            )
+            
+            # If we spot any threats near our base
+            if nearby_enemies or nearby_enemy_workers or offensive_structures or other_structures:
+                print(f"Early game threat detected! Defending base at {th.position}")
+                
+                # Calculate military and enemy power
+                military_power = len(military_units) + len(tanks) * 2
+                enemy_power = (len(nearby_enemies) + len(offensive_structures) * 3 + 
+                             len(nearby_enemy_workers) + len(other_structures))
+                
+                # Worker defense allocation
+                nearby_workers = self.workers.filter(lambda w: w.distance_to(th) < 10)
+                current_defender_tags = getattr(self, 'defender_worker_tags', set())
+                
+                # Calculate how many workers we need
+                base_defender_count = min(8, enemy_power)
+                
+                print(f"base_defender_count: {base_defender_count}")
+                # Adjust defender count based on our worker count to maintain economy
+                total_workers = len(self.workers)
+                if total_workers < 12:  # Early game
+                    base_defender_count = min(base_defender_count, 8)  # Limit early pulls
+                elif total_workers > 20:  # More established
+                    base_defender_count = min(base_defender_count + 2, 12)  # Can pull more
+                
+                # Select defenders
+                defender_workers = []
+                mining_workers = []
+                
+                # First, check current defenders and keep them if still needed
+                current_defenders = [w for w in nearby_workers if w.tag in current_defender_tags]
+                remaining_slots = base_defender_count - len(current_defenders)
+                
+                # Add new defenders if needed
+                if remaining_slots > 0:
+                    potential_new_defenders = [w for w in nearby_workers if w.tag not in current_defender_tags]
+                    new_defenders = potential_new_defenders[:remaining_slots]
+                    defender_workers = current_defenders + new_defenders
+                else:
+                    defender_workers = current_defenders[:base_defender_count]
+                
+                # Update defender tags
+                self.defender_worker_tags = {w.tag for w in defender_workers}
+                
+                # Prioritize targets for military units
+                for unit in military_units:
+                    # Priority 1: Offensive structures
+                    if offensive_structures:
+                        closest_threat = offensive_structures.closest_to(unit)
+                        unit.attack(closest_threat)
+                        continue
+                        
+                    # Priority 2: Enemy workers building structures
+                    if nearby_enemy_workers:
+                        building_workers = [w for w in nearby_enemy_workers]
+                        if building_workers:
+                            closest_worker = min(building_workers, key=lambda w: w.distance_to(unit))
+                            unit.attack(closest_worker)
+                            continue
+                    
+                    # Priority 3: Other enemy units
+                    if nearby_enemies:
+                        closest_enemy = nearby_enemies.closest_to(unit)
+                        unit.attack(closest_enemy)
+                        continue
+                        
+                    # Priority 4: Other structures
+                    if other_structures:
+                        closest_structure = other_structures.closest_to(unit)
+                        unit.attack(closest_structure)
+                        continue
+                        
+                    # Priority 5: Remaining enemy workers
+                    if nearby_enemy_workers:
+                        closest_worker = nearby_enemy_workers.closest_to(unit)
+                        unit.attack(closest_worker)
+                
+                # Prioritize targets for tanks
+                for tank in tanks:
+                    if tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+                        # Tanks prioritize offensive structures and groups of units
+                        if offensive_structures:
+                            tank.attack(offensive_structures.closest_to(tank))
+                        elif nearby_enemies and len(nearby_enemies) > 2:
+                            # Target area with most enemies
+                            tank.attack(nearby_enemies.center)
+                        elif other_structures:
+                            tank.attack(other_structures.closest_to(tank))
+                    else:  # Unsieged tanks
+                        defense_position = th.position.towards(
+                            offensive_structures.center if offensive_structures else
+                            nearby_enemies.center if nearby_enemies else
+                            other_structures.center if other_structures else
+                            nearby_enemy_workers.center, 7
+                        )
+                        
+                        if tank.distance_to(defense_position) < 7:
+                            tank(AbilityId.SIEGEMODE_SIEGEMODE)
+                        else:
+                            tank.move(defense_position)
+                
+                # Assign defender workers with similar priority
+                for worker in nearby_workers:
+                    if worker.tag in self.defender_worker_tags:
+                        if offensive_structures:
+                            worker.attack(offensive_structures.closest_to(worker))
+                        elif nearby_enemy_workers:
+                            closest_building_worker = min(
+                                [w for w in nearby_enemy_workers],
+                                key=lambda w: w.distance_to(worker)
+                            )
+                            worker.attack(closest_building_worker)
+                        elif nearby_enemies:
+                            worker.attack(nearby_enemies.closest_to(worker))
+                        elif other_structures:
+                            worker.attack(other_structures.closest_to(worker))
+                    else:
+                        if worker.is_attacking:
+                            closest_mineral = self.mineral_field.closest_to(worker)
+                            worker.gather(closest_mineral)
+                
+                return True
+                
+        # Clear defender tags when no threats
+        if hasattr(self, 'defender_worker_tags'):
+            for worker in self.workers:
+                if worker.tag in self.defender_worker_tags and worker.is_attacking:
+                    closest_mineral = self.mineral_field.closest_to(worker)
+                    worker.gather(closest_mineral)
+            self.defender_worker_tags = set()
+            
+        return False
+
+    async def rally(self, military_units, tanks):
         """Execute defensive positioning by rallying units to a defensive position."""
         if not (military_units or tanks):
             return
@@ -1061,7 +1268,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Zerg, Difficulty.CheatVision)
+            Computer(Race.Zerg, Difficulty.CheatInsane)
         ],
         realtime=False
     )
