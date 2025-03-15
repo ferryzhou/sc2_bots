@@ -725,7 +725,6 @@ class HanBot(BotAI):
                 return
                 
             # Check if current bases are saturated (16 workers per base is optimal)
-            # Only consider bases with significant minerals remaining
             for th in self.townhalls.ready:
                 # Get nearby mineral fields
                 mineral_fields = self.mineral_field.closer_than(10, th)
@@ -737,14 +736,59 @@ class HanBot(BotAI):
                 
                 # Check worker saturation for viable bases
                 if len(self.workers.closer_than(10, th)) < 14:
-                    return  # Don't expand if current viable bases aren't fully utilized
+                    return  # Don't expand if current viable bases aren't almost fully utilized
                     
-            # Check if we're already expanding
+            # Check if we're already expanding for more than 1 base
             if self.already_pending(UnitTypeId.COMMANDCENTER) > 1:
                 return
+
+            # Get all possible expansion locations
+            expansion_locations = self.expansion_locations_list
+            
+            # Filter out locations where we already have a base or one is being built
+            existing_base_locations = {th.position for th in self.townhalls}  # Existing bases
+            existing_base_locations.update(  # Add pending bases
+                building.position for building in self.structures(UnitTypeId.COMMANDCENTER).not_ready
+            )
+            
+            available_locations = [loc for loc in expansion_locations if loc not in existing_base_locations]
+            
+            if not available_locations:
+                return
+            
+            # Score each expansion location
+            best_location = None
+            best_score = -1
+            
+            for loc in available_locations:
+                # Get mineral fields near this location
+                nearby_minerals = self.mineral_field.closer_than(10, loc)
+                mineral_value = sum(mf.mineral_contents for mf in nearby_minerals)
                 
-            # All checks passed, try to expand
-            await self.expand_now()
+                # Calculate distance from our main base
+                distance_to_main = loc.distance_to(self.start_location)
+                
+                # Calculate distance to enemy base
+                distance_to_enemy = loc.distance_to(self.enemy_start_locations[0])
+                
+                # Calculate score based on minerals and safety
+                # Prefer locations with more minerals and closer to our main
+                # Penalize locations too close to enemy
+                score = (mineral_value * 0.01  # Mineral value weight
+                        - distance_to_main * 2  # Distance penalty
+                        + distance_to_enemy * 1)  # Safety bonus
+                
+                # Additional safety check - don't expand too close to enemy
+                if distance_to_enemy < 40:
+                    continue
+                
+                if score > best_score:
+                    best_score = score
+                    best_location = loc
+            
+            # Expand to the best location
+            if best_location:
+                await self.expand_now(location=best_location)
                 
         except Exception as e:
             print(f"Error expanding base: {e}")
@@ -1017,7 +1061,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Protoss, Difficulty.VeryHard)
+            Computer(Race.Terran, Difficulty.VeryHard)
         ],
         realtime=False
     )
