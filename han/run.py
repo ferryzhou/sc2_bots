@@ -12,8 +12,7 @@ from sc2.main import run_game
 from sc2.player import Bot, Computer
 from loguru import logger
 
-bot = Bot(Race.Protoss, HanBot())
-opponent = Bot(Race.Protoss, Computer(Race.Protoss, Difficulty.VeryHard))
+bot = Bot(Race.Terran, HanBot())
 
 # Start game
 if __name__ == "__main__":
@@ -29,7 +28,6 @@ if __name__ == "__main__":
         print("Starting local game...")
         run_game(
             maps.get("CatalystLE"),
-            #[bot, opponent],
             [bot, Computer(Race.Protoss, Difficulty.VeryHard)],
             realtime=False,
             disable_fog=False,
