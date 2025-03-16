@@ -24,9 +24,6 @@ class HanBot(BotAI):
 
         # Stop production to allow more expansion        
         if iteration % 100 == 0 or (iteration - 10) % 100 == 0:
-           print("stop production for 20 percent of iterations for base expansion")
-           # Print our current mineral bank
-           print(f"Available minerals for production: {self.minerals}")
            return
         
         # Additional game management
@@ -35,7 +32,7 @@ class HanBot(BotAI):
             await self.manage_production()
 
     async def manage_production(self):
-        print(f"manage_production")
+        # print(f"manage_production")
         await self.build_gas_if_needed()
         await self.build_factory_if_needed()
         await self.build_barracks_if_needed()
@@ -72,7 +69,6 @@ class HanBot(BotAI):
                     return
 
         if not self.should_attack():
-            print(f"not attacking")
             await self.rally(military_units, tanks)
             return
 
@@ -1121,7 +1117,6 @@ class HanBot(BotAI):
                             # Check if most of these points are in the pathing grid
                             valid_path_points = sum(1 for p in path_check_points if self.in_pathing_grid(p))
                             if valid_path_points >= 6:  # At least 6 of 8 points should be pathable
-                                print(f"Found good placement for {building_type} with addon space at {pos}")
                                 return pos
         else:
             # Regular building (no addon)
@@ -1142,8 +1137,6 @@ class HanBot(BotAI):
                             print(f"Found good placement for {building_type} at {pos}")
                             return pos
         
-        # If we get here, we couldn't find a position with our enhanced criteria
-        print(f"Falling back to standard placement for {building_type}")
         # Fall back to standard placement but still with increased min_distance
         return await super().find_placement(building_type, near=near_position, placement_step=placement_step)
 
