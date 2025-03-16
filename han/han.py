@@ -79,8 +79,7 @@ class HanBot(BotAI):
         if self.time >= 300: # First 5 minutes
             return False
         
-        # Get base townhall
-        th = self.townhalls.first
+        th = self.start_location
 
         # Check for both enemy units and structures
         nearby_enemies = self.enemy_units.filter(
@@ -441,12 +440,15 @@ class HanBot(BotAI):
         if self.supply_left < 6 * self.townhalls.amount:
             max_concurrent = 2 if self.townhalls.ready.amount > 1 else 1
             pending_depots = self.already_pending(UnitTypeId.SUPPLYDEPOT)
+            near_position = self.start_location
+            if self.townhalls:
+                near_position = self.townhalls.first.position
             
             while (
                 pending_depots < max_concurrent 
                 and self.can_afford(UnitTypeId.SUPPLYDEPOT)
             ):
-                await self.build(UnitTypeId.SUPPLYDEPOT, near=self.townhalls.first)
+                await self.build(UnitTypeId.SUPPLYDEPOT, near=near_position)
                 pending_depots += 1
 
         # Lower completed supply depots
@@ -654,6 +656,9 @@ class HanBot(BotAI):
     async def build_engineering_bay_if_needed(self):
         # Only start upgrades when we have enough units
         if self.get_military_supply() < 30:
+            return
+        
+        if not self.townhalls:
             return
 
         # Build Engineering Bays if we don't have them and can afford it
