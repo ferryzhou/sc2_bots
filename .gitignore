@@ -24,7 +24,7 @@ training_history/
 models/
 
 # Log files
-.log
+*.log
 
 # Replays
 replays/
