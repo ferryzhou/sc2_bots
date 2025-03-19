@@ -324,11 +324,7 @@ class HanBot(BotAI):
                 closest_enemy = nearby_enemies.closest_to(unit)
                 
                 # Enhanced micro based on unit health and enemy type
-                if unit.health_percentage < 0.3:
-                    # Retreat if low health
-                    retreat_pos = unit.position.towards(self.start_location, 4)
-                    unit.move(retreat_pos)
-                elif unit.ground_range > 1:  # Ranged unit micro
+                if unit.ground_range > 1:  # Ranged unit micro
                     if unit.weapon_cooldown > 0:  # If we can't shoot, move away
                         retreat_pos = unit.position.towards(closest_enemy.position, -2)
                         unit.move(retreat_pos)
