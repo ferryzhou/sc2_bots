@@ -781,11 +781,11 @@ class HanBot(BotAI):
                     return False  # Defend if we don't have superior numbers
         
         # Original attack conditions
-        if self.get_military_supply() > 10 * self.townhalls.ready.amount:
+        if self.get_military_supply() > 20 * self.townhalls.ready.amount:
             #print(f"Military supply {self.get_military_supply()} > 20 * {self.townhalls.ready.amount}, attacking")
             return True
             
-        if self.supply_used > 160:
+        if self.supply_used > 180:
             # print(f"supply used is max, attacking")
             return True
         
@@ -1262,7 +1262,8 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Zerg, Difficulty.CheatInsane)
+            Computer(Race.Terran, Difficulty.CheatInsane)
+#            Computer(Race.Protoss, Difficulty.CheatVision)
         ],
         realtime=False
     )
