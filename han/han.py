@@ -14,18 +14,21 @@ import math
 
 class HanBot(BotAI):
     async def on_step(self, iteration):
+        await self.manage_army()
         # Basic economy management
         await self.distribute_workers()
-        await self.expand_base()
         await self.build_supply_depot_if_needed()
-        await self.train_workers()
         await self.manage_mules()
-        await self.manage_army()
+        await self.train_workers()
 
-        # Stop production to allow more expansion        
-        if iteration % 100 == 0 or (iteration - 10) % 100 == 0:
-           return
-        
+        print(f"we have {len(self.townhalls)} bases, {self.townhalls.ready.amount} ready, {self.already_pending(UnitTypeId.COMMANDCENTER)} pending")   
+
+        if self.should_expand_base():                   
+            if self.can_afford(UnitTypeId.COMMANDCENTER):
+                await self.expand_base()
+            else:
+                print(f"can't afford to expand, stop production")
+                return        
         # Additional game management
         if iteration % 10 == 0:  # Every 10 iterations
             print(f"iteration {iteration}")
@@ -465,11 +468,11 @@ class HanBot(BotAI):
         total_refineries = self.structures(UnitTypeId.REFINERY).amount + self.already_pending(UnitTypeId.REFINERY)
         
         if self.townhalls.ready.amount == 1:
-            if total_refineries >= 2:
+            if total_refineries >= 1:
                 return
 
         if self.townhalls.ready.amount == 2:
-            if total_refineries >= 4:
+            if total_refineries >= 3:
                 return
 
         if total_refineries >= self.townhalls.ready.amount * 1.5 + 2:
@@ -557,7 +560,7 @@ class HanBot(BotAI):
         
         if not self.townhalls:
             return
-
+        
         # Get current factory count (including flying factories)
         factories = self.structures(UnitTypeId.FACTORY).amount
         factories_flying = self.structures(UnitTypeId.FACTORYFLYING).amount
@@ -916,86 +919,91 @@ class HanBot(BotAI):
                     building(AbilityId.LAND, target_land_position)
                     break
 
-    async def expand_base(self):
-        try:
-            MAX_BASES = 8
-            
-            # Don't expand if we can't afford it
-            if not self.can_afford(UnitTypeId.COMMANDCENTER):
-                return
-                
-            # Don't expand if we're at max bases
-            if len(self.townhalls) >= MAX_BASES:
-                return
-                
-            # Check if current bases are saturated (16 workers per base is optimal)
-            for th in self.townhalls.ready:
-                # Get nearby mineral fields
-                mineral_fields = self.mineral_field.closer_than(10, th)
-                
-                # Skip this base if it's nearly mined out
-                total_minerals = sum(mf.mineral_contents for mf in mineral_fields)
-                if total_minerals < 2000:  # Skip bases with less than 2000 minerals remaining
-                    continue
-                
-                # Check worker saturation for viable bases
-                if len(self.workers.closer_than(10, th)) < 14:
-                    return  # Don't expand if current viable bases aren't almost fully utilized
-                    
-            # Check if we're already expanding for more than 1 base
-            if self.already_pending(UnitTypeId.COMMANDCENTER) > 1:
-                return
+    def should_expand_base(self):
+        # Don't expand if we're at max bases
+        if len(self.townhalls) > 8:
+            return False
+        
+        # Check if we're already expanding for more than 2 bases
+        if self.already_pending(UnitTypeId.COMMANDCENTER) > 2:
+            return False
 
-            # Get all possible expansion locations
-            expansion_locations = self.expansion_locations_list
+        # Check if current bases are saturated (16 workers per base is optimal)
+        for th in self.townhalls.ready:
+            # Get nearby mineral fields
+            mineral_fields = self.mineral_field.closer_than(10, th)
             
-            # Filter out locations where we already have a base or one is being built
-            existing_base_locations = {th.position for th in self.townhalls}  # Existing bases
-            existing_base_locations.update(  # Add pending bases
-                building.position for building in self.structures(UnitTypeId.COMMANDCENTER).not_ready
-            )
+            # Skip this base if it's nearly mined out
+            total_minerals = sum(mf.mineral_contents for mf in mineral_fields)
+            if total_minerals < 2000:  # Skip bases with less than 2000 minerals remaining
+                continue
             
-            available_locations = [loc for loc in expansion_locations if loc not in existing_base_locations]
+            # Check worker saturation for viable bases
+            if len(self.workers.closer_than(10, th)) < 12:
+                return False  # Don't expand if current viable bases aren't almost fully utilized
             
-            if not available_locations:
-                return
+        return True
+
+    async def expand_base(self):
+        # Don't expand if we can't afford it
+        if not self.can_afford(UnitTypeId.COMMANDCENTER):
+            return
+        
+        print(f"expanding base")
             
-            # Score each expansion location
-            best_location = None
-            best_score = -1
+        # Get all possible expansion locations
+        expansion_locations = self.expansion_locations_list
+        
+        # Filter out locations where we already have a base or one is being built
+        existing_base_locations = {th.position for th in self.townhalls}  # Existing bases
+        existing_base_locations.update(  # Add pending bases
+            building.position for building in self.structures(UnitTypeId.COMMANDCENTER).not_ready
+        )
+        
+        available_locations = [loc for loc in expansion_locations if loc not in existing_base_locations]
+        
+        if not available_locations:
+            print(f"no available locations")
+            return
+        
+        # Score each expansion location
+        best_location = None
+        best_score = -1
+        
+        for loc in available_locations:
+            # Get mineral fields near this location
+            nearby_minerals = self.mineral_field.closer_than(10, loc)
+            mineral_value = sum(mf.mineral_contents for mf in nearby_minerals)
             
-            for loc in available_locations:
-                # Get mineral fields near this location
-                nearby_minerals = self.mineral_field.closer_than(10, loc)
-                mineral_value = sum(mf.mineral_contents for mf in nearby_minerals)
-                
-                # Calculate distance from our main base
-                distance_to_main = loc.distance_to(self.start_location)
-                
-                # Calculate distance to enemy base
-                distance_to_enemy = loc.distance_to(self.enemy_start_locations[0])
-                
-                # Calculate score based on minerals and safety
-                # Prefer locations with more minerals and closer to our main
-                # Penalize locations too close to enemy
-                score = (mineral_value * 0.01  # Mineral value weight
-                        - distance_to_main * 2  # Distance penalty
-                        + distance_to_enemy * 1)  # Safety bonus
-                
-                # Additional safety check - don't expand too close to enemy
-                if distance_to_enemy < 40:
-                    continue
-                
-                if score > best_score:
-                    best_score = score
-                    best_location = loc
+            # Calculate distance from our main base
+            distance_to_main = loc.distance_to(self.start_location)
             
-            # Expand to the best location
-            if best_location:
-                await self.expand_now(location=best_location)
+            # Calculate distance to enemy base
+            distance_to_enemy = loc.distance_to(self.enemy_start_locations[0])
+            
+            # Calculate score based on minerals and safety
+            # Prefer locations with more minerals and closer to our main
+            # Penalize locations too close to enemy
+            score = (mineral_value * 0.01  # Mineral value weight
+                    - distance_to_main * 2  # Distance penalty
+                    + distance_to_enemy * 1)  # Safety bonus
+            
+            # Additional safety check - don't expand too close to enemy
+            if distance_to_enemy < 40:
+                continue
+            
+            if score > best_score:
+                best_score = score
+                best_location = loc
+        
+        # Expand to the best location
+        if best_location:
+            print(f"expanding to {best_location}")
+            await self.expand_now(location=best_location)
+        else:
+            print(f"no good location to expand to, use default")
+            await self.expand_now()
                 
-        except Exception as e:
-            print(f"Error expanding base: {e}")
 
     async def upgrade_army(self):
         # Only start upgrades when we have enough units
@@ -1262,7 +1270,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Terran, Difficulty.CheatInsane)
+            Computer(Race.Zerg, Difficulty.CheatVision)
 #            Computer(Race.Protoss, Difficulty.CheatVision)
         ],
         realtime=False
