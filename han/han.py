@@ -21,14 +21,14 @@ class HanBot(BotAI):
         await self.manage_mules()
         await self.train_workers()
 
-        print(f"we have {len(self.townhalls)} bases, {self.townhalls.ready.amount} ready, {self.already_pending(UnitTypeId.COMMANDCENTER)} pending")   
+        # print(f"we have {len(self.townhalls)} bases, {self.townhalls.ready.amount} ready, {self.already_pending(UnitTypeId.COMMANDCENTER)} pending")   
 
         if self.should_expand_base():                   
             if self.can_afford(UnitTypeId.COMMANDCENTER):
                 await self.expand_base()
-            else:
-                print(f"can't afford to expand, stop production")
-                return        
+            elif self.time >= 480: # After first 8 minutes
+                print(f"can't afford to expand, stop production in late game")
+                return
         # Additional game management
         if iteration % 10 == 0:  # Every 10 iterations
             print(f"iteration {iteration}")
@@ -1270,7 +1270,7 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Zerg, Difficulty.CheatVision)
+            Computer(Race.Zerg, Difficulty.CheatInsane)
 #            Computer(Race.Protoss, Difficulty.CheatVision)
         ],
         realtime=False
