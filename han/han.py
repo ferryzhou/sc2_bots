@@ -314,6 +314,12 @@ class HanBot(BotAI):
         enemy_units = self.enemy_units
         enemy_structures = self.enemy_structures
         enemy_start = self.enemy_start_locations[0]
+
+        enemy_units = self.enemy_units.filter(
+            lambda unit: unit.type_id not in {
+                UnitTypeId.EGG,
+            }
+        )
         
         # Enhanced unit micro for attacking units
         for unit in military_units:
