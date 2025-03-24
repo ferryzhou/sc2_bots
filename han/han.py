@@ -784,7 +784,7 @@ class HanBot(BotAI):
                     return False  # Defend if we don't have superior numbers
         
         # Original attack conditions
-        if self.get_military_supply() > 20 * self.townhalls.ready.amount:
+        if self.get_military_supply() > 20: # * self.townhalls.ready.amount:
             #print(f"Military supply {self.get_military_supply()} > 20 * {self.townhalls.ready.amount}, attacking")
             return True
             
