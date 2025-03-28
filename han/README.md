@@ -2,6 +2,16 @@ Han SC2 Bot - ML Based Bot
 
 Use ML to make decisions based on the current state of the game.
 
+Things to improve:
+
+- ignore overlords for enemy units.
+- don't build factories on base location.
+- win rate in some map is too low.
+- rally at ramp.
+- detect early cheese. 
+- build more marines to attack / defend air units.
+
+
 [205-02-09] Initial code based on claude.ai.
 
 My prompts:
