@@ -720,12 +720,20 @@ class HanBot(BotAI):
                             starport.train(UnitTypeId.RAVEN)
 
     def build_marines_marauders_if_needed(self):
-        # Existing barracks training logic
+        marine_count = self.units(UnitTypeId.MARINE).amount + self.already_pending(UnitTypeId.MARINE)
+        marauder_count = self.units(UnitTypeId.MARAUDER).amount + self.already_pending(UnitTypeId.MARAUDER)
+
+        should_train_marauders = marauder_count < marine_count
+
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
             if barracks.has_add_on:
                 if barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSTECHLAB).tags:
-                    if self.can_afford(UnitTypeId.MARAUDER) and self.supply_left > 2:
-                        barracks.train(UnitTypeId.MARAUDER)
+                    if should_train_marauders:
+                        if self.can_afford(UnitTypeId.MARAUDER) and self.supply_left > 2:
+                            barracks.train(UnitTypeId.MARAUDER)
+                    else:
+                        if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
+                            barracks.train(UnitTypeId.MARINE)
                 elif barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSREACTOR).tags:
                     for _ in range(2):
                         if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
@@ -860,7 +868,7 @@ class HanBot(BotAI):
             if not barracks.has_add_on:
                 # Calculate desired ratio (6:4)
                 desired_techlab_ratio = 0.6
-                current_techlab_ratio = techlab_count / (total_addons + 1) if total_addons > 0 else 0
+                current_techlab_ratio = techlab_count / total_addons if total_addons > 0 else 0
                 
                 # If current techlab ratio is below 0.6, build techlab
                 if current_techlab_ratio < desired_techlab_ratio:
@@ -1284,8 +1292,8 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Protoss, Difficulty.CheatInsane)
-#            Computer(Race.Protoss, Difficulty.CheatVision)
+#            Computer(Race.Protoss, Difficulty.CheatInsane)
+            Computer(Race.Protoss, Difficulty.CheatVision)
         ],
         realtime=False
     )
