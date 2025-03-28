@@ -285,7 +285,7 @@ class HanBot(BotAI):
             return
             
         # Determine rally point - closest base to map center or main base ramp
-        if self.townhalls.ready:
+        if self.townhalls.ready and self.townhalls.ready.amount > 1:
             forward_base = self.townhalls.ready.closest_to(self.game_info.map_center)
             rally_point = forward_base.position.towards(self.game_info.map_center, 8)
         else:
