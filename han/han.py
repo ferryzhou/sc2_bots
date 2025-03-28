@@ -687,7 +687,7 @@ class HanBot(BotAI):
                 # Fallback method for engineering bay
                 await self.build(UnitTypeId.ENGINEERINGBAY, near=self.townhalls.first.position.towards(self.game_info.map_center, 8))
 
-    async def train_military_units(self):
+    def build_tanks_if_needed(self):
         # Build tanks if we have enough military units and a factory with tech lab
         if self.get_military_supply() >= 10:
             for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
@@ -696,16 +696,18 @@ class HanBot(BotAI):
                         if self.can_afford(UnitTypeId.SIEGETANK) and self.supply_left > 4:
                             factory.train(UnitTypeId.SIEGETANK)
 
+    def build_medivacs_if_needed(self):
         # Build medivacs based on ground unit count
         ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
         desired_medivacs = ground_units // 8  # One medivac for every 8 ground units
         current_medivacs = self.units(UnitTypeId.MEDIVAC).amount
-
+        
         if current_medivacs < desired_medivacs:
             for starport in self.structures(UnitTypeId.STARPORT).ready.idle:
                 if self.can_afford(UnitTypeId.MEDIVAC) and self.supply_left > 2:
                     starport.train(UnitTypeId.MEDIVAC)
 
+    def build_ravens_if_needed(self):
         # Build Ravens (up to 2)
         current_ravens = self.units(UnitTypeId.RAVEN).amount
         desired_ravens = 2
@@ -717,6 +719,7 @@ class HanBot(BotAI):
                         if self.can_afford(UnitTypeId.RAVEN) and self.supply_left > 2:
                             starport.train(UnitTypeId.RAVEN)
 
+    def build_marines_marauders_if_needed(self):
         # Existing barracks training logic
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
             if barracks.has_add_on:
@@ -730,6 +733,12 @@ class HanBot(BotAI):
             else:
                 if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
                     barracks.train(UnitTypeId.MARINE)
+
+    async def train_military_units(self):
+        self.build_tanks_if_needed()
+        self.build_medivacs_if_needed()
+        self.build_ravens_if_needed()
+        self.build_marines_marauders_if_needed()
 
     async def train_workers(self):
         # Modified to account for MULE income
