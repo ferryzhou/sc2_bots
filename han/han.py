@@ -318,12 +318,23 @@ class HanBot(BotAI):
         enemy_units = self.enemy_units.filter(
             lambda unit: unit.type_id not in {
                 UnitTypeId.EGG,
+                UnitTypeId.LARVA,
+                UnitTypeId.OVERLORD,
+                UnitTypeId.OVERLORDCOCOON,
+                UnitTypeId.OVERSEER,
+                UnitTypeId.OVERSEERSIEGEMODE,
+                UnitTypeId.CHANGELING,
+                UnitTypeId.CHANGELINGMARINE,
+                UnitTypeId.CHANGELINGMARINESHIELD,
+                UnitTypeId.CHANGELINGZEALOT,
+                UnitTypeId.CHANGELINGZERGLING,
+                UnitTypeId.CHANGELINGZERGLINGWINGS
             }
         )
         
         # Enhanced unit micro for attacking units
         for unit in military_units:
-            # Find nearby enemies
+            # Find nearby enemies (excluding overlords)
             nearby_enemies = enemy_units.filter(
                 lambda enemy: enemy.distance_to(unit) < 50
             )
@@ -1292,8 +1303,8 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-#            Computer(Race.Protoss, Difficulty.CheatInsane)
-            Computer(Race.Protoss, Difficulty.CheatVision)
+            Computer(Race.Zerg, Difficulty.CheatInsane)
+#            Computer(Race.Protoss, Difficulty.CheatVision)
         ],
         realtime=False
     )

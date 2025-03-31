@@ -4,12 +4,12 @@ Use ML to make decisions based on the current state of the game.
 
 Things to improve:
 
-- ignore overlords for enemy units.
+- [Done] ignore overlords for enemy units.
 - don't build factories on base location.
 - win rate in some map is too low.
-- rally at ramp.
-- detect early cheese. 
-- build more marines to attack / defend air units.
+- [Done] rally at ramp in the beginning.
+- detect early zerg cheese. 
+- [Done] build more marines to attack / defend air units.
 
 
 [205-02-09] Initial code based on claude.ai.
