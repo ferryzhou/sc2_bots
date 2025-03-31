@@ -368,6 +368,28 @@ class HanBot(BotAI):
                 target = enemy_structures.closest_to(tank)
             
             await self.manage_attacking_tank(tank, target)
+
+        ravens = self.units(UnitTypeId.RAVEN)
+        # Handle Raven auto-turrets
+        for raven in ravens:
+            if raven.energy >= 50:  # Auto-Turret costs 50 energy
+                nearby_enemies = enemy_units.filter(
+                    lambda unit: unit.distance_to(raven) < 15
+                )
+                
+                if nearby_enemies:
+                    # Find the best position for the turret
+                    if len(nearby_enemies) >= 3:
+                        # Drop at center of enemy cluster
+                        turret_position = nearby_enemies.center
+                    else:
+                        # Drop at closest enemy
+                        turret_position = nearby_enemies.closest_to(raven).position
+                    
+                    # Ensure the position is on valid terrain
+                    if self.in_pathing_grid(turret_position):
+                        raven(AbilityId.BUILDAUTOTURRET_AUTOTURRET, turret_position)
+                        print(f"Raven {raven.tag} dropping turret during attack")
     
     async def manage_attacking_tank(self, tank, target):
         """Manage tank positioning and siege mode during attacks."""
