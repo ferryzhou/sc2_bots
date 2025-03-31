@@ -954,7 +954,7 @@ class HanBot(BotAI):
 
     def should_expand_base(self):
         # Don't expand if we're at max bases
-        if len(self.townhalls) > 8:
+        if len(self.townhalls) > 12:
             return False
         
         # Check if we're already expanding for more than 2 bases
