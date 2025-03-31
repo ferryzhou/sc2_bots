@@ -369,7 +369,28 @@ class HanBot(BotAI):
             
             await self.manage_attacking_tank(tank, target)
 
-        ravens = self.units(UnitTypeId.RAVEN)
+        await self.manage_attacking_ravens(self.units(UnitTypeId.RAVEN), enemy_units)
+
+    async def manage_attacking_tank(self, tank, target):
+        """Manage tank positioning and siege mode during attacks."""
+        enemy_distance = target.distance_to(tank)
+        
+        if tank.type_id == UnitTypeId.SIEGETANK:
+            if enemy_distance < 13:  # Optimal siege range
+                tank(AbilityId.SIEGEMODE_SIEGEMODE)
+            else:
+                # Move closer while avoiding getting too close
+                desired_position = target.position.towards(tank.position, 12)
+                tank.move(desired_position)
+        elif tank.type_id == UnitTypeId.SIEGETANKSIEGED:
+            if enemy_distance > 15:  # Enemy moved out of range
+                tank(AbilityId.UNSIEGE_UNSIEGE)
+            # Otherwise stay sieged and let default attack handle it
+    
+    async def manage_attacking_ravens(self, ravens, enemy_units):
+        """Manage Raven auto-turrets during attacks."""
+        if not ravens or not enemy_units:
+            return
         # Handle Raven auto-turrets
         for raven in ravens:
             if raven.energy >= 50:  # Auto-Turret costs 50 energy
@@ -391,22 +412,8 @@ class HanBot(BotAI):
                         raven(AbilityId.BUILDAUTOTURRET_AUTOTURRET, turret_position)
                         print(f"Raven {raven.tag} dropping turret during attack")
     
-    async def manage_attacking_tank(self, tank, target):
-        """Manage tank positioning and siege mode during attacks."""
-        enemy_distance = target.distance_to(tank)
-        
-        if tank.type_id == UnitTypeId.SIEGETANK:
-            if enemy_distance < 13:  # Optimal siege range
-                tank(AbilityId.SIEGEMODE_SIEGEMODE)
-            else:
-                # Move closer while avoiding getting too close
-                desired_position = target.position.towards(tank.position, 12)
-                tank.move(desired_position)
-        elif tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-            if enemy_distance > 15:  # Enemy moved out of range
-                tank(AbilityId.UNSIEGE_UNSIEGE)
-            # Otherwise stay sieged and let default attack handle it
-    
+
+        # Get closest enemy unit for each raven    
 
     async def manage_medivacs(self, medivacs, military_units):
         """Manage medivac movement to follow army units."""
