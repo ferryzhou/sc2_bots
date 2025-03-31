@@ -972,7 +972,7 @@ class HanBot(BotAI):
                 continue
             
             # Check worker saturation for viable bases
-            if len(self.workers.closer_than(10, th)) < 12:
+            if len(self.workers.closer_than(10, th)) < 16:
                 return False  # Don't expand if current viable bases aren't almost fully utilized
             
         return True
@@ -1297,8 +1297,8 @@ class HanBot(BotAI):
 
 def main():
     bot = HanBot()
-    maps_pool = ["CatalystLE"]
-    
+#    maps_pool = ["CatalystLE"]
+    maps_pool = ["AcropolisAIE"]
     run_game(
         maps.get(maps_pool[0]),
         [
