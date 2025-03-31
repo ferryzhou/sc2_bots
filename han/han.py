@@ -521,7 +521,7 @@ class HanBot(BotAI):
             if total_refineries >= 3:
                 return
 
-        if total_refineries >= self.townhalls.ready.amount * 1.5 + 2:
+        if total_refineries >= self.townhalls.ready.amount * 1.2 + 2:
             return
 
         for th in self.townhalls.ready:
