@@ -509,7 +509,15 @@ class HanBot(BotAI):
                         worker.build_gas(vg)
                         return
 
+    def get_max_barracks(self):
+        if self.townhalls.ready.amount == 1:
+            return 2
+        return min(self.workers.amount // 6, 12)
+
     async def build_barracks_if_needed(self):
+        if not self.townhalls:
+            return
+
         if not self.townhalls.ready:
             return
             
@@ -521,21 +529,7 @@ class HanBot(BotAI):
         barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
         total_barracks = barracks_count + barracks_flying + barracks_pending
         
-        if self.townhalls.amount == 1:
-            if total_barracks >= 2:
-                return
-            
-#        if self.townhalls.amount == 2:
-#            if total_barracks >= 4:
-#                return
-    
-        if total_barracks >= self.workers.amount // 6:
-            return
-        
-        if total_barracks >= 12:
-            return
-        
-        if not self.townhalls:
+        if total_barracks >= self.get_max_barracks():
             return
         
         # Get main base and its position
