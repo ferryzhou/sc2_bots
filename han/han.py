@@ -524,10 +524,7 @@ class HanBot(BotAI):
         if not self.can_afford(UnitTypeId.BARRACKS):
             return
             
-        barracks_count = self.structures(UnitTypeId.BARRACKS).amount
-        barracks_flying = self.structures(UnitTypeId.BARRACKSFLYING).amount
-        barracks_pending = self.already_pending(UnitTypeId.BARRACKS)
-        total_barracks = barracks_count + barracks_flying + barracks_pending
+        total_barracks = self.get_ready_and_pending_count(UnitTypeId.BARRACKS)
         
         if total_barracks >= self.get_max_barracks():
             return
@@ -577,10 +574,7 @@ class HanBot(BotAI):
             return
         
         # Get current factory count (including flying factories)
-        factories = self.structures(UnitTypeId.FACTORY).amount
-        factories_flying = self.structures(UnitTypeId.FACTORYFLYING).amount
-        factories_pending = self.already_pending(UnitTypeId.FACTORY)
-        total_factories = factories + factories_flying + factories_pending
+        total_factories = self.get_ready_and_pending_count(UnitTypeId.FACTORY)
 
         # Always build first factory when we have enough military units
         if total_factories == 0 and self.get_military_supply() >= 10:
@@ -637,10 +631,7 @@ class HanBot(BotAI):
             return
 
         # Check if we already have starports or one is in progress (including flying)
-        starports = self.structures(UnitTypeId.STARPORT).amount
-        starports_flying = self.structures(UnitTypeId.STARPORTFLYING).amount
-        starports_pending = self.already_pending(UnitTypeId.STARPORT)
-        total_starports = starports + starports_flying + starports_pending
+        total_starports = self.get_ready_and_pending_count(UnitTypeId.STARPORT)
         
         if total_starports >= 2:
             return
@@ -1295,18 +1286,33 @@ class HanBot(BotAI):
 
     def get_ready_and_pending_count(self, unit_type):
         """
-        Count the total number of a unit type, including both ready and pending structures.
+        Count the total number of a unit type, including ready, flying, and pending structures.
         
         Args:
             unit_type: The UnitTypeId to count
             
         Returns:
-            int: Total count of ready and pending units/structures
+            int: Total count of ready, flying, and pending units/structures
         """
+        # Count ready structures
         ready_count = self.structures(unit_type).ready.amount
+        
+        # Count flying buildings (Terran specific)
+        flying_count = 0
+        if unit_type in {UnitTypeId.COMMANDCENTER, UnitTypeId.ORBITALCOMMAND, UnitTypeId.PLANETARYFORTRESS}:
+            flying_count = self.structures(UnitTypeId.COMMANDCENTERFLYING).amount
+        elif unit_type == UnitTypeId.BARRACKS:
+            flying_count = self.structures(UnitTypeId.BARRACKSFLYING).amount
+        elif unit_type == UnitTypeId.FACTORY:
+            flying_count = self.structures(UnitTypeId.FACTORYFLYING).amount
+        elif unit_type == UnitTypeId.STARPORT:
+            flying_count = self.structures(UnitTypeId.STARPORTFLYING).amount
+        
+        # Count pending structures
         pending_count = self.already_pending(unit_type)
         
-        total_count = ready_count + pending_count
+        # Calculate total
+        total_count = ready_count + flying_count + pending_count
         
         return total_count
 
