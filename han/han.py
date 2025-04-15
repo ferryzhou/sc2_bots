@@ -665,27 +665,29 @@ class HanBot(BotAI):
         
         if not self.townhalls:
             return
+        
+        if self.get_ready_and_pending_count(UnitTypeId.ENGINEERINGBAY) >= 2:
+            return
+        
+        if not self.can_afford(UnitTypeId.ENGINEERINGBAY):
+            return
 
-        # Build Engineering Bays if we don't have them and can afford it
-        if (len(self.structures(UnitTypeId.ENGINEERINGBAY)) + self.already_pending(UnitTypeId.ENGINEERINGBAY) < 2 and 
-            self.can_afford(UnitTypeId.ENGINEERINGBAY)):
-            
-            # Find placement for engineering bay (no addon needed)
-            pos = await self.find_placement(
-                UnitTypeId.ENGINEERINGBAY,
-                near_position=self.townhalls.first.position,
-                min_distance=5,
-                max_distance=20,
-                addon_space=False
-            )
-            
-            if pos:
-                print(f"Building engineering bay at position {pos}")
-                await self.build(UnitTypeId.ENGINEERINGBAY, near=pos)
-            else:
-                print("Fallback: Using direct placement for engineering bay")
-                # Fallback method for engineering bay
-                await self.build(UnitTypeId.ENGINEERINGBAY, near=self.townhalls.first.position.towards(self.game_info.map_center, 8))
+        # Find placement for engineering bay (no addon needed)
+        pos = await self.find_placement(
+            UnitTypeId.ENGINEERINGBAY,
+            near_position=self.townhalls.first.position,
+            min_distance=5,
+            max_distance=20,
+            addon_space=False
+        )
+        
+        if pos:
+            print(f"Building engineering bay at position {pos}")
+            await self.build(UnitTypeId.ENGINEERINGBAY, near=pos)
+        else:
+            print("Fallback: Using direct placement for engineering bay")
+            # Fallback method for engineering bay
+            await self.build(UnitTypeId.ENGINEERINGBAY, near=self.townhalls.first.position.towards(self.game_info.map_center, 8))
 
     def build_tanks_if_needed(self):
         # Build tanks if we have enough military units and a factory with tech lab
