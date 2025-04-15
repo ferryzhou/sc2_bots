@@ -483,21 +483,20 @@ class HanBot(BotAI):
                 if closest_enemy.distance_to(depot) < 10:
                     depot(AbilityId.MORPH_SUPPLYDEPOT_RAISE)
 
+    def get_max_refineries(self):
+        if self.townhalls.ready.amount == 1:
+            return 1
+        if self.townhalls.ready.amount == 2:
+            return 3
+        return self.townhalls.ready.amount * 1.2 + 2
+
     async def build_gas_if_needed(self):
-        if self.structures(UnitTypeId.BARRACKS).ready.amount + self.already_pending(UnitTypeId.BARRACKS) == 0:
+        if self.get_ready_and_pending_count(UnitTypeId.BARRACKS) == 0:
             return
 
-        total_refineries = self.structures(UnitTypeId.REFINERY).amount + self.already_pending(UnitTypeId.REFINERY)
-        
-        if self.townhalls.ready.amount == 1:
-            if total_refineries >= 1:
-                return
+        total_refineries = self.get_ready_and_pending_count(UnitTypeId.REFINERY)
 
-        if self.townhalls.ready.amount == 2:
-            if total_refineries >= 3:
-                return
-
-        if total_refineries >= self.townhalls.ready.amount * 1.2 + 2:
+        if total_refineries >= self.get_max_refineries():
             return
 
         for th in self.townhalls.ready:
@@ -1299,6 +1298,23 @@ class HanBot(BotAI):
                     )
                     # Call down MULE
                     oc(AbilityId.CALLDOWNMULE_CALLDOWNMULE, best_mineral)
+
+    def get_ready_and_pending_count(self, unit_type):
+        """
+        Count the total number of a unit type, including both ready and pending structures.
+        
+        Args:
+            unit_type: The UnitTypeId to count
+            
+        Returns:
+            int: Total count of ready and pending units/structures
+        """
+        ready_count = self.structures(unit_type).ready.amount
+        pending_count = self.already_pending(unit_type)
+        
+        total_count = ready_count + pending_count
+        
+        return total_count
 
 def main():
     bot = HanBot()
