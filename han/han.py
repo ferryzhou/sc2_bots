@@ -223,30 +223,6 @@ class HanBot(BotAI):
                         closest_worker = nearby_enemy_workers.closest_to(unit)
                         unit.attack(closest_worker)
                 
-                # Prioritize targets for tanks
-                for tank in tanks:
-                    if tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-                        # Tanks prioritize offensive structures and groups of units
-                        if offensive_structures:
-                            tank.attack(offensive_structures.closest_to(tank))
-                        elif nearby_enemies and len(nearby_enemies) > 2:
-                            # Target area with most enemies
-                            tank.attack(nearby_enemies.center)
-                        elif other_structures:
-                            tank.attack(other_structures.closest_to(tank))
-                    else:  # Unsieged tanks
-                        defense_position = th.position.towards(
-                            offensive_structures.center if offensive_structures else
-                            nearby_enemies.center if nearby_enemies else
-                            other_structures.center if other_structures else
-                            nearby_enemy_workers.center, 7
-                        )
-                        
-                        if tank.distance_to(defense_position) < 7:
-                            tank(AbilityId.SIEGEMODE_SIEGEMODE)
-                        else:
-                            tank.move(defense_position)
-                
                 # Assign defender workers with similar priority
                 for worker in nearby_workers:
                     if worker.tag in self.defender_worker_tags:
