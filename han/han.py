@@ -491,10 +491,10 @@ class HanBot(BotAI):
         return self.townhalls.ready.amount * 1.2 + 2
 
     async def build_gas_if_needed(self):
-        if self.get_ready_and_pending_count(UnitTypeId.BARRACKS) == 0:
+        if self.get_total_structure_count(UnitTypeId.BARRACKS) == 0:
             return
 
-        total_refineries = self.get_ready_and_pending_count(UnitTypeId.REFINERY)
+        total_refineries = self.get_total_structure_count(UnitTypeId.REFINERY)
 
         if total_refineries >= self.get_max_refineries():
             return
@@ -524,7 +524,7 @@ class HanBot(BotAI):
         if not self.can_afford(UnitTypeId.BARRACKS):
             return
             
-        total_barracks = self.get_ready_and_pending_count(UnitTypeId.BARRACKS)
+        total_barracks = self.get_total_structure_count(UnitTypeId.BARRACKS)
         
         if total_barracks >= self.get_max_barracks():
             return
@@ -574,7 +574,7 @@ class HanBot(BotAI):
             return
         
         # Get current factory count (including flying factories)
-        total_factories = self.get_ready_and_pending_count(UnitTypeId.FACTORY)
+        total_factories = self.get_total_structure_count(UnitTypeId.FACTORY)
 
         # Always build first factory when we have enough military units
         if total_factories == 0 and self.get_military_supply() >= 10:
@@ -631,7 +631,7 @@ class HanBot(BotAI):
             return
 
         # Check if we already have starports or one is in progress (including flying)
-        total_starports = self.get_ready_and_pending_count(UnitTypeId.STARPORT)
+        total_starports = self.get_total_structure_count(UnitTypeId.STARPORT)
         
         if total_starports >= 2:
             return
@@ -666,7 +666,7 @@ class HanBot(BotAI):
         if not self.townhalls:
             return
         
-        if self.get_ready_and_pending_count(UnitTypeId.ENGINEERINGBAY) >= 2:
+        if self.get_total_structure_count(UnitTypeId.ENGINEERINGBAY) >= 2:
             return
         
         if not self.can_afford(UnitTypeId.ENGINEERINGBAY):
@@ -1286,7 +1286,7 @@ class HanBot(BotAI):
                     # Call down MULE
                     oc(AbilityId.CALLDOWNMULE_CALLDOWNMULE, best_mineral)
 
-    def get_ready_and_pending_count(self, unit_type):
+    def get_total_structure_count(self, unit_type):
         """
         Count the total number of a unit type, including ready, flying, and pending structures.
         
