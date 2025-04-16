@@ -18,6 +18,7 @@ class HanBot(BotAI):
         super().__init__()
         self.race = Race.Terran
         self.retreating_units = {}  # Initialize retreating_units dictionary
+        self.historical_retreating_units = {}  # Initialize retreating_units dictionary
         self.defender_worker_tags = set()
         # Any other initialization you need
     
@@ -351,33 +352,22 @@ class HanBot(BotAI):
                 lambda enemy: enemy.distance_to(unit) < 15
             )
             
+            # Check if unit is currently retreating
+            if unit.tag in self.retreating_units:
+                retreat_time = self.retreating_units[unit.tag]
+                if current_time - retreat_time >= 10:  # 10 seconds retreat limit
+                    del self.retreating_units[unit.tag]
+            
             if nearby_threats:
-                # Prioritize offensive structures first, then units
-                nearby_offensive_structures = offensive_structures.filter(
-                    lambda structure: structure.distance_to(unit) < 15
-                )
-                
-                if nearby_offensive_structures and unit.tag not in self.retreating_units:
-                    # Target offensive structures first
-                    closest_threat = nearby_offensive_structures.closest_to(unit)
-                    unit.attack(closest_threat)
-                    continue
-                
-                # Otherwise target closest enemy unit
                 closest_threat = nearby_threats.closest_to(unit)
                 
-                # Check if unit is currently retreating
-                if unit.tag in self.retreating_units:
-                    retreat_time = self.retreating_units[unit.tag]
-                    if current_time - retreat_time >= 10:  # 10 seconds retreat limit
-                        del self.retreating_units[unit.tag]
-                
                 # Handle unit actions based on health
-                if unit.health_percentage < 0.3 and unit.tag not in self.retreating_units:
+                if unit.health_percentage < 0.4 and unit.tag not in self.retreating_units and unit.tag not in self.historical_retreating_units:
                     # Start retreat
-                    retreat_pos = unit.position.towards(self.start_location, 4)
+                    retreat_pos = unit.position.towards(self.start_location, 20)
                     unit.move(retreat_pos)
                     self.retreating_units[unit.tag] = current_time
+                    self.historical_retreating_units[unit.tag] = current_time
                 elif unit.tag not in self.retreating_units:
                     # Normal combat micro
                     if unit.ground_range > 1:  # Ranged unit
@@ -573,8 +563,8 @@ class HanBot(BotAI):
                         return
 
     def get_max_barracks(self):
-        if self.townhalls.ready.amount == 1:
-            return 2
+        if self.townhalls.ready.amount == 1 and self.get_total_structure_count(UnitTypeId.BARRACKS) < 2:
+            return 1
         return min(self.workers.amount // 6, 12)
 
     async def build_barracks_if_needed(self):
@@ -1393,7 +1383,7 @@ def main():
         [
             Bot(Race.Terran, bot),
             Computer(Race.Zerg, Difficulty.CheatInsane)
-#            Computer(Race.Protoss, Difficulty.CheatVision)
+#            Computer(Race.Protoss, Difficulty.CheatInsane)
         ],
         realtime=False
     )
