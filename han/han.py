@@ -948,8 +948,11 @@ class HanBot(BotAI):
         if len(self.townhalls) > 12:
             return False
         
-        # Check if we're already expanding for more than 2 bases
-        if self.already_pending(UnitTypeId.COMMANDCENTER) > 2:
+        if self.townhalls.ready.amount == 1 and self.already_pending(UnitTypeId.COMMANDCENTER) == 1:
+            return False
+        
+        # Check if we're already expanding for equal ormore than 2 bases
+        if self.already_pending(UnitTypeId.COMMANDCENTER) >= 2:
             return False
 
         # Check if current bases are saturated (16 workers per base is optimal)
