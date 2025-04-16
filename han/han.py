@@ -11,8 +11,16 @@ from sc2.ids.ability_id import AbilityId
 import random
 from sc2.ids.upgrade_id import UpgradeId
 import math
+import time
 
 class HanBot(BotAI):
+    def __init__(self):
+        super().__init__()
+        self.race = Race.Terran
+        self.retreating_units = {}  # Initialize retreating_units dictionary
+        self.defender_worker_tags = set()
+        # Any other initialization you need
+    
     async def on_step(self, iteration):
         await self.manage_army()
         # Basic economy management
@@ -286,11 +294,17 @@ class HanBot(BotAI):
                     tank.move(rally_point)
 
     async def execute_attack(self, military_units, tanks):
-        """Execute attack logic with enhanced unit micro."""
-        enemy_units = self.enemy_units
-        enemy_structures = self.enemy_structures
-        enemy_start = self.enemy_start_locations[0]
-
+        """Execute attack logic with retreat time limits."""
+        current_time = time.time()
+        
+        # Clean up old retreat timers
+        self.retreating_units = {
+            unit_tag: retreat_time 
+            for unit_tag, retreat_time in self.retreating_units.items() 
+            if current_time - retreat_time < 10
+        }
+        
+        # Filter out eggs and overlords from enemy units
         enemy_units = self.enemy_units.filter(
             lambda unit: unit.type_id not in {
                 UnitTypeId.EGG,
@@ -308,40 +322,88 @@ class HanBot(BotAI):
             }
         )
         
-        # Enhanced unit micro for attacking units
+        # Identify offensive structures (those that can attack)
+        offensive_structures = self.enemy_structures.filter(
+            lambda structure: structure.can_attack or structure.type_id in {
+                # Protoss
+                UnitTypeId.PHOTONCANNON, UnitTypeId.SHIELDBATTERY,
+                # Terran
+                UnitTypeId.MISSILETURRET, UnitTypeId.BUNKER, UnitTypeId.PLANETARYFORTRESS,
+                # Zerg
+                UnitTypeId.SPINECRAWLER, UnitTypeId.SPORECRAWLER
+            }
+        )
+        
+        # Combine enemy units with offensive structures for targeting
+        enemy_threats = enemy_units + offensive_structures
+        
+        # Other enemy structures
+        other_structures = self.enemy_structures.filter(
+            lambda structure: structure not in offensive_structures
+        )
+        
+        enemy_start = self.enemy_start_locations[0]
+        
+        # Rest of the attack logic for military units
         for unit in military_units:
-            # Find nearby enemies (excluding overlords)
-            nearby_enemies = enemy_units.filter(
-                lambda enemy: enemy.distance_to(unit) < 50
+            # Find nearby enemies including offensive structures
+            nearby_threats = enemy_threats.filter(
+                lambda enemy: enemy.distance_to(unit) < 15
             )
             
-            if nearby_enemies:
-                # Get closest enemy
-                closest_enemy = nearby_enemies.closest_to(unit)
+            if nearby_threats:
+                # Prioritize offensive structures first, then units
+                nearby_offensive_structures = offensive_structures.filter(
+                    lambda structure: structure.distance_to(unit) < 15
+                )
                 
-                # Enhanced micro based on unit health and enemy type
-                if unit.ground_range > 1:  # Ranged unit micro
-                    if unit.weapon_cooldown > 0:  # If we can't shoot, move away
-                        retreat_pos = unit.position.towards(closest_enemy.position, -2)
-                        unit.move(retreat_pos)
-                    else:  # If we can shoot, attack
-                        unit.attack(closest_enemy)
-                else:  # Melee units or other cases
-                    unit.attack(closest_enemy)
-            elif enemy_structures:
-                # Attack nearest structure if no units nearby
-                closest_structure = enemy_structures.closest_to(unit)
-                unit.attack(closest_structure)
-            else:
-                unit.attack(enemy_start)
+                if nearby_offensive_structures and unit.tag not in self.retreating_units:
+                    # Target offensive structures first
+                    closest_threat = nearby_offensive_structures.closest_to(unit)
+                    unit.attack(closest_threat)
+                    continue
+                
+                # Otherwise target closest enemy unit
+                closest_threat = nearby_threats.closest_to(unit)
+                
+                # Check if unit is currently retreating
+                if unit.tag in self.retreating_units:
+                    retreat_time = self.retreating_units[unit.tag]
+                    if current_time - retreat_time >= 10:  # 10 seconds retreat limit
+                        del self.retreating_units[unit.tag]
+                
+                # Handle unit actions based on health
+                if unit.health_percentage < 0.3 and unit.tag not in self.retreating_units:
+                    # Start retreat
+                    retreat_pos = unit.position.towards(self.start_location, 4)
+                    unit.move(retreat_pos)
+                    self.retreating_units[unit.tag] = current_time
+                elif unit.tag not in self.retreating_units:
+                    # Normal combat micro
+                    if unit.ground_range > 1:  # Ranged unit
+                        if unit.weapon_cooldown > 0:  # If we can't shoot, kite back
+                            retreat_pos = unit.position.towards(closest_threat.position, -2)
+                            unit.move(retreat_pos)
+                        else:  # If we can shoot, attack
+                            unit.attack(closest_threat)
+                    else:  # Melee units
+                        unit.attack(closest_threat)
+            
+            elif unit.tag not in self.retreating_units:
+                # No nearby threats, attack other structures or enemy base
+                if other_structures:
+                    closest_structure = other_structures.closest_to(unit)
+                    unit.attack(closest_structure)
+                else:
+                    unit.attack(enemy_start)
         
-        # Enhanced tank micro for attacking
+        # Handle tanks with similar priority
         for tank in tanks:
             target = enemy_start
-            if enemy_units:
-                target = enemy_units.closest_to(tank)
-            elif enemy_structures:
-                target = enemy_structures.closest_to(tank)
+            if nearby_threats:
+                target = nearby_threats.closest_to(tank)
+            elif other_structures:
+                target = other_structures.closest_to(tank)
             
             await self.manage_attacking_tank(tank, target)
 
@@ -363,6 +425,7 @@ class HanBot(BotAI):
                 tank(AbilityId.UNSIEGE_UNSIEGE)
             # Otherwise stay sieged and let default attack handle it
     
+
     async def manage_attacking_ravens(self, ravens, enemy_units):
         """Manage Raven auto-turrets during attacks."""
         if not ravens or not enemy_units:
