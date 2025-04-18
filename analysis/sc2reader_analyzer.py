@@ -22,6 +22,117 @@ def format_time(seconds):
     return str(timedelta(seconds=seconds))[2:7]
 
 
+def write_build_orders(replay, replay_path):
+    """Extract and write build orders to text files."""
+    # Extract build orders
+    build_orders = defaultdict(list)
+    canceled_units = set()  # Track canceled units by tag
+    
+    # First pass: identify canceled units
+    for event in replay.events:
+        if event.name == "UnitDiedEvent" and hasattr(event, 'unit') and hasattr(event.unit, 'tag'):
+            # If a unit died while still under construction, mark it as canceled
+            if hasattr(event.unit, 'is_building') and event.unit.is_building:
+                canceled_units.add(event.unit.tag)
+    
+    # Second pass: collect successful builds
+    for event in replay.events:
+        if event.name == "UnitBornEvent" and event.control_pid > 0:
+            # Skip units that were canceled
+            if hasattr(event.unit, 'tag') and event.unit.tag in canceled_units:
+                continue
+                
+            player = replay.player[event.control_pid]
+            game_time = format_time(event.second)
+            unit_name = event.unit.name
+            
+            # Skip worker units after early game (optional)
+            if event.second > 300 and unit_name in ["SCV", "Probe", "Drone"]:
+                continue
+                
+            # Supply information isn't directly available in UnitBornEvent
+            build_orders[player.name].append((event.second, game_time, unit_name))
+    
+    print("\n=== Build Orders (Successful Builds Only) ===")
+    
+    for player_name, builds in build_orders.items():
+        # Sort by time
+        sorted_builds = sorted(builds, key=lambda x: x[0])
+        
+        # Write to text file
+        output_file = Path(replay_path).with_suffix(f'.{player_name}.build_order.txt')
+        with open(output_file, 'w') as f:
+            f.write(f"Build Order for {player_name} - {replay.map_name}\n")
+            f.write(f"Game Date: {replay.date}\n")
+            f.write(f"Race: {next((p.play_race for p in replay.players if p.name == player_name), 'Unknown')}\n\n")
+            f.write(f"{'Time':8} {'Unit':25}\n")
+            f.write("-" * 35 + "\n")
+            
+            for _, game_time, unit_name in sorted_builds:
+                f.write(f"{game_time:8} {unit_name:25}\n")
+                
+        print(f"Build order written to: {output_file}")
+
+
+def write_unit_production(replay, replay_path):
+    # Analyze unit production
+    unit_counts = defaultdict(lambda: defaultdict(int))
+    
+    for event in replay.events:
+        if event.name == "UnitBornEvent" and event.control_pid > 0:
+            player = replay.player[event.control_pid]
+            unit_counts[player.name][event.unit.name] += 1
+    
+    """Write unit production summary and file."""
+    for player_name, units in unit_counts.items():
+        # Sort units by count (descending) then name
+        sorted_units = sorted(units.items(), key=lambda x: (-x[1], x[0]))
+        
+        # Write to text file
+        output_file = Path(replay_path).with_suffix(f'.{player_name}.units.txt')
+        with open(output_file, 'w') as f:
+            f.write(f"Unit Production Summary for {player_name}\n\n")
+            f.write(f"{'Unit':25} {'Count':8}\n")
+            f.write("-" * 35 + "\n")
+            
+            for unit_name, count in sorted_units:
+                f.write(f"{unit_name:25} {count:8}\n")
+                
+        print(f"Unit production written to: {output_file}")
+
+
+def write_upgrades(replay, replay_path):
+    # Analyze upgrades
+    upgrades = defaultdict(list)
+    
+    for event in replay.events:
+        if event.name == "UpgradeCompleteEvent":
+            player = replay.player[event.pid]
+            game_time = format_time(event.second)
+            upgrade_name = event.upgrade_type_name
+            
+            upgrades[player.name].append((event.second, game_time, upgrade_name))
+    
+    """Write upgrades to console and file."""
+    for player_name, player_upgrades in upgrades.items():
+        # Sort by time
+        sorted_upgrades = sorted(player_upgrades, key=lambda x: x[0])
+        
+        # Write to text file
+        output_file = Path(replay_path).with_suffix(f'.{player_name}.upgrades.txt')
+        with open(output_file, 'w') as f:
+            f.write(f"Upgrades for {player_name} - {replay.map_name}\n")
+            f.write(f"Game Date: {replay.date}\n")
+            f.write(f"Race: {next((p.play_race for p in replay.players if p.name == player_name), 'Unknown')}\n\n")
+            f.write(f"{'Time':8} {'Upgrade':30}\n")
+            f.write("-" * 40 + "\n")
+            
+            for _, game_time, upgrade_name in sorted_upgrades:
+                f.write(f"{game_time:8} {upgrade_name:30}\n")
+                
+        print(f"Upgrades written to: {output_file}")
+
+
 def analyze_replay(replay_path, generate_graphs=True):
     """Analyze a replay file using sc2reader."""
     print(f"Analyzing replay: {replay_path}")
@@ -46,70 +157,16 @@ def analyze_replay(replay_path, generate_graphs=True):
     print("\n=== Players ===")
     for player in replay.players:
         print(f"Player: {player.name} ({player.play_race})")
-#        print(f"  APM: {player.avg_apm}")
         print(f"  Result: {player.result}")
-    
-    # Build orders
-    print("\n=== Build Orders ===")
-    build_orders = defaultdict(list)
-    
-    for event in replay.events:
-        if event.name == "UnitBornEvent" and event.control_pid > 0:
-            player = replay.player[event.control_pid]
-            game_time = format_time(event.second)
-            unit_name = event.unit.name
-            
-            # Skip worker units after early game (optional)
-            if event.second > 300 and unit_name in ["SCV", "Probe", "Drone"]:
-                continue
-                
-            # Supply information isn't directly available in UnitBornEvent
-            build_orders[player.name].append((event.second, game_time, unit_name))
-    
-    # Print build orders by player
-    for player_name, builds in build_orders.items():
-        print(f"\nBuild Order for {player_name}:")
-        print(f"{'Time':8} {'Unit':25}")
-        print("-" * 35)
         
-        # Sort by time
-        for _, game_time, unit_name in sorted(builds, key=lambda x: x[0]):
-            print(f"{game_time:8} {unit_name:25}")
+    # Write build orders to files and print to console
+    write_build_orders(replay, replay_path)
     
-    # Analyze unit production
-    print("\n=== Unit Production Summary ===")
-    unit_counts = defaultdict(lambda: defaultdict(int))
+    # Write unit production to files and print to console
+    write_unit_production(replay, replay_path)
     
-    for event in replay.events:
-        if event.name == "UnitBornEvent" and event.control_pid > 0:
-            player = replay.player[event.control_pid]
-            unit_counts[player.name][event.unit.name] += 1
-    
-    for player_name, units in unit_counts.items():
-        print(f"\nUnits for {player_name}:")
-        for unit_name, count in sorted(units.items(), key=lambda x: (-x[1], x[0])):
-            print(f"  {unit_name:25}: {count}")
-    
-    # Analyze upgrades
-    print("\n=== Upgrades ===")
-    upgrades = defaultdict(list)
-    
-    for event in replay.events:
-        if event.name == "UpgradeCompleteEvent":
-            player = replay.player[event.pid]
-            game_time = format_time(event.second)
-            upgrade_name = event.upgrade_type_name
-            
-            upgrades[player.name].append((event.second, game_time, upgrade_name))
-    
-    for player_name, player_upgrades in upgrades.items():
-        print(f"\nUpgrades for {player_name}:")
-        print(f"{'Time':8} {'Upgrade':30}")
-        print("-" * 40)
-        
-        # Sort by time
-        for _, game_time, upgrade_name in sorted(player_upgrades, key=lambda x: x[0]):
-            print(f"{game_time:8} {upgrade_name:30}")
+    # Write upgrades to files and print to console
+    write_upgrades(replay, replay_path)
 
     # Generate graphs if requested
     if generate_graphs:
