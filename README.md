@@ -36,6 +36,15 @@ This project is a collection of AI bots for StarCraft II, developed using Python
     *   `matplotlib`: `pip install matplotlib`
     *   `numpy`: `pip install numpy`
 
+**Map Installation:**
+1.  Download the latest map pack from [AI Arena Maps](https://aiarena.net/wiki/maps/)
+2.  Extract the downloaded map files
+3.  Place the maps in your StarCraft II maps directory:
+    *   Windows default location: `C:\Program Files (x86)\StarCraft II\Maps\`
+    *   macOS default location: `/Applications/StarCraft II/Maps/`
+    *   If the `maps` folder doesn't exist, create it
+    *   Note for Linux users: the folder name is case sensitive
+
 **Installation:**
 1.  Clone this repository:
     ```bash
