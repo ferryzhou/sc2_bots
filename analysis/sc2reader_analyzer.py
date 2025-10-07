@@ -27,6 +27,8 @@ def write_build_orders(replay, replay_path):
     # Extract build orders
     build_orders = defaultdict(list)
     canceled_units = set()  # Track canceled units by tag
+
+    print(replay.events)
     
     # First pass: identify canceled units
     for event in replay.events:
@@ -138,9 +140,9 @@ def analyze_replay(replay_path, generate_graphs=True):
     print(f"Analyzing replay: {replay_path}")
     
     # Load the replay
-    replay = sc2reader.load_replay(str(replay_path), load_level=4)
-    replay.load_map()
-    replay.load_all_details()
+    replay = sc2reader.load_replay(str(replay_path), load_level=3)
+    #replay.load_map()
+    #replay.load_all_details()
     
     # Add tracker plugins
     sc2reader.engine.register_plugin(SelectionTracker())
@@ -160,19 +162,24 @@ def analyze_replay(replay_path, generate_graphs=True):
         print(f"  Result: {player.result}")
         
     # Write build orders to files and print to console
-    write_build_orders(replay, replay_path)
+    #write_build_orders(replay, replay_path)
     
     # Write unit production to files and print to console
-    write_unit_production(replay, replay_path)
+    #write_unit_production(replay, replay_path)
     
     # Write upgrades to files and print to console
-    write_upgrades(replay, replay_path)
+    #write_upgrades(replay, replay_path)
 
     # Generate graphs if requested
     if generate_graphs:
         generate_resource_graph(replay)
         generate_units_graph(replay)
 
+def get_player_name_by_pid(replay, pid):
+    for player in replay.players:
+        if player.pid == pid:
+            return player.name
+    return str(pid)
 
 def generate_resource_graph(replay):
     """Generate a graph showing resource collection over time."""
@@ -183,13 +190,20 @@ def generate_resource_graph(replay):
     minerals_by_player = defaultdict(list)
     vespene_by_player = defaultdict(list)
     
+    print(replay.player)
     # Collect resource data
     for event in replay.events:
         if event.name == "PlayerStatsEvent":
-            player = replay.player[event.pid]
+            print(event)
+            print(f'event.second: {event.second}')
+            print(f"pid: {event.pid}")
+            print(f"minerals_collection_rate: {event.minerals_collection_rate}")
+            print(f"vespene_collection_rate: {event.vespene_collection_rate}")
+            player_name = get_player_name_by_pid(replay, event.pid)
+            print(f"player_name: {player_name}")
             timestamps.append(event.second / 60.0)  # Convert to minutes
-            minerals_by_player[player.name].append(event.minerals_collection_rate)
-            vespene_by_player[player.name].append(event.vespene_collection_rate)
+            minerals_by_player[player_name].append(event.minerals_collection_rate)
+            vespene_by_player[player_name].append(event.vespene_collection_rate)
     
     # Create the plot
     plt.figure(figsize=(12, 6))
@@ -237,13 +251,16 @@ def generate_units_graph(replay):
     # Process unit creation and destruction events
     for event in replay.events:
         if event.name == "UnitBornEvent" and event.control_pid > 0:
-            player = replay.player[event.control_pid]
+            print(event)
+            print(f"event.control_pid: {event.control_pid}")
+            print(f"event.unit: {event.unit}")
+            player_name = get_player_name_by_pid(replay, event.control_pid)
             unit_name = event.unit.name
             time_index = min(len(time_points) - 1, event.second // 60)
             
             # Increment unit count for all time points after this one
             for i in range(time_index, len(time_points)):
-                units_over_time[player.name][unit_name][i] += 1
+                units_over_time[player_name][unit_name][i] += 1
                 
         elif event.name == "UnitDiedEvent" and hasattr(event, 'unit') and hasattr(event.unit, 'owner'):
             if event.unit.owner:
