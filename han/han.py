@@ -33,7 +33,7 @@ class HanBot(BotAI):
     async def manage_economy(self):
         await self.distribute_workers()
         await self.manage_mules()
-        await self.train_workers()
+        await self.train_workers_if_needed()
 
         # print(f"we have {len(self.townhalls)} bases, {self.townhalls.ready.amount} ready, {self.already_pending(UnitTypeId.COMMANDCENTER)} pending")   
 
@@ -41,8 +41,50 @@ class HanBot(BotAI):
             if self.can_afford(UnitTypeId.COMMANDCENTER):
                 await self.expand_base()
             elif self.time >= 480: # After first 8 minutes
-                print(f"can't afford to expand, stop production in late game")
+                print(f"stop production in late game")
                 return
+
+    async def manage_mules(self):
+        # Transform Command Center to Orbital Command if possible
+        for cc in self.structures(UnitTypeId.COMMANDCENTER).ready.idle:
+            if self.can_afford(UnitTypeId.ORBITALCOMMAND):
+                cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND)
+
+        """Manage MULE production and optimal mineral mining."""
+        # Check for Orbital Commands
+        for oc in self.structures(UnitTypeId.ORBITALCOMMAND).ready:
+            # Only call down MULE if we have enough energy
+            if oc.energy < 50:
+                return
+
+            # Find the best mineral field to drop MULE on
+            mineral_fields = self.mineral_field.closer_than(10, oc)
+            if mineral_fields:
+                # Prioritize mineral fields with more minerals remaining
+                best_mineral = max(
+                    mineral_fields,
+                    key=lambda mineral: (
+                        mineral.mineral_contents,
+                        -oc.distance_to(mineral)  # Secondary sort by distance
+                    )
+                )
+                # Call down MULE
+                oc(AbilityId.CALLDOWNMULE_CALLDOWNMULE, best_mineral)
+
+    async def train_workers_if_needed(self):
+        # Modified to account for MULE income
+        mule_count = self.units(UnitTypeId.MULE).amount
+        effective_worker_count = self.workers.amount + (mule_count * 4)  # Each MULE mines like ~4 SCVs
+        
+        if effective_worker_count >= 80:
+            return
+        
+        if effective_worker_count >= 20 * self.townhalls.ready.amount:
+            return
+        
+        for cc in self.townhalls.ready.idle:
+            if self.can_afford(UnitTypeId.SCV) and self.supply_left > 0:
+                cc.train(UnitTypeId.SCV)
 
     async def manage_production(self):
         # print(f"manage_production")
@@ -804,21 +846,6 @@ class HanBot(BotAI):
         self.build_ravens_if_needed()
         self.build_marines_marauders_if_needed()
 
-    async def train_workers(self):
-        # Modified to account for MULE income
-        mule_count = self.units(UnitTypeId.MULE).amount
-        effective_worker_count = self.workers.amount + (mule_count * 4)  # Each MULE mines like ~4 SCVs
-        
-        if effective_worker_count >= 80:
-            return
-        
-        if effective_worker_count >= 20 * self.townhalls.ready.amount:
-            return
-        
-        for cc in self.townhalls.ready.idle:
-            if self.can_afford(UnitTypeId.SCV) and self.supply_left > 0:
-                cc.train(UnitTypeId.SCV)
-
     def should_attack(self):
         # Get our military units
         military_units = self.units.filter(
@@ -1005,7 +1032,7 @@ class HanBot(BotAI):
         if self.townhalls.ready.amount == 1 and self.already_pending(UnitTypeId.COMMANDCENTER) == 1:
             return False
         
-        # Check if we're already expanding for equal ormore than 2 bases
+        # Check if we're already expanding for equal or more than 2 bases
         if self.already_pending(UnitTypeId.COMMANDCENTER) >= 2:
             return False
 
@@ -1317,31 +1344,6 @@ class HanBot(BotAI):
         
         # Return from dictionary if available, otherwise default to (100, 25)
         return unit_costs.get(unit_type_id, (100, 25))
-
-    async def manage_mules(self):
-        # Transform Command Center to Orbital Command if possible
-        for cc in self.structures(UnitTypeId.COMMANDCENTER).ready.idle:
-            if self.can_afford(UnitTypeId.ORBITALCOMMAND):
-                cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND)
-
-        """Manage MULE production and optimal mineral mining."""
-        # Check for Orbital Commands
-        for oc in self.structures(UnitTypeId.ORBITALCOMMAND).ready:
-            # Only call down MULE if we have enough energy
-            if oc.energy >= 50:
-                # Find the best mineral field to drop MULE on
-                mineral_fields = self.mineral_field.closer_than(10, oc)
-                if mineral_fields:
-                    # Prioritize mineral fields with more minerals remaining
-                    best_mineral = max(
-                        mineral_fields,
-                        key=lambda mineral: (
-                            mineral.mineral_contents,
-                            -oc.distance_to(mineral)  # Secondary sort by distance
-                        )
-                    )
-                    # Call down MULE
-                    oc(AbilityId.CALLDOWNMULE_CALLDOWNMULE, best_mineral)
 
     def get_total_structure_count(self, unit_type):
         """
