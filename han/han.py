@@ -24,9 +24,14 @@ class HanBot(BotAI):
     
     async def on_step(self, iteration):
         await self.manage_army()
-        # Basic economy management
-        await self.distribute_workers()
         await self.build_supply_depot_if_needed()
+        await self.manage_economy()
+        if iteration % 10 == 0:  # Every 10 iterations
+            print(f"iteration {iteration}")
+            await self.manage_production()
+
+    async def manage_economy(self):
+        await self.distribute_workers()
         await self.manage_mules()
         await self.train_workers()
 
@@ -38,10 +43,6 @@ class HanBot(BotAI):
             elif self.time >= 480: # After first 8 minutes
                 print(f"can't afford to expand, stop production in late game")
                 return
-        # Additional game management
-        if iteration % 10 == 0:  # Every 10 iterations
-            print(f"iteration {iteration}")
-            await self.manage_production()
 
     async def manage_production(self):
         # print(f"manage_production")
@@ -439,7 +440,7 @@ class HanBot(BotAI):
                     # Ensure the position is on valid terrain
                     if self.in_pathing_grid(turret_position):
                         raven(AbilityId.BUILDAUTOTURRET_AUTOTURRET, turret_position)
-                        print(f"Raven {raven.tag} dropping turret during attack")
+                        # print(f"Raven {raven.tag} dropping turret during attack")
     
 
         # Get closest enemy unit for each raven    
@@ -1382,8 +1383,8 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Zerg, Difficulty.CheatInsane)
-#            Computer(Race.Protoss, Difficulty.CheatInsane)
+#            Computer(Race.Zerg, Difficulty.CheatInsane)
+            Computer(Race.Protoss, Difficulty.CheatVision)
         ],
         realtime=False
     )
