@@ -20,12 +20,15 @@ class HanBot(BotAI):
         self.retreating_units = {}  # Initialize retreating_units dictionary
         self.historical_retreating_units = {}  # Initialize retreating_units dictionary
         self.defender_worker_tags = set()
+        self.waiting_for_base_expansion = False
         # Any other initialization you need
     
     async def on_step(self, iteration):
-        await self.manage_army()
+        #await self.manage_army()
         await self.build_supply_depot_if_needed()
         await self.manage_economy()
+        if self.waiting_for_base_expansion:
+            return
         if iteration % 10 == 0:  # Every 10 iterations
             print(f"iteration {iteration}")
             await self.manage_production()
@@ -34,15 +37,16 @@ class HanBot(BotAI):
         await self.distribute_workers()
         await self.manage_mules()
         await self.train_workers_if_needed()
-
-        # print(f"we have {len(self.townhalls)} bases, {self.townhalls.ready.amount} ready, {self.already_pending(UnitTypeId.COMMANDCENTER)} pending")   
-
-        if self.should_expand_base():                   
+        await self.manage_base_expansion()
+    
+    async def manage_base_expansion(self):
+        if self.should_expand_base():
             if self.can_afford(UnitTypeId.COMMANDCENTER):
                 await self.expand_base()
-            elif self.time >= 480: # After first 8 minutes
-                print(f"stop production in late game")
-                return
+            else:
+                self.waiting_for_base_expansion = True
+        else:
+            self.waiting_for_base_expansion = False
 
     async def manage_mules(self):
         # Transform Command Center to Orbital Command if possible
@@ -58,7 +62,7 @@ class HanBot(BotAI):
                 return
 
             # Find the best mineral field to drop MULE on
-            mineral_fields = self.mineral_field.closer_than(10, oc)
+            mineral_fields = self.mineral_field
             if mineral_fields:
                 # Prioritize mineral fields with more minerals remaining
                 best_mineral = max(
@@ -580,6 +584,8 @@ class HanBot(BotAI):
                     depot(AbilityId.MORPH_SUPPLYDEPOT_RAISE)
 
     def get_max_refineries(self):
+        if self.get_total_structure_count(UnitTypeId.BARRACKS) == 0:
+            return 0
         if self.townhalls.ready.amount == 1:
             return 1
         if self.townhalls.ready.amount == 2:
@@ -587,18 +593,16 @@ class HanBot(BotAI):
         return self.townhalls.ready.amount * 1.2 + 2
 
     async def build_gas_if_needed(self):
-        if self.get_total_structure_count(UnitTypeId.BARRACKS) == 0:
+        if self.get_total_structure_count(UnitTypeId.REFINERY) >= self.get_max_refineries():
             return
+        if self.can_afford(UnitTypeId.REFINERY):
+            await self.build_one_gas()
 
-        total_refineries = self.get_total_structure_count(UnitTypeId.REFINERY)
-
-        if total_refineries >= self.get_max_refineries():
-            return
-
+    async def build_one_gas(self):
         for th in self.townhalls.ready:
             vgs = self.vespene_geyser.closer_than(10, th)
             for vg in vgs:
-                if await self.can_place_single(UnitTypeId.REFINERY, vg.position) and self.can_afford(UnitTypeId.REFINERY):
+                if await self.can_place_single(UnitTypeId.REFINERY, vg.position):
                     workers = self.workers.gathering
                     if workers:
                         worker = workers.closest_to(vg)
@@ -611,12 +615,6 @@ class HanBot(BotAI):
         return min(self.workers.amount // 6, 12)
 
     async def build_barracks_if_needed(self):
-        if not self.townhalls:
-            return
-
-        if not self.townhalls.ready:
-            return
-            
         if not self.can_afford(UnitTypeId.BARRACKS):
             return
             
