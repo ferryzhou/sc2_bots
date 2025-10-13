@@ -24,7 +24,7 @@ class HanBot(BotAI):
         # Any other initialization you need
     
     async def on_step(self, iteration):
-        #await self.manage_army()
+        await self.manage_army()
         await self.build_supply_depot_if_needed()
         await self.manage_economy()
         if self.waiting_for_base_expansion:
@@ -62,7 +62,7 @@ class HanBot(BotAI):
                 return
 
             # Find the best mineral field to drop MULE on
-            mineral_fields = self.mineral_field
+            mineral_fields = self.mineral_field.closer_than(10, oc)
             if mineral_fields:
                 # Prioritize mineral fields with more minerals remaining
                 best_mineral = max(
