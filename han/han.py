@@ -783,7 +783,7 @@ class HanBot(BotAI):
             # Fallback method for engineering bay
             await self.build(UnitTypeId.ENGINEERINGBAY, near=self.townhalls.first.position.towards(self.game_info.map_center, 8))
 
-    def build_tanks_if_needed(self):
+    def train_tanks_if_needed(self):
         # Build tanks if we have enough military units and a factory with tech lab
         if self.get_military_supply() >= 10:
             for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
@@ -792,7 +792,7 @@ class HanBot(BotAI):
                         if self.can_afford(UnitTypeId.SIEGETANK) and self.supply_left > 4:
                             factory.train(UnitTypeId.SIEGETANK)
 
-    def build_medivacs_if_needed(self):
+    def train_medivacs_if_needed(self):
         # Build medivacs based on ground unit count
         ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
         desired_medivacs = ground_units // 8  # One medivac for every 8 ground units
@@ -803,7 +803,7 @@ class HanBot(BotAI):
                 if self.can_afford(UnitTypeId.MEDIVAC) and self.supply_left > 2:
                     starport.train(UnitTypeId.MEDIVAC)
 
-    def build_ravens_if_needed(self):
+    def train_ravens_if_needed(self):
         # Build Ravens (up to 2)
         current_ravens = self.units(UnitTypeId.RAVEN).amount
         desired_ravens = 2
@@ -815,7 +815,7 @@ class HanBot(BotAI):
                         if self.can_afford(UnitTypeId.RAVEN) and self.supply_left > 2:
                             starport.train(UnitTypeId.RAVEN)
 
-    def build_marines_marauders_if_needed(self):
+    def train_marines_marauders_if_needed(self):
         marine_count = self.units(UnitTypeId.MARINE).amount + self.already_pending(UnitTypeId.MARINE)
         marauder_count = self.units(UnitTypeId.MARAUDER).amount + self.already_pending(UnitTypeId.MARAUDER)
 
@@ -839,10 +839,10 @@ class HanBot(BotAI):
                     barracks.train(UnitTypeId.MARINE)
 
     async def train_military_units(self):
-        self.build_tanks_if_needed()
-        self.build_medivacs_if_needed()
-        self.build_ravens_if_needed()
-        self.build_marines_marauders_if_needed()
+        self.train_tanks_if_needed()
+        self.train_medivacs_if_needed()
+        self.train_ravens_if_needed()
+        self.train_marines_marauders_if_needed()
 
     def should_attack(self):
         # Get our military units
