@@ -93,10 +93,10 @@ class HanBot(BotAI):
     async def manage_production(self):
         # print(f"manage_production")
         await self.build_gas_if_needed()
-        await self.build_factory_if_needed()
-        await self.build_barracks_if_needed()
-        await self.build_starport_if_needed()
-        await self.build_engineering_bay_if_needed()
+        await self.build_structure_if_needed(UnitTypeId.FACTORY)
+        await self.build_structure_if_needed(UnitTypeId.BARRACKS)
+        await self.build_structure_if_needed(UnitTypeId.STARPORT)
+        await self.build_structure_if_needed(UnitTypeId.ENGINEERINGBAY)
         await self.append_addons()
         await self.upgrade_army()
         await self.train_military_units()
@@ -609,27 +609,32 @@ class HanBot(BotAI):
                         worker.build_gas(vg)
                         return
 
-    def get_max_barracks(self):
-        if self.townhalls.ready.amount == 1 and self.get_total_structure_count(UnitTypeId.BARRACKS) < 2:
-            return 1
-        return min(self.workers.amount // 6, 12)
+    async def build_structure_if_needed(self, unit_type):
+        if not self.can_afford(unit_type):
+            return
+        if self.get_total_structure_count(unit_type) >= self.get_max_structure_count(unit_type):
+            return
+        await self.build_structure(unit_type)
+    
+    def get_max_structure_count(self, unit_type):
+        if unit_type == UnitTypeId.BARRACKS:
+            return self.get_max_barracks()
+        if unit_type == UnitTypeId.FACTORY:
+            return self.get_max_factories()
+        if unit_type == UnitTypeId.STARPORT:
+            return self.get_max_starports()
+        return 0
 
-    async def build_barracks_if_needed(self):
-        if not self.can_afford(UnitTypeId.BARRACKS):
+    async def build_structure(self, unit_type):
+        if not self.can_afford(unit_type):
             return
-            
-        total_barracks = self.get_total_structure_count(UnitTypeId.BARRACKS)
-        
-        if total_barracks >= self.get_max_barracks():
-            return
-        
         # Get main base and its position
         cc = self.townhalls.first
         base_pos = cc.position
         
         # Try primary placement method
         pos = await self.find_placement(
-            UnitTypeId.BARRACKS,
+            unit_type,
             near_position=base_pos,
             min_distance=6,
             max_distance=25,
@@ -637,11 +642,11 @@ class HanBot(BotAI):
         )
         
         if pos:
-            print(f"Building barracks at position {pos}")
-            await self.build(UnitTypeId.BARRACKS, near=pos)
+            print(f"Building {unit_type} at position {pos}")
+            await self.build(unit_type, near=pos)
         else:
             # Fallback method 1: Try direct placement
-            print("Fallback: Using direct placement for barracks")
+            print(f"Fallback: Using direct placement for {unit_type}")
             potential_positions = [
                 base_pos.towards(self.game_info.map_center, 8),
                 base_pos.towards(self.game_info.map_center, 12),
@@ -649,139 +654,46 @@ class HanBot(BotAI):
             ]
             
             for fallback_pos in potential_positions:
-                if await self.can_place(UnitTypeId.BARRACKS, fallback_pos):
-                    await self.build(UnitTypeId.BARRACKS, near=fallback_pos)
+                if await self.can_place(unit_type, fallback_pos):
+                    await self.build(unit_type, near=fallback_pos)
                     return
             
             # Fallback method 2: Just try the standard build method near base
-            await self.build(UnitTypeId.BARRACKS, near=base_pos)
+            await self.build(unit_type, near=base_pos)
 
-    async def build_factory_if_needed(self):
-        # Need barracks before factory
+
+    def get_max_barracks(self):
+        if self.townhalls.ready.amount == 1 and self.get_total_structure_count(UnitTypeId.BARRACKS) < 2:
+            return 1
+        return min(self.workers.amount // 6, 12)
+
+    def get_max_factories(self):
         if not self.structures(UnitTypeId.BARRACKS).ready:
-            return
-        
-        if not self.can_afford(UnitTypeId.FACTORY):
-            return
-        
-        if not self.townhalls:
-            return
-        
-        # Get current factory count (including flying factories)
-        total_factories = self.get_total_structure_count(UnitTypeId.FACTORY)
+            return 0
+        if self.get_military_supply() < 10:
+            return 0
+        if self.townhalls.ready.amount <= 2:
+            return 1
+        if self.townhalls.ready.amount <= 3:
+            return 2
+        return 3
 
-        # Always build first factory when we have enough military units
-        if total_factories == 0 and self.get_military_supply() >= 10:
-            # Find placement for factory with addon space
-            pos = await self.find_placement(
-                UnitTypeId.FACTORY,
-                near_position=self.townhalls.first.position,
-                min_distance=6,
-                max_distance=25,
-                addon_space=True
-            )
-            
-            if pos:
-                print(f"Building factory at position {pos}")
-                await self.build(UnitTypeId.FACTORY, near=pos)
-            else:
-                print("Fallback: Using direct placement for factory")
-                # Fallback: build near any barracks
-                barracks = self.structures(UnitTypeId.BARRACKS).ready
-                if barracks:
-                    await self.build(UnitTypeId.FACTORY, near=barracks.random.position.towards(self.game_info.map_center, 7))
-                else:
-                    await self.build(UnitTypeId.FACTORY, near=self.townhalls.first)
-            return
 
-        # Only build second factory when we have a large ground army
-        ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
-        if total_factories == 1 and ground_units >= 30:
-            pos = await self.find_placement(
-                UnitTypeId.FACTORY,
-                near_position=self.townhalls.first.position,
-                min_distance=6,
-                max_distance=25,
-                addon_space=True
-            )
-            
-            if pos:
-                await self.build(UnitTypeId.FACTORY, near=pos)
-            else:
-                # Fallback: build near any barracks
-                barracks = self.structures(UnitTypeId.BARRACKS).ready
-                if barracks:
-                    await self.build(UnitTypeId.FACTORY, near=barracks.random.position.towards(self.game_info.map_center, 7))
-
-    async def build_starport_if_needed(self):
-        # Need at least one factory before starport
+    def get_max_starports(self):
         if not self.structures(UnitTypeId.FACTORY).ready:
-            return
-    
-        if not self.can_afford(UnitTypeId.STARPORT):
-            return
-        
-        if not self.townhalls:
-            return
+            return 0
+        if self.get_military_supply() < 10:
+            return 0
+        return 2
 
-        # Check if we already have starports or one is in progress (including flying)
-        total_starports = self.get_total_structure_count(UnitTypeId.STARPORT)
-        
-        if total_starports >= 2:
-            return
 
-        # Find placement for starport with addon space
-        pos = await self.find_placement(
-            UnitTypeId.STARPORT,
-            near_position=self.townhalls.first.position,
-            min_distance=6,
-            max_distance=25,
-            addon_space=True
-        )
-        
-        if pos:
-            print(f"Building starport at position {pos}")
-            await self.build(UnitTypeId.STARPORT, near=pos)
-        else:
-            print("Fallback: Using direct placement for starport")
-            # Fallback: build near factory or barracks
-            if self.structures(UnitTypeId.FACTORY).ready:
-                await self.build(UnitTypeId.STARPORT, near=self.structures(UnitTypeId.FACTORY).ready.random.position)
-            elif self.structures(UnitTypeId.BARRACKS).ready:
-                await self.build(UnitTypeId.STARPORT, near=self.structures(UnitTypeId.BARRACKS).ready.random.position)
-            else:
-                await self.build(UnitTypeId.STARPORT, near=self.townhalls.first)
+    def get_max_engineering_bays(self):
+        if not self.structures(UnitTypeId.FACTORY).ready:
+            return 0
+        if self.get_military_supply() < 10:
+            return 0
+        return 2
 
-    async def build_engineering_bay_if_needed(self):
-        # Only start upgrades when we have enough units
-        if self.get_military_supply() < 30:
-            return
-        
-        if not self.townhalls:
-            return
-        
-        if self.get_total_structure_count(UnitTypeId.ENGINEERINGBAY) >= 2:
-            return
-        
-        if not self.can_afford(UnitTypeId.ENGINEERINGBAY):
-            return
-
-        # Find placement for engineering bay (no addon needed)
-        pos = await self.find_placement(
-            UnitTypeId.ENGINEERINGBAY,
-            near_position=self.townhalls.first.position,
-            min_distance=5,
-            max_distance=20,
-            addon_space=False
-        )
-        
-        if pos:
-            print(f"Building engineering bay at position {pos}")
-            await self.build(UnitTypeId.ENGINEERINGBAY, near=pos)
-        else:
-            print("Fallback: Using direct placement for engineering bay")
-            # Fallback method for engineering bay
-            await self.build(UnitTypeId.ENGINEERINGBAY, near=self.townhalls.first.position.towards(self.game_info.map_center, 8))
 
     def train_tanks_if_needed(self):
         # Build tanks if we have enough military units and a factory with tech lab
@@ -1119,7 +1031,7 @@ class HanBot(BotAI):
         # Build Engineering Bays if we don't have them and can afford it
         if (len(self.structures(UnitTypeId.ENGINEERINGBAY)) + self.already_pending(UnitTypeId.ENGINEERINGBAY) < 2 and 
             self.can_afford(UnitTypeId.ENGINEERINGBAY)):
-            await self.build_engineering_bay_if_needed()
+            await self.build_structure_if_needed(UnitTypeId.ENGINEERINGBAY)
             return
 
         # Build Factory if we don't have one (required for Armory)
@@ -1127,7 +1039,7 @@ class HanBot(BotAI):
             not self.structures(UnitTypeId.FACTORY) and
             not self.already_pending(UnitTypeId.FACTORY) and
             self.can_afford(UnitTypeId.FACTORY)):
-            await self.build_factory_if_needed()
+            await self.build_structure_if_needed(UnitTypeId.FACTORY)
             return
 
         # Build Armory for level 2 and 3 upgrades
