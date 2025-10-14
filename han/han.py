@@ -458,7 +458,7 @@ class HanBot(BotAI):
                 desired_position = target.position.towards(tank.position, 12)
                 tank.move(desired_position)
         elif tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-            if enemy_distance > 15:  # Enemy moved out of range
+            if enemy_distance > 18:  # Enemy moved out of range
                 tank(AbilityId.UNSIEGE_UNSIEGE)
             # Otherwise stay sieged and let default attack handle it
     
