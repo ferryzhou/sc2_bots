@@ -665,7 +665,13 @@ class HanBot(BotAI):
     def get_max_barracks(self):
         if self.townhalls.ready.amount == 1 and self.get_total_structure_count(UnitTypeId.BARRACKS) < 2:
             return 1
-        return min(self.workers.amount // 6, 12)
+        barracks_by_workers = self.workers.amount // 6
+        maxinum = 12
+        if self.get_max_factories() == 0:
+            maxinum = 3
+        if self.get_max_factories() == 1:
+            maxinum = 6
+        return min(barracks_by_workers, maxinum)
 
     def get_max_factories(self):
         if not self.structures(UnitTypeId.BARRACKS).ready:
