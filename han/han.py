@@ -1302,7 +1302,7 @@ def main():
         [
             Bot(Race.Terran, bot),
 #            Computer(Race.Zerg, Difficulty.CheatInsane)
-            Computer(Race.Protoss, Difficulty.CheatVision)
+            Computer(Race.Protoss, Difficulty.CheatMoney)
         ],
         realtime=False
     )
