@@ -451,14 +451,14 @@ class HanBot(BotAI):
         enemy_distance = target.distance_to(tank)
         
         if tank.type_id == UnitTypeId.SIEGETANK:
-            if enemy_distance < 13:  # Optimal siege range
+            if enemy_distance < 15:  # Optimal siege range
                 tank(AbilityId.SIEGEMODE_SIEGEMODE)
             else:
                 # Move closer while avoiding getting too close
                 desired_position = target.position.towards(tank.position, 12)
                 tank.move(desired_position)
         elif tank.type_id == UnitTypeId.SIEGETANKSIEGED:
-            if enemy_distance > 18:  # Enemy moved out of range
+            if enemy_distance > 20:  # Enemy moved out of range
                 tank(AbilityId.UNSIEGE_UNSIEGE)
             # Otherwise stay sieged and let default attack handle it
     
@@ -589,7 +589,7 @@ class HanBot(BotAI):
         if self.townhalls.ready.amount == 1:
             return 1
         if self.townhalls.ready.amount == 2:
-            return 3
+            return 4
         return self.townhalls.ready.amount * 1.2 + 2
 
     async def build_gas_if_needed(self):
@@ -669,6 +669,8 @@ class HanBot(BotAI):
         maxinum = 12
         if self.get_max_factories() == 0:
             maxinum = 3
+        if self.structures(UnitTypeId.FACTORY).ready.amount == 0:
+            maxinum = 3
         if self.get_max_factories() == 1:
             maxinum = 6
         return min(barracks_by_workers, maxinum)
@@ -676,8 +678,8 @@ class HanBot(BotAI):
     def get_max_factories(self):
         if not self.structures(UnitTypeId.BARRACKS).ready:
             return 0
-        if self.get_military_supply() < 10:
-            return 0
+        #if self.get_military_supply() < 10:
+        #    return 0
         if self.townhalls.ready.amount <= 2:
             return 1
         if self.townhalls.ready.amount <= 3:
@@ -715,7 +717,7 @@ class HanBot(BotAI):
 
     def train_units_if_needed(self, unit_type):
         desired_units = self.get_desired_units(unit_type)
-        # print(f"desired units for {unit_type}: {desired_units}")
+        print(f"desired units for {unit_type}: {desired_units}")
         if desired_units > 0:
             self.train_units(unit_type)
 
@@ -731,10 +733,27 @@ class HanBot(BotAI):
         if unit_type == UnitTypeId.RAVEN:
             self.train_ravens()
 
+    def get_total_units_count(self, unit_type):
+        return self.units(unit_type).amount + self.already_pending(unit_type)
+
+    def get_desired_marines(self):
+        if not self.structures(UnitTypeId.BARRACKS).ready:
+            return 0
+        marine_count = self.get_total_units_count(UnitTypeId.MARINE)
+        marauder_count = self.get_total_units_count(UnitTypeId.MARAUDER)
+        return marauder_count - marine_count + 8
+
+    def get_desired_marauders(self):
+        if not self.structures(UnitTypeId.BARRACKS).ready:
+            return 0
+        marauder_count = self.get_total_units_count(UnitTypeId.MARAUDER)
+        marine_count = self.get_total_units_count(UnitTypeId.MARINE)
+        return marine_count - marauder_count + 2
+   
     def get_desired_tanks(self):
         if not self.structures(UnitTypeId.FACTORY).ready:
             return 0
-        if self.get_military_supply() < 10:
+        if self.get_military_supply() < 5:
             return 0
         return 8
 
@@ -745,22 +764,10 @@ class HanBot(BotAI):
         if self.get_military_supply() < 10:
             return 0
         
-        ground_units = self.units(UnitTypeId.MARINE).amount + self.units(UnitTypeId.MARAUDER).amount
+        ground_units = self.get_total_units_count(UnitTypeId.MARINE) + self.get_total_units_count(UnitTypeId.MARAUDER)
         desired_medivacs = ground_units // 8  # One medivac for every 8 ground units
 
         return desired_medivacs
-
-    def train_tanks(self):
-        for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
-            if factory.has_add_on:
-                if factory.add_on_tag in self.structures(UnitTypeId.FACTORYTECHLAB).tags:
-                    if self.can_afford(UnitTypeId.SIEGETANK) and self.supply_left > 4:
-                        factory.train(UnitTypeId.SIEGETANK)
-
-    def train_medivacs(self):
-        for starport in self.structures(UnitTypeId.STARPORT).ready.idle:
-            if self.can_afford(UnitTypeId.MEDIVAC) and self.supply_left > 2:
-                starport.train(UnitTypeId.MEDIVAC)
 
     def get_desired_ravens(self):
         if not self.structures(UnitTypeId.STARPORT).ready:
@@ -769,46 +776,46 @@ class HanBot(BotAI):
             return 0
         return 2
 
+    def train_tanks(self):
+        for factory in self.structures(UnitTypeId.FACTORY).ready.idle:
+            if factory.has_add_on:
+                if factory.add_on_tag in self.structures(UnitTypeId.FACTORYTECHLAB).tags:
+                    if self.can_afford(UnitTypeId.SIEGETANK):
+                        factory.train(UnitTypeId.SIEGETANK)
+                    else:
+                        print(f"cannot afford tanks")
+
+    def train_medivacs(self):
+        for starport in self.structures(UnitTypeId.STARPORT).ready.idle:
+            if self.can_afford(UnitTypeId.MEDIVAC):
+                starport.train(UnitTypeId.MEDIVAC)
+
     def train_ravens(self):
         for starport in self.structures(UnitTypeId.STARPORT).ready.idle:
             if starport.has_add_on:
                 if starport.add_on_tag in self.structures(UnitTypeId.STARPORTTECHLAB).tags:
-                    if self.can_afford(UnitTypeId.RAVEN) and self.supply_left > 2:
+                    if self.can_afford(UnitTypeId.RAVEN):
                         starport.train(UnitTypeId.RAVEN)
 
-    def get_desired_marines(self):
-        if not self.structures(UnitTypeId.BARRACKS).ready:
-            return 0
-        marine_count = self.units(UnitTypeId.MARINE).amount + self.already_pending(UnitTypeId.MARINE)
-        marauder_count = self.units(UnitTypeId.MARAUDER).amount + self.already_pending(UnitTypeId.MARAUDER)
-        return marauder_count - marine_count + 8
-
-    def get_desired_marauders(self):
-        if not self.structures(UnitTypeId.BARRACKS).ready:
-            return 0
-        marauder_count = self.units(UnitTypeId.MARAUDER).amount + self.already_pending(UnitTypeId.MARAUDER)
-        marine_count = self.units(UnitTypeId.MARINE).amount + self.already_pending(UnitTypeId.MARINE)
-        return marine_count - marauder_count
-   
     def train_marines(self):
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
             if barracks.has_add_on:
                 if barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSTECHLAB).tags:
-                    if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
+                    if self.can_afford(UnitTypeId.MARINE):
                         barracks.train(UnitTypeId.MARINE)
                 elif barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSREACTOR).tags:
                     for _ in range(2):
-                        if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
+                        if self.can_afford(UnitTypeId.MARINE):
                             barracks.train(UnitTypeId.MARINE)
             else:
-                if self.can_afford(UnitTypeId.MARINE) and self.supply_left > 1:
+                if self.can_afford(UnitTypeId.MARINE):
                     barracks.train(UnitTypeId.MARINE)
 
     def train_marauders(self):
         for barracks in self.structures(UnitTypeId.BARRACKS).ready.idle:
             if barracks.has_add_on:
                 if barracks.add_on_tag in self.structures(UnitTypeId.BARRACKSTECHLAB).tags:
-                    if self.can_afford(UnitTypeId.MARAUDER) and self.supply_left > 2:
+                    if self.can_afford(UnitTypeId.MARAUDER):
                         barracks.train(UnitTypeId.MARAUDER)
 
     async def train_military_units(self):
