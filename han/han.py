@@ -29,7 +29,7 @@ class HanBot(BotAI):
         await self.manage_economy()
         if self.waiting_for_base_expansion:
             return
-        if iteration % 10 == 0:  # Every 10 iterations
+        if iteration % 15 == 0:  # Every 10 iterations
             print(f"iteration {iteration}")
             await self.manage_production()
 
@@ -131,7 +131,7 @@ class HanBot(BotAI):
             await self.rally(military_units, tanks)
             return
 
-        print(f"attacking")
+        # print(f"attacking")
         await self.execute_attack(military_units, tanks)
 
     def detected_cheese(self):
@@ -455,7 +455,7 @@ class HanBot(BotAI):
                 tank(AbilityId.SIEGEMODE_SIEGEMODE)
             else:
                 # Move closer while avoiding getting too close
-                desired_position = target.position.towards(tank.position, 12)
+                desired_position = target.position.towards(tank.position, 14)
                 tank.move(desired_position)
         elif tank.type_id == UnitTypeId.SIEGETANKSIEGED:
             if enemy_distance > 20:  # Enemy moved out of range
