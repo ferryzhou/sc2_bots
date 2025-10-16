@@ -21,12 +21,15 @@ class HanBot(BotAI):
         self.historical_retreating_units = {}  # Initialize retreating_units dictionary
         self.defender_worker_tags = set()
         self.waiting_for_base_expansion = False
+        self.scout_tags = set()  # Track units assigned to scouting
+        self.scouted_locations = {}  # Track when locations were last scouted (location -> time)
         # Any other initialization you need
     
     async def on_step(self, iteration):
         await self.manage_army()
         await self.build_supply_depot_if_needed()
         await self.manage_economy()
+        await self.manage_scouting()
         if self.waiting_for_base_expansion:
             return
         if iteration % 15 == 0:  # Every 10 iterations
@@ -108,6 +111,11 @@ class HanBot(BotAI):
         medivacs = self.units(UnitTypeId.MEDIVAC)
         ravens = self.units(UnitTypeId.RAVEN)
         
+        # Filter out scouts from army management
+        military_units = military_units.filter(lambda u: u.tag not in self.scout_tags)
+        medivacs = medivacs.filter(lambda u: u.tag not in self.scout_tags)
+        ravens = ravens.filter(lambda u: u.tag not in self.scout_tags)
+        
         await self.manage_medivacs(medivacs, military_units)
         await self.manage_ravens(ravens, military_units)
 
@@ -133,6 +141,104 @@ class HanBot(BotAI):
 
         # print(f"attacking")
         await self.execute_attack(military_units, tanks)
+
+    async def manage_scouting(self):
+        """Manage scouting in late game to gather intelligence on enemy positions and expansions."""
+        # Only scout in late game (after 5 minutes or when we have sufficient army)
+        #if self.time < 300 and self.get_military_supply() < 30:
+        #    return
+        
+        # Determine desired number of scouts based on game time
+        desired_scouts = 1 if self.time < 600 else 2  # 1 scout before 10 min, 2 after
+        
+        # Clean up scout tags for dead units
+        self.scout_tags = {tag for tag in self.scout_tags if self.units.find_by_tag(tag)}
+        
+        current_scouts = len(self.scout_tags)
+        
+        # Assign new scouts if needed
+        if current_scouts < desired_scouts:
+            # Prefer Medivacs or Ravens for scouting (they can fly)
+            potential_scouts = (
+                self.units(UnitTypeId.MEDIVAC).idle | 
+                self.units(UnitTypeId.RAVEN).idle
+            ).filter(lambda u: u.tag not in self.scout_tags)
+            
+            # If no flying units available, use Marines
+            if not potential_scouts:
+                marines = self.units(UnitTypeId.MARINE).filter(
+                    lambda u: u.tag not in self.scout_tags and u.tag not in self.retreating_units
+                )
+                # Only take a marine if we have plenty
+                if len(marines) > 15:
+                    potential_scouts = marines.take(1)
+            
+            # Assign scouts
+            for scout in potential_scouts.take(desired_scouts - current_scouts):
+                self.scout_tags.add(scout.tag)
+                print(f"Assigned {scout.type_id} as scout")
+        
+        # Manage existing scouts
+        for scout_tag in list(self.scout_tags):
+            scout = self.units.find_by_tag(scout_tag)
+            if not scout:
+                self.scout_tags.remove(scout_tag)
+                continue
+            
+            # If scout is under attack and low health, retreat it
+            if scout.health_percentage < 0.3:
+                nearby_enemies = self.enemy_units.filter(lambda e: e.distance_to(scout) < 10)
+                if nearby_enemies:
+                    retreat_pos = scout.position.towards(self.start_location, 10)
+                    scout.move(retreat_pos)
+                    continue
+            
+            # Get scouting targets
+            scout_targets = self.get_scout_targets()
+            
+            if scout_targets:
+                # Find the nearest unscouted or least recently scouted location
+                target = min(
+                    scout_targets,
+                    key=lambda loc: (
+                        self.scouted_locations.get(loc, 0),  # Prioritize never-scouted locations
+                        scout.distance_to(loc)  # Then by distance
+                    )
+                )
+                
+                # Move scout to target
+                if scout.distance_to(target) > 3:
+                    scout.move(target)
+                else:
+                    # Mark location as scouted
+                    self.scouted_locations[target] = self.time
+                    print(f"Scout reached {target}, marking as scouted")
+    
+    def get_scout_targets(self):
+        """Get list of locations to scout (enemy expansions and key map locations)."""
+        targets = []
+        
+        # Add enemy start location
+        if self.enemy_start_locations:
+            targets.append(self.enemy_start_locations[0])
+        
+        # Add all expansion locations (to find enemy expansions)
+        for exp_loc in self.expansion_locations_list:
+            # Skip our own bases
+            if not any(th.distance_to(exp_loc) < 10 for th in self.townhalls):
+                targets.append(exp_loc)
+        
+        # Add map center for general scouting
+        targets.append(self.game_info.map_center)
+        
+        # Filter out recently scouted locations (within last 2 minutes)
+        current_time = self.time
+        targets = [
+            loc for loc in targets 
+            if current_time - self.scouted_locations.get(loc, 0) > 120
+        ]
+        
+        return targets
 
     def detected_cheese(self):
         if self.time >= 180: # First 3 minutes
