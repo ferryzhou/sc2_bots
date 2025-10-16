@@ -135,7 +135,7 @@ class HanBot(BotAI):
         await self.execute_attack(military_units, tanks)
 
     def detected_cheese(self):
-        if self.time >= 300: # First 5 minutes
+        if self.time >= 180: # First 3 minutes
             return False
         
         th = self.start_location
@@ -1364,8 +1364,8 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-#            Computer(Race.Zerg, Difficulty.CheatInsane)
-            Computer(Race.Protoss, Difficulty.CheatMoney)
+            Computer(Race.Zerg, Difficulty.CheatInsane)
+#            Computer(Race.Protoss, Difficulty.CheatInsane)
         ],
         realtime=False
     )
