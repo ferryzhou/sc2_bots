@@ -1123,7 +1123,7 @@ class HanBot(BotAI):
             return False
         
         # Check if we're already expanding for equal or more than 2 bases
-        if self.already_pending(UnitTypeId.COMMANDCENTER) >= 2:
+        if self.already_pending(UnitTypeId.COMMANDCENTER) >= 1:
             return False
 
         # Check if current bases are saturated (16 workers per base is optimal)
@@ -1137,7 +1137,7 @@ class HanBot(BotAI):
                 continue
             
             # Check worker saturation for viable bases
-            if len(self.workers.closer_than(10, th)) < 16:
+            if len(self.workers.closer_than(10, th)) < 15:
                 return False  # Don't expand if current viable bases aren't almost fully utilized
             
         return True
@@ -1475,8 +1475,8 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-            Computer(Race.Zerg, Difficulty.CheatInsane)
-#            Computer(Race.Protoss, Difficulty.CheatInsane)
+#            Computer(Race.Zerg, Difficulty.CheatInsane)
+            Computer(Race.Protoss, Difficulty.CheatInsane)
         ],
         realtime=False
     )
