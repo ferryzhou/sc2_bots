@@ -32,9 +32,11 @@ class HanBot(BotAI):
         await self.manage_scouting()
         if self.waiting_for_base_expansion:
             return
+        await self.manage_production()
+        
         if iteration % 15 == 0:  # Every 10 iterations
             print(f"iteration {iteration}")
-            await self.manage_production()
+            await self.train_military_units()
 
     async def manage_economy(self):
         await self.distribute_workers()
@@ -102,7 +104,6 @@ class HanBot(BotAI):
         await self.build_structure_if_needed(UnitTypeId.ENGINEERINGBAY)
         await self.append_addons()
         await self.upgrade_army()
-        await self.train_military_units()
 
     async def manage_army(self):
         # Get all military units
@@ -543,6 +544,10 @@ class HanBot(BotAI):
         # Handle tanks with similar priority
         for tank in tanks:
             target = enemy_start
+            # Find nearby enemies including offensive structures
+            nearby_threats = enemy_threats.filter(
+                lambda enemy: enemy.distance_to(tank) < 25
+            )
             if nearby_threats:
                 target = nearby_threats.closest_to(tank)
             elif other_structures:
