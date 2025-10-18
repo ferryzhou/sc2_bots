@@ -1481,7 +1481,8 @@ def main():
         [
             Bot(Race.Terran, bot),
 #            Computer(Race.Zerg, Difficulty.CheatInsane)
-            Computer(Race.Protoss, Difficulty.CheatInsane)
+#            Computer(Race.Protoss, Difficulty.CheatInsane)
+            Computer(Race.Terran, Difficulty.CheatVision)
         ],
         realtime=False
     )
