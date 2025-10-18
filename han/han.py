@@ -1291,12 +1291,15 @@ class HanBot(BotAI):
         # Create a list of potential positions in a spiral pattern
         positions = []
         for distance in range(7, max_distance, placement_step):
-            for angle in range(0, 360, 20):  # Check every 20 degrees for more options
+            for angle in range(0, 360, 15):  # Check every 20 degrees for more options
                 radians = math.radians(angle)
                 x = near_position.x + (distance * math.cos(radians))
                 y = near_position.y + (distance * math.sin(radians))
                 positions.append(Point2((x, y)))
-        
+
+        # remove positions that are too close to all potential expansion points
+        positions = [pos for pos in positions if all(pos.distance_to(expansion_pos) > 10 for expansion_pos in self.expansion_locations_list)]
+
         # Shuffle positions for more varied building placement
         random.shuffle(positions)
         
