@@ -23,6 +23,7 @@ class HanBot(BotAI):
         self.waiting_for_base_expansion = False
         self.scout_tags = set()  # Track units assigned to scouting
         self.scouted_locations = {}  # Track when locations were last scouted (location -> time)
+        self.base_is_under_attack = False
         # Any other initialization you need
     
     async def on_step(self, iteration):
@@ -129,6 +130,7 @@ class HanBot(BotAI):
             return
         
         # Normal army management for mid/late game
+        self.base_is_under_attack = False
         if self.townhalls:
             for base in self.townhalls:
                 nearby_enemies = self.enemy_units.filter(
@@ -136,7 +138,8 @@ class HanBot(BotAI):
                 )
                 if nearby_enemies:
                     print(f"Defending against enemies near base!")
-                    await self.execute_attack(military_units, tanks)
+                    self.base_is_under_attack = True
+                    await self.execute_attack(military_units, tanks, nearby_enemies)
                     return
 
         if not self.should_attack():
@@ -451,7 +454,7 @@ class HanBot(BotAI):
                 else:  # Move to rally point
                     tank.move(rally_point)
 
-    async def execute_attack(self, military_units, tanks):
+    async def execute_attack(self, military_units, tanks, nearby_enemies = None):
         """Execute attack logic with retreat time limits."""
         current_time = time.time()
         
@@ -541,6 +544,9 @@ class HanBot(BotAI):
                 if other_structures:
                     closest_structure = other_structures.closest_to(unit)
                     unit.attack(closest_structure)
+                # no nearby threats or structures if base is under attack, defend base
+                elif self.base_is_under_attack and nearby_enemies is not None:
+                    unit.attack(nearby_enemies.closest_to(unit))
                 else:
                     unit.attack(enemy_start)
         
@@ -825,7 +831,7 @@ class HanBot(BotAI):
             return 0
         if not self.structures(UnitTypeId.ENGINEERINGBAY).ready:
             return 0
-        if self.get_military_supply() < 30:
+        if self.get_military_supply() < 40:
             return 0
         return 1
 
@@ -1461,9 +1467,9 @@ def main():
         maps.get(maps_pool[0]),
         [
             Bot(Race.Terran, bot),
-#            Computer(Race.Zerg, Difficulty.CheatInsane)
+            Computer(Race.Zerg, Difficulty.CheatInsane)
 #            Computer(Race.Protoss, Difficulty.CheatInsane)
-            Computer(Race.Terran, Difficulty.CheatVision)
+#            Computer(Race.Terran, Difficulty.CheatVision)
         ],
         realtime=False
     )
