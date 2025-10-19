@@ -104,6 +104,7 @@ class HanBot(BotAI):
         await self.build_structure_if_needed(UnitTypeId.BARRACKS)
         await self.build_structure_if_needed(UnitTypeId.STARPORT)
         await self.build_structure_if_needed(UnitTypeId.ENGINEERINGBAY)
+        await self.build_structure_if_needed(UnitTypeId.ARMORY)
         await self.append_addons()
         await self.upgrade_army()
 
@@ -736,6 +737,10 @@ class HanBot(BotAI):
             return self.get_max_factories()
         if unit_type == UnitTypeId.STARPORT:
             return self.get_max_starports()
+        if unit_type == UnitTypeId.ENGINEERINGBAY:
+            return self.get_max_engineering_bays()
+        if unit_type == UnitTypeId.ARMORY:
+            return self.get_max_armory()
         return 0
 
     async def build_structure(self, unit_type):
@@ -811,9 +816,18 @@ class HanBot(BotAI):
     def get_max_engineering_bays(self):
         if not self.structures(UnitTypeId.FACTORY).ready:
             return 0
-        if self.get_military_supply() < 10:
+        if self.get_military_supply() < 30:
             return 0
         return 2
+
+    def get_max_armory(self):
+        if not self.structures(UnitTypeId.FACTORY).ready:
+            return 0
+        if not self.structures(UnitTypeId.ENGINEERINGBAY).ready:
+            return 0
+        if self.get_military_supply() < 30:
+            return 0
+        return 1
 
     def get_desired_units(self, unit_type):
         if unit_type == UnitTypeId.MARINE:
@@ -1206,45 +1220,6 @@ class HanBot(BotAI):
                 
 
     async def upgrade_army(self):
-        # Only start upgrades when we have enough units
-        if self.get_military_supply() < 30:
-            return
-
-        # Build Engineering Bays if we don't have them and can afford it
-        if (len(self.structures(UnitTypeId.ENGINEERINGBAY)) + self.already_pending(UnitTypeId.ENGINEERINGBAY) < 2 and 
-            self.can_afford(UnitTypeId.ENGINEERINGBAY)):
-            await self.build_structure_if_needed(UnitTypeId.ENGINEERINGBAY)
-            return
-
-        # Build Factory if we don't have one (required for Armory)
-        if (self.structures(UnitTypeId.BARRACKS).ready and
-            not self.structures(UnitTypeId.FACTORY) and
-            not self.already_pending(UnitTypeId.FACTORY) and
-            self.can_afford(UnitTypeId.FACTORY)):
-            await self.build_structure_if_needed(UnitTypeId.FACTORY)
-            return
-
-        # Build Armory for level 2 and 3 upgrades
-        if (self.structures(UnitTypeId.ENGINEERINGBAY).ready and 
-            self.structures(UnitTypeId.FACTORY).ready and  # Factory must be ready
-            not self.structures(UnitTypeId.ARMORY) and 
-            not self.already_pending(UnitTypeId.ARMORY) and 
-            self.can_afford(UnitTypeId.ARMORY)):
-            
-            # Find placement for armory (no addon needed)
-            if self.townhalls:
-                pos = await self.find_placement(
-                    UnitTypeId.ARMORY,
-                    near_position=self.townhalls.first.position,
-                    min_distance=5,
-                    max_distance=20,
-                    addon_space=False
-                )
-                
-                if pos:
-                    await self.build(UnitTypeId.ARMORY, near=pos)
-            return
-
         # Get Engineering Bays
         ebays = self.structures(UnitTypeId.ENGINEERINGBAY).ready
         if not ebays:
@@ -1255,19 +1230,25 @@ class HanBot(BotAI):
         # Use first ebay for weapons
         if len(ebays) >= 1:
             if not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYWEAPONSLEVEL1):
+                print(f"researching weapons level 1")
                 ebays[0].research(UpgradeId.TERRANINFANTRYWEAPONSLEVEL1)
             elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYWEAPONSLEVEL2):
+                print(f"researching weapons level 2")
                 ebays[0].research(UpgradeId.TERRANINFANTRYWEAPONSLEVEL2)
             elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYWEAPONSLEVEL3):
+                print(f"researching weapons level 3")
                 ebays[0].research(UpgradeId.TERRANINFANTRYWEAPONSLEVEL3)
 
         # Use second ebay for armor
         if len(ebays) >= 2:
             if not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYARMORSLEVEL1):
+                print(f"researching weapons level 1")
                 ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL1)
             elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYARMORSLEVEL2):
+                print(f"researching weapons level 2")
                 ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL2)
             elif has_armory and not self.already_pending_upgrade(UpgradeId.TERRANINFANTRYARMORSLEVEL3):
+                print(f"researching weapons level 3")
                 ebays[1].research(UpgradeId.TERRANINFANTRYARMORSLEVEL3)
 
     async def find_placement(self, building_type, near_position, min_distance=7, max_distance=30, addon_space=False, placement_step=2):
