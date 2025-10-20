@@ -24,6 +24,7 @@ class HanBot(BotAI):
         self.scout_tags = set()  # Track units assigned to scouting
         self.scouted_locations = {}  # Track when locations were last scouted (location -> time)
         self.base_is_under_attack = False
+        print(f"HanBot V2.0 initialized")
         # Any other initialization you need
     
     async def on_step(self, iteration):
@@ -36,7 +37,6 @@ class HanBot(BotAI):
         await self.manage_production()
         
         if iteration % 15 == 0:
-            print(f"iteration {iteration}")
             await self.train_military_units()
 
     async def manage_economy(self):
