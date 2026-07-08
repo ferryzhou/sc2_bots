@@ -28,3 +28,6 @@ models/
 
 # Replays
 replays/
+
+# ares-sc2 runtime data (build winrate history, logs)
+phoenix/data/

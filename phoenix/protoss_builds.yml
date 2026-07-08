@@ -1,0 +1,49 @@
+# PhoenixBot opening builds, executed by the ares build runner.
+# After the opening completes, macro controllers in bot/main.py take over.
+# Docs: https://aressc2.github.io/ares-sc2/tutorials/build_runner.html
+
+UseData: True
+BuildSelection: WinrateBased
+MinGamesWinrateBased: 3
+
+BuildChoices:
+    # active when Debug: True in config.yml
+    test_123:
+        BotName: Test
+        Cycle:
+            - GateExpand
+
+    Protoss:
+        BotName: ProtossRace
+        Cycle:
+            - GateExpand
+
+    Random:
+        BotName: RandomRace
+        Cycle:
+            - GateExpand
+
+    Terran:
+        BotName: TerranRace
+        Cycle:
+            - GateExpand
+
+    Zerg:
+        BotName: ZergRace
+        Cycle:
+            - GateExpand
+
+Builds:
+    GateExpand:
+        ConstantWorkerProductionTill: 44
+        OpeningBuildOrder:
+            - 14 pylon @ ramp
+            - 15 gateway
+            - 16 gas
+            - 17 gas
+            - 19 core
+            - 20 expand
+            - 20 pylon
+            - 21 chrono @ nexus
+            - 22 gate
+            - 23 gate
