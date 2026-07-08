@@ -1,0 +1,192 @@
+"""Run a gauntlet of headless games and maintain a persistent scoreboard.
+
+Each game runs in its own subprocess (one SC2 instance per game) via
+play_one.py. Results append to results/history.jsonl so progress is tracked
+across sessions, and a per-matchup summary prints at the end.
+
+Examples:
+    python harness/gauntlet.py --games 6 --concurrency 2
+    python harness/gauntlet.py --games 12 --difficulties CheatVision,CheatInsane
+    python harness/gauntlet.py --summary-only          # re-print scoreboard
+"""
+
+import argparse
+import itertools
+import json
+import random
+import subprocess
+import sys
+import tempfile
+import time
+from collections import defaultdict
+from datetime import datetime
+from os import environ
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+PLAY_ONE = REPO_ROOT / "harness" / "play_one.py"
+RESULTS_DIR = REPO_ROOT / "results"
+HISTORY = RESULTS_DIR / "history.jsonl"
+
+WIN, LOSS, TIE = "Victory", "Defeat", "Tie"
+
+
+def git_sha() -> str:
+    try:
+        return subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except Exception:  # noqa: BLE001
+        return "unknown"
+
+
+def available_maps() -> list[str]:
+    sc2_path = Path(environ.get("SC2PATH", Path.home() / "StarCraftII"))
+    return sorted(p.stem for p in (sc2_path / "Maps").glob("*.SC2Map"))
+
+
+def build_matchups(args) -> list[dict]:
+    races = args.races.split(",")
+    difficulties = args.difficulties.split(",")
+    maps_pool = args.maps.split(",") if args.maps else available_maps()
+    if not maps_pool:
+        sys.exit("No maps found - run scripts/setup_env.sh first")
+
+    combos = itertools.cycle(itertools.product(races, difficulties))
+    rng = random.Random(args.seed)
+    return [
+        {
+            "race": race,
+            "difficulty": difficulty,
+            "map": rng.choice(maps_pool),
+        }
+        for race, difficulty in itertools.islice(combos, args.games)
+    ]
+
+
+def play(matchup: dict, wall_timeout: int) -> dict:
+    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as tf:
+        result_file = tf.name
+    cmd = [
+        sys.executable,
+        str(PLAY_ONE),
+        "--map", matchup["map"],
+        "--race", matchup["race"],
+        "--difficulty", matchup["difficulty"],
+        "--result-file", result_file,
+    ]
+    record = dict(matchup)
+    try:
+        proc = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=wall_timeout
+        )
+        payload = Path(result_file).read_text().strip()
+        if payload:
+            record = json.loads(payload)
+        else:
+            record["result"] = "Error"
+            record["error"] = (proc.stderr or proc.stdout)[-800:]
+    except subprocess.TimeoutExpired:
+        record["result"] = "Error"
+        record["error"] = f"wall timeout after {wall_timeout}s"
+    except Exception as exc:  # noqa: BLE001
+        record["result"] = "Error"
+        record["error"] = f"{type(exc).__name__}: {exc}"
+    finally:
+        Path(result_file).unlink(missing_ok=True)
+    return record
+
+
+def outcome_char(result: str) -> str:
+    return {WIN: "W", LOSS: "L", TIE: "T"}.get(result, "E")
+
+
+def print_summary(records: list[dict], title: str) -> None:
+    by_matchup: dict[tuple, list[str]] = defaultdict(list)
+    for r in records:
+        key = (r.get("opponent_race", r.get("race")), r.get("difficulty"))
+        by_matchup[key].append(r.get("result", "Error"))
+
+    print(f"\n=== {title} ===")
+    print(f"{'opponent':<12} {'difficulty':<14} {'games':>5} {'wins':>5} "
+          f"{'winrate':>8}  record")
+    total_games = total_wins = 0
+    for (race, diff), results in sorted(by_matchup.items()):
+        wins = results.count(WIN)
+        total_games += len(results)
+        total_wins += wins
+        chars = "".join(outcome_char(r) for r in results)
+        print(f"{race:<12} {diff:<14} {len(results):>5} {wins:>5} "
+              f"{wins / len(results):>7.0%}  {chars}")
+    if total_games:
+        print(f"{'TOTAL':<12} {'':<14} {total_games:>5} {total_wins:>5} "
+              f"{total_wins / total_games:>7.0%}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--games", type=int, default=6)
+    parser.add_argument("--concurrency", type=int, default=2)
+    parser.add_argument("--races", default="zerg,terran,protoss")
+    parser.add_argument("--difficulties", default="CheatVision")
+    parser.add_argument("--maps", default=None, help="comma-separated, default: all installed")
+    parser.add_argument("--wall-timeout", type=int, default=1800,
+                        help="max wall-clock seconds per game")
+    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--summary-only", action="store_true",
+                        help="print scoreboard from results/history.jsonl and exit")
+    args = parser.parse_args()
+
+    if args.summary_only:
+        if not HISTORY.is_file():
+            sys.exit(f"No history at {HISTORY}")
+        records = [json.loads(line) for line in HISTORY.read_text().splitlines()]
+        print_summary(records, f"All-time scoreboard ({HISTORY})")
+        return
+
+    matchups = build_matchups(args)
+    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+    sha = git_sha()
+    print(f"Gauntlet {run_id} @ {sha}: {len(matchups)} games, "
+          f"concurrency {args.concurrency}")
+
+    RESULTS_DIR.mkdir(exist_ok=True)
+    records: list[dict] = []
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    start = time.time()
+    with ThreadPoolExecutor(max_workers=args.concurrency) as pool:
+        futures = {
+            pool.submit(play, m, args.wall_timeout): i
+            for i, m in enumerate(matchups)
+        }
+        for future in as_completed(futures):
+            record = future.result()
+            record["run_id"] = run_id
+            record["git_sha"] = sha
+            records.append(record)
+            with open(HISTORY, "a") as f:
+                f.write(json.dumps(record) + "\n")
+            n = len(records)
+            print(f"[{n}/{len(matchups)}] {record.get('result', '?'):<8} "
+                  f"vs {record.get('opponent_race', '?'):<8} "
+                  f"{record.get('difficulty', '?'):<13} "
+                  f"on {record.get('map', '?'):<22} "
+                  f"({record.get('game_time', '?')}s game, "
+                  f"{record.get('wall_seconds', '?')}s wall)")
+            if record.get("result") == "Error":
+                print(f"    error: {record.get('error', '?')[:200]}")
+
+    print(f"\nWall time: {time.time() - start:.0f}s")
+    print_summary(records, f"Run {run_id}")
+
+    all_records = [json.loads(line) for line in HISTORY.read_text().splitlines()]
+    print_summary(all_records, "All-time scoreboard")
+
+
+if __name__ == "__main__":
+    main()
