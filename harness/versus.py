@@ -115,16 +115,22 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
             their_cmd = [*opp_cmd, "--GamePort", str(ctrl_b._process._port),
                          "--OpponentId", "PhoenixBot", *common]
 
+            log_dir = REPO_ROOT / "results" / "versus_logs"
+            log_dir.mkdir(parents=True, exist_ok=True)
+            stamp = datetime.now().strftime("%H%M%S")
+            opp_log = open(log_dir / f"{opponent['name']}_{stamp}.log", "wb")
+
             ours = await asyncio.create_subprocess_exec(
                 *our_cmd, cwd=BOT_DIR,
                 stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
             theirs = await asyncio.create_subprocess_exec(
                 *their_cmd, cwd=opp_cwd,
-                stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL)
+                stdout=opp_log, stderr=asyncio.subprocess.STDOUT)
 
             try:
                 out, _ = await asyncio.wait_for(ours.communicate(), timeout=timeout)
                 text = out.decode(errors="replace")
+                (log_dir / f"PhoenixBot_{stamp}.log").write_text(text)
                 m = re.search(r"Result\.(\w+)", text)
                 record["result"] = m.group(1) if m else "Unknown"
                 if record["result"] == "Unknown" and ours.returncode != 0:
@@ -138,6 +144,7 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 if theirs.returncode is None:
                     theirs.kill()
                 await theirs.wait()
+                opp_log.close()
 
     record["wall_seconds"] = round(time.time() - wall_start, 1)
     return record
