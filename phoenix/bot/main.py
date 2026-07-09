@@ -14,6 +14,8 @@ from itertools import cycle
 from typing import Optional
 
 import numpy as np
+
+import bot.compat  # noqa: F401 - 4.10 linux client compatibility patches
 from ares import AresBot
 from ares.behaviors.combat import CombatManeuver
 from ares.behaviors.combat.individual import (
