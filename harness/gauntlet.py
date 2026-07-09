@@ -27,6 +27,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 PLAY_ONE = REPO_ROOT / "harness" / "play_one.py"
 RESULTS_DIR = REPO_ROOT / "results"
 HISTORY = RESULTS_DIR / "history.jsonl"
+# maps verified compatible with ares + the 4.10 linux client (see README)
+MAP_POOL_FILE = REPO_ROOT / "harness" / "map_pool.txt"
 
 WIN, LOSS, TIE = "Victory", "Defeat", "Tie"
 
@@ -46,7 +48,13 @@ def git_sha() -> str:
 
 def available_maps() -> list[str]:
     sc2_path = Path(environ.get("SC2PATH", Path.home() / "StarCraftII"))
-    return sorted(p.stem for p in (sc2_path / "Maps").glob("*.SC2Map"))
+    installed = sorted(p.stem for p in (sc2_path / "Maps").glob("*.SC2Map"))
+    if MAP_POOL_FILE.is_file():
+        verified = MAP_POOL_FILE.read_text().split()
+        pool = [m for m in verified if m in installed]
+        if pool:
+            return pool
+    return installed
 
 
 def build_matchups(args) -> list[dict]:

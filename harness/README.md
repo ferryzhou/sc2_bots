@@ -33,6 +33,16 @@ $VENV/bin/python harness/gauntlet.py --summary-only
 Replays land in `phoenix/replays/harness/` (gitignored). Loss replays are the
 input for replay-based loss analysis (`analysis/sc2reader_analyzer.py`).
 
+## Map pool
+
+`map_pool.txt` lists maps verified to work with ares-sc2 on the 4.10 Linux
+client (some older map-pack files crash ares' building-placement solver at
+game start, spawn-dependently). The gauntlet defaults to this pool when the
+file exists; pass `--maps` to override. Re-validate after installing new map
+packs by probing each map with a few short games
+(`play_one.py --game-time-limit 8` — a placement crash shows up as an
+instant Defeat with `game_time` 0).
+
 ## Difficulty ladder
 
 Built-in AI tiers, roughly in order: `VeryHard` < `CheatVision` <
