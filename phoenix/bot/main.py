@@ -48,11 +48,13 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 # Army composition consumed by SpawnController / ProductionController.
-# Immortals get top priority (ProductionController techs to robo for them);
-# they fix pure-stalker armies trading badly into armored deathballs.
+# NOTE: an immortal-heavy variant (35% immortal priority 0) was tried and
+# REGRESSED vs CheatInsane (7-5 vs 11-1, PvP 0-4): robo investment diluted
+# army supply at the timings the enemy attacks. Revisit composition changes
+# only with replay-driven loss analysis. See results/history.jsonl
+# run 20260709_022501.
 ARMY_COMP: dict[UnitID, dict] = {
-    UnitID.IMMORTAL: {"proportion": 0.35, "priority": 0},
-    UnitID.STALKER: {"proportion": 0.65, "priority": 1},
+    UnitID.STALKER: {"proportion": 1.0, "priority": 0},
 }
 
 DESIRED_UPGRADES: list[UpgradeId] = [
@@ -231,18 +233,6 @@ class PhoenixBot(AresBot):
 
                 enemy_target: Unit = cy_pick_enemy_target(all_close)
                 if unit.shield_percentage < 0.3:
-                    # blink out first if available, then run on the grid
-                    if (
-                        unit.type_id == UnitID.STALKER
-                        and UpgradeId.BLINKTECH in self.state.upgrades
-                    ):
-                        maneuver.add(
-                            UseAbility(
-                                AbilityId.EFFECT_BLINK_STALKER,
-                                unit,
-                                unit.position.towards(self.start_location, 8.0),
-                            )
-                        )
                     maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
                 else:
                     maneuver.add(
