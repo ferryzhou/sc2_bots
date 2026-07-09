@@ -227,7 +227,11 @@ class PhoenixBot(AresBot):
                     BuildWorkers(to_count=min(66, 22 * len(self.townhalls)))
                 )
                 macro_plan.add(SpawnController(comp))
-                if self.time > UPGRADES_AFTER:
+                # upgrades only once we're stable: past the rush window AND
+                # holding a real army (a 5:00 forge while defending was a
+                # second death spiral in the Chance loss analysis)
+                army_supply = self.supply_used - self.supply_workers
+                if self.time > UPGRADES_AFTER and army_supply >= 16:
                     macro_plan.add(
                         UpgradeController(
                             upgrade_list=DESIRED_UPGRADES,
