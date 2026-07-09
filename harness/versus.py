@@ -34,10 +34,51 @@ PY312 = environ.get("LADDER_PYTHON", "/root/venv312/bin/python")
 
 sys.path.insert(0, str(BOT_DIR))
 
+from aiohttp import WSMsgType, web
 from sc2 import maps
 from sc2.data import PlayerType, Race
 from sc2.player import AbstractPlayer
 from sc2.sc2process import SC2Process
+
+
+def free_port() -> int:
+    s = socket.socket()
+    s.bind(("127.0.0.1", 0))
+    port = s.getsockname()[1]
+    s.close()
+    return port
+
+
+async def start_relay(sc2_ws, port: int) -> web.AppRunner:
+    """Proxy one bot's websocket onto an existing SC2 connection.
+
+    SC2 accepts a single websocket client, and the match manager already
+    holds it (it needed it for create_game). Real ladder managers solve
+    this by proxying - bots connect to the manager's port and frames are
+    relayed 1:1 over the manager's SC2 connection. GamePort therefore
+    points at this relay, not at SC2 itself.
+    """
+
+    async def handler(request: web.Request) -> web.WebSocketResponse:
+        bot_ws = web.WebSocketResponse(max_msg_size=0)
+        await bot_ws.prepare(request)
+        async for msg in bot_ws:
+            if msg.type != WSMsgType.BINARY:
+                break
+            await sc2_ws.send_bytes(msg.data)
+            resp = await sc2_ws.receive()
+            if resp.type != WSMsgType.BINARY:
+                break
+            await bot_ws.send_bytes(resp.data)
+        return bot_ws
+
+    app = web.Application()
+    app.router.add_route("GET", "/sc2api", handler)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "127.0.0.1", port)
+    await site.start()
+    return runner
 
 
 def find_start_port() -> int:
@@ -107,12 +148,17 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
             ]
             await ctrl_a.create_game(maps.get(map_name), players, realtime=False)
 
+            # relay each bot onto the manager's SC2 connections
+            proxy_a, proxy_b = free_port(), free_port()
+            relay_a = await start_relay(ctrl_a._ws, proxy_a)
+            relay_b = await start_relay(ctrl_b._ws, proxy_b)
+
             start_port = find_start_port()
             common = ["--LadderServer", "127.0.0.1",
                       "--StartPort", str(start_port)]
-            our_cmd = [PY312, "run.py", "--GamePort", str(ctrl_a._process._port),
+            our_cmd = [PY312, "run.py", "--GamePort", str(proxy_a),
                        "--OpponentId", opponent["name"], *common]
-            their_cmd = [*opp_cmd, "--GamePort", str(ctrl_b._process._port),
+            their_cmd = [*opp_cmd, "--GamePort", str(proxy_b),
                          "--OpponentId", "PhoenixBot", *common]
 
             log_dir = REPO_ROOT / "results" / "versus_logs"
@@ -145,6 +191,8 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                     theirs.kill()
                 await theirs.wait()
                 opp_log.close()
+                await relay_a.cleanup()
+                await relay_b.cleanup()
 
     record["wall_seconds"] = round(time.time() - wall_start, 1)
     return record
