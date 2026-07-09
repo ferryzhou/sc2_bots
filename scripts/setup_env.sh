@@ -3,6 +3,9 @@
 #   1. Python venv with ares-sc2 (+ burnysc2, SC2MapAnalysis, cython-extensions)
 #   2. Blizzard headless StarCraft II Linux client
 #   3. Current AI Arena ladder maps
+#   4. Python 3.12 venv matching the AI Arena ladder runtime - used to build
+#      the ladder zip (scripts/create_ladder_zip.py) and to run downloaded
+#      opponent bots (harness/versus.py, harness/download_bots.py)
 #
 # Designed to be idempotent so it can be used as a Claude Code environment
 # setup script (the resulting filesystem gets snapshotted/cached) or run
@@ -14,6 +17,7 @@
 set -euo pipefail
 
 VENV="${VENV:-$HOME/venv}"
+VENV312="${VENV312:-/root/venv312}"
 SC2PATH="${SC2PATH:-$HOME/StarCraftII}"
 SC2_ZIP_URL="https://blzdistsc2-a.akamaihd.net/Linux/SC2.4.10.zip"
 # By downloading you agree to the Blizzard AI/ML license (this is the
@@ -46,7 +50,31 @@ if ! "$VENV/bin/python" -c "import ares" 2>/dev/null; then
 fi
 "$VENV/bin/python" -c "from ares import AresBot; print('    ares-sc2 OK')"
 
-echo "==> 2/3 StarCraft II headless client ($SC2PATH)"
+echo "==> 2/4 Python 3.12 ladder toolchain ($VENV312)"
+if [ ! -x "$VENV312/bin/python" ]; then
+    "$VENV/bin/pip" install --quiet uv
+    "$VENV/bin/uv" python install 3.12
+    "$VENV/bin/uv" venv --python 3.12 "$VENV312"
+    "$VENV/bin/uv" pip install --python "$VENV312/bin/python" --quiet \
+        pip setuptools wheel
+fi
+if ! "$VENV312/bin/python" -c "import ares" 2>/dev/null; then
+    "$VENV312/bin/pip" install --quiet "git+https://github.com/AresSC2/ares-sc2.git"
+    SP312="$("$VENV312/bin/python" -c 'import site; print(site.getsitepackages()[0])')"
+    echo "$SP312/src" > "$SP312/ares_src.pth"
+    if [ ! -d "$SP312/src/sc2_helper" ]; then
+        tmp="$(mktemp -d)"
+        git clone --quiet --depth 1 https://github.com/AresSC2/ares-sc2.git "$tmp/ares-sc2"
+        cp -r "$tmp/ares-sc2/sc2_helper" "$SP312/src/"
+        rm -rf "$tmp"
+    fi
+    # extra packages the AI Arena image provides - downloaded opponent bots
+    # (harness/versus.py) expect them
+    "$VENV312/bin/pip" install --quiet pillow matplotlib requests
+fi
+"$VENV312/bin/python" -c "from ares import AresBot; print('    ares-sc2 on 3.12 OK')"
+
+echo "==> 3/4 StarCraft II headless client ($SC2PATH)"
 if [ ! -d "$SC2PATH/Versions" ]; then
     tmp_zip="$(mktemp --suffix=.zip)"
     curl -sS -o "$tmp_zip" "$SC2_ZIP_URL"
@@ -55,7 +83,7 @@ if [ ! -d "$SC2PATH/Versions" ]; then
 fi
 echo "    $(ls "$SC2PATH/Versions" | head -1) installed"
 
-echo "==> 3/3 Ladder maps ($SC2PATH/Maps)"
+echo "==> 4/4 Ladder maps ($SC2PATH/Maps)"
 mkdir -p "$SC2PATH/Maps"
 # python-sc2 expects a lowercase maps dir on linux
 [ -e "$SC2PATH/maps" ] || ln -s "$SC2PATH/Maps" "$SC2PATH/maps"
@@ -69,4 +97,9 @@ if ! ls "$SC2PATH/Maps"/*.SC2Map >/dev/null 2>&1; then
 fi
 echo "    $(ls "$SC2PATH/Maps" | wc -l) maps installed"
 
-echo "Done. Run a game with: $VENV/bin/python phoenix/run.py"
+echo "Done."
+echo "  Local game:        $VENV/bin/python phoenix/run.py"
+echo "  Gauntlet:          $VENV/bin/python harness/gauntlet.py --games 6"
+echo "  Download opponents: AIARENA_API_TOKEN=... $VENV/bin/python harness/download_bots.py"
+echo "  Versus opponents:  $VENV312/bin/python harness/versus.py --opponent <name>"
+echo "  Ladder zip:        $VENV312/bin/python scripts/create_ladder_zip.py"
