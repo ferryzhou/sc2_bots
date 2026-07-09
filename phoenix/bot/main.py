@@ -24,7 +24,9 @@ from ares.behaviors.combat.individual import (
     PathUnitToTarget,
     ShootTargetInRange,
     StutterUnitBack,
+    UseAbility,
 )
+from sc2.ids.ability_id import AbilityId
 from ares.behaviors.macro import (
     AutoSupply,
     BuildWorkers,
@@ -38,6 +40,7 @@ from ares.behaviors.macro import (
 from ares.behaviors.macro.macro_plan import MacroPlan
 from ares.consts import ALL_STRUCTURES, WORKER_TYPES, UnitRole, UnitTreeQueryType
 from cython_extensions import cy_closest_to, cy_in_attack_range, cy_pick_enemy_target
+from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
@@ -45,6 +48,11 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 # Army composition consumed by SpawnController / ProductionController.
+# NOTE: an immortal-heavy variant (35% immortal priority 0) was tried and
+# REGRESSED vs CheatInsane (7-5 vs 11-1, PvP 0-4): robo investment diluted
+# army supply at the timings the enemy attacks. Revisit composition changes
+# only with replay-driven loss analysis. See results/history.jsonl
+# run 20260709_022501.
 ARMY_COMP: dict[UnitID, dict] = {
     UnitID.STALKER: {"proportion": 1.0, "priority": 0},
 }
@@ -53,7 +61,9 @@ DESIRED_UPGRADES: list[UpgradeId] = [
     UpgradeId.WARPGATERESEARCH,
     UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1,
     UpgradeId.BLINKTECH,
+    UpgradeId.PROTOSSGROUNDARMORSLEVEL1,
     UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2,
+    UpgradeId.PROTOSSGROUNDARMORSLEVEL2,
 ]
 
 COMMON_UNIT_IGNORE_TYPES: set[UnitID] = {
@@ -178,16 +188,18 @@ class PhoenixBot(AresBot):
         self._chrono_production()
 
     def _chrono_production(self) -> None:
-        from sc2.ids.ability_id import AbilityId
-
+        structures_dict = self.mediator.get_own_structures_dict
         for th in self.townhalls:
             if th.energy >= 50:
-                if gateways := [
-                    g
-                    for g in self.mediator.get_own_structures_dict[UnitID.GATEWAY]
-                    if g.build_progress >= 1.0 and not g.is_idle
+                if busy := [
+                    s
+                    for type_id in (UnitID.ROBOTICSFACILITY, UnitID.GATEWAY)
+                    for s in structures_dict[type_id]
+                    if s.build_progress >= 1.0
+                    and not s.is_idle
+                    and not s.has_buff(BuffId.CHRONOBOOSTENERGYCOST)
                 ]:
-                    th(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, gateways[0])
+                    th(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy[0])
 
     def _micro(self, forces: Units, target: Point2) -> None:
         near_enemy: dict[int, Units] = self.mediator.get_units_in_range(
