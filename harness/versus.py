@@ -100,30 +100,46 @@ def find_start_port() -> int:
     raise RuntimeError("no free port range found")
 
 
-def opponent_command(bot_dir: Path) -> tuple[list[str], Path]:
-    """Build the launch command from the bot's ladderbots.json."""
-    meta_path = bot_dir / "ladderbots.json"
-    if meta_path.is_file():
+def opponent_command(bot_dir: Path, bot_name: str) -> tuple[list[str], Path]:
+    """Build the launch command from the bot's zip layout.
+
+    Layouts seen in the wild: ladderbots.json at the root or one level
+    down (Type spellings vary: Python, cppLinux, BinaryCpp); a plain
+    python bot with run.py at the root; or just a bare executable named
+    after the bot, possibly nested one directory deep.
+    """
+    candidates = [bot_dir / "ladderbots.json",
+                  *sorted(bot_dir.glob("*/ladderbots.json"))]
+    for meta_path in candidates:
+        if not meta_path.is_file():
+            continue
         meta = json.loads(meta_path.read_text())
         (name, info), = meta["Bots"].items()
-        root = bot_dir / info.get("RootPath", ".")
+        root = (meta_path.parent / info.get("RootPath", ".")).resolve()
         file_name = info["FileName"]
         bot_type = info["Type"].lower()
-    else:  # fall back: python bot with run.py at root
-        root, file_name, bot_type = bot_dir, "run.py", "python"
+        if "python" in bot_type:
+            return [PY312, file_name], root
+        if "cpp" in bot_type or "binary" in bot_type:
+            binary = root / file_name
+            binary.chmod(0o755)
+            return [str(binary)], root
+        raise ValueError(f"unsupported bot type: {bot_type}")
 
-    if bot_type == "python":
-        return [PY312, file_name], root
-    if bot_type == "cpplinux":
-        binary = root / file_name
-        binary.chmod(0o755)
-        return [str(binary)], root
-    raise ValueError(f"unsupported bot type: {bot_type}")
+    if (bot_dir / "run.py").is_file():
+        return [PY312, "run.py"], bot_dir
+
+    for binary in (bot_dir / bot_name, bot_dir / bot_name / bot_name):
+        if binary.is_file():
+            binary.chmod(0o755)
+            return [str(binary)], binary.parent
+
+    raise ValueError(f"no launch spec found in {bot_dir}")
 
 
 async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
     opp_dir = BOTS_DIR / opponent["name"]
-    opp_cmd, opp_cwd = opponent_command(opp_dir)
+    opp_cmd, opp_cwd = opponent_command(opp_dir, opponent["name"])
 
     record = {
         "mode": "versus",
@@ -174,6 +190,20 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 stdout=opp_log, stderr=asyncio.subprocess.STDOUT)
 
             try:
+                # fast-fail: an opponent that dies in the first 25s never
+                # joined - don't burn the full match timeout waiting
+                try:
+                    await asyncio.wait_for(theirs.wait(), timeout=25)
+                    record["result"] = "Error"
+                    record["error"] = (f"opponent exited at launch "
+                                       f"(rc={theirs.returncode})")
+                    ours.kill()
+                    await ours.wait()
+                    record["wall_seconds"] = round(time.time() - wall_start, 1)
+                    return record
+                except asyncio.TimeoutError:
+                    pass
+
                 out, _ = await asyncio.wait_for(ours.communicate(), timeout=timeout)
                 text = out.decode(errors="replace")
                 (log_dir / f"PhoenixBot_{stamp}.log").write_text(text)
