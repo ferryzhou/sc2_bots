@@ -91,3 +91,4 @@
 {"mode": "versus", "opponent_name": "Chance", "opponent_race": "R", "opponent_type": "python", "opponent_elo": 1322, "map": "LeyLinesAIE_v3", "started_at": "2026-07-09T21:31:02", "result": "Defeat", "wall_seconds": 126.2, "git_sha": "versus"}
 {"mode": "versus", "opponent_name": "Chance", "opponent_race": "R", "opponent_type": "python", "opponent_elo": 1322, "map": "PylonAIE", "started_at": "2026-07-09T21:33:09", "result": "Defeat", "wall_seconds": 144.5, "git_sha": "versus"}
 {"mode": "versus", "opponent_name": "Chance", "opponent_race": "R", "opponent_type": "python", "opponent_elo": 1322, "map": "PersephoneAIE_v4", "started_at": "2026-07-09T21:35:34", "result": "Victory", "wall_seconds": 77.9, "git_sha": "versus"}
+{"mode": "versus", "opponent_name": "Chance", "opponent_race": "R", "opponent_type": "python", "opponent_elo": 1322, "map": "PylonAIE", "started_at": "2026-07-09T21:58:04", "result": "Defeat", "wall_seconds": 116.9, "git_sha": "versus"}

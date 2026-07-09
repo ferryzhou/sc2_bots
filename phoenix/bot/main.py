@@ -119,8 +119,12 @@ class PhoenixBot(AresBot):
         forces_supply: float = self.get_total_supply(forces)
 
         if threat := self._home_threat():
-            # defend: send everything at the closest threat to our bases
-            self._micro(forces, target=threat.position)
+            # defend: during an early rush hold the ramp choke (don't chase
+            # down the ramp into the flood) unless enemies are already inside
+            target: Point2 = threat.position
+            if self._emergency and threat.distance_to(self.start_location) > 18.0:
+                target = self.main_base_ramp.top_center
+            self._micro(forces, target=target)
             return
 
         if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:

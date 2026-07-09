@@ -44,10 +44,11 @@ Builds:
     SafeExpand:
         ConstantWorkerProductionTill: 44
         OpeningBuildOrder:
+            # full ramp wall (pylon+gateway+core) - ling floods bounce off it
             - 14 pylon @ ramp
-            - 15 gateway
+            - 15 gateway @ ramp
             - 16 gas
-            - 19 core
+            - 19 core @ ramp
             - 19 zealot
             - 22 pylon
             - 22 gateway
