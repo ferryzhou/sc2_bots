@@ -31,3 +31,6 @@ replays/
 
 # ares-sc2 runtime data (build winrate history, logs)
 phoenix/data/
+
+# AI Arena ladder zip (build artifact)
+PhoenixBot.zip
