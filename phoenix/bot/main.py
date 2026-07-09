@@ -24,7 +24,9 @@ from ares.behaviors.combat.individual import (
     PathUnitToTarget,
     ShootTargetInRange,
     StutterUnitBack,
+    UseAbility,
 )
+from sc2.ids.ability_id import AbilityId
 from ares.behaviors.macro import (
     AutoSupply,
     BuildWorkers,
@@ -38,6 +40,7 @@ from ares.behaviors.macro import (
 from ares.behaviors.macro.macro_plan import MacroPlan
 from ares.consts import ALL_STRUCTURES, WORKER_TYPES, UnitRole, UnitTreeQueryType
 from cython_extensions import cy_closest_to, cy_in_attack_range, cy_pick_enemy_target
+from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
@@ -45,15 +48,20 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 # Army composition consumed by SpawnController / ProductionController.
+# Immortals get top priority (ProductionController techs to robo for them);
+# they fix pure-stalker armies trading badly into armored deathballs.
 ARMY_COMP: dict[UnitID, dict] = {
-    UnitID.STALKER: {"proportion": 1.0, "priority": 0},
+    UnitID.IMMORTAL: {"proportion": 0.35, "priority": 0},
+    UnitID.STALKER: {"proportion": 0.65, "priority": 1},
 }
 
 DESIRED_UPGRADES: list[UpgradeId] = [
     UpgradeId.WARPGATERESEARCH,
     UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1,
     UpgradeId.BLINKTECH,
+    UpgradeId.PROTOSSGROUNDARMORSLEVEL1,
     UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2,
+    UpgradeId.PROTOSSGROUNDARMORSLEVEL2,
 ]
 
 COMMON_UNIT_IGNORE_TYPES: set[UnitID] = {
@@ -178,16 +186,18 @@ class PhoenixBot(AresBot):
         self._chrono_production()
 
     def _chrono_production(self) -> None:
-        from sc2.ids.ability_id import AbilityId
-
+        structures_dict = self.mediator.get_own_structures_dict
         for th in self.townhalls:
             if th.energy >= 50:
-                if gateways := [
-                    g
-                    for g in self.mediator.get_own_structures_dict[UnitID.GATEWAY]
-                    if g.build_progress >= 1.0 and not g.is_idle
+                if busy := [
+                    s
+                    for type_id in (UnitID.ROBOTICSFACILITY, UnitID.GATEWAY)
+                    for s in structures_dict[type_id]
+                    if s.build_progress >= 1.0
+                    and not s.is_idle
+                    and not s.has_buff(BuffId.CHRONOBOOSTENERGYCOST)
                 ]:
-                    th(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, gateways[0])
+                    th(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy[0])
 
     def _micro(self, forces: Units, target: Point2) -> None:
         near_enemy: dict[int, Units] = self.mediator.get_units_in_range(
@@ -221,6 +231,18 @@ class PhoenixBot(AresBot):
 
                 enemy_target: Unit = cy_pick_enemy_target(all_close)
                 if unit.shield_percentage < 0.3:
+                    # blink out first if available, then run on the grid
+                    if (
+                        unit.type_id == UnitID.STALKER
+                        and UpgradeId.BLINKTECH in self.state.upgrades
+                    ):
+                        maneuver.add(
+                            UseAbility(
+                                AbilityId.EFFECT_BLINK_STALKER,
+                                unit,
+                                unit.position.towards(self.start_location, 8.0),
+                            )
+                        )
                     maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
                 else:
                     maneuver.add(
