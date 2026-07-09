@@ -11,29 +11,51 @@ BuildChoices:
     test_123:
         BotName: Test
         Cycle:
+            - SafeExpand
             - GateExpand
 
     Protoss:
         BotName: ProtossRace
         Cycle:
+            - SafeExpand
             - GateExpand
 
     Random:
         BotName: RandomRace
         Cycle:
+            - SafeExpand
             - GateExpand
 
     Terran:
         BotName: TerranRace
         Cycle:
+            - SafeExpand
             - GateExpand
 
     Zerg:
         BotName: ZergRace
         Cycle:
+            - SafeExpand
             - GateExpand
 
 Builds:
+    # units-first opening for rush-prone opponents: two gates and zealots
+    # before the expansion
+    SafeExpand:
+        ConstantWorkerProductionTill: 44
+        OpeningBuildOrder:
+            # full ramp wall (pylon+gateway+core) - ling floods bounce off it
+            - 14 pylon @ ramp
+            - 15 gateway @ ramp
+            - 16 gas
+            - 19 core @ ramp
+            - 19 zealot
+            - 22 pylon
+            - 22 gateway
+            - 23 zealot
+            - 27 expand
+            - 27 gas
+
     GateExpand:
         ConstantWorkerProductionTill: 44
         OpeningBuildOrder:

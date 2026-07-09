@@ -14,6 +14,7 @@ from itertools import cycle
 from typing import Optional
 
 import numpy as np
+from loguru import logger
 
 import bot.compat  # noqa: F401 - 4.10 linux client compatibility patches
 from ares import AresBot
@@ -57,6 +58,19 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.STALKER: {"proportion": 1.0, "priority": 0},
 }
 
+# used while defending early aggression - zealots are the only gateway unit
+# available before cybercore tech and hold rushes far better than nothing
+EMERGENCY_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.5, "priority": 0},
+    UnitID.ZEALOT: {"proportion": 0.5, "priority": 1},
+}
+
+# early-rush window: aggression detected before this triggers emergency mode
+EARLY_THREAT_UNTIL: float = 300.0
+# don't spend on forge/twilight upgrades before this (a 2:32 forge+twilight
+# was the direct cause of rush losses - see the Chance loss analysis)
+UPGRADES_AFTER: float = 300.0
+
 DESIRED_UPGRADES: list[UpgradeId] = [
     UpgradeId.WARPGATERESEARCH,
     UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1,
@@ -87,6 +101,8 @@ class PhoenixBot(AresBot):
     def __init__(self, game_step_override: Optional[int] = None):
         super().__init__(game_step_override)
         self._commenced_attack: bool = False
+        self._emergency: bool = False
+        self._last_threat_time: float = 0.0
 
     async def on_start(self) -> None:
         await super(PhoenixBot, self).on_start()
@@ -96,14 +112,19 @@ class PhoenixBot(AresBot):
     async def on_step(self, iteration: int) -> None:
         await super(PhoenixBot, self).on_step(iteration)
 
+        self._update_emergency()
         self._macro()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
 
         if threat := self._home_threat():
-            # defend: send everything at the closest threat to our bases
-            self._micro(forces, target=threat.position)
+            # defend: during an early rush hold the ramp choke (don't chase
+            # down the ramp into the flood) unless enemies are already inside
+            target: Point2 = threat.position
+            if self._emergency and threat.distance_to(self.start_location) > 18.0:
+                target = self.main_base_ramp.top_center
+            self._micro(forces, target=target)
             return
 
         if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
@@ -156,31 +177,80 @@ class PhoenixBot(AresBot):
             return None
         return cy_closest_to(self.start_location, Units(threats, self))
 
+    def _early_aggression_seen(self) -> bool:
+        """Enemy combat units or proxy structures near our main."""
+        combat = [
+            u
+            for u in self.enemy_units
+            if u.type_id not in WORKER_TYPES
+            and u.type_id not in COMMON_UNIT_IGNORE_TYPES
+            and not u.is_memory
+            and u.distance_to(self.start_location) < 50.0
+        ]
+        proxy = [
+            s
+            for s in self.enemy_structures
+            if s.distance_to(self.start_location) < 50.0
+        ]
+        return len(combat) >= 3 or len(proxy) >= 1
+
+    def _update_emergency(self) -> None:
+        """Rush defense mode: abort the opening, stop spending on greed."""
+        if self._early_aggression_seen():
+            self._last_threat_time = self.time
+            if not self._emergency and self.time < EARLY_THREAT_UNTIL:
+                self._emergency = True
+                logger.warning(f"{self.time_formatted} EMERGENCY: early rush detected")
+                if not self.build_order_runner.build_completed:
+                    # hand control to the reactive macro plan immediately
+                    self.build_order_runner.set_build_completed()
+        elif self._emergency and self.time - self._last_threat_time > 45.0:
+            self._emergency = False
+
     def _macro(self) -> None:
         self.register_behavior(Mining())
 
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
+            comp = EMERGENCY_COMP if self._emergency else ARMY_COMP
             macro_plan.add(AutoSupply(base_location=self.start_location))
-            macro_plan.add(
-                BuildWorkers(to_count=min(66, 22 * len(self.townhalls)))
-            )
-            macro_plan.add(SpawnController(ARMY_COMP))
-            macro_plan.add(
-                UpgradeController(
-                    upgrade_list=DESIRED_UPGRADES,
-                    base_location=self.start_location,
+            if self._emergency:
+                # units and production only - no expansions, no upgrades,
+                # no worker overinvestment until the rush is dead
+                macro_plan.add(SpawnController(comp))
+                macro_plan.add(
+                    BuildWorkers(to_count=min(28, 22 * len(self.townhalls)))
                 )
-            )
-            macro_plan.add(
-                ProductionController(
-                    ARMY_COMP, base_location=self.start_location
+                macro_plan.add(
+                    ProductionController(
+                        comp,
+                        base_location=self.start_location,
+                        add_production_at_bank=(150, 0),
+                    )
                 )
-            )
-            macro_plan.add(ExpansionController(to_count=4, max_pending=1))
-            macro_plan.add(
-                GasBuildingController(to_count=len(self.townhalls) * 2)
-            )
+            else:
+                macro_plan.add(
+                    BuildWorkers(to_count=min(66, 22 * len(self.townhalls)))
+                )
+                macro_plan.add(SpawnController(comp))
+                # upgrades only once we're stable: past the rush window AND
+                # holding a real army (a 5:00 forge while defending was a
+                # second death spiral in the Chance loss analysis)
+                army_supply = self.supply_used - self.supply_workers
+                if self.time > UPGRADES_AFTER and army_supply >= 16:
+                    macro_plan.add(
+                        UpgradeController(
+                            upgrade_list=DESIRED_UPGRADES,
+                            base_location=self.start_location,
+                        )
+                    )
+                macro_plan.add(
+                    ProductionController(comp, base_location=self.start_location)
+                )
+                macro_plan.add(ExpansionController(to_count=4, max_pending=1))
+                macro_plan.add(
+                    GasBuildingController(to_count=len(self.townhalls) * 2)
+                )
         else:
             macro_plan.add(SpawnController(ARMY_COMP))
         self.register_behavior(macro_plan)
