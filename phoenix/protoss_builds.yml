@@ -11,11 +11,13 @@ BuildChoices:
     test_123:
         BotName: Test
         Cycle:
+            - SafeExpand
             - GateExpand
 
     Protoss:
         BotName: ProtossRace
         Cycle:
+            - SafeExpand
             - GateExpand
 
     Random:
@@ -27,6 +29,7 @@ BuildChoices:
     Terran:
         BotName: TerranRace
         Cycle:
+            - SafeExpand
             - GateExpand
 
     Zerg:

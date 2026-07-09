@@ -14,6 +14,7 @@ from itertools import cycle
 from typing import Optional
 
 import numpy as np
+from loguru import logger
 
 import bot.compat  # noqa: F401 - 4.10 linux client compatibility patches
 from ares import AresBot
@@ -195,6 +196,7 @@ class PhoenixBot(AresBot):
             self._last_threat_time = self.time
             if not self._emergency and self.time < EARLY_THREAT_UNTIL:
                 self._emergency = True
+                logger.warning(f"{self.time_formatted} EMERGENCY: early rush detected")
                 if not self.build_order_runner.build_completed:
                     # hand control to the reactive macro plan immediately
                     self.build_order_runner.set_build_completed()
