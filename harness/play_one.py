@@ -96,8 +96,11 @@ def main() -> None:
         )
         record["result"] = result.name if result is not None else "Unknown"
     except Exception as exc:  # noqa: BLE001 - report any crash as a result
+        import traceback
+
         record["result"] = "Error"
         record["error"] = f"{type(exc).__name__}: {exc}"
+        record["traceback"] = traceback.format_exc(limit=25)
 
     record["wall_seconds"] = round(time.time() - wall_start, 1)
     record.update(_game_stats)
