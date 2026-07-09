@@ -5,7 +5,7 @@ This project is a collection of AI bots for StarCraft II, developed using Python
 
 **Features:**
 *   Multiple Starcraft II bot implementations.
-*   `han`: A Terran bot potentially using machine learning techniques (details in `han/README.md`).
+*   `han`: HanBot V2.0, a rule-based Terran bio/mech macro bot with scouting, cheese detection, and army micro. It can beat the built-in cheater AIs (details in `han/README.md`).
 *   `lishimin`: Protoss bots employing strategies like cannon rushes (`LiShiMinBot`) and multi-pylon builds (`MultiPylonBot`).
 *   Replay analysis tool (`analysis/sc2reader_analyzer.py`) to extract build orders, unit production, upgrades, and generate performance graphs.
 *   Scripts to run bots locally against the computer or other bots.
@@ -14,8 +14,8 @@ This project is a collection of AI bots for StarCraft II, developed using Python
 *   `README.md`: This file, providing an overview of the project.
 *   `LICENSE`: Contains the project's license information.
 *   `han/`: Contains the "han" Terran bot, including its specific README.
-    *   `han/han.py`: Main logic for the HanBot.
-    *   `han/run.py`: Script to run the HanBot.
+    *   `han/han.py`: Main logic for the HanBot, plus a `main()` entry point to run it against the built-in AI.
+    *   `han/run.py`: Script to run the HanBot locally or on a ladder server.
 *   `lishimin/`: Contains the "lishimin" Protoss bots.
     *   `lishimin/lishimin.py`: Main logic for the LiShiMinBot (cannon rush).
     *   `lishimin/multi_pylon.py`: Logic for the MultiPylonBot.
@@ -77,18 +77,30 @@ This project is a collection of AI bots for StarCraft II, developed using Python
     ```
     You might need to edit these `run.py` files to specify opponents, maps, etc.
 
+    HanBot can also be run directly against a built-in cheater AI (currently a CheatInsane Zerg; edit `main()` in `han/han.py` to change the opponent race and difficulty):
+    ```bash
+    python han/han.py
+    ```
+
 *   **Using `run_local_games.py`:**
-    This script (if it exists and is configured) can be used to run games between different bots or against the built-in AI.
+    This script runs a game between HanBot (Terran) and LiShiMinBot (Protoss) and saves the replay to `replays/han_vs_lishimin.SC2Replay`.
     ```bash
     python run_local_games.py
     ```
-    *(Note: Based on the `ls()` output, this file exists. Its functionality is assumed for this README.)*
 
 **Available Bots:**
 
 *   **HanBot (`han/`)**
     *   Race: Terran
-    *   Strategy: This bot is described as an ML-based bot. For more details on its specific strategies and development, please refer to its dedicated README: `han/README.md`.
+    *   Strategy: A rule-based bio/mech macro bot (V2.0). It plays a marine/marauder/siege tank composition supported by medivacs and ravens, manages its economy (SCV production, MULE calldowns, orbital upgrades, base expansions), builds addons, and researches infantry upgrades through engineering bays and an armory.
+    *   Notable behaviors from recent development:
+        *   Early game worker scouting plus ongoing medivac/raven scouting of the map.
+        *   Cheese detection in the first 3 minutes, with a dedicated early game defense mode.
+        *   Base attack detection with counter-attack logic when defending with a superior force.
+        *   Siege tank micro (siege/unsiege based on enemy distance and nearby enemy targeting).
+        *   Strategic building placement that avoids blocking expansion locations.
+    *   It can consistently beat the built-in cheater AIs (e.g., Protoss CheatMoney and Terran CheatVision).
+    *   For development history, see its dedicated README: `han/README.md`.
 *   **LiShiMin Bots (`lishimin/`)**
     *   Race: Protoss
     *   `LiShiMinBot`: Implements a cannon rush strategy.
@@ -137,4 +149,4 @@ Please follow these general guidelines:
 5.  Submit a pull request for review.
 
 **License:**
-This project is licensed under the terms of the LICENSE file. Please see the `LICENSE` file in the root directory for more details. (Currently, it appears to be an MIT License based on typical open-source projects, but confirm this by checking the LICENSE file content if possible. If `LICENSE` file content is not available, use this general statement).
+This project is licensed under the MIT License. See the `LICENSE` file in the root directory for details.
