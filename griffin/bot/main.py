@@ -129,6 +129,11 @@ ATTACK_ANYWAY_AFTER: float = 480.0
 # stalled to the 40-min wall timeout with a massed army cycling
 # attack/regroup outside a defended base instead of finishing
 COMMIT_AT_SUPPLY: float = 70.0
+# vs protoss, only attack at commit strength: instrumented TvP losses
+# showed 40-50 supply pushes feeding the protoss deathball one at a time
+# (45->9, rebuild, 46->8, eliminated) while macro easily sustained more -
+# and the games griffin wins are the ones where it fights at 130+ supply
+ATTACK_AT_SUPPLY_VS_PROTOSS: float = COMMIT_AT_SUPPLY
 DEFEND_RADIUS: float = 25.0
 
 # Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
@@ -219,7 +224,7 @@ class GriffinBot(AresBot):
         elif not self._commenced_attack and (
             forces_supply >= COMMIT_AT_SUPPLY
             or (
-                forces_supply >= ATTACK_AT_SUPPLY
+                forces_supply >= self._attack_at_supply
                 and (
                     (
                         self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
@@ -280,6 +285,12 @@ class GriffinBot(AresBot):
         if self.enemy_race == Race.Protoss:
             return ARMY_COMP_VS_PROTOSS
         return ARMY_COMP
+
+    @property
+    def _attack_at_supply(self) -> float:
+        if self.enemy_race == Race.Protoss:
+            return ATTACK_AT_SUPPLY_VS_PROTOSS
+        return ATTACK_AT_SUPPLY
 
     def _home_threats(self) -> Units:
         """Enemy combat units near any of our townhalls."""
