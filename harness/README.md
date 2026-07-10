@@ -12,8 +12,10 @@ improvement loops plug into.
   bot stats, replay path.
 - `gauntlet.py` — orchestrates N games across matchups (opponent race ×
   difficulty × random ladder map), running games in parallel subprocesses.
-  Appends every record to `results/history.jsonl` (committed, so results
-  survive ephemeral dev environments) and prints per-matchup winrates.
+  Appends every record to `results/history_<bot>.jsonl` (one file per bot
+  so runs for different bots never contend; committed, so results survive
+  ephemeral dev environments) and prints per-matchup winrates across all
+  bots' files.
 - `versus.py` — runs a repo bot against downloaded AI Arena bots through
   the real ladder entrypoint (see `download_bots.py`).
 

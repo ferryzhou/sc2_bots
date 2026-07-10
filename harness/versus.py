@@ -27,7 +27,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 BOTS_DIR = Path(environ.get("ARENA_BOTS_DIR", "/root/arena_bots"))
 MANIFEST = REPO_ROOT / "results" / "opponents.json"
-HISTORY = REPO_ROOT / "results" / "history.jsonl"
 MAP_POOL_FILE = REPO_ROOT / "harness" / "map_pool.txt"
 
 PY312 = environ.get("LADDER_PYTHON", "/root/venv312/bin/python")
@@ -269,13 +268,15 @@ def main() -> None:
         sys.exit(f"Unknown opponent {args.opponent!r} - use --list")
     opponent = by_name[args.opponent]
 
+    # one history file per bot so concurrent runs never contend
+    history = REPO_ROOT / "results" / f"history_{BOT_KEY}.jsonl"
     map_pool = (MAP_POOL_FILE.read_text().split()
                 if MAP_POOL_FILE.is_file() else [])
     for i in range(args.games):
         map_name = args.map or random.choice(map_pool)
         record = asyncio.run(run_match(opponent, map_name, args.timeout))
         record["git_sha"] = "versus"
-        with open(HISTORY, "a") as f:
+        with open(history, "a") as f:
             f.write(json.dumps(record) + "\n")
         print(f"[{i + 1}/{args.games}] {record.get('result'):<8} "
               f"vs {opponent['name']} (elo {opponent.get('elo')}) "

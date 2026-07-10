@@ -52,7 +52,7 @@ from sc2.units import Units
 # NOTE: an immortal-heavy variant (35% immortal priority 0) was tried and
 # REGRESSED vs CheatInsane (7-5 vs 11-1, PvP 0-4): robo investment diluted
 # army supply at the timings the enemy attacks. Revisit composition changes
-# only with replay-driven loss analysis. See results/history.jsonl
+# only with replay-driven loss analysis. See results/history_phoenix.jsonl
 # run 20260709_022501.
 ARMY_COMP: dict[UnitID, dict] = {
     UnitID.STALKER: {"proportion": 1.0, "priority": 0},
