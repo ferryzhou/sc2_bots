@@ -17,6 +17,7 @@ import numpy as np
 from loguru import logger
 
 import bot.compat  # noqa: F401 - 4.10 linux client compatibility patches
+from bot.tuning import Tuner
 from ares import AresBot
 from ares.behaviors.combat import CombatManeuver
 from ares.behaviors.combat.individual import (
@@ -117,6 +118,43 @@ class PhoenixBot(AresBot):
         self.current_base_target = self.enemy_start_locations[0]
         self.expansions_generator = cycle(list(self.expansion_locations_list))
 
+        # continuous parameter learning: draw this game's strategy knobs
+        # from the persisted search distribution (data dir survives between
+        # ladder games, so learning continues on the arena)
+        from pathlib import Path
+
+        self._tuner = Tuner(Path("data"))
+        p = self._tuner.ask()
+        self._attack_at_supply: float = p["attack_at_supply"]
+        self._pressure_valve_supply: float = p["pressure_valve_supply"]
+        self._regroup_below_supply: float = p["regroup_below_supply"]
+        self._emergency_exit_seconds: float = p["emergency_exit_seconds"]
+        z = p["emergency_zealot_proportion"]
+        self._emergency_comp: dict[UnitID, dict] = {
+            UnitID.STALKER: {"proportion": round(1.0 - z, 3), "priority": 0},
+            UnitID.ZEALOT: {"proportion": round(z, 3), "priority": 1},
+        }
+        logger.info(f"tuning sample: { {k: round(v, 2) for k, v in p.items()} }")
+
+    async def on_end(self, game_result) -> None:
+        score = self.state.score
+        killed = float(
+            (score.killed_value_units or 0)
+            + (score.killed_value_structures or 0)
+        )
+        proto = score._proto
+        lost = float(
+            getattr(proto, "lost_minerals_army", 0)
+            + getattr(proto, "lost_vespene_army", 0)
+        )
+        self._tuner.tell(
+            won=str(game_result) == "Result.Victory",
+            tied=str(game_result) == "Result.Tie",
+            killed_value=killed,
+            lost_value=lost,
+        )
+        await super(PhoenixBot, self).on_end(game_result)
+
     async def on_step(self, iteration: int) -> None:
         await super(PhoenixBot, self).on_step(iteration)
 
@@ -151,16 +189,16 @@ class PhoenixBot(AresBot):
             )
 
         if self._commenced_attack:
-            if forces_supply < REGROUP_BELOW_SUPPLY or (
+            if forces_supply < self._regroup_below_supply or (
                 fight is not None and fight in LOSS_CLOSE_OR_WORSE
             ):
                 self._commenced_attack = False
-        elif forces_supply >= ATTACK_AT_SUPPLY and (
+        elif forces_supply >= self._attack_at_supply and (
             fight is None
             or fight in TIE_OR_BETTER
             # pressure valve: near max supply nothing is gained by waiting -
             # attack even into a predicted loss rather than starve at home
-            or forces_supply >= 60.0
+            or forces_supply >= self._pressure_valve_supply
         ):
             self._commenced_attack = True
 
@@ -241,7 +279,10 @@ class PhoenixBot(AresBot):
                 if not self.build_order_runner.build_completed:
                     # hand control to the reactive macro plan immediately
                     self.build_order_runner.set_build_completed()
-        elif self._emergency and self.time - self._last_threat_time > 45.0:
+        elif (
+            self._emergency
+            and self.time - self._last_threat_time > self._emergency_exit_seconds
+        ):
             self._emergency = False
 
     def _macro(self) -> None:
@@ -249,7 +290,7 @@ class PhoenixBot(AresBot):
 
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
-            comp = EMERGENCY_COMP if self._emergency else ARMY_COMP
+            comp = self._emergency_comp if self._emergency else ARMY_COMP
             macro_plan.add(AutoSupply(base_location=self.start_location))
             if self._emergency:
                 # units and production only - no expansions, no upgrades,
