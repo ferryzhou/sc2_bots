@@ -356,30 +356,19 @@ class PhoenixBot(AresBot):
 
             maneuver: CombatManeuver = CombatManeuver()
             if close_enemy:
-                fight = self.mediator.can_win_fight(
-                    own_units=units,
-                    enemy_units=close_enemy,
-                    workers_do_no_damage=True,
+                # always fight when engaged: StutterGroupBack shoots on
+                # weapon-ready and kites between shots. Squad-level fleeing
+                # (KeepGroupSafe on predicted loss) made the army passive -
+                # the global attack/retreat gate owns disengagement.
+                maneuver.add(
+                    StutterGroupBack(
+                        group=units,
+                        group_tags=squad.tags,
+                        group_position=squad.squad_position,
+                        target=close_enemy.center,
+                        grid=grid,
+                    )
                 )
-                if fight in LOSS_CLOSE_OR_WORSE and not self._emergency:
-                    maneuver.add(
-                        KeepGroupSafe(
-                            group=units,
-                            close_enemy=close_enemy,
-                            grid=grid,
-                        )
-                    )
-                else:
-                    enemy_center: Point2 = close_enemy.center
-                    maneuver.add(
-                        StutterGroupBack(
-                            group=units,
-                            group_tags=squad.tags,
-                            group_position=squad.squad_position,
-                            target=enemy_center,
-                            grid=grid,
-                        )
-                    )
             else:
                 maneuver.add(
                     PathGroupToTarget(
