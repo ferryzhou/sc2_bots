@@ -148,6 +148,23 @@ COMMIT_AT_SUPPLY: float = 70.0
 # enemy units enter/leave vision (TvT logs showed regroup->attack->regroup
 # in one second), and each yo-yo bleeds units into the enemy's siege line
 ATTACK_DECISION_COOLDOWN: float = 30.0
+# contain-breaking: the terran AI sieges tanks + liberators just OUTSIDE
+# the defend radius and fortifies while we turtle (TvT logs: home_threats=0
+# for minutes, then LOSS_OVERWHELMING once the line crosses it). Siege
+# units setting up this close to a base are engaged immediately.
+CONTAIN_RADIUS: float = 40.0
+CONTAIN_TYPES: set[UnitID] = {
+    UnitID.SIEGETANK,
+    UnitID.SIEGETANKSIEGED,
+    UnitID.LIBERATOR,
+    UnitID.LIBERATORAG,
+    UnitID.WIDOWMINE,
+    UnitID.WIDOWMINEBURROWED,
+    UnitID.LURKERMP,
+    UnitID.LURKERMPBURROWED,
+    UnitID.COLOSSUS,
+    UnitID.DISRUPTOR,
+}
 # vs protoss and terran, only attack at commit strength: instrumented
 # losses in both matchups showed 40-50 supply pushes feeding a stronger
 # army/siege line one at a time (45->9, rebuild, 46->8, eliminated) while
@@ -204,9 +221,11 @@ class GriffinBot(AresBot):
             if self._emergency and threat.distance_to(self.start_location) > 18.0:
                 target = self.main_base_ramp.top_center
             self._micro(guard, target=target)
-            # recall the main army only when the guard is outmatched
+            # recall the main army when the guard is outmatched, and always
+            # against a forming contain - siege lines only get stronger
             if (
                 self._emergency
+                or any(u.type_id in CONTAIN_TYPES for u in threats)
                 or self.get_total_supply(threats)
                 > self.get_total_supply(guard) + RECALL_MARGIN
             ):
@@ -368,14 +387,23 @@ class GriffinBot(AresBot):
         return ATTACK_AT_SUPPLY
 
     def _home_threats(self) -> Units:
-        """Enemy combat units near any of our townhalls."""
+        """Enemy combat units near our townhalls, plus siege units forming
+        a contain further out."""
         return Units(
             [
                 u
                 for u in self.enemy_units
                 if u.type_id not in COMMON_UNIT_IGNORE_TYPES
                 and not u.is_memory
-                and any(u.distance_to(th) < DEFEND_RADIUS for th in self.townhalls)
+                and any(
+                    u.distance_to(th)
+                    < (
+                        CONTAIN_RADIUS
+                        if u.type_id in CONTAIN_TYPES
+                        else DEFEND_RADIUS
+                    )
+                    for th in self.townhalls
+                )
             ],
             self,
         )
