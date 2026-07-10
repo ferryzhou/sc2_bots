@@ -45,6 +45,7 @@ from cython_extensions import cy_closest_to, cy_in_attack_range, cy_pick_enemy_t
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
+from sc2.data import Race
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -57,6 +58,15 @@ from sc2.units import Units
 ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MARINE: {"proportion": 0.5, "priority": 0},
     UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
+    UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
+    UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
+}
+
+# vs protoss: marauder-heavy - stalkers/immortals/archons are all armored,
+# and TvP went 0-4 by elimination in the two gauntlets before this comp
+ARMY_COMP_VS_PROTOSS: dict[UnitID, dict] = {
+    UnitID.MARINE: {"proportion": 0.35, "priority": 1},
+    UnitID.MARAUDER: {"proportion": 0.35, "priority": 0},
     UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
@@ -115,7 +125,24 @@ ATTACK_AT_SUPPLY: float = 40.0
 REGROUP_BELOW_SUPPLY: float = 15.0
 MEDIVACS_FOR_ATTACK: int = 1
 ATTACK_ANYWAY_AFTER: float = 480.0
+# with an overwhelming army, commit unconditionally: real-opponent games
+# stalled to the 40-min wall timeout with a massed army cycling
+# attack/regroup outside a defended base instead of finishing
+COMMIT_AT_SUPPLY: float = 70.0
+# vs protoss, only attack at commit strength: instrumented TvP losses
+# showed 40-50 supply pushes feeding the protoss deathball one at a time
+# (45->9, rebuild, 46->8, eliminated) while macro easily sustained more -
+# and the games griffin wins are the ones where it fights at 130+ supply
+ATTACK_AT_SUPPLY_VS_PROTOSS: float = COMMIT_AT_SUPPLY
 DEFEND_RADIUS: float = 25.0
+
+# Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
+# with 600-1300s of idle worker time - reaper/hellion harassment met zero
+# resistance whenever the army was away, and any threat recalled the whole
+# army instead. A small squad stays home; the main army is only recalled
+# when the threat outweighs the guard.
+HOME_GUARD_SUPPLY: float = 10.0
+RECALL_MARGIN: float = 4.0
 
 
 class GriffinBot(AresBot):
@@ -127,6 +154,7 @@ class GriffinBot(AresBot):
         self._commenced_attack: bool = False
         self._emergency: bool = False
         self._last_threat_time: float = 0.0
+        self._last_status_log: float = 0.0
 
     async def on_start(self) -> None:
         await super(GriffinBot, self).on_start()
@@ -143,30 +171,73 @@ class GriffinBot(AresBot):
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
+        guard: Units = self.mediator.get_units_from_role(role=UnitRole.BASE_DEFENDER)
 
-        if threat := self._home_threat():
+        threats: Units = self._home_threats()
+        if threats:
+            threat: Unit = cy_closest_to(self.start_location, threats)
             # defend: during an early rush hold the ramp choke (don't chase
             # down the ramp into the flood) unless enemies are already inside
             target: Point2 = threat.position
             if self._emergency and threat.distance_to(self.start_location) > 18.0:
                 target = self.main_base_ramp.top_center
-            self._micro(forces, target=target)
-            return
+            self._micro(guard, target=target)
+            # recall the main army only when the guard is outmatched
+            if (
+                self._emergency
+                or self.get_total_supply(threats)
+                > self.get_total_supply(guard) + RECALL_MARGIN
+            ):
+                self._micro(forces, target=target)
+                return
+        else:
+            # station the guard between the townhalls and the front
+            station: Point2 = self.main_base_ramp.top_center.towards(
+                self.game_info.map_center, 2.0
+            )
+            grid: np.ndarray = self.mediator.get_ground_grid
+            for unit in guard:
+                if unit.distance_to(station) > 8.0:
+                    maneuver: CombatManeuver = CombatManeuver()
+                    maneuver.add(
+                        PathUnitToTarget(unit=unit, grid=grid, target=station)
+                    )
+                    maneuver.add(AMove(unit=unit, target=station))
+                    self.register_behavior(maneuver)
+
+        # periodic state line + attack/regroup transitions, for loss analysis
+        if self.time - self._last_status_log >= 30.0:
+            self._last_status_log = self.time
+            logger.info(
+                f"{self.time_formatted} STATUS army={forces_supply:.0f} "
+                f"guard={self.get_total_supply(guard):.0f} "
+                f"bases={self.townhalls.amount} workers={self.workers.amount} "
+                f"attacking={self._commenced_attack} "
+                f"home_threats={self.get_total_supply(threats):.0f}"
+            )
 
         if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
             self._commenced_attack = False
-        elif (
-            not self._commenced_attack
-            and forces_supply >= ATTACK_AT_SUPPLY
-            and (
-                (
-                    self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
-                    and UpgradeId.STIMPACK in self.state.upgrades
+            logger.info(
+                f"{self.time_formatted} REGROUP at army={forces_supply:.0f}"
+            )
+        elif not self._commenced_attack and (
+            forces_supply >= COMMIT_AT_SUPPLY
+            or (
+                forces_supply >= self._attack_at_supply
+                and (
+                    (
+                        self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
+                        and UpgradeId.STIMPACK in self.state.upgrades
+                    )
+                    or self.time > ATTACK_ANYWAY_AFTER
                 )
-                or self.time > ATTACK_ANYWAY_AFTER
             )
         ):
             self._commenced_attack = True
+            logger.info(
+                f"{self.time_formatted} ATTACK at army={forces_supply:.0f}"
+            )
 
         if self._commenced_attack:
             self._micro(forces, target=self.attack_target)
@@ -185,7 +256,16 @@ class GriffinBot(AresBot):
 
     async def on_unit_created(self, unit: Unit) -> None:
         await super(GriffinBot, self).on_unit_created(unit)
-        if unit.type_id not in WORKER_TYPES:
+        if unit.type_id in WORKER_TYPES:
+            return
+        # keep the home guard topped up; medivacs always travel with the army
+        guard: Units = self.mediator.get_units_from_role(role=UnitRole.BASE_DEFENDER)
+        if (
+            unit.type_id not in SUPPORT_TYPES
+            and self.get_total_supply(guard) < HOME_GUARD_SUPPLY
+        ):
+            self.mediator.assign_role(tag=unit.tag, role=UnitRole.BASE_DEFENDER)
+        else:
             self.mediator.assign_role(tag=unit.tag, role=UnitRole.ATTACKING)
 
     @property
@@ -200,18 +280,30 @@ class GriffinBot(AresBot):
                 self.current_base_target = next(self.expansions_generator)
             return self.current_base_target
 
-    def _home_threat(self) -> Optional[Unit]:
-        """Closest enemy combat unit near any of our townhalls, if any."""
-        threats: list[Unit] = [
-            u
-            for u in self.enemy_units
-            if u.type_id not in COMMON_UNIT_IGNORE_TYPES
-            and not u.is_memory
-            and any(u.distance_to(th) < DEFEND_RADIUS for th in self.townhalls)
-        ]
-        if not threats:
-            return None
-        return cy_closest_to(self.start_location, Units(threats, self))
+    @property
+    def _army_comp(self) -> dict[UnitID, dict]:
+        if self.enemy_race == Race.Protoss:
+            return ARMY_COMP_VS_PROTOSS
+        return ARMY_COMP
+
+    @property
+    def _attack_at_supply(self) -> float:
+        if self.enemy_race == Race.Protoss:
+            return ATTACK_AT_SUPPLY_VS_PROTOSS
+        return ATTACK_AT_SUPPLY
+
+    def _home_threats(self) -> Units:
+        """Enemy combat units near any of our townhalls."""
+        return Units(
+            [
+                u
+                for u in self.enemy_units
+                if u.type_id not in COMMON_UNIT_IGNORE_TYPES
+                and not u.is_memory
+                and any(u.distance_to(th) < DEFEND_RADIUS for th in self.townhalls)
+            ],
+            self,
+        )
 
     def _early_aggression_seen(self) -> bool:
         """Enemy combat units or proxy structures near our main."""
@@ -248,7 +340,7 @@ class GriffinBot(AresBot):
 
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
-            comp = EMERGENCY_COMP if self._emergency else ARMY_COMP
+            comp = EMERGENCY_COMP if self._emergency else self._army_comp
             macro_plan.add(AutoSupply(base_location=self.start_location))
             if self._emergency:
                 # units and production only - no expansions, no upgrades,
@@ -287,7 +379,7 @@ class GriffinBot(AresBot):
                     GasBuildingController(to_count=len(self.townhalls) * 2)
                 )
         else:
-            macro_plan.add(SpawnController(ARMY_COMP))
+            macro_plan.add(SpawnController(self._army_comp))
         self.register_behavior(macro_plan)
 
     def _manage_orbitals(self) -> None:
