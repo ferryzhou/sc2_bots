@@ -51,9 +51,13 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 # Army composition consumed by SpawnController / ProductionController.
+# Siege tanks are load-bearing vs the built-in cheater AIs: pure bio went
+# 0-6 vs terran+protoss CheatVision across two timing sweeps, and HanBot
+# (this repo's older Terran bot that beats cheater AIs) is bio+tank.
 ARMY_COMP: dict[UnitID, dict] = {
-    UnitID.MARINE: {"proportion": 0.6, "priority": 0},
-    UnitID.MARAUDER: {"proportion": 0.3, "priority": 1},
+    UnitID.MARINE: {"proportion": 0.5, "priority": 0},
+    UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
+    UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
@@ -64,8 +68,9 @@ EMERGENCY_COMP: dict[UnitID, dict] = {
 
 # early-rush window: aggression detected before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
-# don't spend on ebay upgrades before this (mirrors the phoenix rush lessons)
-UPGRADES_AFTER: float = 300.0
+# don't spend on ebay upgrades before this (mirrors the phoenix rush
+# lessons); early enough that stim is done for the 40-supply push
+UPGRADES_AFTER: float = 240.0
 
 DESIRED_UPGRADES: list[UpgradeId] = [
     UpgradeId.STIMPACK,
@@ -89,11 +94,27 @@ COMMON_UNIT_IGNORE_TYPES: set[UnitID] = {
 # support units that should follow the army rather than stutter into it
 SUPPORT_TYPES: set[UnitID] = {UnitID.MEDIVAC}
 
+TANK_TYPES: set[UnitID] = {UnitID.SIEGETANK, UnitID.SIEGETANKSIEGED}
+# siege when ground targets are inside this; unsiege when none remain
+# within a comfortably larger radius (hysteresis avoids mode-flapping)
+SIEGE_AT_RANGE: float = 11.0
+UNSIEGE_BEYOND_RANGE: float = 16.0
+
 STIMABLE_TYPES: set[UnitID] = {UnitID.MARINE, UnitID.MARAUDER}
 STIM_BUFFS: set[BuffId] = {BuffId.STIMPACK, BuffId.STIMPACKMARAUDER}
 
-ATTACK_AT_SUPPLY: float = 28.0
-REGROUP_BELOW_SUPPLY: float = 10.0
+# Attack timing, calibrated by gauntlet sweeps vs CheatVision:
+# - 28 supply, no gates: won vs zerg by constant pressure but 0-6 vs
+#   terran+protoss (pushed without stim/medivacs, traded out, then
+#   streamed reinforcements in piecemeal until eliminated)
+# - 50 supply + 2 medivacs + 10:00 fallback + cohesion micro: 0-6 vs all
+#   races - too passive, the cheater economy snowballs while bio waits
+# Current: standard stim-timing push - 40 supply once stim + a medivac
+# are in, with a 8:00 fallback so the army never sits home forever.
+ATTACK_AT_SUPPLY: float = 40.0
+REGROUP_BELOW_SUPPLY: float = 15.0
+MEDIVACS_FOR_ATTACK: int = 1
+ATTACK_ANYWAY_AFTER: float = 480.0
 DEFEND_RADIUS: float = 25.0
 
 
@@ -134,7 +155,17 @@ class GriffinBot(AresBot):
 
         if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
             self._commenced_attack = False
-        elif not self._commenced_attack and forces_supply >= ATTACK_AT_SUPPLY:
+        elif (
+            not self._commenced_attack
+            and forces_supply >= ATTACK_AT_SUPPLY
+            and (
+                (
+                    self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
+                    and UpgradeId.STIMPACK in self.state.upgrades
+                )
+                or self.time > ATTACK_ANYWAY_AFTER
+            )
+        ):
             self._commenced_attack = True
 
         if self._commenced_attack:
@@ -241,7 +272,7 @@ class GriffinBot(AresBot):
                 # upgrades only once we're stable: past the rush window AND
                 # holding a real army (same gating as phoenix)
                 army_supply = self.supply_used - self.supply_workers
-                if self.time > UPGRADES_AFTER and army_supply >= 16:
+                if self.time > UPGRADES_AFTER and army_supply >= 12:
                     macro_plan.add(
                         UpgradeController(
                             upgrade_list=DESIRED_UPGRADES,
@@ -318,6 +349,11 @@ class GriffinBot(AresBot):
                 lambda u: u.type_id not in ALL_STRUCTURES
             )
 
+            if unit.type_id in TANK_TYPES:
+                self._tank_micro(unit, all_close, grid, target, maneuver)
+                self.register_behavior(maneuver)
+                continue
+
             if all_close:
                 self._maybe_stim(unit, only_enemy_units, maneuver)
                 # shoot whatever is already in range (units before structures)
@@ -342,6 +378,35 @@ class GriffinBot(AresBot):
                 maneuver.add(AMove(unit=unit, target=target))
 
             self.register_behavior(maneuver)
+
+    def _tank_micro(
+        self,
+        unit: Unit,
+        enemies_close: Units,
+        grid: np.ndarray,
+        target: Point2,
+        maneuver: CombatManeuver,
+    ) -> None:
+        """Siege against nearby ground targets, unsiege and follow otherwise."""
+        ground: Units = enemies_close.filter(lambda u: not u.is_flying)
+        closest_dist: float = (
+            unit.distance_to(cy_closest_to(unit.position, ground))
+            if ground
+            else 9999.0
+        )
+        if unit.type_id == UnitID.SIEGETANK:
+            if closest_dist < SIEGE_AT_RANGE:
+                maneuver.add(
+                    UseAbility(ability=AbilityId.SIEGEMODE_SIEGEMODE, unit=unit)
+                )
+            else:
+                maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=target))
+                maneuver.add(AMove(unit=unit, target=target))
+        else:  # sieged: hold and shoot; pack up only when nothing is in reach
+            if closest_dist > UNSIEGE_BEYOND_RANGE:
+                maneuver.add(
+                    UseAbility(ability=AbilityId.UNSIEGE_UNSIEGE, unit=unit)
+                )
 
     def _maybe_stim(
         self, unit: Unit, enemies_close: Units, maneuver: CombatManeuver
