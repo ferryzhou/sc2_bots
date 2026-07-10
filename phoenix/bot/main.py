@@ -302,7 +302,11 @@ class PhoenixBot(AresBot):
                     )
 
                 enemy_target: Unit = cy_pick_enemy_target(all_close)
-                if unit.shield_percentage < 0.3:
+                if self._emergency and unit.type_id == UnitID.ZEALOT:
+                    # holding a wall gap: kiting backwards opens the door,
+                    # so zealots stand and fight
+                    maneuver.add(AMove(unit=unit, target=enemy_target.position))
+                elif unit.shield_percentage < 0.3:
                     maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
                 else:
                     maneuver.add(
