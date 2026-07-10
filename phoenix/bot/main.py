@@ -156,7 +156,11 @@ class PhoenixBot(AresBot):
             ):
                 self._commenced_attack = False
         elif forces_supply >= ATTACK_AT_SUPPLY and (
-            fight is None or fight in TIE_OR_BETTER
+            fight is None
+            or fight in TIE_OR_BETTER
+            # pressure valve: near max supply nothing is gained by waiting -
+            # attack even into a predicted loss rather than starve at home
+            or forces_supply >= 60.0
         ):
             self._commenced_attack = True
 
