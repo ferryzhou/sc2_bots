@@ -7,6 +7,8 @@ This project is a collection of AI bots for StarCraft II, developed using Python
 *   Multiple Starcraft II bot implementations.
 *   `han`: HanBot V2.0, a rule-based Terran bio/mech macro bot with scouting, cheese detection, and army micro. It can beat the built-in cheater AIs (details in `han/README.md`).
 *   `lishimin`: Protoss bots employing strategies like cannon rushes (`LiShiMinBot`) and multi-pylon builds (`MultiPylonBot`).
+*   `phoenix`: PhoenixBot, a Protoss bot built on the ares-sc2 framework with data-driven openings (details in `phoenix/README.md`).
+*   `griffin`: GriffinBot, a Terran marine/marauder/medivac bio bot built on ares-sc2, the Terran counterpart of PhoenixBot (details in `griffin/README.md`).
 *   Replay analysis tool (`analysis/sc2reader_analyzer.py`) to extract build orders, unit production, upgrades, and generate performance graphs.
 *   Scripts to run bots locally against the computer or other bots.
 
@@ -20,6 +22,11 @@ This project is a collection of AI bots for StarCraft II, developed using Python
     *   `lishimin/lishimin.py`: Main logic for the LiShiMinBot (cannon rush).
     *   `lishimin/multi_pylon.py`: Logic for the MultiPylonBot.
     *   `lishimin/run.py`: Script to run the lishimin bots.
+*   `phoenix/`: Contains the "phoenix" Protoss bot (ares-sc2), including its specific README.
+*   `griffin/`: Contains the "griffin" Terran bot (ares-sc2), including its specific README.
+    *   `griffin/bot/main.py`: Main logic for the GriffinBot.
+    *   `griffin/terran_builds.yml`: Data-driven opening build orders.
+    *   `griffin/run.py`: Script to run the GriffinBot locally or on a ladder server.
 *   `analysis/`: Contains tools for game replay analysis.
     *   `analysis/sc2reader_analyzer.py`: Script to parse replays and extract game data.
 *   `run_local_games.py`: A script to easily run games between different bots or against the computer.
@@ -105,6 +112,12 @@ This project is a collection of AI bots for StarCraft II, developed using Python
     *   Race: Protoss
     *   `LiShiMinBot`: Implements a cannon rush strategy.
     *   `MultiPylonBot`: Focuses on a strategy involving multiple pylons (details can be inferred from `lishimin/multi_pylon.py`).
+*   **PhoenixBot (`phoenix/`)**
+    *   Race: Protoss
+    *   Strategy: Built on the ares-sc2 framework. Data-driven openings (`phoenix/protoss_builds.yml`) executed by the ares build runner, then ares macro controllers and stalker-based micro. See `phoenix/README.md`.
+*   **GriffinBot (`griffin/`)**
+    *   Race: Terran
+    *   Strategy: The Terran counterpart of PhoenixBot, sharing its ares-sc2 architecture. Data-driven openings (`griffin/terran_builds.yml`), then marine/marauder/medivac bio with stim micro, orbital/MULE management, and supply depot raise/lower. See `griffin/README.md`.
 
 **Replay Analysis (`analysis/sc2reader_analyzer.py`):**
 This project includes a script to analyze StarCraft II replay files (`.SC2Replay`).
