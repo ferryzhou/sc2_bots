@@ -35,11 +35,19 @@ from ares.behaviors.macro import (
     GasBuildingController,
     Mining,
     ProductionController,
+    ProtossStaticDefence,
     SpawnController,
     UpgradeController,
 )
 from ares.behaviors.macro.macro_plan import MacroPlan
-from ares.consts import ALL_STRUCTURES, WORKER_TYPES, UnitRole, UnitTreeQueryType
+from ares.consts import (
+    ALL_STRUCTURES,
+    LOSS_CLOSE_OR_WORSE,
+    TIE_OR_BETTER,
+    WORKER_TYPES,
+    UnitRole,
+    UnitTreeQueryType,
+)
 from cython_extensions import cy_closest_to, cy_in_attack_range, cy_pick_enemy_target
 from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
@@ -127,9 +135,33 @@ class PhoenixBot(AresBot):
             self._micro(forces, target=target)
             return
 
-        if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
-            self._commenced_attack = False
-        elif not self._commenced_attack and forces_supply >= ATTACK_AT_SUPPLY:
+        # engagement gating: simulate the fight against the visible enemy
+        # army before committing / while committed (ares combat sim)
+        enemy_army: Units = self.enemy_units.filter(
+            lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES
+            and u.type_id not in WORKER_TYPES
+            and not u.is_memory
+        )
+        fight = None
+        if forces and enemy_army:
+            fight = self.mediator.can_win_fight(
+                own_units=forces,
+                enemy_units=enemy_army,
+                workers_do_no_damage=True,
+            )
+
+        if self._commenced_attack:
+            if forces_supply < REGROUP_BELOW_SUPPLY or (
+                fight is not None and fight in LOSS_CLOSE_OR_WORSE
+            ):
+                self._commenced_attack = False
+        elif forces_supply >= ATTACK_AT_SUPPLY and (
+            fight is None
+            or fight in TIE_OR_BETTER
+            # pressure valve: near max supply nothing is gained by waiting -
+            # attack even into a predicted loss rather than starve at home
+            or forces_supply >= 60.0
+        ):
             self._commenced_attack = True
 
         if self._commenced_attack:
@@ -196,7 +228,12 @@ class PhoenixBot(AresBot):
 
     def _update_emergency(self) -> None:
         """Rush defense mode: abort the opening, stop spending on greed."""
-        if self._early_aggression_seen():
+        # ares intel detections (race-aware, timing-tuned) plus our own
+        # proximity heuristic as a catch-all
+        intel_rush: bool = bool(
+            self.mediator.get_did_enemy_rush or self.mediator.get_is_proxy_zealot
+        )
+        if intel_rush or self._early_aggression_seen():
             self._last_threat_time = self.time
             if not self._emergency and self.time < EARLY_THREAT_UNTIL:
                 self._emergency = True
@@ -228,6 +265,14 @@ class PhoenixBot(AresBot):
                         add_production_at_bank=(150, 0),
                     )
                 )
+                # a battery behind the wall is the strongest rush holder
+                macro_plan.add(
+                    ProtossStaticDefence(
+                        pylons_per_base=1,
+                        photon_cannons_per_base=0,
+                        shield_batteries_per_base=1,
+                    )
+                )
             else:
                 macro_plan.add(
                     BuildWorkers(to_count=min(66, 22 * len(self.townhalls)))
@@ -246,6 +291,15 @@ class PhoenixBot(AresBot):
                     )
                 macro_plan.add(
                     ProductionController(comp, base_location=self.start_location)
+                )
+                # shield battery at each base (auto-techs its prerequisites);
+                # cannons skipped to avoid an early forge detour
+                macro_plan.add(
+                    ProtossStaticDefence(
+                        pylons_per_base=1,
+                        photon_cannons_per_base=0,
+                        shield_batteries_per_base=1,
+                    )
                 )
                 macro_plan.add(ExpansionController(to_count=4, max_pending=1))
                 macro_plan.add(
