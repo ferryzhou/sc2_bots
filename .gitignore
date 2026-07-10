@@ -33,6 +33,7 @@ replays/
 phoenix/data/
 griffin/data/
 
-# AI Arena ladder zip (build artifact)
+# AI Arena ladder zips (build artifacts)
 PhoenixBot.zip
+GriffinBot.zip
 results/versus_logs/

@@ -1,4 +1,4 @@
-"""Build an AI Arena ladder zip for PhoenixBot.
+"""Build an AI Arena ladder zip for a repo bot (PhoenixBot or GriffinBot).
 
 Packages the bot plus all non-standard dependencies as plain packages at the
 zip root (the arena runs `python run.py ...` from the extracted zip, so the
@@ -8,8 +8,9 @@ AI Arena ladder (currently 3.12):
 
     python scripts/create_ladder_zip.py --site-packages \
         /root/venv312/lib/python3.12/site-packages
+    python scripts/create_ladder_zip.py --bot griffin
 
-Output: PhoenixBot.zip in the repo root.
+Output: <BotName>.zip in the repo root.
 """
 
 import argparse
@@ -20,9 +21,14 @@ import zipfile
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-BOT_DIR = REPO_ROOT / "phoenix"
 
-BOT_FILES = ["run.py", "ladder.py", "config.yml", "protoss_builds.yml"]
+# dir name -> (ladder bot name, builds yml consumed by the ares build runner)
+BOT_REGISTRY = {
+    "phoenix": ("PhoenixBot", "protoss_builds.yml"),
+    "griffin": ("GriffinBot", "terran_builds.yml"),
+}
+
+BOT_FILES = ["run.py", "ladder.py", "config.yml"]
 BOT_PACKAGE = "bot"
 
 # package dirs harvested from site-packages (ares installs under src/)
@@ -61,14 +67,21 @@ def copy_package(src: Path, dst: Path, py_tag: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--bot", default="phoenix", choices=sorted(BOT_REGISTRY),
+                        help="which repo bot to package")
     parser.add_argument(
         "--site-packages",
         default="/root/venv312/lib/python3.12/site-packages",
         help="site-packages of a venv matching the ladder python version",
     )
     parser.add_argument("--py-tag", default="312", help="cpython tag, e.g. 312")
-    parser.add_argument("--output", default=str(REPO_ROOT / "PhoenixBot.zip"))
+    parser.add_argument("--output", default=None,
+                        help="default: <BotName>.zip in the repo root")
     args = parser.parse_args()
+
+    bot_name, builds_yml = BOT_REGISTRY[args.bot]
+    bot_dir = REPO_ROOT / args.bot
+    output = args.output or str(REPO_ROOT / f"{bot_name}.zip")
 
     sp = Path(args.site_packages)
     if not (sp / "src" / "ares").is_dir():
@@ -76,13 +89,13 @@ def main() -> None:
 
     staging = Path(tempfile.mkdtemp(prefix="ladder_zip_"))
     try:
-        for name in BOT_FILES:
-            shutil.copy2(BOT_DIR / name, staging / name)
-        copy_package(BOT_DIR / BOT_PACKAGE, staging / BOT_PACKAGE, args.py_tag)
+        for name in [*BOT_FILES, builds_yml]:
+            shutil.copy2(bot_dir / name, staging / name)
+        copy_package(bot_dir / BOT_PACKAGE, staging / BOT_PACKAGE, args.py_tag)
         for dst_name, rel_src in DEPENDENCIES.items():
             copy_package(sp / rel_src, staging / dst_name, args.py_tag)
 
-        out = Path(args.output)
+        out = Path(output)
         out.unlink(missing_ok=True)
         with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
             for f in sorted(staging.rglob("*")):
