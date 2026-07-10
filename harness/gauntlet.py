@@ -68,6 +68,7 @@ def build_matchups(args) -> list[dict]:
     rng = random.Random(args.seed)
     return [
         {
+            "bot": args.bot,
             "race": race,
             "difficulty": difficulty,
             "map": rng.choice(maps_pool),
@@ -82,6 +83,7 @@ def play(matchup: dict, wall_timeout: int) -> dict:
     cmd = [
         sys.executable,
         str(PLAY_ONE),
+        "--bot", matchup["bot"],
         "--map", matchup["map"],
         "--race", matchup["race"],
         "--difficulty", matchup["difficulty"],
@@ -116,27 +118,33 @@ def outcome_char(result: str) -> str:
 def print_summary(records: list[dict], title: str) -> None:
     by_matchup: dict[tuple, list[str]] = defaultdict(list)
     for r in records:
-        key = (r.get("opponent_race", r.get("race")), r.get("difficulty"))
+        # records predating multi-bot support are all phoenix; versus-mode
+        # records have an opponent bot name instead of a difficulty
+        key = (r.get("bot", "phoenix"),
+               r.get("opponent_race") or r.get("race") or "?",
+               r.get("difficulty") or r.get("opponent_name") or "?")
         by_matchup[key].append(r.get("result", "Error"))
 
     print(f"\n=== {title} ===")
-    print(f"{'opponent':<12} {'difficulty':<14} {'games':>5} {'wins':>5} "
-          f"{'winrate':>8}  record")
+    print(f"{'bot':<9} {'opponent':<12} {'difficulty':<14} {'games':>5} "
+          f"{'wins':>5} {'winrate':>8}  record")
     total_games = total_wins = 0
-    for (race, diff), results in sorted(by_matchup.items()):
+    for (bot, race, diff), results in sorted(by_matchup.items()):
         wins = results.count(WIN)
         total_games += len(results)
         total_wins += wins
         chars = "".join(outcome_char(r) for r in results)
-        print(f"{race:<12} {diff:<14} {len(results):>5} {wins:>5} "
+        print(f"{bot:<9} {race:<12} {diff:<14} {len(results):>5} {wins:>5} "
               f"{wins / len(results):>7.0%}  {chars}")
     if total_games:
-        print(f"{'TOTAL':<12} {'':<14} {total_games:>5} {total_wins:>5} "
+        print(f"{'TOTAL':<9} {'':<12} {'':<14} {total_games:>5} {total_wins:>5} "
               f"{total_wins / total_games:>7.0%}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--bot", default="phoenix", choices=["phoenix", "griffin"],
+                        help="which repo bot to evaluate")
     parser.add_argument("--games", type=int, default=6)
     parser.add_argument("--concurrency", type=int, default=2)
     parser.add_argument("--races", default="zerg,terran,protoss")

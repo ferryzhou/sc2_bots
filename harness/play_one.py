@@ -5,6 +5,8 @@ process), but works standalone too:
 
     python harness/play_one.py --map PylonAIE --race zerg \
         --difficulty CheatVision --result-file /tmp/result.json
+    python harness/play_one.py --bot griffin --map PylonAIE \
+        --race zerg --difficulty CheatVision --result-file /tmp/result.json
 """
 
 import argparse
@@ -16,24 +18,39 @@ from datetime import datetime
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-BOT_DIR = REPO_ROOT / "phoenix"
+
+# ares bots in this repo playable by the harness: dir name -> (class, race)
+BOT_REGISTRY = {
+    "phoenix": ("PhoenixBot", "Protoss"),
+    "griffin": ("GriffinBot", "Terran"),
+}
+
+# --bot decides which package to import and which dir to chdir into, so it
+# must be known before the sc2/bot imports below
+_pre = argparse.ArgumentParser(add_help=False)
+_pre.add_argument("--bot", default="phoenix", choices=sorted(BOT_REGISTRY))
+BOT_KEY = _pre.parse_known_args()[0].bot
+BOT_CLASS_NAME, BOT_RACE_NAME = BOT_REGISTRY[BOT_KEY]
+
+BOT_DIR = REPO_ROOT / BOT_KEY
 sys.path.insert(0, str(BOT_DIR))
 
-# ares reads config.yml / protoss_builds.yml from the working directory
+# ares reads config.yml / <race>_builds.yml from the working directory
 os.chdir(BOT_DIR)
 
+import bot.main
 from sc2 import maps
 from sc2.data import AIBuild, Difficulty, Race
 from sc2.main import run_game
 from sc2.player import Bot, Computer
 
-from bot.main import PhoenixBot
+BotClass = getattr(bot.main, BOT_CLASS_NAME)
 
 # filled in by HarnessBot.on_end, read after run_game returns
 _game_stats: dict = {}
 
 
-class HarnessBot(PhoenixBot):
+class HarnessBot(BotClass):
     async def on_end(self, game_result) -> None:
         _game_stats["game_time"] = round(self.time, 1)
         _game_stats["workers"] = self.workers.amount
@@ -45,7 +62,7 @@ class HarnessBot(PhoenixBot):
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(parents=[_pre])
     parser.add_argument("--map", required=True)
     parser.add_argument(
         "--race", default="zerg", choices=["zerg", "terran", "protoss", "random"]
@@ -70,6 +87,7 @@ def main() -> None:
     )
 
     record = {
+        "bot": BOT_KEY,
         "map": args.map,
         "opponent_race": args.race,
         "difficulty": args.difficulty,
@@ -83,7 +101,7 @@ def main() -> None:
         result = run_game(
             maps.get(args.map),
             [
-                Bot(Race.Protoss, HarnessBot(), "PhoenixBot"),
+                Bot(Race[BOT_RACE_NAME], HarnessBot(), BOT_CLASS_NAME),
                 Computer(
                     Race[args.race.title()],
                     Difficulty[args.difficulty],
