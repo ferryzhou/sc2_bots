@@ -45,6 +45,7 @@ from cython_extensions import cy_closest_to, cy_in_attack_range, cy_pick_enemy_t
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
+from sc2.data import Race
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.position import Point2
 from sc2.unit import Unit
@@ -57,6 +58,15 @@ from sc2.units import Units
 ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MARINE: {"proportion": 0.5, "priority": 0},
     UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
+    UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
+    UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
+}
+
+# vs protoss: marauder-heavy - stalkers/immortals/archons are all armored,
+# and TvP went 0-4 by elimination in the two gauntlets before this comp
+ARMY_COMP_VS_PROTOSS: dict[UnitID, dict] = {
+    UnitID.MARINE: {"proportion": 0.35, "priority": 1},
+    UnitID.MARAUDER: {"proportion": 0.35, "priority": 0},
     UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
@@ -247,6 +257,12 @@ class GriffinBot(AresBot):
                 self.current_base_target = next(self.expansions_generator)
             return self.current_base_target
 
+    @property
+    def _army_comp(self) -> dict[UnitID, dict]:
+        if self.enemy_race == Race.Protoss:
+            return ARMY_COMP_VS_PROTOSS
+        return ARMY_COMP
+
     def _home_threats(self) -> Units:
         """Enemy combat units near any of our townhalls."""
         return Units(
@@ -295,7 +311,7 @@ class GriffinBot(AresBot):
 
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
-            comp = EMERGENCY_COMP if self._emergency else ARMY_COMP
+            comp = EMERGENCY_COMP if self._emergency else self._army_comp
             macro_plan.add(AutoSupply(base_location=self.start_location))
             if self._emergency:
                 # units and production only - no expansions, no upgrades,
@@ -334,7 +350,7 @@ class GriffinBot(AresBot):
                     GasBuildingController(to_count=len(self.townhalls) * 2)
                 )
         else:
-            macro_plan.add(SpawnController(ARMY_COMP))
+            macro_plan.add(SpawnController(self._army_comp))
         self.register_behavior(macro_plan)
 
     def _manage_orbitals(self) -> None:
