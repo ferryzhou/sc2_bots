@@ -69,11 +69,14 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
-# vs protoss: marauder-heavy - stalkers/immortals/archons are all armored,
-# and TvP went 0-4 by elimination in the two gauntlets before this comp
+# vs protoss: instrumented losses showed an immortal/zealot/sentry/templar
+# deathball wiping the whole army in one fight (immortals delete armored
+# marauders+tanks, storm melts clumped bio). Ghosts are the counter: EMP
+# strips shields and drains sentry/templar energy before the engagement.
 ARMY_COMP_VS_PROTOSS: dict[UnitID, dict] = {
     UnitID.MARINE: {"proportion": 0.35, "priority": 1},
-    UnitID.MARAUDER: {"proportion": 0.35, "priority": 0},
+    UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
+    UnitID.GHOST: {"proportion": 0.15, "priority": 0},
     UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
@@ -496,6 +499,20 @@ class GriffinBot(AresBot):
                 continue
 
             if all_close:
+                # EMP the shielded/energy deathball before shooting
+                if (
+                    unit.type_id == UnitID.GHOST
+                    and unit.energy >= 75
+                    and only_enemy_units
+                ):
+                    emp_target: Unit = cy_pick_enemy_target(only_enemy_units)
+                    maneuver.add(
+                        UseAbility(
+                            ability=AbilityId.EMP_EMP,
+                            unit=unit,
+                            target=emp_target.position,
+                        )
+                    )
                 self._maybe_stim(unit, only_enemy_units, maneuver)
                 # shoot whatever is already in range (units before structures)
                 if in_attack_range := cy_in_attack_range(unit, only_enemy_units):
