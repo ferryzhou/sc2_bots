@@ -40,7 +40,14 @@ from ares.behaviors.macro import (
     UpgradeController,
 )
 from ares.behaviors.macro.macro_plan import MacroPlan
-from ares.consts import ALL_STRUCTURES, WORKER_TYPES, UnitRole, UnitTreeQueryType
+from ares.consts import (
+    ALL_STRUCTURES,
+    LOSS_CLOSE_OR_WORSE,
+    TIE_OR_BETTER,
+    WORKER_TYPES,
+    UnitRole,
+    UnitTreeQueryType,
+)
 from cython_extensions import cy_closest_to, cy_in_attack_range, cy_pick_enemy_target
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
@@ -62,11 +69,14 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
-# vs protoss: marauder-heavy - stalkers/immortals/archons are all armored,
-# and TvP went 0-4 by elimination in the two gauntlets before this comp
+# vs protoss: instrumented losses showed an immortal/zealot/sentry/templar
+# deathball wiping the whole army in one fight (immortals delete armored
+# marauders+tanks, storm melts clumped bio). Ghosts are the counter: EMP
+# strips shields and drains sentry/templar energy before the engagement.
 ARMY_COMP_VS_PROTOSS: dict[UnitID, dict] = {
     UnitID.MARINE: {"proportion": 0.35, "priority": 1},
-    UnitID.MARAUDER: {"proportion": 0.35, "priority": 0},
+    UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
+    UnitID.GHOST: {"proportion": 0.15, "priority": 0},
     UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
@@ -191,9 +201,10 @@ class GriffinBot(AresBot):
                 self._micro(forces, target=target)
                 return
         else:
-            # station the guard between the townhalls and the front
-            station: Point2 = self.main_base_ramp.top_center.towards(
-                self.game_info.map_center, 2.0
+            # station the guard between the natural and the main, covering
+            # both mineral lines against harassment
+            station: Point2 = self.mediator.get_own_nat.towards(
+                self.start_location, 4.0
             )
             grid: np.ndarray = self.mediator.get_ground_grid
             for unit in guard:
@@ -205,26 +216,56 @@ class GriffinBot(AresBot):
                     maneuver.add(AMove(unit=unit, target=station))
                     self.register_behavior(maneuver)
 
+        # engagement gating: simulate the fight against the visible enemy
+        # army before committing / while committed (ares combat sim) - the
+        # instrumented TvP losses came from feeding 40-50 supply pushes
+        # into a stronger deathball one at a time
+        enemy_army: Units = self.enemy_units.filter(
+            lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES
+            and u.type_id not in WORKER_TYPES
+            and not u.is_memory
+        )
+        fight = None
+        if forces and enemy_army:
+            fight = self.mediator.can_win_fight(
+                own_units=forces,
+                enemy_units=enemy_army,
+                workers_do_no_damage=True,
+            )
+
         # periodic state line + attack/regroup transitions, for loss analysis
         if self.time - self._last_status_log >= 30.0:
             self._last_status_log = self.time
+            enemy_comp: dict[str, int] = {}
+            for u in enemy_army:
+                enemy_comp[u.type_id.name] = enemy_comp.get(u.type_id.name, 0) + 1
+            comp_str = ",".join(
+                f"{n}:{c}"
+                for n, c in sorted(enemy_comp.items(), key=lambda x: -x[1])[:6]
+            )
             logger.info(
                 f"{self.time_formatted} STATUS army={forces_supply:.0f} "
                 f"guard={self.get_total_supply(guard):.0f} "
                 f"bases={self.townhalls.amount} workers={self.workers.amount} "
-                f"attacking={self._commenced_attack} "
-                f"home_threats={self.get_total_supply(threats):.0f}"
+                f"attacking={self._commenced_attack} fight={fight} "
+                f"home_threats={self.get_total_supply(threats):.0f} "
+                f"enemy=[{comp_str}]"
             )
 
-        if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
-            self._commenced_attack = False
-            logger.info(
-                f"{self.time_formatted} REGROUP at army={forces_supply:.0f}"
-            )
-        elif not self._commenced_attack and (
+        if self._commenced_attack:
+            if forces_supply < REGROUP_BELOW_SUPPLY or (
+                fight is not None and fight in LOSS_CLOSE_OR_WORSE
+            ):
+                self._commenced_attack = False
+                logger.info(
+                    f"{self.time_formatted} REGROUP at "
+                    f"army={forces_supply:.0f} fight={fight}"
+                )
+        elif (
             forces_supply >= COMMIT_AT_SUPPLY
             or (
                 forces_supply >= self._attack_at_supply
+                and (fight is None or fight in TIE_OR_BETTER)
                 and (
                     (
                         self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
@@ -236,20 +277,31 @@ class GriffinBot(AresBot):
         ):
             self._commenced_attack = True
             logger.info(
-                f"{self.time_formatted} ATTACK at army={forces_supply:.0f}"
+                f"{self.time_formatted} ATTACK at "
+                f"army={forces_supply:.0f} fight={fight}"
             )
 
         if self._commenced_attack:
             self._micro(forces, target=self.attack_target)
         else:
-            # stage the army between our bases and the map center
-            rally: Point2 = self.main_base_ramp.top_center.towards(
-                self.game_info.map_center, 4.0
+            # stage the army at the natural facing the map - the old main-ramp
+            # rally left the natural CC exposed while turtling to commit
+            # strength; tanks siege pre-emptively to anchor the defense
+            rally: Point2 = self.mediator.get_own_nat.towards(
+                self.game_info.map_center, 5.0
             )
             grid: np.ndarray = self.mediator.get_ground_grid
             for unit in forces:
-                if unit.distance_to(rally) > 8.0:
-                    maneuver: CombatManeuver = CombatManeuver()
+                if unit.type_id == UnitID.SIEGETANK and unit.distance_to(rally) <= 8.0:
+                    maneuver = CombatManeuver()
+                    maneuver.add(
+                        UseAbility(ability=AbilityId.SIEGEMODE_SIEGEMODE, unit=unit)
+                    )
+                    self.register_behavior(maneuver)
+                elif unit.type_id == UnitID.SIEGETANKSIEGED:
+                    continue  # hold the defensive siege while staging
+                elif unit.distance_to(rally) > 8.0:
+                    maneuver = CombatManeuver()
                     maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=rally))
                     maneuver.add(AMove(unit=unit, target=rally))
                     self.register_behavior(maneuver)
@@ -447,6 +499,20 @@ class GriffinBot(AresBot):
                 continue
 
             if all_close:
+                # EMP the shielded/energy deathball before shooting
+                if (
+                    unit.type_id == UnitID.GHOST
+                    and unit.energy >= 75
+                    and only_enemy_units
+                ):
+                    emp_target: Unit = cy_pick_enemy_target(only_enemy_units)
+                    maneuver.add(
+                        UseAbility(
+                            ability=AbilityId.EMP_EMP,
+                            unit=unit,
+                            target=emp_target.position,
+                        )
+                    )
                 self._maybe_stim(unit, only_enemy_units, maneuver)
                 # shoot whatever is already in range (units before structures)
                 if in_attack_range := cy_in_attack_range(unit, only_enemy_units):
