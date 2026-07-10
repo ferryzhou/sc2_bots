@@ -117,6 +117,14 @@ MEDIVACS_FOR_ATTACK: int = 1
 ATTACK_ANYWAY_AFTER: float = 480.0
 DEFEND_RADIUS: float = 25.0
 
+# Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
+# with 600-1300s of idle worker time - reaper/hellion harassment met zero
+# resistance whenever the army was away, and any threat recalled the whole
+# army instead. A small squad stays home; the main army is only recalled
+# when the threat outweighs the guard.
+HOME_GUARD_SUPPLY: float = 10.0
+RECALL_MARGIN: float = 4.0
+
 
 class GriffinBot(AresBot):
     expansions_generator: cycle
@@ -143,15 +151,39 @@ class GriffinBot(AresBot):
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
+        guard: Units = self.mediator.get_units_from_role(role=UnitRole.BASE_DEFENDER)
 
-        if threat := self._home_threat():
+        threats: Units = self._home_threats()
+        if threats:
+            threat: Unit = cy_closest_to(self.start_location, threats)
             # defend: during an early rush hold the ramp choke (don't chase
             # down the ramp into the flood) unless enemies are already inside
             target: Point2 = threat.position
             if self._emergency and threat.distance_to(self.start_location) > 18.0:
                 target = self.main_base_ramp.top_center
-            self._micro(forces, target=target)
-            return
+            self._micro(guard, target=target)
+            # recall the main army only when the guard is outmatched
+            if (
+                self._emergency
+                or self.get_total_supply(threats)
+                > self.get_total_supply(guard) + RECALL_MARGIN
+            ):
+                self._micro(forces, target=target)
+                return
+        else:
+            # station the guard between the townhalls and the front
+            station: Point2 = self.main_base_ramp.top_center.towards(
+                self.game_info.map_center, 2.0
+            )
+            grid: np.ndarray = self.mediator.get_ground_grid
+            for unit in guard:
+                if unit.distance_to(station) > 8.0:
+                    maneuver: CombatManeuver = CombatManeuver()
+                    maneuver.add(
+                        PathUnitToTarget(unit=unit, grid=grid, target=station)
+                    )
+                    maneuver.add(AMove(unit=unit, target=station))
+                    self.register_behavior(maneuver)
 
         if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
             self._commenced_attack = False
@@ -185,7 +217,16 @@ class GriffinBot(AresBot):
 
     async def on_unit_created(self, unit: Unit) -> None:
         await super(GriffinBot, self).on_unit_created(unit)
-        if unit.type_id not in WORKER_TYPES:
+        if unit.type_id in WORKER_TYPES:
+            return
+        # keep the home guard topped up; medivacs always travel with the army
+        guard: Units = self.mediator.get_units_from_role(role=UnitRole.BASE_DEFENDER)
+        if (
+            unit.type_id not in SUPPORT_TYPES
+            and self.get_total_supply(guard) < HOME_GUARD_SUPPLY
+        ):
+            self.mediator.assign_role(tag=unit.tag, role=UnitRole.BASE_DEFENDER)
+        else:
             self.mediator.assign_role(tag=unit.tag, role=UnitRole.ATTACKING)
 
     @property
@@ -200,18 +241,18 @@ class GriffinBot(AresBot):
                 self.current_base_target = next(self.expansions_generator)
             return self.current_base_target
 
-    def _home_threat(self) -> Optional[Unit]:
-        """Closest enemy combat unit near any of our townhalls, if any."""
-        threats: list[Unit] = [
-            u
-            for u in self.enemy_units
-            if u.type_id not in COMMON_UNIT_IGNORE_TYPES
-            and not u.is_memory
-            and any(u.distance_to(th) < DEFEND_RADIUS for th in self.townhalls)
-        ]
-        if not threats:
-            return None
-        return cy_closest_to(self.start_location, Units(threats, self))
+    def _home_threats(self) -> Units:
+        """Enemy combat units near any of our townhalls."""
+        return Units(
+            [
+                u
+                for u in self.enemy_units
+                if u.type_id not in COMMON_UNIT_IGNORE_TYPES
+                and not u.is_memory
+                and any(u.distance_to(th) < DEFEND_RADIUS for th in self.townhalls)
+            ],
+            self,
+        )
 
     def _early_aggression_seen(self) -> bool:
         """Enemy combat units or proxy structures near our main."""
