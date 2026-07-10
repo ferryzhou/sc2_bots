@@ -69,6 +69,17 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
+# vs terran: instrumented losses showed a sieged tank + liberator/viking/
+# thor contain grinding us down with zero anti-air in our comp - vikings
+# answer the air and snipe medivacs/liberators
+ARMY_COMP_VS_TERRAN: dict[UnitID, dict] = {
+    UnitID.MARINE: {"proportion": 0.4, "priority": 1},
+    UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
+    UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
+    UnitID.VIKINGFIGHTER: {"proportion": 0.1, "priority": 0},
+    UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
+}
+
 # vs protoss: instrumented losses showed an immortal/zealot/sentry/templar
 # deathball wiping the whole army in one fight (immortals delete armored
 # marauders+tanks, storm melts clumped bio). Ghosts are the counter: EMP
@@ -139,6 +150,10 @@ ATTACK_ANYWAY_AFTER: float = 480.0
 # stalled to the 40-min wall timeout with a massed army cycling
 # attack/regroup outside a defended base instead of finishing
 COMMIT_AT_SUPPLY: float = 70.0
+# hysteresis on attack/regroup flips: the combat sim swings wildly as
+# enemy units enter/leave vision (TvT logs showed regroup->attack->regroup
+# in one second), and each yo-yo bleeds units into the enemy's siege line
+ATTACK_DECISION_COOLDOWN: float = 30.0
 # vs protoss, only attack at commit strength: instrumented TvP losses
 # showed 40-50 supply pushes feeding the protoss deathball one at a time
 # (45->9, rebuild, 46->8, eliminated) while macro easily sustained more -
@@ -165,6 +180,7 @@ class GriffinBot(AresBot):
         self._emergency: bool = False
         self._last_threat_time: float = 0.0
         self._last_status_log: float = 0.0
+        self._last_attack_decision: float = -999.0
 
     async def on_start(self) -> None:
         await super(GriffinBot, self).on_start()
@@ -252,16 +268,24 @@ class GriffinBot(AresBot):
                 f"enemy=[{comp_str}]"
             )
 
+        decision_ready: bool = (
+            self.time - self._last_attack_decision >= ATTACK_DECISION_COOLDOWN
+        )
         if self._commenced_attack:
+            # supply crash aborts immediately; sim-based regroup respects
+            # the cooldown so vision flicker can't thrash the state
             if forces_supply < REGROUP_BELOW_SUPPLY or (
-                fight is not None and fight in LOSS_CLOSE_OR_WORSE
+                decision_ready
+                and fight is not None
+                and fight in LOSS_CLOSE_OR_WORSE
             ):
                 self._commenced_attack = False
+                self._last_attack_decision = self.time
                 logger.info(
                     f"{self.time_formatted} REGROUP at "
                     f"army={forces_supply:.0f} fight={fight}"
                 )
-        elif (
+        elif decision_ready and (
             forces_supply >= COMMIT_AT_SUPPLY
             or (
                 forces_supply >= self._attack_at_supply
@@ -276,6 +300,7 @@ class GriffinBot(AresBot):
             )
         ):
             self._commenced_attack = True
+            self._last_attack_decision = self.time
             logger.info(
                 f"{self.time_formatted} ATTACK at "
                 f"army={forces_supply:.0f} fight={fight}"
@@ -336,6 +361,8 @@ class GriffinBot(AresBot):
     def _army_comp(self) -> dict[UnitID, dict]:
         if self.enemy_race == Race.Protoss:
             return ARMY_COMP_VS_PROTOSS
+        if self.enemy_race == Race.Terran:
+            return ARMY_COMP_VS_TERRAN
         return ARMY_COMP
 
     @property
