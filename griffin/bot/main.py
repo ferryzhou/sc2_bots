@@ -69,16 +69,10 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
-# vs terran: instrumented losses showed a sieged tank + liberator/viking/
-# thor contain grinding us down with zero anti-air in our comp - vikings
-# answer the air and snipe medivacs/liberators
-ARMY_COMP_VS_TERRAN: dict[UnitID, dict] = {
-    UnitID.MARINE: {"proportion": 0.4, "priority": 1},
-    UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
-    UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
-    UnitID.VIKINGFIGHTER: {"proportion": 0.1, "priority": 0},
-    UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
-}
+# NOTE vs terran: a 10% VIKINGFIGHTER variant was tried and went 1-5
+# (vs ~50% before) - air-only supply can't shoot the AI's ground push,
+# so the ground army effectively fought at 90%. Reverted to the default
+# comp; TvT instead attacks only at commit strength (like TvP below).
 
 # vs protoss: instrumented losses showed an immortal/zealot/sentry/templar
 # deathball wiping the whole army in one fight (immortals delete armored
@@ -154,11 +148,13 @@ COMMIT_AT_SUPPLY: float = 70.0
 # enemy units enter/leave vision (TvT logs showed regroup->attack->regroup
 # in one second), and each yo-yo bleeds units into the enemy's siege line
 ATTACK_DECISION_COOLDOWN: float = 30.0
-# vs protoss, only attack at commit strength: instrumented TvP losses
-# showed 40-50 supply pushes feeding the protoss deathball one at a time
-# (45->9, rebuild, 46->8, eliminated) while macro easily sustained more -
-# and the games griffin wins are the ones where it fights at 130+ supply
+# vs protoss and terran, only attack at commit strength: instrumented
+# losses in both matchups showed 40-50 supply pushes feeding a stronger
+# army/siege line one at a time (45->9, rebuild, 46->8, eliminated) while
+# macro easily sustained more - and the games griffin wins are the ones
+# where it fights at 130+ supply
 ATTACK_AT_SUPPLY_VS_PROTOSS: float = COMMIT_AT_SUPPLY
+ATTACK_AT_SUPPLY_VS_TERRAN: float = COMMIT_AT_SUPPLY
 DEFEND_RADIUS: float = 25.0
 
 # Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
@@ -361,14 +357,14 @@ class GriffinBot(AresBot):
     def _army_comp(self) -> dict[UnitID, dict]:
         if self.enemy_race == Race.Protoss:
             return ARMY_COMP_VS_PROTOSS
-        if self.enemy_race == Race.Terran:
-            return ARMY_COMP_VS_TERRAN
         return ARMY_COMP
 
     @property
     def _attack_at_supply(self) -> float:
         if self.enemy_race == Race.Protoss:
             return ATTACK_AT_SUPPLY_VS_PROTOSS
+        if self.enemy_race == Race.Terran:
+            return ATTACK_AT_SUPPLY_VS_TERRAN
         return ATTACK_AT_SUPPLY
 
     def _home_threats(self) -> Units:
