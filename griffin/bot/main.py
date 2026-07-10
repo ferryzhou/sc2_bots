@@ -69,6 +69,11 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
+# NOTE vs terran: a 10% VIKINGFIGHTER variant was tried and went 1-5
+# (vs ~50% before) - air-only supply can't shoot the AI's ground push,
+# so the ground army effectively fought at 90%. Reverted to the default
+# comp; TvT instead attacks only at commit strength (like TvP below).
+
 # vs protoss: instrumented losses showed an immortal/zealot/sentry/templar
 # deathball wiping the whole army in one fight (immortals delete armored
 # marauders+tanks, storm melts clumped bio). Ghosts are the counter: EMP
@@ -139,11 +144,34 @@ ATTACK_ANYWAY_AFTER: float = 480.0
 # stalled to the 40-min wall timeout with a massed army cycling
 # attack/regroup outside a defended base instead of finishing
 COMMIT_AT_SUPPLY: float = 70.0
-# vs protoss, only attack at commit strength: instrumented TvP losses
-# showed 40-50 supply pushes feeding the protoss deathball one at a time
-# (45->9, rebuild, 46->8, eliminated) while macro easily sustained more -
-# and the games griffin wins are the ones where it fights at 130+ supply
+# hysteresis on attack/regroup flips: the combat sim swings wildly as
+# enemy units enter/leave vision (TvT logs showed regroup->attack->regroup
+# in one second), and each yo-yo bleeds units into the enemy's siege line
+ATTACK_DECISION_COOLDOWN: float = 30.0
+# contain-breaking: the terran AI sieges tanks + liberators just OUTSIDE
+# the defend radius and fortifies while we turtle (TvT logs: home_threats=0
+# for minutes, then LOSS_OVERWHELMING once the line crosses it). Siege
+# units setting up this close to a base are engaged immediately.
+CONTAIN_RADIUS: float = 40.0
+CONTAIN_TYPES: set[UnitID] = {
+    UnitID.SIEGETANK,
+    UnitID.SIEGETANKSIEGED,
+    UnitID.LIBERATOR,
+    UnitID.LIBERATORAG,
+    UnitID.WIDOWMINE,
+    UnitID.WIDOWMINEBURROWED,
+    UnitID.LURKERMP,
+    UnitID.LURKERMPBURROWED,
+    UnitID.COLOSSUS,
+    UnitID.DISRUPTOR,
+}
+# vs protoss and terran, only attack at commit strength: instrumented
+# losses in both matchups showed 40-50 supply pushes feeding a stronger
+# army/siege line one at a time (45->9, rebuild, 46->8, eliminated) while
+# macro easily sustained more - and the games griffin wins are the ones
+# where it fights at 130+ supply
 ATTACK_AT_SUPPLY_VS_PROTOSS: float = COMMIT_AT_SUPPLY
+ATTACK_AT_SUPPLY_VS_TERRAN: float = COMMIT_AT_SUPPLY
 DEFEND_RADIUS: float = 25.0
 
 # Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
@@ -165,6 +193,7 @@ class GriffinBot(AresBot):
         self._emergency: bool = False
         self._last_threat_time: float = 0.0
         self._last_status_log: float = 0.0
+        self._last_attack_decision: float = -999.0
 
     async def on_start(self) -> None:
         await super(GriffinBot, self).on_start()
@@ -192,9 +221,11 @@ class GriffinBot(AresBot):
             if self._emergency and threat.distance_to(self.start_location) > 18.0:
                 target = self.main_base_ramp.top_center
             self._micro(guard, target=target)
-            # recall the main army only when the guard is outmatched
+            # recall the main army when the guard is outmatched, and always
+            # against a forming contain - siege lines only get stronger
             if (
                 self._emergency
+                or any(u.type_id in CONTAIN_TYPES for u in threats)
                 or self.get_total_supply(threats)
                 > self.get_total_supply(guard) + RECALL_MARGIN
             ):
@@ -252,16 +283,24 @@ class GriffinBot(AresBot):
                 f"enemy=[{comp_str}]"
             )
 
+        decision_ready: bool = (
+            self.time - self._last_attack_decision >= ATTACK_DECISION_COOLDOWN
+        )
         if self._commenced_attack:
+            # supply crash aborts immediately; sim-based regroup respects
+            # the cooldown so vision flicker can't thrash the state
             if forces_supply < REGROUP_BELOW_SUPPLY or (
-                fight is not None and fight in LOSS_CLOSE_OR_WORSE
+                decision_ready
+                and fight is not None
+                and fight in LOSS_CLOSE_OR_WORSE
             ):
                 self._commenced_attack = False
+                self._last_attack_decision = self.time
                 logger.info(
                     f"{self.time_formatted} REGROUP at "
                     f"army={forces_supply:.0f} fight={fight}"
                 )
-        elif (
+        elif decision_ready and (
             forces_supply >= COMMIT_AT_SUPPLY
             or (
                 forces_supply >= self._attack_at_supply
@@ -276,6 +315,7 @@ class GriffinBot(AresBot):
             )
         ):
             self._commenced_attack = True
+            self._last_attack_decision = self.time
             logger.info(
                 f"{self.time_formatted} ATTACK at "
                 f"army={forces_supply:.0f} fight={fight}"
@@ -342,17 +382,28 @@ class GriffinBot(AresBot):
     def _attack_at_supply(self) -> float:
         if self.enemy_race == Race.Protoss:
             return ATTACK_AT_SUPPLY_VS_PROTOSS
+        if self.enemy_race == Race.Terran:
+            return ATTACK_AT_SUPPLY_VS_TERRAN
         return ATTACK_AT_SUPPLY
 
     def _home_threats(self) -> Units:
-        """Enemy combat units near any of our townhalls."""
+        """Enemy combat units near our townhalls, plus siege units forming
+        a contain further out."""
         return Units(
             [
                 u
                 for u in self.enemy_units
                 if u.type_id not in COMMON_UNIT_IGNORE_TYPES
                 and not u.is_memory
-                and any(u.distance_to(th) < DEFEND_RADIUS for th in self.townhalls)
+                and any(
+                    u.distance_to(th)
+                    < (
+                        CONTAIN_RADIUS
+                        if u.type_id in CONTAIN_TYPES
+                        else DEFEND_RADIUS
+                    )
+                    for th in self.townhalls
+                )
             ],
             self,
         )
