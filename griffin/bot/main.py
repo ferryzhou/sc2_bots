@@ -51,9 +51,13 @@ from sc2.unit import Unit
 from sc2.units import Units
 
 # Army composition consumed by SpawnController / ProductionController.
+# Siege tanks are load-bearing vs the built-in cheater AIs: pure bio went
+# 0-6 vs terran+protoss CheatVision across two timing sweeps, and HanBot
+# (this repo's older Terran bot that beats cheater AIs) is bio+tank.
 ARMY_COMP: dict[UnitID, dict] = {
-    UnitID.MARINE: {"proportion": 0.6, "priority": 0},
-    UnitID.MARAUDER: {"proportion": 0.3, "priority": 1},
+    UnitID.MARINE: {"proportion": 0.5, "priority": 0},
+    UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
+    UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
@@ -89,6 +93,12 @@ COMMON_UNIT_IGNORE_TYPES: set[UnitID] = {
 
 # support units that should follow the army rather than stutter into it
 SUPPORT_TYPES: set[UnitID] = {UnitID.MEDIVAC}
+
+TANK_TYPES: set[UnitID] = {UnitID.SIEGETANK, UnitID.SIEGETANKSIEGED}
+# siege when ground targets are inside this; unsiege when none remain
+# within a comfortably larger radius (hysteresis avoids mode-flapping)
+SIEGE_AT_RANGE: float = 11.0
+UNSIEGE_BEYOND_RANGE: float = 16.0
 
 STIMABLE_TYPES: set[UnitID] = {UnitID.MARINE, UnitID.MARAUDER}
 STIM_BUFFS: set[BuffId] = {BuffId.STIMPACK, BuffId.STIMPACKMARAUDER}
@@ -339,6 +349,11 @@ class GriffinBot(AresBot):
                 lambda u: u.type_id not in ALL_STRUCTURES
             )
 
+            if unit.type_id in TANK_TYPES:
+                self._tank_micro(unit, all_close, grid, target, maneuver)
+                self.register_behavior(maneuver)
+                continue
+
             if all_close:
                 self._maybe_stim(unit, only_enemy_units, maneuver)
                 # shoot whatever is already in range (units before structures)
@@ -363,6 +378,35 @@ class GriffinBot(AresBot):
                 maneuver.add(AMove(unit=unit, target=target))
 
             self.register_behavior(maneuver)
+
+    def _tank_micro(
+        self,
+        unit: Unit,
+        enemies_close: Units,
+        grid: np.ndarray,
+        target: Point2,
+        maneuver: CombatManeuver,
+    ) -> None:
+        """Siege against nearby ground targets, unsiege and follow otherwise."""
+        ground: Units = enemies_close.filter(lambda u: not u.is_flying)
+        closest_dist: float = (
+            unit.distance_to(cy_closest_to(unit.position, ground))
+            if ground
+            else 9999.0
+        )
+        if unit.type_id == UnitID.SIEGETANK:
+            if closest_dist < SIEGE_AT_RANGE:
+                maneuver.add(
+                    UseAbility(ability=AbilityId.SIEGEMODE_SIEGEMODE, unit=unit)
+                )
+            else:
+                maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=target))
+                maneuver.add(AMove(unit=unit, target=target))
+        else:  # sieged: hold and shoot; pack up only when nothing is in reach
+            if closest_dist > UNSIEGE_BEYOND_RANGE:
+                maneuver.add(
+                    UseAbility(ability=AbilityId.UNSIEGE_UNSIEGE, unit=unit)
+                )
 
     def _maybe_stim(
         self, unit: Unit, enemies_close: Units, maneuver: CombatManeuver
