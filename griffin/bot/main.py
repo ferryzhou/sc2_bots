@@ -233,12 +233,20 @@ class GriffinBot(AresBot):
         # periodic state line + attack/regroup transitions, for loss analysis
         if self.time - self._last_status_log >= 30.0:
             self._last_status_log = self.time
+            enemy_comp: dict[str, int] = {}
+            for u in enemy_army:
+                enemy_comp[u.type_id.name] = enemy_comp.get(u.type_id.name, 0) + 1
+            comp_str = ",".join(
+                f"{n}:{c}"
+                for n, c in sorted(enemy_comp.items(), key=lambda x: -x[1])[:6]
+            )
             logger.info(
                 f"{self.time_formatted} STATUS army={forces_supply:.0f} "
                 f"guard={self.get_total_supply(guard):.0f} "
                 f"bases={self.townhalls.amount} workers={self.workers.amount} "
                 f"attacking={self._commenced_attack} fight={fight} "
-                f"home_threats={self.get_total_supply(threats):.0f}"
+                f"home_threats={self.get_total_supply(threats):.0f} "
+                f"enemy=[{comp_str}]"
             )
 
         if self._commenced_attack:
