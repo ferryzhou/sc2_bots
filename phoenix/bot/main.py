@@ -19,12 +19,6 @@ from loguru import logger
 import bot.compat  # noqa: F401 - 4.10 linux client compatibility patches
 from ares import AresBot
 from ares.behaviors.combat import CombatManeuver
-from ares.behaviors.combat.group import (
-    AMoveGroup,
-    KeepGroupSafe,
-    PathGroupToTarget,
-    StutterGroupBack,
-)
 from ares.behaviors.combat.individual import (
     AMove,
     KeepUnitSafe,
@@ -171,13 +165,19 @@ class PhoenixBot(AresBot):
             self._commenced_attack = True
 
         if self._commenced_attack:
-            self._control_army(target=self.attack_target)
+            self._micro(forces, target=self.attack_target)
         else:
             # stage the army between our bases and the map center
             rally: Point2 = self.main_base_ramp.top_center.towards(
                 self.game_info.map_center, 4.0
             )
-            self._control_army(target=rally)
+            grid: np.ndarray = self.mediator.get_ground_grid
+            for unit in forces:
+                if unit.distance_to(rally) > 8.0:
+                    maneuver: CombatManeuver = CombatManeuver()
+                    maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=rally))
+                    maneuver.add(AMove(unit=unit, target=rally))
+                    self.register_behavior(maneuver)
 
     async def on_unit_created(self, unit: Unit) -> None:
         await super(PhoenixBot, self).on_unit_created(unit)
@@ -324,68 +324,6 @@ class PhoenixBot(AresBot):
                     and not s.has_buff(BuffId.CHRONOBOOSTENERGYCOST)
                 ]:
                     th(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy[0])
-
-    def _control_army(self, target: Point2) -> None:
-        """Squad-level army control: coherent balls instead of unit trickle.
-
-        Squads engage or retreat per their own local combat sim; non-main
-        squads converge on the main squad before pushing to the target.
-        """
-        squads = self.mediator.get_squads(
-            role=UnitRole.ATTACKING, squad_radius=9.0
-        )
-        if not squads:
-            return
-        main_squad_pos: Point2 = self.mediator.get_position_of_main_squad(
-            role=UnitRole.ATTACKING
-        )
-        grid: np.ndarray = self.mediator.get_ground_grid
-
-        for squad in squads:
-            units: Units = squad.squad_units
-            squad_target: Point2 = target if squad.main_squad else main_squad_pos
-
-            close_enemy: Units = self.mediator.get_units_in_range(
-                start_points=[squad.squad_position],
-                distances=15.0,
-                query_tree=UnitTreeQueryType.AllEnemy,
-            )[0].filter(
-                lambda u: not u.is_memory
-                and u.type_id not in COMMON_UNIT_IGNORE_TYPES
-            )
-
-            maneuver: CombatManeuver = CombatManeuver()
-            if close_enemy:
-                # always fight when engaged: StutterGroupBack shoots on
-                # weapon-ready and kites between shots. Squad-level fleeing
-                # (KeepGroupSafe on predicted loss) made the army passive -
-                # the global attack/retreat gate owns disengagement.
-                maneuver.add(
-                    StutterGroupBack(
-                        group=units,
-                        group_tags=squad.tags,
-                        group_position=squad.squad_position,
-                        target=close_enemy.center,
-                        grid=grid,
-                    )
-                )
-            else:
-                maneuver.add(
-                    PathGroupToTarget(
-                        start=squad.squad_position,
-                        group=units,
-                        group_tags=squad.tags,
-                        grid=grid,
-                        target=squad_target,
-                        success_at_distance=5.0,
-                    )
-                )
-                maneuver.add(
-                    AMoveGroup(
-                        group=units, group_tags=squad.tags, target=squad_target
-                    )
-                )
-            self.register_behavior(maneuver)
 
     def _micro(self, forces: Units, target: Point2) -> None:
         near_enemy: dict[int, Units] = self.mediator.get_units_in_range(
