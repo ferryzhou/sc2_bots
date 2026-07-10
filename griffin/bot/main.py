@@ -115,6 +115,10 @@ ATTACK_AT_SUPPLY: float = 40.0
 REGROUP_BELOW_SUPPLY: float = 15.0
 MEDIVACS_FOR_ATTACK: int = 1
 ATTACK_ANYWAY_AFTER: float = 480.0
+# with an overwhelming army, commit unconditionally: real-opponent games
+# stalled to the 40-min wall timeout with a massed army cycling
+# attack/regroup outside a defended base instead of finishing
+COMMIT_AT_SUPPLY: float = 70.0
 DEFEND_RADIUS: float = 25.0
 
 # Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
@@ -187,15 +191,17 @@ class GriffinBot(AresBot):
 
         if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
             self._commenced_attack = False
-        elif (
-            not self._commenced_attack
-            and forces_supply >= ATTACK_AT_SUPPLY
-            and (
-                (
-                    self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
-                    and UpgradeId.STIMPACK in self.state.upgrades
+        elif not self._commenced_attack and (
+            forces_supply >= COMMIT_AT_SUPPLY
+            or (
+                forces_supply >= ATTACK_AT_SUPPLY
+                and (
+                    (
+                        self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
+                        and UpgradeId.STIMPACK in self.state.upgrades
+                    )
+                    or self.time > ATTACK_ANYWAY_AFTER
                 )
-                or self.time > ATTACK_ANYWAY_AFTER
             )
         ):
             self._commenced_attack = True
