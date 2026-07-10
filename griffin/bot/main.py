@@ -149,6 +149,7 @@ class GriffinBot(AresBot):
         self._commenced_attack: bool = False
         self._emergency: bool = False
         self._last_threat_time: float = 0.0
+        self._last_status_log: float = 0.0
 
     async def on_start(self) -> None:
         await super(GriffinBot, self).on_start()
@@ -199,8 +200,22 @@ class GriffinBot(AresBot):
                     maneuver.add(AMove(unit=unit, target=station))
                     self.register_behavior(maneuver)
 
+        # periodic state line + attack/regroup transitions, for loss analysis
+        if self.time - self._last_status_log >= 30.0:
+            self._last_status_log = self.time
+            logger.info(
+                f"{self.time_formatted} STATUS army={forces_supply:.0f} "
+                f"guard={self.get_total_supply(guard):.0f} "
+                f"bases={self.townhalls.amount} workers={self.workers.amount} "
+                f"attacking={self._commenced_attack} "
+                f"home_threats={self.get_total_supply(threats):.0f}"
+            )
+
         if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
             self._commenced_attack = False
+            logger.info(
+                f"{self.time_formatted} REGROUP at army={forces_supply:.0f}"
+            )
         elif not self._commenced_attack and (
             forces_supply >= COMMIT_AT_SUPPLY
             or (
@@ -215,6 +230,9 @@ class GriffinBot(AresBot):
             )
         ):
             self._commenced_attack = True
+            logger.info(
+                f"{self.time_formatted} ATTACK at army={forces_supply:.0f}"
+            )
 
         if self._commenced_attack:
             self._micro(forces, target=self.attack_target)
