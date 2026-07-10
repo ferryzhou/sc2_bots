@@ -1,8 +1,9 @@
 # Harness
 
-Automated evaluation for PhoenixBot: plays batches of headless games and
-keeps a persistent scoreboard. This is the fitness function that strategy
-changes, parameter tuning, and automated improvement loops plug into.
+Automated evaluation for the repo's ares bots (`phoenix`, `griffin`): plays
+batches of headless games and keeps a persistent scoreboard. This is the
+fitness function that strategy changes, parameter tuning, and automated
+improvement loops plug into.
 
 ## Components
 
@@ -11,8 +12,15 @@ changes, parameter tuning, and automated improvement loops plug into.
   bot stats, replay path.
 - `gauntlet.py` — orchestrates N games across matchups (opponent race ×
   difficulty × random ladder map), running games in parallel subprocesses.
-  Appends every record to `results/history.jsonl` (committed, so results
-  survive ephemeral dev environments) and prints per-matchup winrates.
+  Appends every record to `results/history_<bot>.jsonl` (one file per bot
+  so runs for different bots never contend; committed, so results survive
+  ephemeral dev environments) and prints per-matchup winrates across all
+  bots' files.
+- `versus.py` — runs a repo bot against downloaded AI Arena bots through
+  the real ladder entrypoint (see `download_bots.py`).
+
+All three take `--bot {phoenix,griffin}` (default `phoenix`); the scoreboard
+tracks each bot separately.
 
 ## Usage
 
@@ -22,6 +30,9 @@ VENV=~/venv   # created by scripts/setup_env.sh
 # 6 games vs CheatVision (2 per race), 2 at a time
 $VENV/bin/python harness/gauntlet.py --games 6 --concurrency 2
 
+# same gauntlet for the Terran bot
+$VENV/bin/python harness/gauntlet.py --bot griffin --games 6 --concurrency 2
+
 # harder gauntlet
 $VENV/bin/python harness/gauntlet.py --games 12 \
     --difficulties CheatVision,CheatMoney,CheatInsane
@@ -30,7 +41,7 @@ $VENV/bin/python harness/gauntlet.py --games 12 \
 $VENV/bin/python harness/gauntlet.py --summary-only
 ```
 
-Replays land in `phoenix/replays/harness/` (gitignored). Loss replays are the
+Replays land in `<bot>/replays/harness/` (gitignored). Loss replays are the
 input for replay-based loss analysis (`analysis/sc2reader_analyzer.py`).
 
 ## Map pool

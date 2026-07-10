@@ -1,13 +1,14 @@
-"""Run PhoenixBot against downloaded AI Arena bots, exactly like the ladder.
+"""Run a repo bot against downloaded AI Arena bots, exactly like the ladder.
 
 For each match this launches two headless SC2 instances, creates a 2-slot
 game on the first, then starts BOTH bots as external ladder-client
-subprocesses (ours via phoenix/run.py --LadderServer, the opponent from its
+subprocesses (ours via <bot>/run.py --LadderServer, the opponent from its
 extracted zip) that join with the standard StartPort port convention. This
 exercises our real ladder entrypoint.
 
 Usage:
     python harness/versus.py --opponent MicroMachine --games 2
+    python harness/versus.py --bot griffin --opponent MicroMachine
     python harness/versus.py --list            # show downloaded opponents
 """
 
@@ -24,15 +25,18 @@ from os import environ
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-BOT_DIR = REPO_ROOT / "phoenix"
 BOTS_DIR = Path(environ.get("ARENA_BOTS_DIR", "/root/arena_bots"))
 MANIFEST = REPO_ROOT / "results" / "opponents.json"
-HISTORY = REPO_ROOT / "results" / "history.jsonl"
 MAP_POOL_FILE = REPO_ROOT / "harness" / "map_pool.txt"
 
 PY312 = environ.get("LADDER_PYTHON", "/root/venv312/bin/python")
 
-sys.path.insert(0, str(BOT_DIR))
+# ares bots in this repo with a ladder-capable run.py: dir name -> ladder id
+BOT_REGISTRY = {"phoenix": "PhoenixBot", "griffin": "GriffinBot"}
+# overridden from --bot in main()
+BOT_KEY = "phoenix"
+BOT_DIR = REPO_ROOT / BOT_KEY
+BOT_NAME = BOT_REGISTRY[BOT_KEY]
 
 from aiohttp import WSMsgType, web
 from sc2 import maps
@@ -143,6 +147,7 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
 
     record = {
         "mode": "versus",
+        "bot": BOT_KEY,
         "opponent_name": opponent["name"],
         "opponent_race": opponent["race"],
         "opponent_type": opponent["type"],
@@ -175,7 +180,7 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
             our_cmd = [PY312, "run.py", "--GamePort", str(proxy_a),
                        "--OpponentId", opponent["name"], *common]
             their_cmd = [*opp_cmd, "--GamePort", str(proxy_b),
-                         "--OpponentId", "PhoenixBot", *common]
+                         "--OpponentId", BOT_NAME, *common]
 
             log_dir = REPO_ROOT / "results" / "versus_logs"
             log_dir.mkdir(parents=True, exist_ok=True)
@@ -206,7 +211,7 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
 
                 out, _ = await asyncio.wait_for(ours.communicate(), timeout=timeout)
                 text = out.decode(errors="replace")
-                (log_dir / f"PhoenixBot_{stamp}.log").write_text(text)
+                (log_dir / f"{BOT_NAME}_{stamp}.log").write_text(text)
                 m = re.search(r"Result\.(\w+)", text)
                 record["result"] = m.group(1) if m else "Unknown"
                 if record["result"] == "Unknown" and ours.returncode != 0:
@@ -235,13 +240,21 @@ def load_opponents() -> list[dict]:
 
 
 def main() -> None:
+    global BOT_KEY, BOT_DIR, BOT_NAME
+
     parser = argparse.ArgumentParser()
+    parser.add_argument("--bot", default="phoenix", choices=sorted(BOT_REGISTRY),
+                        help="which repo bot to run")
     parser.add_argument("--opponent", help="opponent bot name from the manifest")
     parser.add_argument("--games", type=int, default=1)
     parser.add_argument("--map", default=None)
     parser.add_argument("--timeout", type=int, default=2400)
     parser.add_argument("--list", action="store_true")
     args = parser.parse_args()
+
+    BOT_KEY = args.bot
+    BOT_DIR = REPO_ROOT / BOT_KEY
+    BOT_NAME = BOT_REGISTRY[BOT_KEY]
 
     opponents = load_opponents()
     if args.list:
@@ -255,13 +268,15 @@ def main() -> None:
         sys.exit(f"Unknown opponent {args.opponent!r} - use --list")
     opponent = by_name[args.opponent]
 
+    # one history file per bot so concurrent runs never contend
+    history = REPO_ROOT / "results" / f"history_{BOT_KEY}.jsonl"
     map_pool = (MAP_POOL_FILE.read_text().split()
                 if MAP_POOL_FILE.is_file() else [])
     for i in range(args.games):
         map_name = args.map or random.choice(map_pool)
         record = asyncio.run(run_match(opponent, map_name, args.timeout))
         record["git_sha"] = "versus"
-        with open(HISTORY, "a") as f:
+        with open(history, "a") as f:
             f.write(json.dumps(record) + "\n")
         print(f"[{i + 1}/{args.games}] {record.get('result'):<8} "
               f"vs {opponent['name']} (elo {opponent.get('elo')}) "

@@ -1,8 +1,9 @@
 """Run a gauntlet of headless games and maintain a persistent scoreboard.
 
 Each game runs in its own subprocess (one SC2 instance per game) via
-play_one.py. Results append to results/history.jsonl so progress is tracked
-across sessions, and a per-matchup summary prints at the end.
+play_one.py. Results append to results/history_<bot>.jsonl (one file per
+bot, so concurrent runs for different bots never contend) and a
+per-matchup summary prints at the end.
 
 Examples:
     python harness/gauntlet.py --games 6 --concurrency 2
@@ -26,11 +27,22 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PLAY_ONE = REPO_ROOT / "harness" / "play_one.py"
 RESULTS_DIR = REPO_ROOT / "results"
-HISTORY = RESULTS_DIR / "history.jsonl"
 # maps verified compatible with ares + the 4.10 linux client (see README)
 MAP_POOL_FILE = REPO_ROOT / "harness" / "map_pool.txt"
 
 WIN, LOSS, TIE = "Victory", "Defeat", "Tie"
+
+
+def history_path(bot: str) -> Path:
+    return RESULTS_DIR / f"history_{bot}.jsonl"
+
+
+def load_all_history() -> list[dict]:
+    """All records across every bot's history file."""
+    records: list[dict] = []
+    for path in sorted(RESULTS_DIR.glob("history_*.jsonl")):
+        records += [json.loads(line) for line in path.read_text().splitlines()]
+    return records
 
 
 def git_sha() -> str:
@@ -68,6 +80,7 @@ def build_matchups(args) -> list[dict]:
     rng = random.Random(args.seed)
     return [
         {
+            "bot": args.bot,
             "race": race,
             "difficulty": difficulty,
             "map": rng.choice(maps_pool),
@@ -82,6 +95,7 @@ def play(matchup: dict, wall_timeout: int) -> dict:
     cmd = [
         sys.executable,
         str(PLAY_ONE),
+        "--bot", matchup["bot"],
         "--map", matchup["map"],
         "--race", matchup["race"],
         "--difficulty", matchup["difficulty"],
@@ -116,27 +130,33 @@ def outcome_char(result: str) -> str:
 def print_summary(records: list[dict], title: str) -> None:
     by_matchup: dict[tuple, list[str]] = defaultdict(list)
     for r in records:
-        key = (r.get("opponent_race", r.get("race")), r.get("difficulty"))
+        # records predating multi-bot support are all phoenix; versus-mode
+        # records have an opponent bot name instead of a difficulty
+        key = (r.get("bot", "phoenix"),
+               r.get("opponent_race") or r.get("race") or "?",
+               r.get("difficulty") or r.get("opponent_name") or "?")
         by_matchup[key].append(r.get("result", "Error"))
 
     print(f"\n=== {title} ===")
-    print(f"{'opponent':<12} {'difficulty':<14} {'games':>5} {'wins':>5} "
-          f"{'winrate':>8}  record")
+    print(f"{'bot':<9} {'opponent':<12} {'difficulty':<14} {'games':>5} "
+          f"{'wins':>5} {'winrate':>8}  record")
     total_games = total_wins = 0
-    for (race, diff), results in sorted(by_matchup.items()):
+    for (bot, race, diff), results in sorted(by_matchup.items()):
         wins = results.count(WIN)
         total_games += len(results)
         total_wins += wins
         chars = "".join(outcome_char(r) for r in results)
-        print(f"{race:<12} {diff:<14} {len(results):>5} {wins:>5} "
+        print(f"{bot:<9} {race:<12} {diff:<14} {len(results):>5} {wins:>5} "
               f"{wins / len(results):>7.0%}  {chars}")
     if total_games:
-        print(f"{'TOTAL':<12} {'':<14} {total_games:>5} {total_wins:>5} "
+        print(f"{'TOTAL':<9} {'':<12} {'':<14} {total_games:>5} {total_wins:>5} "
               f"{total_wins / total_games:>7.0%}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--bot", default="phoenix", choices=["phoenix", "griffin"],
+                        help="which repo bot to evaluate")
     parser.add_argument("--games", type=int, default=6)
     parser.add_argument("--concurrency", type=int, default=2)
     parser.add_argument("--races", default="zerg,terran,protoss")
@@ -146,14 +166,14 @@ def main() -> None:
                         help="max wall-clock seconds per game")
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--summary-only", action="store_true",
-                        help="print scoreboard from results/history.jsonl and exit")
+                        help="print scoreboard from results/history_*.jsonl and exit")
     args = parser.parse_args()
 
     if args.summary_only:
-        if not HISTORY.is_file():
-            sys.exit(f"No history at {HISTORY}")
-        records = [json.loads(line) for line in HISTORY.read_text().splitlines()]
-        print_summary(records, f"All-time scoreboard ({HISTORY})")
+        records = load_all_history()
+        if not records:
+            sys.exit(f"No history_*.jsonl files in {RESULTS_DIR}")
+        print_summary(records, f"All-time scoreboard ({RESULTS_DIR}/history_*.jsonl)")
         return
 
     matchups = build_matchups(args)
@@ -177,7 +197,7 @@ def main() -> None:
             record["run_id"] = run_id
             record["git_sha"] = sha
             records.append(record)
-            with open(HISTORY, "a") as f:
+            with open(history_path(args.bot), "a") as f:
                 f.write(json.dumps(record) + "\n")
             n = len(records)
             print(f"[{n}/{len(matchups)}] {record.get('result', '?'):<8} "
@@ -192,8 +212,7 @@ def main() -> None:
     print(f"\nWall time: {time.time() - start:.0f}s")
     print_summary(records, f"Run {run_id}")
 
-    all_records = [json.loads(line) for line in HISTORY.read_text().splitlines()]
-    print_summary(all_records, "All-time scoreboard")
+    print_summary(load_all_history(), "All-time scoreboard")
 
 
 if __name__ == "__main__":
