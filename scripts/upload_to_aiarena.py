@@ -1,10 +1,13 @@
-"""Upload PhoenixBot.zip to an existing bot on aiarena.net.
+"""Upload a bot zip to an existing bot on aiarena.net.
 
 Usage:
     AIARENA_API_TOKEN=... python scripts/upload_to_aiarena.py --bot-id 1234
+    AIARENA_API_TOKEN=... python scripts/upload_to_aiarena.py \
+        --bot griffin --bot-id 5678
 
 The bot must already exist on aiarena.net (create it once via the website:
-Profile -> Bots -> Create Bot, type "python", race Protoss, plays race P).
+Profile -> Bots -> Create Bot, type "python"; race Protoss/plays P for
+phoenix, race Terran/plays T for griffin).
 Get the API token from https://aiarena.net/profile/token/.
 """
 
@@ -16,16 +19,29 @@ from pathlib import Path
 import requests
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-ZIP_PATH = REPO_ROOT / "PhoenixBot.zip"
+
+# dir name -> (ladder bot name, wiki blurb)
+BOT_REGISTRY = {
+    "phoenix": ("PhoenixBot", "# PhoenixBot\n\nProtoss bot made with "
+                "[ares-sc2](https://github.com/AresSC2/ares-sc2)."),
+    "griffin": ("GriffinBot", "# GriffinBot\n\nTerran bot made with "
+                "[ares-sc2](https://github.com/AresSC2/ares-sc2)."),
+}
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--bot", default="phoenix", choices=sorted(BOT_REGISTRY),
+                        help="which repo bot to upload")
     parser.add_argument("--bot-id", required=True)
-    parser.add_argument("--zip", default=str(ZIP_PATH))
-    parser.add_argument("--wiki", default="# PhoenixBot\n\nProtoss bot made with "
-                        "[ares-sc2](https://github.com/AresSC2/ares-sc2).")
+    parser.add_argument("--zip", default=None,
+                        help="default: <BotName>.zip in the repo root")
+    parser.add_argument("--wiki", default=None)
     args = parser.parse_args()
+
+    bot_name, default_wiki = BOT_REGISTRY[args.bot]
+    args.zip = args.zip or str(REPO_ROOT / f"{bot_name}.zip")
+    args.wiki = args.wiki or default_wiki
 
     token = environ.get("AIARENA_API_TOKEN")
     if not token:
