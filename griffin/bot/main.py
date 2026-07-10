@@ -64,8 +64,9 @@ EMERGENCY_COMP: dict[UnitID, dict] = {
 
 # early-rush window: aggression detected before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
-# don't spend on ebay upgrades before this (mirrors the phoenix rush lessons)
-UPGRADES_AFTER: float = 300.0
+# don't spend on ebay upgrades before this (mirrors the phoenix rush
+# lessons); early enough that stim is done for the 40-supply push
+UPGRADES_AFTER: float = 240.0
 
 DESIRED_UPGRADES: list[UpgradeId] = [
     UpgradeId.STIMPACK,
@@ -92,17 +93,18 @@ SUPPORT_TYPES: set[UnitID] = {UnitID.MEDIVAC}
 STIMABLE_TYPES: set[UnitID] = {UnitID.MARINE, UnitID.MARAUDER}
 STIM_BUFFS: set[BuffId] = {BuffId.STIMPACK, BuffId.STIMPACKMARAUDER}
 
-# bio needs critical mass + medivac healing before crossing the map: the
-# first gauntlets attacked at 28 supply, traded out against the cheater
-# economy, then streamed reinforcements in piecemeal until eliminated
-# (0W-6L vs terran+protoss CheatVision, all losses by elimination)
-ATTACK_AT_SUPPLY: float = 50.0
-REGROUP_BELOW_SUPPLY: float = 22.0
-# don't start the first push without healing support unless it's very late
-MEDIVACS_FOR_ATTACK: int = 2
-MEDIVAC_WAIT_UNTIL: float = 600.0
-# attack cohesion: units this far from the bio ball regroup with it first
-COHESION_RADIUS: float = 12.0
+# Attack timing, calibrated by gauntlet sweeps vs CheatVision:
+# - 28 supply, no gates: won vs zerg by constant pressure but 0-6 vs
+#   terran+protoss (pushed without stim/medivacs, traded out, then
+#   streamed reinforcements in piecemeal until eliminated)
+# - 50 supply + 2 medivacs + 10:00 fallback + cohesion micro: 0-6 vs all
+#   races - too passive, the cheater economy snowballs while bio waits
+# Current: standard stim-timing push - 40 supply once stim + a medivac
+# are in, with a 8:00 fallback so the army never sits home forever.
+ATTACK_AT_SUPPLY: float = 40.0
+REGROUP_BELOW_SUPPLY: float = 15.0
+MEDIVACS_FOR_ATTACK: int = 1
+ATTACK_ANYWAY_AFTER: float = 480.0
 DEFEND_RADIUS: float = 25.0
 
 
@@ -147,14 +149,17 @@ class GriffinBot(AresBot):
             not self._commenced_attack
             and forces_supply >= ATTACK_AT_SUPPLY
             and (
-                self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
-                or self.time > MEDIVAC_WAIT_UNTIL
+                (
+                    self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
+                    and UpgradeId.STIMPACK in self.state.upgrades
+                )
+                or self.time > ATTACK_ANYWAY_AFTER
             )
         ):
             self._commenced_attack = True
 
         if self._commenced_attack:
-            self._micro(forces, target=self.attack_target, group=True)
+            self._micro(forces, target=self.attack_target)
         else:
             # stage the army between our bases and the map center
             rally: Point2 = self.main_base_ramp.top_center.towards(
@@ -257,7 +262,7 @@ class GriffinBot(AresBot):
                 # upgrades only once we're stable: past the rush window AND
                 # holding a real army (same gating as phoenix)
                 army_supply = self.supply_used - self.supply_workers
-                if self.time > UPGRADES_AFTER and army_supply >= 16:
+                if self.time > UPGRADES_AFTER and army_supply >= 12:
                     macro_plan.add(
                         UpgradeController(
                             upgrade_list=DESIRED_UPGRADES,
@@ -305,7 +310,7 @@ class GriffinBot(AresBot):
             if enemy_ground.closer_than(8, depot):
                 depot(AbilityId.MORPH_SUPPLYDEPOT_RAISE)
 
-    def _micro(self, forces: Units, target: Point2, group: bool = False) -> None:
+    def _micro(self, forces: Units, target: Point2) -> None:
         near_enemy: dict[int, Units] = self.mediator.get_units_in_range(
             start_points=forces,
             distances=15,
@@ -354,20 +359,8 @@ class GriffinBot(AresBot):
                         StutterUnitBack(unit=unit, target=enemy_target, grid=grid)
                     )
             else:
-                # when attacking, stragglers and reinforcements join the
-                # ball before heading to the target (defense pathing stays
-                # direct - the threat is at home, not across the map)
-                move_target = target
-                if (
-                    group
-                    and bio.amount >= 6
-                    and unit.distance_to(bio_center) > COHESION_RADIUS
-                ):
-                    move_target = bio_center
-                maneuver.add(
-                    PathUnitToTarget(unit=unit, grid=grid, target=move_target)
-                )
-                maneuver.add(AMove(unit=unit, target=move_target))
+                maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=target))
+                maneuver.add(AMove(unit=unit, target=target))
 
             self.register_behavior(maneuver)
 
