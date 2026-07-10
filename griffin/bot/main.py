@@ -92,8 +92,17 @@ SUPPORT_TYPES: set[UnitID] = {UnitID.MEDIVAC}
 STIMABLE_TYPES: set[UnitID] = {UnitID.MARINE, UnitID.MARAUDER}
 STIM_BUFFS: set[BuffId] = {BuffId.STIMPACK, BuffId.STIMPACKMARAUDER}
 
-ATTACK_AT_SUPPLY: float = 28.0
-REGROUP_BELOW_SUPPLY: float = 10.0
+# bio needs critical mass + medivac healing before crossing the map: the
+# first gauntlets attacked at 28 supply, traded out against the cheater
+# economy, then streamed reinforcements in piecemeal until eliminated
+# (0W-6L vs terran+protoss CheatVision, all losses by elimination)
+ATTACK_AT_SUPPLY: float = 50.0
+REGROUP_BELOW_SUPPLY: float = 22.0
+# don't start the first push without healing support unless it's very late
+MEDIVACS_FOR_ATTACK: int = 2
+MEDIVAC_WAIT_UNTIL: float = 600.0
+# attack cohesion: units this far from the bio ball regroup with it first
+COHESION_RADIUS: float = 12.0
 DEFEND_RADIUS: float = 25.0
 
 
@@ -134,11 +143,18 @@ class GriffinBot(AresBot):
 
         if self._commenced_attack and forces_supply < REGROUP_BELOW_SUPPLY:
             self._commenced_attack = False
-        elif not self._commenced_attack and forces_supply >= ATTACK_AT_SUPPLY:
+        elif (
+            not self._commenced_attack
+            and forces_supply >= ATTACK_AT_SUPPLY
+            and (
+                self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
+                or self.time > MEDIVAC_WAIT_UNTIL
+            )
+        ):
             self._commenced_attack = True
 
         if self._commenced_attack:
-            self._micro(forces, target=self.attack_target)
+            self._micro(forces, target=self.attack_target, group=True)
         else:
             # stage the army between our bases and the map center
             rally: Point2 = self.main_base_ramp.top_center.towards(
@@ -289,7 +305,7 @@ class GriffinBot(AresBot):
             if enemy_ground.closer_than(8, depot):
                 depot(AbilityId.MORPH_SUPPLYDEPOT_RAISE)
 
-    def _micro(self, forces: Units, target: Point2) -> None:
+    def _micro(self, forces: Units, target: Point2, group: bool = False) -> None:
         near_enemy: dict[int, Units] = self.mediator.get_units_in_range(
             start_points=forces,
             distances=15,
@@ -338,8 +354,20 @@ class GriffinBot(AresBot):
                         StutterUnitBack(unit=unit, target=enemy_target, grid=grid)
                     )
             else:
-                maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=target))
-                maneuver.add(AMove(unit=unit, target=target))
+                # when attacking, stragglers and reinforcements join the
+                # ball before heading to the target (defense pathing stays
+                # direct - the threat is at home, not across the map)
+                move_target = target
+                if (
+                    group
+                    and bio.amount >= 6
+                    and unit.distance_to(bio_center) > COHESION_RADIUS
+                ):
+                    move_target = bio_center
+                maneuver.add(
+                    PathUnitToTarget(unit=unit, grid=grid, target=move_target)
+                )
+                maneuver.add(AMove(unit=unit, target=move_target))
 
             self.register_behavior(maneuver)
 
