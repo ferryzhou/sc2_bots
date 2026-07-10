@@ -14,16 +14,21 @@ Terran counterpart of `phoenix/` (PhoenixBot), sharing its architecture.
   (see `bot/main.py:_macro`). Terran plumbing on top: command centers morph
   to orbitals, orbital energy is dumped into MULEs, and supply depots
   raise/lower based on nearby enemy ground units.
-- **Army**: marine/marauder/siege tank/medivac. Units get the `ATTACKING`
-  role on creation. The bot rallies until it reaches an attack supply
-  threshold (gated on stim + a medivac), defends its bases if threatened,
-  and uses ares `CombatManeuver` behaviors (stutter-step, health-aware
-  retreat, influence-grid pathing) for per-unit micro. Bio stims when
-  healthy and in weapons range of real targets; tanks siege against nearby
-  ground targets and unsiege to follow the army; medivacs hug the bio ball
-  and rely on autocast heal. Tanks are load-bearing vs the built-in cheater
-  AIs: pure-bio variants went 0-6 vs terran+protoss CheatVision across two
-  timing sweeps, bio+tank went 4-2 (see `results/history_griffin.jsonl`).
+- **Army**: marine/marauder/siege tank/medivac, plus ghosts vs protoss.
+  Units get the `ATTACKING` role on creation (a 10-supply `BASE_DEFENDER`
+  home guard stays back to stop harassment). The bot stages at the natural
+  with tanks pre-sieged until it reaches an attack supply threshold (gated
+  on stim + a medivac + the ares combat sim predicting a winnable fight,
+  with an unconditional commit at 70 supply), defends its bases if
+  threatened, and uses ares `CombatManeuver` behaviors (stutter-step,
+  health-aware retreat, influence-grid pathing) for per-unit micro. Bio
+  stims when healthy and in weapons range; tanks siege against nearby
+  ground targets; ghosts EMP the protoss deathball before engagements;
+  medivacs hug the bio ball and rely on autocast heal.
+  Composition results are documented in `bot/main.py` comments and
+  `results/history_griffin.jsonl` — headline: pure bio went 0-6 vs
+  terran+protoss CheatVision, adding tanks fixed TvT/TvZ, and adding
+  EMP ghosts took TvP from 1-5 to 5-1.
 
 The strategy surface (builds yml + army comp dict + thresholds) is
 deliberately data-shaped so tooling can tune or swap strategies without
