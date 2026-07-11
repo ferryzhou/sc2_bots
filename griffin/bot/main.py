@@ -69,6 +69,15 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
+# NOTE vs zerg: ladder-replay autopsies showed all four ladder losses to
+# the remax cycle (griffin leads through 10-12min, then larvae rebuild the
+# zerg army in minutes). A tank-heavy comp (30% tank / 15% medivac) was
+# tried at both 55-supply and 40-supply attack timings and went 2-2 vs
+# CheatVision zerg BOTH times (vs 2-0 typical for the default comp), with
+# losses in long grind-downs. Reverted - the default comp stays; ladder
+# TvZ remains an open problem needing a different idea (e.g. multi-prong
+# or better re-engage discipline after a won fight).
+
 # NOTE vs terran: a 10% VIKINGFIGHTER variant was tried and went 1-5
 # (vs ~50% before) - air-only supply can't shoot the AI's ground push,
 # so the ground army effectively fought at 90%. Reverted to the default
@@ -181,6 +190,8 @@ CONTAIN_TYPES: set[UnitID] = {
 # where it fights at 130+ supply
 ATTACK_AT_SUPPLY_VS_PROTOSS: float = COMMIT_AT_SUPPLY
 ATTACK_AT_SUPPLY_VS_TERRAN: float = COMMIT_AT_SUPPLY
+# (a 55-supply zerg delay was also tried: 2-2, losses in 27/35-min games -
+# early pressure is what beats zerg before the bank/remax scales)
 DEFEND_RADIUS: float = 25.0
 
 # Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
