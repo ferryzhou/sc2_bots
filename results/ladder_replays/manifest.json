@@ -1,0 +1,92 @@
+[
+ {
+  "match": 4870697,
+  "opponent": "QueenBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T19:14:10.298648Z",
+  "game_steps": 45509,
+  "file": "loss_QueenBot_4870697.SC2Replay"
+ },
+ {
+  "match": 4870694,
+  "opponent": "Princess-Mika",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T10:15:42.539151Z",
+  "game_steps": 16144,
+  "file": "loss_Princess-Mika_4870694.SC2Replay"
+ },
+ {
+  "match": 4870693,
+  "opponent": "Klakinn",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T15:49:28.957366Z",
+  "game_steps": 12908,
+  "file": "loss_Klakinn_4870693.SC2Replay"
+ },
+ {
+  "match": 4870692,
+  "opponent": "Crawler",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T12:34:36.053622Z",
+  "game_steps": 15196,
+  "file": "loss_Crawler_4870692.SC2Replay"
+ },
+ {
+  "match": 4870630,
+  "opponent": "OneBaseStalkerBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T20:02:10.072855Z",
+  "game_steps": 11392,
+  "file": "loss_OneBaseStalkerBot_4870630.SC2Replay"
+ },
+ {
+  "match": 4870374,
+  "opponent": "kas",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T11:12:49.666453Z",
+  "game_steps": 18892,
+  "file": "loss_kas_4870374.SC2Replay"
+ },
+ {
+  "match": 4870129,
+  "opponent": "PiG_Bot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T14:04:22.922612Z",
+  "game_steps": 10324,
+  "file": "loss_PiG_Bot_4870129.SC2Replay"
+ },
+ {
+  "match": 4869785,
+  "opponent": "PerilousProtossBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T09:34:46.203423Z",
+  "game_steps": 13162,
+  "file": "loss_PerilousProtossBot_4869785.SC2Replay"
+ },
+ {
+  "match": 4869584,
+  "opponent": "Montka",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-10T13:32:30.428800Z",
+  "game_steps": 11228,
+  "file": "loss_Montka_4869584.SC2Replay"
+ },
+ {
+  "match": 4865732,
+  "opponent": "AlphaCheese",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-09T08:05:16.492453Z",
+  "game_steps": 15990,
+  "file": "loss_AlphaCheese_4865732.SC2Replay"
+ }
+]

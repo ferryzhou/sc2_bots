@@ -112,6 +112,18 @@ def main() -> None:
         except Exception as exc:  # noqa: BLE001
             print(f"[{i + 1}/{len(runnable)}] {name} FAILED: {exc}")
 
+    # merge with the existing manifest: keep entries for bots that are no
+    # longer publicly downloadable but are still extracted locally
+    if MANIFEST.is_file():
+        try:
+            fresh_names = {e["name"] for e in manifest}
+            for old in json.loads(MANIFEST.read_text()):
+                if (old["name"] not in fresh_names
+                        and (BOTS_DIR / old["name"]).is_dir()):
+                    manifest.append({**old, "local_only": True})
+        except (ValueError, KeyError):
+            pass
+
     MANIFEST.parent.mkdir(exist_ok=True)
     MANIFEST.write_text(json.dumps(manifest, indent=1))
     print(f"\n{len(manifest)} opponents ready in {BOTS_DIR}")
