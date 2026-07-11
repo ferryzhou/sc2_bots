@@ -194,9 +194,11 @@ CONTAIN_TYPES: set[UnitID] = {
 # where it fights at 130+ supply
 ATTACK_AT_SUPPLY_VS_PROTOSS: float = COMMIT_AT_SUPPLY
 ATTACK_AT_SUPPLY_VS_TERRAN: float = COMMIT_AT_SUPPLY
-# vs zerg, middle ground: small pushes feed the remax, but full turtling
-# hands zerg a free 200-supply bank - push at 55 with siege support
-ATTACK_AT_SUPPLY_VS_ZERG: float = 55.0
+# vs zerg, keep the default timing: a 55-supply delay was tried and went
+# 2-2 vs CheatVision (losses in 27/35-min long games) - early pressure is
+# what beats zerg before the bank/remax scales. The tank-heavy comp
+# provides the trade efficiency; timing stays aggressive.
+ATTACK_AT_SUPPLY_VS_ZERG: float = ATTACK_AT_SUPPLY
 DEFEND_RADIUS: float = 25.0
 
 # Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
