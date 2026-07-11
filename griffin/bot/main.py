@@ -69,18 +69,14 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
-# vs zerg: ladder-replay autopsies showed all four losses to the remax
-# cycle - griffin leads or trades evenly through 10-12min, then larvae
-# rebuild the zerg army in minutes while our remnant walks into it
-# (DoopyBot lost 2.6k resources all game while killing 6k of ours).
-# Tank-heavy + extra medivacs: sieged tanks make every wave trade badly
-# and healing keeps the bio alive between waves.
-ARMY_COMP_VS_ZERG: dict[UnitID, dict] = {
-    UnitID.MARINE: {"proportion": 0.45, "priority": 1},
-    UnitID.MARAUDER: {"proportion": 0.1, "priority": 1},
-    UnitID.SIEGETANK: {"proportion": 0.3, "priority": 0},
-    UnitID.MEDIVAC: {"proportion": 0.15, "priority": 2},
-}
+# NOTE vs zerg: ladder-replay autopsies showed all four ladder losses to
+# the remax cycle (griffin leads through 10-12min, then larvae rebuild the
+# zerg army in minutes). A tank-heavy comp (30% tank / 15% medivac) was
+# tried at both 55-supply and 40-supply attack timings and went 2-2 vs
+# CheatVision zerg BOTH times (vs 2-0 typical for the default comp), with
+# losses in long grind-downs. Reverted - the default comp stays; ladder
+# TvZ remains an open problem needing a different idea (e.g. multi-prong
+# or better re-engage discipline after a won fight).
 
 # NOTE vs terran: a 10% VIKINGFIGHTER variant was tried and went 1-5
 # (vs ~50% before) - air-only supply can't shoot the AI's ground push,
@@ -194,11 +190,8 @@ CONTAIN_TYPES: set[UnitID] = {
 # where it fights at 130+ supply
 ATTACK_AT_SUPPLY_VS_PROTOSS: float = COMMIT_AT_SUPPLY
 ATTACK_AT_SUPPLY_VS_TERRAN: float = COMMIT_AT_SUPPLY
-# vs zerg, keep the default timing: a 55-supply delay was tried and went
-# 2-2 vs CheatVision (losses in 27/35-min long games) - early pressure is
-# what beats zerg before the bank/remax scales. The tank-heavy comp
-# provides the trade efficiency; timing stays aggressive.
-ATTACK_AT_SUPPLY_VS_ZERG: float = ATTACK_AT_SUPPLY
+# (a 55-supply zerg delay was also tried: 2-2, losses in 27/35-min games -
+# early pressure is what beats zerg before the bank/remax scales)
 DEFEND_RADIUS: float = 25.0
 
 # Standing home guard: real-opponent losses (Stockfish, MicroMachine) came
@@ -408,8 +401,6 @@ class GriffinBot(AresBot):
     def _army_comp(self) -> dict[UnitID, dict]:
         if self.enemy_race == Race.Protoss:
             return ARMY_COMP_VS_PROTOSS
-        if self.enemy_race == Race.Zerg:
-            return ARMY_COMP_VS_ZERG
         return ARMY_COMP
 
     @property
@@ -418,8 +409,6 @@ class GriffinBot(AresBot):
             return ATTACK_AT_SUPPLY_VS_PROTOSS
         if self.enemy_race == Race.Terran:
             return ATTACK_AT_SUPPLY_VS_TERRAN
-        if self.enemy_race == Race.Zerg:
-            return ATTACK_AT_SUPPLY_VS_ZERG
         return ATTACK_AT_SUPPLY
 
     def _home_threats(self) -> Units:
