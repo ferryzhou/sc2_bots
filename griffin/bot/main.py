@@ -31,6 +31,7 @@ from ares.behaviors.combat.individual import (
 )
 from ares.behaviors.macro import (
     AutoSupply,
+    BuildStructure,
     BuildWorkers,
     ExpansionController,
     GasBuildingController,
@@ -233,6 +234,8 @@ class GriffinBot(AresBot):
         self._macro()
         self._manage_orbitals()
         self._manage_depots()
+        self._counter_proxy_structures()
+        self._build_turrets_vs_air()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
@@ -247,6 +250,18 @@ class GriffinBot(AresBot):
             if self._emergency and threat.distance_to(self.start_location) > 18.0:
                 target = self.main_base_ramp.top_center
             self._micro(guard, target=target)
+            # during an emergency, an outnumbered defense also pulls SCVs -
+            # the ZEALOCALYPSE 4-gate rolled the wall 30->1 supply in two
+            # minutes while every SCV kept mining
+            if self._emergency:
+                combat_supply = forces_supply + self.get_total_supply(guard)
+                if self.get_total_supply(threats) > combat_supply:
+                    for scv in self.workers.sorted_by_distance_to(threat)[:12]:
+                        if not scv.orders or scv.orders[0].ability.id not in (
+                            AbilityId.ATTACK,
+                            AbilityId.ATTACK_ATTACK,
+                        ):
+                            scv.attack(threat)
             # recall the main army when the guard is outmatched, and always
             # against a forming contain - siege lines only get stronger
             if (
@@ -416,6 +431,73 @@ class GriffinBot(AresBot):
         if self.enemy_race == Race.Terran:
             return ATTACK_AT_SUPPLY_VS_TERRAN
         return ATTACK_AT_SUPPLY
+
+    def _counter_proxy_structures(self) -> None:
+        """Cannon-rush / proxy response: pull SCVs onto proxy structures
+        while they're building. Ladder loss to PerilousProtossBot: 4
+        cannons at our main, dead by 6:00 with zero response."""
+        proxies = [
+            s
+            for s in self.enemy_structures
+            if any(s.distance_to(th) < 30.0 for th in self.townhalls)
+        ]
+        if not proxies or self.time > 420.0:
+            return
+        # prioritise unfinished cannons, then pylons
+        proxies.sort(
+            key=lambda s: (
+                s.build_progress >= 1.0,
+                s.type_id != UnitID.PHOTONCANNON,
+            )
+        )
+        target = proxies[0]
+        for scv in self.workers.sorted_by_distance_to(target)[:8]:
+            if not scv.orders or scv.orders[0].ability.id not in (
+                AbilityId.ATTACK,
+                AbilityId.ATTACK_ATTACK,
+            ):
+                scv.attack(target)
+
+    def _build_turrets_vs_air(self) -> None:
+        """Missile turrets at each mineral line once enemy air combat units
+        are seen. Ladder loss to sharpy_protoss_test1: double-stargate void
+        rays collapsed us 74->22 supply with marines as the only AA."""
+        air_threats = [
+            u
+            for u in self.enemy_units
+            if u.is_flying
+            and (
+                u.can_attack_ground
+                or u.type_id in {UnitID.ORACLE, UnitID.LIBERATOR, UnitID.BANSHEE}
+            )
+        ]
+        if not air_threats:
+            return
+        if not self.structures(UnitID.ENGINEERINGBAY):
+            if (
+                not self.already_pending(UnitID.ENGINEERINGBAY)
+                and self.can_afford(UnitID.ENGINEERINGBAY)
+            ):
+                self.register_behavior(
+                    BuildStructure(
+                        base_location=self.start_location,
+                        structure_id=UnitID.ENGINEERINGBAY,
+                    )
+                )
+            return
+        if self.already_pending(UnitID.MISSILETURRET) >= 2:
+            return
+        for th in self.townhalls.ready:
+            if not self.structures(UnitID.MISSILETURRET).closer_than(
+                12.0, th
+            ) and self.can_afford(UnitID.MISSILETURRET):
+                self.register_behavior(
+                    BuildStructure(
+                        base_location=th.position,
+                        structure_id=UnitID.MISSILETURRET,
+                    )
+                )
+                return
 
     def _home_threats(self) -> Units:
         """Enemy combat units near our townhalls, plus siege units forming
