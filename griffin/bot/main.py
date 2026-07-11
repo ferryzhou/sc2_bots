@@ -166,6 +166,12 @@ ATTACK_DECISION_COOLDOWN: float = 30.0
 # Past this time with a commit-strength army, attack permanently - a 3-3
 # maxed push resolving the game beats a guaranteed half-point tie.
 STALEMATE_AFTER: float = 1320.0
+# NOTE: a heal-retreat discipline was tried here (fall back when the
+# post-fight bio averaged <55% HP, re-attack at 70%) to counter the
+# ladder remax anatomy - it went 2-4 vs CheatVision (baseline 5-1).
+# Same lesson as every passivity lever on this bot: giving a cheater
+# economy free time loses more than tired pushes do. Ladder-targeted
+# behavior changes need ladder-realistic validation, not the gauntlet.
 # contain-breaking: the terran AI sieges tanks + liberators just OUTSIDE
 # the defend radius and fortifies while we turtle (TvT logs: home_threats=0
 # for minutes, then LOSS_OVERWHELMING once the line crosses it). Siege
