@@ -166,6 +166,12 @@ ATTACK_DECISION_COOLDOWN: float = 30.0
 # Past this time with a commit-strength army, attack permanently - a 3-3
 # maxed push resolving the game beats a guaranteed half-point tie.
 STALEMATE_AFTER: float = 1320.0
+# re-engage discipline: the ladder-replay autopsies showed a worn-down
+# post-fight army walking into the enemy's freshly rebuilt one (the zerg
+# remax cycle in particular). When the local fight is over and the bio is
+# this damaged on average, fall back to the rally to heal before pushing on.
+HEAL_RETREAT_BELOW_HP: float = 0.55
+HEAL_REATTACK_ABOVE_HP: float = 0.7
 # contain-breaking: the terran AI sieges tanks + liberators just OUTSIDE
 # the defend radius and fortifies while we turtle (TvT logs: home_threats=0
 # for minutes, then LOSS_OVERWHELMING once the line crosses it). Siege
@@ -309,23 +315,36 @@ class GriffinBot(AresBot):
         stalemate: bool = (
             self.time > STALEMATE_AFTER and forces_supply >= COMMIT_AT_SUPPLY
         )
+        # post-fight heal check: fight is over (no visible enemy army) but
+        # the surviving bio is badly damaged - re-engaging now feeds the
+        # enemy's rebuilt army; going home lets medivacs top everyone up
+        bio_hp: float = 1.0
+        if bio_units := [
+            u for u in forces if u.type_id not in SUPPORT_TYPES and u.is_ready
+        ]:
+            bio_hp = sum(u.health_percentage for u in bio_units) / len(bio_units)
+        worn_out: bool = not enemy_army and bio_hp < HEAL_RETREAT_BELOW_HP
+
         if self._commenced_attack:
-            # supply crash aborts immediately; sim-based regroup respects
-            # the cooldown so vision flicker can't thrash the state, and is
-            # disabled entirely in stalemate mode - resolve the game
+            # supply crash aborts immediately; sim-based regroup and heal
+            # retreats respect the cooldown so vision flicker can't thrash
+            # the state, and both are disabled in stalemate mode
             if forces_supply < REGROUP_BELOW_SUPPLY or (
                 not stalemate
                 and decision_ready
-                and fight is not None
-                and fight in LOSS_CLOSE_OR_WORSE
+                and (
+                    worn_out
+                    or (fight is not None and fight in LOSS_CLOSE_OR_WORSE)
+                )
             ):
                 self._commenced_attack = False
                 self._last_attack_decision = self.time
                 logger.info(
                     f"{self.time_formatted} REGROUP at "
-                    f"army={forces_supply:.0f} fight={fight}"
+                    f"army={forces_supply:.0f} fight={fight} "
+                    f"bio_hp={bio_hp:.2f}"
                 )
-        elif stalemate or decision_ready and (
+        elif stalemate or decision_ready and bio_hp >= HEAL_REATTACK_ABOVE_HP and (
             forces_supply >= COMMIT_AT_SUPPLY
             or (
                 forces_supply >= self._attack_at_supply
