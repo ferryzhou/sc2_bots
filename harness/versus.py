@@ -234,9 +234,33 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
 
 
 def load_opponents() -> list[dict]:
-    if not MANIFEST.is_file():
-        sys.exit(f"No manifest at {MANIFEST} - run harness/download_bots.py")
-    return json.loads(MANIFEST.read_text())
+    """Manifest entries plus any extracted bot dirs missing from it.
+
+    The manifest can be regenerated at any time (and bots leave the
+    publicly-downloadable set), but an extracted bot in BOTS_DIR stays
+    playable - synthesize an entry from its ladderbots.json when needed.
+    """
+    manifest = (json.loads(MANIFEST.read_text())
+                if MANIFEST.is_file() else [])
+    known = {o["name"] for o in manifest}
+    for bot_dir in sorted(BOTS_DIR.iterdir()) if BOTS_DIR.is_dir() else []:
+        if not bot_dir.is_dir() or bot_dir.name in known:
+            continue
+        entry = {"name": bot_dir.name, "race": "?", "type": "python",
+                 "elo": None, "local_only": True}
+        for meta_path in (bot_dir / "ladderbots.json",
+                          *sorted(bot_dir.glob("*/ladderbots.json"))):
+            if meta_path.is_file():
+                try:
+                    (name, info), = json.loads(
+                        meta_path.read_text())["Bots"].items()
+                    entry["race"] = info.get("Race", "?")[:1]
+                    entry["type"] = info.get("Type", "python").lower()
+                except (ValueError, KeyError):
+                    pass
+                break
+        manifest.append(entry)
+    return manifest
 
 
 def main() -> None:
