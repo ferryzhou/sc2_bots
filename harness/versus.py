@@ -212,7 +212,9 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 out, _ = await asyncio.wait_for(ours.communicate(), timeout=timeout)
                 text = out.decode(errors="replace")
                 (log_dir / f"{BOT_NAME}_{stamp}.log").write_text(text)
-                m = re.search(r"Result\.(\w+)", text)
+                # anchor to real game results - the bot's own logging can
+                # contain e.g. "EngagementResult.VICTORY_EMPHATIC"
+                m = re.search(r"\bResult\.(Victory|Defeat|Tie)\b", text)
                 record["result"] = m.group(1) if m else "Unknown"
                 if record["result"] == "Unknown" and ours.returncode != 0:
                     record["result"] = "Error"
