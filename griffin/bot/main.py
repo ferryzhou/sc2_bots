@@ -105,6 +105,10 @@ DESIRED_UPGRADES: list[UpgradeId] = [
     UpgradeId.TERRANINFANTRYARMORSLEVEL1,
     UpgradeId.TERRANINFANTRYWEAPONSLEVEL2,
     UpgradeId.TERRANINFANTRYARMORSLEVEL2,
+    # long ladder games (two 60-min ties) reach these; a maxed 3-3 army
+    # is how the eventual forced engagement gets won
+    UpgradeId.TERRANINFANTRYWEAPONSLEVEL3,
+    UpgradeId.TERRANINFANTRYARMORSLEVEL3,
 ]
 
 COMMON_UNIT_IGNORE_TYPES: set[UnitID] = {
@@ -148,6 +152,11 @@ COMMIT_AT_SUPPLY: float = 70.0
 # enemy units enter/leave vision (TvT logs showed regroup->attack->regroup
 # in one second), and each yo-yo bleeds units into the enemy's siege line
 ATTACK_DECISION_COOLDOWN: float = 30.0
+# stalemate breaker: two ladder games ended as 60-min ties with griffin
+# camping at commit strength while the sim gate kept declining the fight.
+# Past this time with a commit-strength army, attack permanently - a 3-3
+# maxed push resolving the game beats a guaranteed half-point tie.
+STALEMATE_AFTER: float = 1320.0
 # contain-breaking: the terran AI sieges tanks + liberators just OUTSIDE
 # the defend radius and fortifies while we turtle (TvT logs: home_threats=0
 # for minutes, then LOSS_OVERWHELMING once the line crosses it). Siege
@@ -286,11 +295,16 @@ class GriffinBot(AresBot):
         decision_ready: bool = (
             self.time - self._last_attack_decision >= ATTACK_DECISION_COOLDOWN
         )
+        stalemate: bool = (
+            self.time > STALEMATE_AFTER and forces_supply >= COMMIT_AT_SUPPLY
+        )
         if self._commenced_attack:
             # supply crash aborts immediately; sim-based regroup respects
-            # the cooldown so vision flicker can't thrash the state
+            # the cooldown so vision flicker can't thrash the state, and is
+            # disabled entirely in stalemate mode - resolve the game
             if forces_supply < REGROUP_BELOW_SUPPLY or (
-                decision_ready
+                not stalemate
+                and decision_ready
                 and fight is not None
                 and fight in LOSS_CLOSE_OR_WORSE
             ):
@@ -300,7 +314,7 @@ class GriffinBot(AresBot):
                     f"{self.time_formatted} REGROUP at "
                     f"army={forces_supply:.0f} fight={fight}"
                 )
-        elif decision_ready and (
+        elif stalemate or decision_ready and (
             forces_supply >= COMMIT_AT_SUPPLY
             or (
                 forces_supply >= self._attack_at_supply
@@ -477,7 +491,12 @@ class GriffinBot(AresBot):
                 macro_plan.add(
                     ProductionController(comp, base_location=self.start_location)
                 )
-                macro_plan.add(ExpansionController(to_count=4, max_pending=1))
+                # long games: keep taking bases so a mined-out economy
+                # doesn't decide the 60-min grinds
+                expansion_target = 4 if self.time < 900.0 else 6
+                macro_plan.add(
+                    ExpansionController(to_count=expansion_target, max_pending=1)
+                )
                 macro_plan.add(
                     GasBuildingController(to_count=len(self.townhalls) * 2)
                 )
