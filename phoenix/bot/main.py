@@ -155,10 +155,56 @@ class PhoenixBot(AresBot):
         )
         await super(PhoenixBot, self).on_end(game_result)
 
+    @property
+    def _enemy_all_in(self) -> bool:
+        """One-base all-in read: past the rush window but the enemy still
+        hasn't expanded and shows a real army. The 4 midgame ladder losses
+        (Klakinn/Montka/OneBaseStalkerBot/PiG_Bot) all died to this at
+        8-11min: their army value was 2-6x ours while we teched/expanded."""
+        if not (240.0 < self.time < 660.0):
+            return False
+        if self.mediator.get_enemy_expanded:
+            return False
+        enemy_army_supply = self.get_total_supply(
+            self.enemy_units.filter(
+                lambda u: u.type_id not in WORKER_TYPES
+                and u.type_id not in COMMON_UNIT_IGNORE_TYPES
+            )
+        )
+        return (
+            enemy_army_supply >= 10.0
+            or self.mediator.get_enemy_went_four_gate
+            or self.mediator.get_enemy_went_marine_rush
+        )
+
+    def _counter_proxy_structures(self) -> None:
+        """Cannon-rush response: pull nearby probes onto proxy structures
+        while they're building (cannons finished = too late). The 2 cannon
+        losses ended with our supply collapsing 26->1 with zero response."""
+        proxies = [
+            s
+            for s in self.enemy_structures
+            if any(s.distance_to(th) < 30.0 for th in self.townhalls)
+        ]
+        if not proxies or self.time > 420.0:
+            return
+        # prioritise unfinished cannons, then pylons
+        proxies.sort(key=lambda s: (s.build_progress >= 1.0,
+                                    s.type_id != UnitID.PHOTONCANNON))
+        target = proxies[0]
+        pullers = self.workers.sorted_by_distance_to(target)[:8]
+        for probe in pullers:
+            if not probe.orders or probe.orders[0].ability.id not in (
+                AbilityId.ATTACK, AbilityId.ATTACK_ATTACK
+            ):
+                probe.attack(target)
+
     async def on_step(self, iteration: int) -> None:
         await super(PhoenixBot, self).on_step(iteration)
 
         self._update_emergency()
+        self._all_in_read: bool = self._enemy_all_in
+        self._counter_proxy_structures()
         self._macro()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
@@ -200,7 +246,10 @@ class PhoenixBot(AresBot):
             # attack even into a predicted loss rather than starve at home
             or forces_supply >= self._pressure_valve_supply
         ):
-            self._commenced_attack = True
+            # vs a one-base all-in, hold home-field advantage (wall +
+            # batteries) instead of meeting the push in the open
+            if not self._all_in_read:
+                self._commenced_attack = True
 
         if self._commenced_attack:
             self._micro(forces, target=self.attack_target)
@@ -321,9 +370,11 @@ class PhoenixBot(AresBot):
                 macro_plan.add(SpawnController(comp))
                 # upgrades only once we're stable: past the rush window AND
                 # holding a real army (a 5:00 forge while defending was a
-                # second death spiral in the Chance loss analysis)
+                # second death spiral in the Chance loss analysis); never
+                # while a one-base all-in is inbound
                 army_supply = self.supply_used - self.supply_workers
-                if self.time > UPGRADES_AFTER and army_supply >= 16:
+                if (self.time > UPGRADES_AFTER and army_supply >= 16
+                        and not self._all_in_read):
                     macro_plan.add(
                         UpgradeController(
                             upgrade_list=DESIRED_UPGRADES,
@@ -342,7 +393,12 @@ class PhoenixBot(AresBot):
                         shield_batteries_per_base=1,
                     )
                 )
-                macro_plan.add(ExpansionController(to_count=4, max_pending=1))
+                # no new bases while a one-base all-in is inbound - units win
+                # that fight, a half-built nexus doesn't
+                if not self._all_in_read:
+                    macro_plan.add(
+                        ExpansionController(to_count=4, max_pending=1)
+                    )
                 macro_plan.add(
                     GasBuildingController(to_count=len(self.townhalls) * 2)
                 )
