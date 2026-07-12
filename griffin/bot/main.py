@@ -586,28 +586,47 @@ class GriffinBot(AresBot):
 
     @property
     def _enemy_all_in(self) -> bool:
-        """One-base/two-base all-in read: past the rush window but the enemy
-        still hasn't taken a natural and already shows a real army. This is
-        griffin's dominant ladder loss - the enemy pours everything into army
-        off one base and hits at 6-10min while griffin techs/expands (see the
-        ALL_IN_WINDOW note). Ported from PhoenixBot, which names the same
-        killers (Klakinn/OneBaseStalkerBot/PiG_Bot)."""
+        """All-in / timing-attack read for the vulnerable tech-down window.
+
+        Two paths, both from the ladder autopsies:
+        1. One-base all-in (Klakinn/OneBaseStalkerBot/PiG_Bot/protossinger):
+           enemy hasn't taken a natural but shows a real army - ported from
+           PhoenixBot, which names the same killers.
+        2. Flood / 2-base timing (zig-reapers 24 reapers off 2 CCs,
+           MY_SCRIPTING_SON 60 lings off 2 hatch): enemy combat army near our
+           bases outnumbers ours - expansion-agnostic, since a bigger army at
+           home means pump-and-hold regardless of how many bases fed it."""
         if not (ALL_IN_WINDOW[0] < self.time < ALL_IN_WINDOW[1]):
             return False
-        if self.mediator.get_enemy_expanded:
-            return False
-        enemy_army_supply = self.get_total_supply(
-            self.enemy_units.filter(
+
+        def real_army(units: Units) -> Units:
+            return units.filter(
                 lambda u: u.type_id not in WORKER_TYPES
                 and u.type_id not in COMMON_UNIT_IGNORE_TYPES
                 and not u.is_memory
             )
-        )
-        return (
-            enemy_army_supply >= ALL_IN_ARMY_SUPPLY
+
+        enemy_army = real_army(self.enemy_units)
+
+        # path 1: one-base all-in
+        if not self.mediator.get_enemy_expanded and (
+            self.get_total_supply(enemy_army) >= ALL_IN_ARMY_SUPPLY
             or bool(self.mediator.get_enemy_went_four_gate)
             or bool(self.mediator.get_enemy_went_marine_rush)
+        ):
+            return True
+
+        # path 2: enemy army near our bases outnumbers ours
+        enemy_near = enemy_army.filter(
+            lambda u: any(u.distance_to(th) < 45.0 for th in self.townhalls)
         )
+        if self.get_total_supply(enemy_near) >= ALL_IN_ARMY_SUPPLY:
+            our_army = self.get_total_supply(
+                self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
+            )
+            if self.get_total_supply(enemy_near) >= 1.5 * max(our_army, 1.0):
+                return True
+        return False
 
     def _update_emergency(self) -> None:
         """Rush defense mode: abort the opening, stop spending on greed.
