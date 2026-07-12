@@ -221,6 +221,7 @@ class GriffinBot(AresBot):
         self._last_threat_time: float = 0.0
         self._last_status_log: float = 0.0
         self._last_attack_decision: float = -999.0
+        self._enemy_air_seen: bool = False
 
     async def on_start(self) -> None:
         await super(GriffinBot, self).on_start()
@@ -458,6 +459,19 @@ class GriffinBot(AresBot):
             ):
                 scv.attack(target)
 
+    @staticmethod
+    def _with_vikings(comp: dict[UnitID, dict]) -> dict[UnitID, dict]:
+        """Blend a 20% viking share into a composition (proportions rescaled)."""
+        blended = {
+            k: {
+                "proportion": round(v["proportion"] * 0.8, 3),
+                "priority": v["priority"],
+            }
+            for k, v in comp.items()
+        }
+        blended[UnitID.VIKINGFIGHTER] = {"proportion": 0.2, "priority": 0}
+        return blended
+
     def _build_turrets_vs_air(self) -> None:
         """Missile turrets at each mineral line once enemy air combat units
         are seen. Ladder loss to sharpy_protoss_test1: double-stargate void
@@ -473,6 +487,12 @@ class GriffinBot(AresBot):
         ]
         if not air_threats:
             return
+        if not self._enemy_air_seen:
+            self._enemy_air_seen = True
+            logger.warning(
+                f"{self.time_formatted} enemy air seen "
+                f"({air_threats[0].type_id.name}) - adding vikings + turrets"
+            )
         if not self.structures(UnitID.ENGINEERINGBAY):
             if (
                 not self.already_pending(UnitID.ENGINEERINGBAY)
@@ -557,6 +577,13 @@ class GriffinBot(AresBot):
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
             comp = EMERGENCY_COMP if self._emergency else self._army_comp
+            # reactive vikings: only once enemy air combat units are seen
+            # (a permanent viking share was tried and went 1-5 - air-blind
+            # supply can't shoot a ground push; see the vs-terran NOTE).
+            # Air-heavy opponents (sharpy void rays, Asteria tempests) are
+            # unanswerable without a mobile AA share.
+            if self._enemy_air_seen and not self._emergency:
+                comp = self._with_vikings(comp)
             macro_plan.add(AutoSupply(base_location=self.start_location))
             if self._emergency:
                 # units and production only - no expansions, no upgrades,
