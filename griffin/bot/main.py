@@ -133,6 +133,17 @@ COMMON_UNIT_IGNORE_TYPES: set[UnitID] = {
 # support units that should follow the army rather than stutter into it
 SUPPORT_TYPES: set[UnitID] = {UnitID.MEDIVAC}
 
+# air units that signal a committed air strategy rather than light harass
+CAPITAL_AIR_TYPES: set[UnitID] = {
+    UnitID.VOIDRAY,
+    UnitID.TEMPEST,
+    UnitID.CARRIER,
+    UnitID.BATTLECRUISER,
+    UnitID.LIBERATOR,
+    UnitID.LIBERATORAG,
+    UnitID.BROODLORD,
+}
+
 TANK_TYPES: set[UnitID] = {UnitID.SIEGETANK, UnitID.SIEGETANKSIEGED}
 # siege when ground targets are inside this; unsiege when none remain
 # within a comfortably larger radius (hysteresis avoids mode-flapping)
@@ -487,11 +498,18 @@ class GriffinBot(AresBot):
         ]
         if not air_threats:
             return
-        if not self._enemy_air_seen:
+        # vikings only for a real air transition, not a lone harass banshee:
+        # a single-sighting trigger went 2-4 vs CheatVision - one scouted
+        # banshee diverted 20% of supply into air-blind vikings all game
+        heavy_air = len(air_threats) >= 3 or any(
+            u.type_id in CAPITAL_AIR_TYPES for u in air_threats
+        )
+        if heavy_air and not self._enemy_air_seen:
             self._enemy_air_seen = True
             logger.warning(
-                f"{self.time_formatted} enemy air seen "
-                f"({air_threats[0].type_id.name}) - adding vikings + turrets"
+                f"{self.time_formatted} heavy enemy air "
+                f"({air_threats[0].type_id.name} x{len(air_threats)}) "
+                f"- adding vikings"
             )
         if not self.structures(UnitID.ENGINEERINGBAY):
             if (
@@ -601,7 +619,10 @@ class GriffinBot(AresBot):
                 )
             else:
                 macro_plan.add(
-                    BuildWorkers(to_count=min(66, 22 * len(self.townhalls)))
+                    # 80-worker ceiling: ladder macro bots (Horizon 4CC/8min,
+                    # Persephone 75 drones) outscaled the old 66 cap in every
+                    # long game - the 8-14min window is where those were lost
+                    BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
                 )
                 macro_plan.add(SpawnController(comp))
                 # upgrades only once we're stable: past the rush window AND
@@ -619,7 +640,7 @@ class GriffinBot(AresBot):
                 )
                 # long games: keep taking bases so a mined-out economy
                 # doesn't decide the 60-min grinds
-                expansion_target = 4 if self.time < 900.0 else 6
+                expansion_target = 4 if self.time < 720.0 else 6
                 macro_plan.add(
                     ExpansionController(to_count=expansion_target, max_pending=1)
                 )
