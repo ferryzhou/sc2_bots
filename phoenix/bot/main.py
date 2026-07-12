@@ -67,6 +67,18 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.STALKER: {"proportion": 1.0, "priority": 0},
 }
 
+# late-game extension, gated on being maxed AND banking (so it can never
+# dilute early army like the failed immortal experiment): colossus AoE is
+# the close-out vs mass queen/ling turtles and maxed deathballs - the
+# 47-min QueenBot ladder loss was won on trades (51k killed) but never
+# closed
+LATE_COMP: dict[UnitID, dict] = {
+    UnitID.COLOSSUS: {"proportion": 0.2, "priority": 0},
+    UnitID.STALKER: {"proportion": 0.8, "priority": 1},
+}
+LATE_COMP_SUPPLY: float = 180.0
+LATE_COMP_BANK: int = 1200
+
 # used while defending early aggression - zealots are the only gateway unit
 # available before cybercore tech and hold rushes far better than nothing
 EMERGENCY_COMP: dict[UnitID, dict] = {
@@ -161,7 +173,7 @@ class PhoenixBot(AresBot):
         hasn't expanded and shows a real army. The 4 midgame ladder losses
         (Klakinn/Montka/OneBaseStalkerBot/PiG_Bot) all died to this at
         8-11min: their army value was 2-6x ours while we teched/expanded."""
-        if not (240.0 < self.time < 660.0):
+        if not (210.0 < self.time < 660.0):
             return False
         if self.mediator.get_enemy_expanded:
             return False
@@ -339,7 +351,13 @@ class PhoenixBot(AresBot):
 
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
-            comp = self._emergency_comp if self._emergency else ARMY_COMP
+            if self._emergency:
+                comp = self._emergency_comp
+            elif (self.supply_used >= LATE_COMP_SUPPLY
+                  and self.minerals >= LATE_COMP_BANK):
+                comp = LATE_COMP
+            else:
+                comp = ARMY_COMP
             macro_plan.add(AutoSupply(base_location=self.start_location))
             if self._emergency:
                 # units and production only - no expansions, no upgrades,
@@ -375,9 +393,12 @@ class PhoenixBot(AresBot):
                 army_supply = self.supply_used - self.supply_workers
                 if (self.time > UPGRADES_AFTER and army_supply >= 16
                         and not self._all_in_read):
+                    upgrades = list(DESIRED_UPGRADES)
+                    if self.mediator.get_own_army_dict[UnitID.COLOSSUS]:
+                        upgrades.append(UpgradeId.EXTENDEDTHERMALLANCE)
                     macro_plan.add(
                         UpgradeController(
-                            upgrade_list=DESIRED_UPGRADES,
+                            upgrade_list=upgrades,
                             base_location=self.start_location,
                         )
                     )
