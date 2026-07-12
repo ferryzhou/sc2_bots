@@ -101,8 +101,16 @@ EMERGENCY_COMP: dict[UnitID, dict] = {
     UnitID.MARINE: {"proportion": 1.0, "priority": 0},
 }
 
-# early-rush window: aggression detected before this triggers emergency mode
+# early-rush window: proximity aggression before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
+# one-base/two-base all-in window: griffin's dominant ladder loss (zig-reapers,
+# OneBaseStalkerBot, Klakinn, PiG_Bot, Apidae, protossinger, ZEALOCALYPSE) is a
+# 6-10min timing attack that lands AFTER the proximity rush window - even on
+# supply at 4-6min, then 2-4x behind on army at 8min while griffin techs and
+# expands. Detected by economy evidence (enemy unexpanded + real army), not
+# just proximity, so emergency army production starts before the hit lands.
+ALL_IN_WINDOW: tuple[float, float] = (210.0, 660.0)
+ALL_IN_ARMY_SUPPLY: float = 12.0
 # don't spend on ebay upgrades before this (mirrors the phoenix rush
 # lessons); early enough that stim is done for the 40-supply push
 UPGRADES_AFTER: float = 240.0
@@ -576,13 +584,50 @@ class GriffinBot(AresBot):
         ]
         return len(combat) >= 3 or len(proxy) >= 1
 
+    @property
+    def _enemy_all_in(self) -> bool:
+        """One-base all-in read for the vulnerable tech-down window: past the
+        rush window but the enemy still hasn't taken a natural and already
+        shows a real army (Klakinn/OneBaseStalkerBot/PiG_Bot/protossinger).
+        Ported from PhoenixBot, which names the same killers.
+
+        Gated hard on the enemy being UNEXPANDED: this is what keeps it from
+        false-firing vs a normal macro opponent (which naturals early). An
+        earlier expansion-agnostic "army near home outnumbers ours" path was
+        tried to also catch 2-base floods (zig-reapers/MY_SCRIPTING_SON) - it
+        regressed the gauntlet 2-4 (baseline 5-1) by triggering whenever our
+        army was out attacking, so it was removed. 2-base floods need a
+        different, non-crippling response."""
+        if not (ALL_IN_WINDOW[0] < self.time < ALL_IN_WINDOW[1]):
+            return False
+        if self.mediator.get_enemy_expanded:
+            return False
+        enemy_army = self.get_total_supply(
+            self.enemy_units.filter(
+                lambda u: u.type_id not in WORKER_TYPES
+                and u.type_id not in COMMON_UNIT_IGNORE_TYPES
+                and not u.is_memory
+            )
+        )
+        return (
+            enemy_army >= ALL_IN_ARMY_SUPPLY
+            or bool(self.mediator.get_enemy_went_four_gate)
+            or bool(self.mediator.get_enemy_went_marine_rush)
+        )
+
     def _update_emergency(self) -> None:
-        """Rush defense mode: abort the opening, stop spending on greed."""
-        if self._early_aggression_seen():
+        """Rush defense mode: abort the opening, stop spending on greed.
+
+        Two triggers: close-proximity aggression in the first 5min, and the
+        economy-based all-in read through ~11min (the timing-attack window)."""
+        if self._early_aggression_seen() or self._enemy_all_in:
             self._last_threat_time = self.time
-            if not self._emergency and self.time < EARLY_THREAT_UNTIL:
+            if not self._emergency:
                 self._emergency = True
-                logger.warning(f"{self.time_formatted} EMERGENCY: early rush detected")
+                logger.warning(
+                    f"{self.time_formatted} EMERGENCY: "
+                    f"{'all-in' if self._enemy_all_in else 'early rush'} detected"
+                )
                 if not self.build_order_runner.build_completed:
                     # hand control to the reactive macro plan immediately
                     self.build_order_runner.set_build_completed()

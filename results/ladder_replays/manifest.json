@@ -1,5 +1,14 @@
 [
  {
+  "match": 4873057,
+  "opponent": "SiriusBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-12T21:41:08.690249Z",
+  "game_steps": 16178,
+  "file": "loss_SiriusBot_4873057.SC2Replay"
+ },
+ {
   "match": 4872608,
   "opponent": "Apidae",
   "result": "loss",
@@ -45,6 +54,15 @@
   "file": "loss_KoB_4872604.SC2Replay"
  },
  {
+  "match": 4872603,
+  "opponent": "zig-reapers",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-12T14:19:37.597673Z",
+  "game_steps": 12204,
+  "file": "loss_zig-reapers_4872603.SC2Replay"
+ },
+ {
   "match": 4872596,
   "opponent": "GriffinBot",
   "result": "win",
@@ -81,30 +99,12 @@
   "file": "loss_GriffinBot_4872412.SC2Replay"
  },
  {
-  "match": 4872245,
+  "match": 4872355,
   "opponent": "GriffinBot",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-12T01:48:22.981618Z",
-  "game_steps": 14706,
-  "file": "loss_GriffinBot_4872245.SC2Replay"
- },
- {
-  "match": 4872193,
-  "opponent": "GriffinBot",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T22:50:05.779176Z",
-  "game_steps": 10634,
-  "file": "loss_GriffinBot_4872193.SC2Replay"
- },
- {
-  "match": 4872144,
-  "opponent": "GriffinBot",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T19:23:20.517727Z",
-  "game_steps": 12544,
-  "file": "loss_GriffinBot_4872144.SC2Replay"
+  "when": "2026-07-12T13:15:42.931027Z",
+  "game_steps": 24100,
+  "file": "loss_GriffinBot_4872355.SC2Replay"
  }
 ]
