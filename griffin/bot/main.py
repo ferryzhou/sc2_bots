@@ -133,6 +133,17 @@ COMMON_UNIT_IGNORE_TYPES: set[UnitID] = {
 # support units that should follow the army rather than stutter into it
 SUPPORT_TYPES: set[UnitID] = {UnitID.MEDIVAC}
 
+# air units that signal a committed air strategy rather than light harass
+CAPITAL_AIR_TYPES: set[UnitID] = {
+    UnitID.VOIDRAY,
+    UnitID.TEMPEST,
+    UnitID.CARRIER,
+    UnitID.BATTLECRUISER,
+    UnitID.LIBERATOR,
+    UnitID.LIBERATORAG,
+    UnitID.BROODLORD,
+}
+
 TANK_TYPES: set[UnitID] = {UnitID.SIEGETANK, UnitID.SIEGETANKSIEGED}
 # siege when ground targets are inside this; unsiege when none remain
 # within a comfortably larger radius (hysteresis avoids mode-flapping)
@@ -221,6 +232,7 @@ class GriffinBot(AresBot):
         self._last_threat_time: float = 0.0
         self._last_status_log: float = 0.0
         self._last_attack_decision: float = -999.0
+        self._enemy_air_seen: bool = False
 
     async def on_start(self) -> None:
         await super(GriffinBot, self).on_start()
@@ -458,6 +470,19 @@ class GriffinBot(AresBot):
             ):
                 scv.attack(target)
 
+    @staticmethod
+    def _with_vikings(comp: dict[UnitID, dict]) -> dict[UnitID, dict]:
+        """Blend a 20% viking share into a composition (proportions rescaled)."""
+        blended = {
+            k: {
+                "proportion": round(v["proportion"] * 0.8, 3),
+                "priority": v["priority"],
+            }
+            for k, v in comp.items()
+        }
+        blended[UnitID.VIKINGFIGHTER] = {"proportion": 0.2, "priority": 0}
+        return blended
+
     def _build_turrets_vs_air(self) -> None:
         """Missile turrets at each mineral line once enemy air combat units
         are seen. Ladder loss to sharpy_protoss_test1: double-stargate void
@@ -473,6 +498,19 @@ class GriffinBot(AresBot):
         ]
         if not air_threats:
             return
+        # vikings only for a real air transition, not a lone harass banshee:
+        # a single-sighting trigger went 2-4 vs CheatVision - one scouted
+        # banshee diverted 20% of supply into air-blind vikings all game
+        heavy_air = len(air_threats) >= 3 or any(
+            u.type_id in CAPITAL_AIR_TYPES for u in air_threats
+        )
+        if heavy_air and not self._enemy_air_seen:
+            self._enemy_air_seen = True
+            logger.warning(
+                f"{self.time_formatted} heavy enemy air "
+                f"({air_threats[0].type_id.name} x{len(air_threats)}) "
+                f"- adding vikings"
+            )
         if not self.structures(UnitID.ENGINEERINGBAY):
             if (
                 not self.already_pending(UnitID.ENGINEERINGBAY)
@@ -557,6 +595,13 @@ class GriffinBot(AresBot):
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
             comp = EMERGENCY_COMP if self._emergency else self._army_comp
+            # reactive vikings: only once enemy air combat units are seen
+            # (a permanent viking share was tried and went 1-5 - air-blind
+            # supply can't shoot a ground push; see the vs-terran NOTE).
+            # Air-heavy opponents (sharpy void rays, Asteria tempests) are
+            # unanswerable without a mobile AA share.
+            if self._enemy_air_seen and not self._emergency:
+                comp = self._with_vikings(comp)
             macro_plan.add(AutoSupply(base_location=self.start_location))
             if self._emergency:
                 # units and production only - no expansions, no upgrades,
@@ -574,7 +619,10 @@ class GriffinBot(AresBot):
                 )
             else:
                 macro_plan.add(
-                    BuildWorkers(to_count=min(66, 22 * len(self.townhalls)))
+                    # 80-worker ceiling: ladder macro bots (Horizon 4CC/8min,
+                    # Persephone 75 drones) outscaled the old 66 cap in every
+                    # long game - the 8-14min window is where those were lost
+                    BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
                 )
                 macro_plan.add(SpawnController(comp))
                 # upgrades only once we're stable: past the rush window AND
@@ -592,7 +640,7 @@ class GriffinBot(AresBot):
                 )
                 # long games: keep taking bases so a mined-out economy
                 # doesn't decide the 60-min grinds
-                expansion_target = 4 if self.time < 900.0 else 6
+                expansion_target = 4 if self.time < 720.0 else 6
                 macro_plan.add(
                     ExpansionController(to_count=expansion_target, max_pending=1)
                 )

@@ -1,5 +1,41 @@
 [
  {
+  "match": 4872608,
+  "opponent": "Apidae",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-11T21:15:29.628911Z",
+  "game_steps": 12591,
+  "file": "loss_Apidae_4872608.SC2Replay"
+ },
+ {
+  "match": 4872607,
+  "opponent": "QueenBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-12T10:22:50.821158Z",
+  "game_steps": 25835,
+  "file": "loss_QueenBot_4872607.SC2Replay"
+ },
+ {
+  "match": 4872606,
+  "opponent": "WorkingAsIntended",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-12T00:12:19.165284Z",
+  "game_steps": 16587,
+  "file": "loss_WorkingAsIntended_4872606.SC2Replay"
+ },
+ {
+  "match": 4872605,
+  "opponent": "Crawler",
+  "result": "win",
+  "cause": "game_rules",
+  "when": "2026-07-12T00:19:54.518659Z",
+  "game_steps": 13556,
+  "file": "win_Crawler_4872605.SC2Replay"
+ },
+ {
   "match": 4872604,
   "opponent": "KoB",
   "result": "loss",
@@ -7,6 +43,15 @@
   "when": "2026-07-11T20:10:56.236359Z",
   "game_steps": 13845,
   "file": "loss_KoB_4872604.SC2Replay"
+ },
+ {
+  "match": 4872596,
+  "opponent": "GriffinBot",
+  "result": "win",
+  "cause": "game_rules",
+  "when": "2026-07-11T23:36:46.053542Z",
+  "game_steps": 32034,
+  "file": "win_GriffinBot_4872596.SC2Replay"
  },
  {
   "match": 4872545,
@@ -18,6 +63,42 @@
   "file": "loss_GriffinBot_4872545.SC2Replay"
  },
  {
+  "match": 4872528,
+  "opponent": "GriffinBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-11T22:31:33.476174Z",
+  "game_steps": 27466,
+  "file": "loss_GriffinBot_4872528.SC2Replay"
+ },
+ {
+  "match": 4872412,
+  "opponent": "GriffinBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-12T02:33:07.980353Z",
+  "game_steps": 15330,
+  "file": "loss_GriffinBot_4872412.SC2Replay"
+ },
+ {
+  "match": 4872245,
+  "opponent": "GriffinBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-12T01:48:22.981618Z",
+  "game_steps": 14706,
+  "file": "loss_GriffinBot_4872245.SC2Replay"
+ },
+ {
+  "match": 4872193,
+  "opponent": "GriffinBot",
+  "result": "loss",
+  "cause": "game_rules",
+  "when": "2026-07-11T22:50:05.779176Z",
+  "game_steps": 10634,
+  "file": "loss_GriffinBot_4872193.SC2Replay"
+ },
+ {
   "match": 4872144,
   "opponent": "GriffinBot",
   "result": "loss",
@@ -25,86 +106,5 @@
   "when": "2026-07-11T19:23:20.517727Z",
   "game_steps": 12544,
   "file": "loss_GriffinBot_4872144.SC2Replay"
- },
- {
-  "match": 4871446,
-  "opponent": "GriffinBot",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T15:16:01.017578Z",
-  "game_steps": 9274,
-  "file": "loss_GriffinBot_4871446.SC2Replay"
- },
- {
-  "match": 4871380,
-  "opponent": "GriffinBot",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-11T18:13:04.237372Z",
-  "game_steps": 26509,
-  "file": "win_GriffinBot_4871380.SC2Replay"
- },
- {
-  "match": 4871313,
-  "opponent": "GriffinBot",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-11T17:20:57.850855Z",
-  "game_steps": 20995,
-  "file": "win_GriffinBot_4871313.SC2Replay"
- },
- {
-  "match": 4871241,
-  "opponent": "GriffinBot",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T16:07:45.861860Z",
-  "game_steps": 23672,
-  "file": "loss_GriffinBot_4871241.SC2Replay"
- },
- {
-  "match": 4871164,
-  "opponent": "GriffinBot",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T16:30:15.424892Z",
-  "game_steps": 17980,
-  "file": "loss_GriffinBot_4871164.SC2Replay"
- },
- {
-  "match": 4869836,
-  "opponent": "TheCatSC2Bot",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-10T17:17:48.617698Z",
-  "game_steps": 17636,
-  "file": "win_TheCatSC2Bot_4869836.SC2Replay"
- },
- {
-  "match": 4869835,
-  "opponent": "Myztery",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-10T16:18:40.770073Z",
-  "game_steps": 15814,
-  "file": "win_Myztery_4869835.SC2Replay"
- },
- {
-  "match": 4869834,
-  "opponent": "DownedStar1",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-10T11:35:17.320405Z",
-  "game_steps": 19156,
-  "file": "win_DownedStar1_4869834.SC2Replay"
- },
- {
-  "match": 4869833,
-  "opponent": "Siriusly",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-10T19:41:23.480042Z",
-  "game_steps": 18575,
-  "file": "win_Siriusly_4869833.SC2Replay"
  }
 ]
