@@ -365,7 +365,12 @@ class PhoenixBot(AresBot):
             self._emergency = False
 
     def _macro(self) -> None:
-        self.register_behavior(Mining())
+        # dynamic gas throttle: our army is mineral-heavy, so when gas is
+        # flooding (the Hestia loss floated 5k+) pull workers off gas onto
+        # minerals - cuts the waste AND speeds us toward max supply, which
+        # mineral income (not gas) gates
+        workers_per_gas = 1 if self.vespene > 600 else 3
+        self.register_behavior(Mining(workers_per_gas=workers_per_gas))
 
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
@@ -441,14 +446,10 @@ class PhoenixBot(AresBot):
                     macro_plan.add(
                         ExpansionController(to_count=5, max_pending=1)
                     )
-                # match gas income to the comp: a mineral-heavy stalker
-                # army floods gas at 2 geysers/base (the Hestia loss). Take
-                # full gas only once the gas-spending comp is active.
-                gas_per_base = 2 if comp is LATE_COMP else 1
+                # full gas geysers available; the dynamic gas throttle in
+                # Mining (above) prevents over-mining when we're floating
                 macro_plan.add(
-                    GasBuildingController(
-                        to_count=len(self.townhalls) * gas_per_base
-                    )
+                    GasBuildingController(to_count=len(self.townhalls) * 2)
                 )
         else:
             macro_plan.add(SpawnController(ARMY_COMP))
