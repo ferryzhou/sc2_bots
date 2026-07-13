@@ -126,6 +126,9 @@ class PhoenixBot(AresBot):
         self._commenced_attack: bool = False
         self._emergency: bool = False
         self._last_threat_time: float = 0.0
+        # per-stalker blink cooldown tracking (blink is ~11s; avoids an
+        # async get_available_abilities call per unit each frame)
+        self._blinked_at: dict[int, float] = {}
 
     async def on_start(self) -> None:
         await super(PhoenixBot, self).on_start()
@@ -487,7 +490,29 @@ class PhoenixBot(AresBot):
                     # so zealots stand and fight
                     maneuver.add(AMove(unit=unit, target=enemy_target.position))
                 elif unit.shield_percentage < 0.3:
-                    maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
+                    # damaged stalker: blink toward safety if it's ready
+                    # (jumps 8 range instantly out of the fight), else run.
+                    # BLINKTECH is already in DESIRED_UPGRADES but was never
+                    # actually fired before this.
+                    if (
+                        unit.type_id == UnitID.STALKER
+                        and UpgradeId.BLINKTECH in self.state.upgrades
+                        and self.time - self._blinked_at.get(unit.tag, -100.0)
+                        > 11.0
+                    ):
+                        safe: Point2 = self.mediator.find_closest_safe_spot(
+                            from_pos=unit.position, grid=grid
+                        )
+                        maneuver.add(
+                            UseAbility(
+                                AbilityId.EFFECT_BLINK_STALKER,
+                                unit,
+                                unit.position.towards(safe, 8.0),
+                            )
+                        )
+                        self._blinked_at[unit.tag] = self.time
+                    else:
+                        maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
                 else:
                     maneuver.add(
                         StutterUnitBack(unit=unit, target=enemy_target, grid=grid)
