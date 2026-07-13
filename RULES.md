@@ -91,14 +91,34 @@ Each section maps to a principle by number.
 - Use spellcasters and abilities proactively (stim, blink, EMP, storm, fungal)
   rather than hoarding energy.
 
-## 10. Upgrades matter
+## 10. Tech and upgrades matter
 
-- Start attack/armor upgrades as soon as the economy supports it; keep upgrade
-  structures running continuously.
+Upgrades:
+
+- Start attack/armor upgrades as soon as the economy supports it (typically once
+  your natural is up and mineral income is steady); keep upgrade structures
+  running continuously — never let one sit idle with gas available.
 - Prioritize the upgrade that helps your core army most (attack for aggression,
   armor for durability against many small hits).
 - Don't skip upgrades to over-produce units — an upgraded smaller army often
   beats an unupgraded larger one.
+- Add a second upgrade structure when income can support two research paths at
+  once, so attack and armor progress in parallel.
+
+Tech:
+
+- Tech only as fast as you can defend the window it comes online — if scouting
+  shows aggression, hold army/defense before pushing tech higher.
+- Tech reactively to scouted threats *before* they land: start detection when you
+  see a cloak/burrow enabler, anti-air when you see an air tech building, splash
+  when you see massing light units.
+- Don't go tech-blind: if you have no answer to a scouted tech, prioritize the
+  counter over more of your current units.
+- When a tech switch is the right counter, cover the transition window with your
+  existing army — don't move out or expand greedily while the switch is
+  incomplete.
+- Match gas income to tech ambitions: rushing tech needs early gas; if gas is
+  floating, you likely have unspent tech/upgrade options.
 
 ## 11. Multitask — do everything at once
 
