@@ -9,7 +9,14 @@ strategic model produces sensible recommendations, then prints an example digest
 from __future__ import annotations
 
 from .state import GameState
-from .principles import Investment, PowerTiming, recommend_investment, power_timing
+from .principles import (
+    Investment,
+    PowerTiming,
+    TradeVerdict,
+    recommend_investment,
+    power_timing,
+    assess_efficiency,
+)
 from .strategy import Archetype, classify_opponent
 from .harassment import harass_advice
 from .rules import evaluate_rules
@@ -48,6 +55,26 @@ def test_power_timing() -> None:
     _check("army lead -> ahead now", power_timing(now) == PowerTiming.AHEAD_NOW)
     _check("economy lead -> ahead later", power_timing(later) == PowerTiming.AHEAD_LATER)
     _check("no scouting -> unknown", power_timing(unknown) == PowerTiming.UNKNOWN)
+
+
+def test_efficiency_trading() -> None:
+    up = GameState(value_killed=2000, value_lost=800)
+    down = GameState(value_killed=600, value_lost=1500)
+    unknown = GameState(value_killed=0, value_lost=0)
+    _check("kill more than lost -> trading up",
+           assess_efficiency(up).verdict == TradeVerdict.TRADING_UP)
+    _check("trading up -> should seek fights", assess_efficiency(up).should_seek_fights)
+    _check("lose more than killed -> trading down",
+           assess_efficiency(down).verdict == TradeVerdict.TRADING_DOWN)
+    _check("trading down -> should avoid fights", assess_efficiency(down).should_avoid_fights)
+    _check("no fights yet -> unknown",
+           assess_efficiency(unknown).verdict == TradeVerdict.UNKNOWN)
+
+
+def test_efficiency_idle_waste() -> None:
+    st = GameState(value_killed=1000, value_lost=500, minerals=800, idle_production=2)
+    _check("floating money / idle production -> idle_waste flagged",
+           assess_efficiency(st).idle_waste)
 
 
 def test_classify_cheese() -> None:
@@ -109,8 +136,10 @@ def test_advisor_end_to_end() -> None:
         army_supply=18, production_structures=4, upgrade_structures=1,
         enemy_base_count=3, enemy_worker_count=48, enemy_army_supply=6,
         enemy_production_structures=2, has_harass_units=True,
+        value_killed=1800, value_lost=700,
     )
     advice = StrategicAdvisor().advise(st)
+    _check("advisor returns an efficiency read", advice.efficiency is not None)
     _check("advisor returns a classification", advice.classification is not None)
     _check("advisor summary is non-empty", len(advice.summary()) > 0)
     print("\n--- example advice digest ---")

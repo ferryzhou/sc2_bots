@@ -26,8 +26,11 @@ from .principles import (
     Investment,
     InvestmentAdvice,
     PowerTiming,
+    TradeVerdict,
+    Efficiency,
     recommend_investment,
     power_timing,
+    assess_efficiency,
 )
 from .strategy import Archetype, Classification, classify_opponent, counter_stance
 from .rules import Rule, RuleHit, evaluate_rules
@@ -39,8 +42,11 @@ __all__ = [
     "Investment",
     "InvestmentAdvice",
     "PowerTiming",
+    "TradeVerdict",
+    "Efficiency",
     "recommend_investment",
     "power_timing",
+    "assess_efficiency",
     "Archetype",
     "Classification",
     "classify_opponent",

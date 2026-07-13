@@ -15,8 +15,10 @@ from .state import GameState
 from .principles import (
     InvestmentAdvice,
     PowerTiming,
+    Efficiency,
     recommend_investment,
     power_timing,
+    assess_efficiency,
 )
 from .strategy import (
     Classification,
@@ -30,6 +32,7 @@ from .harassment import HarassAdvice, harass_advice
 
 @dataclass
 class Advice:
+    efficiency: Efficiency
     investment: InvestmentAdvice
     timing: PowerTiming
     classification: Classification
@@ -39,7 +42,11 @@ class Advice:
 
     def summary(self) -> str:
         """A compact human-readable digest, handy for logging from a bot."""
+        # Efficiency leads: replay analysis makes it the strongest single signal.
+        eff = self.efficiency
         lines = [
+            f"efficiency: {eff.verdict.value} (trade {eff.trade_ratio:.2f})"
+            + ("  [idle resources!]" if eff.idle_waste else ""),
             f"posture:    {self.investment.posture}",
             f"invest:     {' > '.join(i.value for i in self.investment.priority)}",
             f"timing:     {self.timing.value}",
@@ -66,6 +73,7 @@ class StrategicAdvisor:
     def advise(self, state: GameState) -> Advice:
         classification = classify_opponent(state)
         return Advice(
+            efficiency=assess_efficiency(state),
             investment=recommend_investment(state),
             timing=power_timing(state),
             classification=classification,

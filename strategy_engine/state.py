@@ -47,6 +47,11 @@ class GameState:
     # --- own mobile-harass capability ---
     has_harass_units: bool = False  # drops/air/cloak/fast raiders available
 
+    # --- trade efficiency (cumulative resource value; the strongest empirical
+    #     predictor of the winner -- see analysis/REPLAY_FINDINGS.md) ---
+    value_killed: float = 0.0  # enemy resource value we have destroyed
+    value_lost: float = 0.0    # our resource value the enemy has destroyed
+
     # --- scouted enemy state (None == unknown) ---
     last_scouted_time: Optional[float] = None
     enemy_base_count: Optional[int] = None
@@ -118,6 +123,20 @@ class GameState:
             supply_left=getattr(bot, "supply_left", 0),
             army_supply=getattr(bot, "supply_army", 0.0),
         )
+
+        # Best-effort trade values from python-sc2's score details, if present.
+        score = getattr(getattr(bot, "state", None), "score", None)
+        if score is not None:
+            killed = getattr(score, "killed_value_units", 0) + getattr(
+                score, "killed_value_structures", 0
+            )
+            lost = getattr(score, "lost_value_units", 0) + getattr(
+                score, "lost_value_structures", 0
+            )
+            if killed:
+                st.value_killed = float(killed)
+            if lost:
+                st.value_lost = float(lost)
 
         # Overlay any scouted-enemy memory the bot has accumulated.
         for key, value in enemy_memory.items():

@@ -182,7 +182,14 @@ exactly the mistake the harasser wants.
 
 ## Two lenses
 
-- **Efficiency:** win trades — kill more value than you lose, and never let
-  resources (money, larva, production time, worker mining) sit idle.
+- **Efficiency (the strongest single lens):** win trades — kill more value than
+  you lose — and never let resources (money, larva, production time, worker
+  mining) sit idle. Analysis of 65 pro games
+  ([`analysis/REPLAY_FINDINGS.md`](analysis/REPLAY_FINDINGS.md)) found trade
+  efficiency to be the single best predictor of the winner (88% of games),
+  out-predicting raw economy. A bigger economy loses anyway if you can't
+  *convert* it — the games where the loser out-produced but still lost were all
+  cases of floating resources, staying supply-blocked, and losing the decisive
+  trade. Treat efficiency as first-order, not a footnote.
 - **Tempo / initiative:** being ahead lets you dictate. Use a lead to pressure
   and expand; when behind, defend, stall, and look for a favorable swing.
