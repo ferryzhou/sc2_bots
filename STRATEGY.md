@@ -141,6 +141,49 @@ air, splash vs. massed light, a higher-tier unit vs. their tier). Remember it
 costs tempo and opens a window while the switch comes online, so cover that
 window with what you already have.
 
+## Harassment: reading it and defending it
+
+Harassment (drops, runbys, air raids, cloaked pokes — see the harassment section
+in [`PRINCIPLES.md`](PRINCIPLES.md)) is its own layer of pressure that runs
+alongside the economy–army spectrum. Reading whether the opponent is *set up to
+harass* — and covering your vulnerable spots before it lands — matters as much as
+reading their main army.
+
+### Detecting incoming harassment
+
+- **Mobile/tech units that don't fit a main-army push.** A dropship, a couple of
+  air units, a cloaked unit, or fast/flanking units produced while the main army
+  is elsewhere signal a harass rather than a frontal attack.
+- **The enabling tech, before the raid.** As with all tech, the building appears
+  first — the tech that unlocks air, cloak, drops, or fast raiders is your warning
+  to prepare the answer.
+- **Map control gaps.** If the opponent has vision of an undefended flank,
+  worker line, or expansion, assume they may exploit it. Watch your own blind
+  spots as much as their army.
+- **Harass often covers greed.** Pressure on you frequently means they're doing
+  something economic behind it — a hidden expansion or tech. Reading the harass
+  should prompt you to scout for what it's *covering*.
+
+### Defending harassment (without overreacting)
+
+- **Pre-place defense at vulnerable spots.** Static defense and detection covering
+  worker lines, tech, and expansions cost less than the workers a raid would kill.
+- **Keep-back units.** A small holding force at home defends far more efficiently
+  than pulling your whole army back each time.
+- **Pull workers efficiently, then resume.** Move workers out of the raid and
+  right back — don't let a small poke stall mining longer than the raid itself.
+- **Don't over-commit.** Chasing raiders across the map with your main army, or
+  fixating on the harass while your macro stalls, is exactly the trade the
+  harasser wants. Defend at proportionate cost and keep your own plan moving.
+
+### Using harassment as a counter
+
+- **Answer greed with harassment.** Against a greedy/economic opponent (see
+  archetype 4), harassment is a low-commitment way to punish the thin-army window
+  — kill workers or force pulls without risking a full engagement.
+- **Harass to cover your own transition.** Apply pressure to buy the tempo for
+  your own expand/tech, so you're greedy *behind* the harass rather than exposed.
+
 ## Detection cheat-sheet
 
 Scout for these signals and infer the economy–army commitment:
