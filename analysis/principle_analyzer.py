@@ -16,15 +16,71 @@ it directly:
         cp /tmp/mpyq/mpyq-*/mpyq.py "$(python -c 'import site;print(site.getsitepackages()[0])')/" && \
         pip install sc2reader --no-deps
 
-See analysis/REPLAY_FINDINGS.md for a write-up of results on 65 pro games.
+See analysis/REPLAY_FINDINGS.md for a write-up of results on 65 pro games and
+90 AI Arena bot games (the latter via aa_download.py + aa_analyze.py).
 """
 
 import sys
 import glob
+from datetime import datetime, timezone
+
 import sc2reader
+from sc2reader import utils
+from sc2reader.resources import Replay, GAME_SPEED_FACTOR
 
 TOWNHALLS = {"Nexus", "CommandCenter", "Hatchery", "OrbitalCommand", "PlanetaryFortress"}
 STD_RACES = {"Protoss", "Terran", "Zerg"}
+
+
+def patch_sc2reader_for_arena():
+    """Tolerate AI Arena arena-client replays, which omit ``cache_handles``.
+
+    Stock sc2reader crashes in ``load_details`` on ``cache_handles[0]`` for these
+    replays. This wrapper falls back to sane defaults (region us, LotV) when the
+    handles are missing, leaving normal ladder replays untouched. Called on import
+    so both this tool and ``aa_analyze.py`` benefit. AA replays also carry a few
+    game-event types sc2reader 1.9 can't parse, so analyze them at load_level=3
+    (tracker events only) -- see aa_analyze.py.
+    """
+    _orig = Replay.load_details
+
+    def load_details(self):
+        if "replay.details" in self.raw_data:
+            details = self.raw_data["replay.details"]
+        elif "replay.details.backup" in self.raw_data:
+            details = self.raw_data["replay.details.backup"]
+        else:
+            return
+        if details.get("cache_handles"):
+            return _orig(self)
+        self.map_name = details["map_name"]
+        self.region = "us"
+        self.map_hash = None
+        self.map_file = None
+        self.expansion = "LotV"
+        self.windows_timestamp = details["file_time"]
+        self.unix_timestamp = utils.windows_to_unix(self.windows_timestamp)
+        self.end_time = datetime.fromtimestamp(self.unix_timestamp, timezone.utc)
+        if details["utc_adjustment"] < 10 ** 7 * 60 * 60 * 24:
+            self.time_zone = details["utc_adjustment"] / (10 ** 7 * 60 * 60)
+        else:
+            self.time_zone = (details["utc_adjustment"] - details["file_time"]) / (
+                10 ** 7 * 60 * 60
+            )
+        self.game_length = self.length
+        self.real_length = utils.Length(
+            seconds=int(self.length.seconds
+                        // GAME_SPEED_FACTOR[self.expansion].get(self.speed, 1.0))
+        )
+        self.start_time = datetime.fromtimestamp(
+            self.unix_timestamp - self.real_length.seconds, timezone.utc
+        )
+        self.date = self.end_time
+
+    Replay.load_details = load_details
+
+
+patch_sc2reader_for_arena()
 
 
 def analyze_replay(path):
