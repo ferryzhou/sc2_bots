@@ -7,7 +7,7 @@ stay in lockstep.
 | Module          | Mirrors            | Responsibility |
 |-----------------|--------------------|----------------|
 | `state.py`      | —                  | `GameState`: a framework-agnostic snapshot of the game (+ `from_bot` adapter). |
-| `principles.py` | `PRINCIPLES.md`    | The economy / army / tech investment tension and power timing. |
+| `principles.py` | `PRINCIPLES.md`    | The economy / army / tech investment tension, power timing, and the **efficiency** lens (`assess_efficiency`). |
 | `strategy.py`   | `STRATEGY.md`      | Opponent classification (detection) and counter stances. |
 | `rules.py`      | `RULES.md`         | Concrete, checkable rules as predicate functions. |
 | `harassment.py` | harassment sections| Harass and anti-harass decisions. |
@@ -26,6 +26,11 @@ stay in lockstep.
   `UNKNOWN` and recommend scouting) instead of assuming zero.
 - **Tunables in one place.** Thresholds match `RULES.md` and live in `rules.py`
   and the `principles`/`strategy` scorers.
+- **Efficiency is first-class.** `Advice.efficiency` leads the digest: replay
+  analysis (`analysis/REPLAY_FINDINGS.md`) found trade efficiency — value killed
+  vs. lost, plus idle-resource waste — to be the strongest single predictor of
+  the winner. Feed `value_killed` / `value_lost` (the `from_bot` adapter reads
+  them from python-sc2's score) to get `should_seek_fights` / `should_avoid_fights`.
 
 ## Usage from a python-sc2 bot
 

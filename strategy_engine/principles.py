@@ -32,6 +32,79 @@ class PowerTiming(Enum):
     UNKNOWN = "unknown"            # not enough scouting to say
 
 
+class TradeVerdict(Enum):
+    TRADING_UP = "trading_up"      # killing more value than we lose -- keep fighting
+    TRADING_DOWN = "trading_down"  # losing value on trades -- avoid engagements
+    EVEN = "even"
+    UNKNOWN = "unknown"            # no fights yet
+
+
+@dataclass
+class Efficiency:
+    """The efficiency lens, promoted to a first-class signal.
+
+    Replay analysis (analysis/REPLAY_FINDINGS.md) found trade efficiency -- value
+    killed vs. lost -- to be the single strongest predictor of the winner (88% of
+    pro games), out-predicting raw economy. So the engine surfaces it directly:
+    are we trading up, and are we wasting resources by leaving them idle?
+    """
+
+    trade_ratio: float          # value_killed / value_lost (inf if nothing lost)
+    verdict: TradeVerdict
+    idle_waste: bool            # floating resources or idle production
+    notes: List[str]
+
+    @property
+    def should_seek_fights(self) -> bool:
+        return self.verdict == TradeVerdict.TRADING_UP
+
+    @property
+    def should_avoid_fights(self) -> bool:
+        return self.verdict == TradeVerdict.TRADING_DOWN
+
+
+def assess_efficiency(state: GameState) -> Efficiency:
+    """Judge trade efficiency and idle-resource waste.
+
+    Trading up means engaging is good; trading down means look for a better spot
+    rather than feeding the current fight. Idle resources (floating minerals/gas
+    or idle production) are the other half of efficiency: money that isn't working
+    is money wasted -- the 'convert your economy' lesson from the COUNTER games,
+    where bigger economies lost by floating and staying supply-blocked.
+    """
+    notes: List[str] = []
+
+    total_traded = state.value_killed + state.value_lost
+    if total_traded < 200:
+        verdict = TradeVerdict.UNKNOWN
+        ratio = float("inf") if state.value_lost == 0 else state.value_killed / state.value_lost
+    else:
+        ratio = float("inf") if state.value_lost == 0 else state.value_killed / state.value_lost
+        if ratio >= 1.15:
+            verdict = TradeVerdict.TRADING_UP
+            notes.append(f"trading up ({ratio:.2f}): engagements are favorable, keep pressing")
+        elif ratio <= 0.87:
+            verdict = TradeVerdict.TRADING_DOWN
+            notes.append(f"trading down ({ratio:.2f}): avoid feeding fights, find a better engagement")
+        else:
+            verdict = TradeVerdict.EVEN
+            notes.append(f"trades roughly even ({ratio:.2f})")
+
+    idle_waste = (
+        state.minerals > 400
+        or state.vespene > 300
+        or state.idle_production > 0
+        or state.idle_upgrade_structures > 0
+    )
+    if idle_waste:
+        notes.append(
+            "idle resources: spend banked money / use idle production -- unconverted "
+            "economy loses even when it is bigger"
+        )
+
+    return Efficiency(trade_ratio=ratio, verdict=verdict, idle_waste=idle_waste, notes=notes)
+
+
 @dataclass
 class InvestmentAdvice:
     priority: List[Investment]  # ordered, highest priority first
