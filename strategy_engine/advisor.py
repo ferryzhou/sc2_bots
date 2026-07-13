@@ -1,0 +1,79 @@
+"""advisor: tie the modules into one recommendation a bot queries each step.
+
+A bot builds a ``GameState`` (directly or via ``GameState.from_bot``), calls
+``StrategicAdvisor.advise(state)``, and reads a single ``Advice`` object covering
+investment priority, opponent classification and counter, power timing, harass
+advice, and the concrete rules that fired.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import List
+
+from .state import GameState
+from .principles import (
+    InvestmentAdvice,
+    PowerTiming,
+    recommend_investment,
+    power_timing,
+)
+from .strategy import (
+    Classification,
+    CounterStance,
+    classify_opponent,
+    counter_stance,
+)
+from .rules import RuleHit, evaluate_rules
+from .harassment import HarassAdvice, harass_advice
+
+
+@dataclass
+class Advice:
+    investment: InvestmentAdvice
+    timing: PowerTiming
+    classification: Classification
+    counter: CounterStance
+    harass: HarassAdvice
+    rule_hits: List[RuleHit]
+
+    def summary(self) -> str:
+        """A compact human-readable digest, handy for logging from a bot."""
+        lines = [
+            f"posture:    {self.investment.posture}",
+            f"invest:     {' > '.join(i.value for i in self.investment.priority)}",
+            f"timing:     {self.timing.value}",
+            f"opponent:   {self.classification.archetype.value} "
+            f"({self.classification.confidence:.0%})",
+            f"counter:    {self.counter.posture}",
+        ]
+        if self.harass.should_harass:
+            lines.append("harass:     yes -- " + "; ".join(self.harass.harass_reasons))
+        if self.harass.should_defend:
+            lines.append("anti-harass: " + "; ".join(self.harass.defend_reasons))
+        if self.rule_hits:
+            lines.append("rules:      " + ", ".join(h.action for h in self.rule_hits))
+        return "\n".join(lines)
+
+
+class StrategicAdvisor:
+    """Stateless facade over the strategy modules.
+
+    Stateless by design: pass a fresh ``GameState`` each call. Any memory (e.g.
+    accumulated scouting) lives on the bot and is folded into the state.
+    """
+
+    def advise(self, state: GameState) -> Advice:
+        classification = classify_opponent(state)
+        return Advice(
+            investment=recommend_investment(state),
+            timing=power_timing(state),
+            classification=classification,
+            counter=counter_stance(classification),
+            harass=harass_advice(state),
+            rule_hits=evaluate_rules(state),
+        )
+
+    def advise_bot(self, bot, enemy_memory: dict | None = None) -> Advice:
+        """Convenience: snapshot a python-sc2 bot, then advise."""
+        return self.advise(GameState.from_bot(bot, enemy_memory))
