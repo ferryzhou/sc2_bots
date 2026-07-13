@@ -366,10 +366,11 @@ class PhoenixBot(AresBot):
 
     def _macro(self) -> None:
         # dynamic gas throttle: our army is mineral-heavy, so when gas is
-        # flooding (the Hestia loss floated 5k+) pull workers off gas onto
+        # flooding (the Hestia loss floated 5k+) ease workers off gas onto
         # minerals - cuts the waste AND speeds us toward max supply, which
-        # mineral income (not gas) gates
-        workers_per_gas = 1 if self.vespene > 600 else 3
+        # mineral income (not gas) gates. Gentle (2, not 1) so it never
+        # starves the gas-heavy immortal/colossus comp.
+        workers_per_gas = 2 if self.vespene > 800 else 3
         self.register_behavior(Mining(workers_per_gas=workers_per_gas))
 
         macro_plan: MacroPlan = MacroPlan()
