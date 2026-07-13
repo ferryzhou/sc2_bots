@@ -4,6 +4,9 @@ High-level principles of strong StarCraft II play. These are race-agnostic
 fundamentals — the "why" behind good decisions. Execution differs by race and
 matchup, but the underlying ideas are universal.
 
+For the concrete, checkable rules that drill down from each principle, see
+[`RULES.md`](RULES.md).
+
 ## Macro fundamentals
 
 1. **Never stop producing workers.** Economy is the foundation of everything.
