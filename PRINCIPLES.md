@@ -71,6 +71,9 @@ doing. Key ideas:
 The whole game is a running negotiation of this trade-off. Falling behind on
 economy loses slowly; dying to a timing loses instantly.
 
+For common strategy archetypes along this spectrum — and how to detect and
+counter each — see [`STRATEGY.md`](STRATEGY.md).
+
 ## Timing: strength is relative and changes over time
 
 Army strength is never absolute — it only matters **relative to the opponent at
