@@ -98,6 +98,49 @@ strong late-game)
   completes, or tech to your own counter to their late-game composition. Time is
   on the side of whoever has more bases, so make sure that's you.
 
+## Reading tech: detection and counters
+
+Beyond *how much* economy and army the opponent has, you need to read *what tech
+they're going for*. Tech decides which units and abilities appear, and many games
+are lost by being unprepared for a tech you could have scouted. The rule: **the
+tech building is visible before the units are** — react to the building, not the
+army that arrives too late.
+
+### Detecting a tech direction
+
+- **Read the tech building, not the unit.** Tech structures (and their add-ons)
+  telegraph the units to come — the building appears minutes before the army
+  does. Seeing the building is your warning.
+- **Gas is the tell.** Fast or heavy gas means tech or a gas-heavy unit is
+  coming. Pure-economy openings take gas late; early double-gas signals a tech
+  play.
+- **Cloak / burrow / air need a *specific* answer.** These are the punishing
+  techs — if scouting hints at them (the enabling tech building, or gas with no
+  visible army), assume the worst and prepare detection or anti-air *before* it
+  lands.
+- **What's missing tells you too.** A tech building with little army = teching at
+  the cost of current strength (a vulnerability window now). No tech building on
+  heavy gas = the gas is banked for a rush unit about to appear.
+
+### The two tech mistakes and their counters
+
+- **Tech rush (teching too fast, thin army):** they gave up current strength for
+  a later spike. *Counter:* apply pressure or hit a timing during the window
+  before the tech comes online — punish the thin army, or force them to pull off
+  teching to defend.
+- **Tech-blind (no answer to what you scout):** getting surprised by cloak, air,
+  or splash you could have seen coming. *Counter (for you):* tech reactively —
+  the moment you read the enabling building, start your answer (detection,
+  anti-air, splash) so it's ready when their units arrive.
+
+### Countering by teching yourself
+
+Sometimes the right response to a composition isn't more of the same units but a
+**tech switch** — teching to a hard counter (detection vs. cloak, anti-air vs.
+air, splash vs. massed light, a higher-tier unit vs. their tier). Remember it
+costs tempo and opens a window while the switch comes online, so cover that
+window with what you already have.
+
 ## Detection cheat-sheet
 
 Scout for these signals and infer the economy–army commitment:
@@ -112,6 +155,9 @@ Scout for these signals and infer the economy–army commitment:
   commitment (timing/all-in).
 - **Proxies and positioning.** Buildings toward your base, or an army moving out
   early, signal aggression.
+- **Tech buildings and add-ons.** They telegraph the units and abilities coming
+  minutes ahead — react to the building, not the army. Watch especially for the
+  enablers of cloak, burrow, and air.
 - **What's *missing*.** No expansion → aggression. No army → greed. The absence
   is often the loudest signal.
 
