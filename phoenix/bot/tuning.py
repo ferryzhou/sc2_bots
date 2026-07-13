@@ -36,9 +36,18 @@ class Param:
 
 # The tunable strategy surface. Means match the previously hand-tuned
 # constants so learning starts from the validated build.
+#
+# pressure_valve_supply lower bound raised 30 -> 50 after a controlled A/B
+# (results/LADDER_ANALYSIS.md): the tuner had driven it to 34.7, which
+# force-attacks ~17 units into combat-sim-predicted losses. That
+# reproduced the ladder's dominant "army wipe" loss (vs Bot_Stardust,
+# same map: valve=34 lost with 0 enemy structures killed + 1015s idle
+# workers; valve=90 won, razing the base). Bounds are authoritative -
+# _load() clamps any persisted mean into [lo, hi], so the ladder's learned
+# 34.7 self-corrects up to >=50 on the next game.
 SCHEMA: list[Param] = [
     Param("attack_at_supply", 26.0, 8.0, 8.0, 60.0),
-    Param("pressure_valve_supply", 60.0, 12.0, 30.0, 110.0),
+    Param("pressure_valve_supply", 60.0, 10.0, 50.0, 110.0),
     Param("regroup_below_supply", 10.0, 4.0, 2.0, 24.0),
     Param("emergency_exit_seconds", 45.0, 15.0, 10.0, 120.0),
     Param("emergency_zealot_proportion", 0.5, 0.15, 0.1, 0.9),
@@ -74,8 +83,14 @@ class Tuner:
         # (re)initialise added ones, drop removed ones
         fresh = self._fresh_state()
         merged = fresh["params"]
+        bounds = {p.name: p for p in SCHEMA}
         for name, entry in state.get("params", {}).items():
             if name in merged:
+                # bounds are authoritative: clamp a persisted mean into the
+                # current [lo, hi] so tightening a bound retroactively
+                # corrects learned state (e.g. the pressure-valve floor)
+                p = bounds[name]
+                entry["mean"] = min(p.hi, max(p.lo, entry["mean"]))
                 merged[name] = entry
         state["params"] = merged
         # drop in-flight batch results that reference a stale schema
