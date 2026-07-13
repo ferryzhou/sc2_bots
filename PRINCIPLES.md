@@ -38,6 +38,9 @@ For the concrete, checkable rules that drill down from each principle, see
 10. **Upgrades matter.** Attack and armor upgrades compound across every unit
     and every fight. Neglecting them quietly loses engagements.
 
+For the tactical layer — how to win battles, defend, attack, and be efficient in
+combat — see [`COMBAT.md`](COMBAT.md).
+
 ## The meta-principle
 
 11. **Multitask — do everything at once.** The real skill is holding macro
