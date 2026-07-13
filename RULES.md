@@ -91,6 +91,32 @@ Each section maps to a principle by number.
 - Use spellcasters and abilities proactively (stim, blink, EMP, storm, fungal)
   rather than hoarding energy.
 
+## 9b. Harass to attack the investment
+
+Attacking:
+
+- Commit only a small, mobile detachment to harass — never so much that your main
+  army or defense is exposed.
+- Target the economy first: workers, then tech/production, then supply. Dead
+  workers compound as lost mining for the rest of the game.
+- Retreat harass units the moment the defense arrives; preserve them to strike
+  again rather than trading into a defended line.
+- Judge each harass by return — workers killed, tech delayed, responses forced —
+  versus what you committed and risked. Pull off harass that isn't paying.
+- Harass to cover your own greed: expand or tech behind the pressure while the
+  opponent is distracted.
+
+Defending:
+
+- Pre-place static defense and detection at vulnerable spots (worker lines, tech,
+  expansions) before the raid lands.
+- Keep a small holding force at home instead of pulling the main army back for
+  every poke.
+- Pull threatened workers out of the raid, then return them to mining as soon as
+  it's safe — minimize mining downtime.
+- Don't over-commit: never chase raiders with your main army or let harass stall
+  your macro. Respond at proportionate cost and keep your own plan moving.
+
 ## 10. Tech and upgrades matter
 
 Upgrades:

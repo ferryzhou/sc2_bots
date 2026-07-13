@@ -142,6 +142,44 @@ add economy, army, tech, and upgrades.
 The practical question every moment is: *am I stronger now or will I be stronger
 later?* If now, find a way to use it. If later, survive until then.
 
+## Harassment: attack the investment, not just the army
+
+Most damage in a game doesn't have to come from a main-army battle. **Harassment**
+— small, mobile forces striking the opponent's economy, tech, or production
+without committing to a full engagement — attacks the *investments* directly.
+Drops, runbys, air raids, cloaked units, and worker-line pokes all trade a little
+army for damage the opponent can't easily recover.
+
+Why it's powerful:
+
+- **It hits the economy leg directly.** Killing workers or forcing a worker pull
+  strikes the foundation everything else is built on. A handful of dead workers
+  compounds — it's lost mining for the rest of the game, often a better return
+  than the same units trading in a main fight.
+- **It exploits the multitask principle.** Harassment forces the opponent to
+  defend a second (or third) place while still running their macro. Whoever can
+  defend the harass *and* keep macroing wins; harassment is how you punish an
+  opponent who can only focus on one thing at a time.
+- **It buys tempo and cover.** Pressure keeps the initiative and distracts the
+  opponent while *you* do something greedy — expand, tech, or take the map behind
+  the harass. Even a contained harass that does no direct damage has value if it
+  pulled units back, forced static defense, or stuttered their production.
+
+The cost side — harassment is still an investment:
+
+- **The units could have been in the main army.** Harass that dies for no damage
+  is a bad trade; it's a bet that the economic/tempo damage exceeds the army you
+  committed.
+- **Efficiency still rules.** Judge harassment by return: workers killed, tech
+  delayed, responses forced — versus what you spent and risked. Don't feed
+  mobile units into a defended line.
+
+Defending harassment is the mirror image: static defense and detection at
+vulnerable spots, keep-back units or turrets covering worker lines and tech, and
+pull workers efficiently — but *don't over-commit* chasing raiders while your own
+macro or main army suffers. Trading your whole focus to stop a small harass is
+exactly the mistake the harasser wants.
+
 ## Two lenses
 
 - **Efficiency:** win trades — kill more value than you lose, and never let
