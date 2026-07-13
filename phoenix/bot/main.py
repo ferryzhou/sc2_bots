@@ -10,6 +10,8 @@ The strategy layer is intentionally data-driven (army comp dict + builds yml)
 so that future tooling can tune or swap strategies without touching code.
 """
 
+import json
+import os
 from itertools import cycle
 from typing import Optional
 
@@ -137,6 +139,12 @@ class PhoenixBot(AresBot):
 
         self._tuner = Tuner(Path("data"))
         p = self._tuner.ask()
+        # controlled-experiment hook: pin any subset of params to fixed
+        # values (JSON) so an A/B can isolate one knob. Does not affect the
+        # ladder (env var unset there); tell() still records the real result.
+        override = os.environ.get("PHOENIX_PARAM_OVERRIDE")
+        if override:
+            p.update(json.loads(override))
         self._attack_at_supply: float = p["attack_at_supply"]
         self._pressure_valve_supply: float = p["pressure_valve_supply"]
         self._regroup_below_supply: float = p["regroup_below_supply"]

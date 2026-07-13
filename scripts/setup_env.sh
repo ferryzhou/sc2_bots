@@ -70,7 +70,7 @@ if ! "$VENV312/bin/python" -c "import ares" 2>/dev/null; then
     fi
     # extra packages the AI Arena image provides - downloaded opponent bots
     # (harness/versus.py) expect them
-    "$VENV312/bin/pip" install --quiet pillow matplotlib requests
+    "$VENV312/bin/pip" install --quiet pillow matplotlib requests async_timeout
 fi
 "$VENV312/bin/python" -c "from ares import AresBot; print('    ares-sc2 on 3.12 OK')"
 
