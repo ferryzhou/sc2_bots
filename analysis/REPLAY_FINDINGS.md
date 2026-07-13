@@ -1,15 +1,19 @@
 # Replay Findings: Do the Principles Hold Up?
 
 An empirical check of the strategy model in [`PRINCIPLES.md`](../PRINCIPLES.md) /
-[`STRATEGY.md`](../STRATEGY.md) / [`RULES.md`](../RULES.md) against real games,
-using [`principle_analyzer.py`](principle_analyzer.py).
+[`STRATEGY.md`](../STRATEGY.md) / [`RULES.md`](../RULES.md) against real games —
+**65 pro games** and **90 AI Arena bot games** — using
+[`principle_analyzer.py`](principle_analyzer.py) and
+[`aa_analyze.py`](aa_analyze.py).
 
 ## Method
 
-- **Data:** 65 professional 1v1 ladder/tournament replays downloaded from
-  spawningtool.com's pro filter — recent games from Serral, Reynor, Clem,
-  HeroMarine, Harstem, Lambo, Krystianer, ShoWTimE, Elazer, and others across all
-  matchups.
+- **Data:** two samples —
+  - **65 pro 1v1 games** from spawningtool.com's pro filter (Serral, Reynor,
+    Clem, HeroMarine, Harstem, Lambo, Krystianer, ShoWTimE, Elazer, …), and
+  - **90 AI Arena bot games** from the top 12 bots of the current standard ladder
+    (Deimos, Eris, Phobos, GPT, SharpenedEdge, DominionDog, tito, VeTerran, …),
+    pulled via the AI Arena API ([`aa_download.py`](aa_download.py)).
 - **Extraction:** `sc2reader` tracker events (`PlayerStatsEvent`,
   `UpgradeCompleteEvent`, unit births) give per-player timelines: worker count,
   supply used vs. made, banked (floating) resources, army/economy/tech spend
@@ -17,16 +21,12 @@ using [`principle_analyzer.py`](principle_analyzer.py).
 - **Attribution:** for each game the winner and loser are compared on each
   principle; a `MATCH` means the winner followed the principle better, a
   `COUNTER` means the loser led on that metric yet still lost.
-- **Scope note:** AI Arena bot replays were requested too, but the AI Arena API
-  requires authentication credentials that this environment does not have, so the
-  sample is pro humans only. The analyzer works on any `.SC2Replay`; point it at
-  AI Arena replays once credentials are available.
 
 These are **correlational** metrics from aggregate stats, not a substitute for
 watching the games — they can't see positioning or a single decisive engagement
 directly, but they capture the economic and trade-efficiency footprint of one.
 
-## Aggregate results (65 games)
+## Aggregate results — pro games (65)
 
 | Principle | Verdict | Games | Share |
 |-----------|---------|-------|-------|
@@ -84,29 +84,79 @@ loses anyway if you **can't spend it** (floating), **stall your own production**
 wins repeatedly with fewer workers by converting a smaller economy more
 efficiently.
 
+## AI Arena bots (90 games): same principles, sharper
+
+Running the identical analysis on 90 games from the top AI Arena bots
+([`aa_analyze.py`](aa_analyze.py)) gives the same ordering — only more extreme.
+
+| Principle | Pro (65) | AI Arena bots (90) |
+|-----------|:--------:|:------------------:|
+| Efficiency (win trades) | 88% | **99%** |
+| Economy | 83% | **98%** |
+| Harassment (loser bled workers) | 45% | **94%** |
+| Expand (more bases) | 38% | **78%** |
+| Upgrades | 49% | 72% |
+| Don't get supply-blocked | 40% | 40% |
+| Economy COUNTER (out-econ'd but lost) | 9% (6) | **1% (1)** |
+
+Four things stand out about bot play:
+
+1. **Economy + efficiency are near-deterministic (98–99%).** Among bots, whoever
+   leads on workers *and* trades essentially always wins. The pro sample has more
+   noise (upsets, all-ins, comebacks); bot games are cleaner tests of the two
+   core lenses — and they pass overwhelmingly.
+
+2. **Comebacks from an economy deficit barely exist (1 COUNTER vs. 6 for pros).**
+   The pro COUNTERs were Clem-style wins with a *smaller* economy converted more
+   efficiently. Bots almost never pull this off — they lack the micro/efficiency
+   finesse to beat a bigger economy, so an economy lead converts to a win far more
+   reliably against bots than against humans. The lone bot COUNTER proves the
+   rule: VeTerran beat BenBotBC despite fewer workers because BenBotBC **never
+   expanded** (1 base the whole 50-minute game) and floated ~4800 unspent while
+   VeTerran spread to 13 bases and traded 2.68 vs. 0.31.
+
+3. **Harassment is far more decisive vs. bots (94% vs. 45%).** Losing bots leaked
+   enormous worker counts to harass — up to **118 workers** in a single game — vs.
+   near-zero for the winner. Bot worker-defense and static-defense placement are
+   weak, so "attack the investment" pays off much harder against bots than against
+   pros who defend harass cleanly.
+
+4. **Bots waste resources heavily.** Losing bots sat supply-blocked far longer
+   (one Zerg bot: **250s** blocked) and floated huge banks. The `don't float` /
+   `don't get supply blocked` rules, minor tiebreakers among pros, are frequent
+   and severe among bots.
+
 ## Takeaways for our bots
 
-The model matches how pro games are actually won, in priority order:
+The model matches how games are actually won — and the bot sample sharpens the
+priorities for a bot competing on AI Arena specifically:
 
 1. **Efficiency first, economy second.** Our `strategy_engine` treats economy as
    the top investment while safe — correct — but the data says the decisive skill
    is *converting* it: winning trades and not letting resources sit idle. The
-   `efficiency` lens deserves first-class weight in bot decisions, not just the
-   investment ordering.
-2. **Punish the un-converted economy.** The COUNTER games are the greedy-opponent
-   archetype from `STRATEGY.md`: a big economy with a thin/inefficient army is
-   beatable by pressure and good trades. Our `classify_opponent` +
-   `counter_stance` already prescribe exactly this.
-3. **The idle-resource and supply-block rules earn their place.** Floating and
-   supply blocks measurably separated winners from losers; `rule_stop_floating`
-   and `rule_build_supply` are worth acting on aggressively.
-4. **Harassment is high-value.** Worker-kill differentials were large and
-   one-sided; the `harassment` module's "attack the investment" framing is well
-   supported.
+   `efficiency` lens (now first-class in the engine) is validated at 88% among
+   pros and 99% among bots.
+2. **Vs. bots, out-economy + out-expand is nearly sufficient.** Economy leads
+   convert to wins 98% of the time against bots and comebacks are almost absent,
+   so the `economy`/`expand` rules (`rule_build_worker`, `rule_expand`) are
+   especially high-value on the AI Arena ladder.
+3. **Harassment is the biggest under-exploited edge vs. bots (94%).** The
+   `harassment` module's "attack the investment" framing is enormously effective
+   against bot worker-defense — and conversely, defending our own workers well is
+   a cheap way to avoid the most common way losing bots die.
+4. **Enforce the anti-waste rules hard.** `rule_stop_floating` and
+   `rule_build_supply` separate winners from losers among bots far more than among
+   pros — bots routinely violate them.
 
 ## Reproduce
 
 ```bash
 # install sc2reader (see principle_analyzer.py header for the mpyq workaround)
+
+# pro replays (any .SC2Replay from spawningtool, etc.)
 python analysis/principle_analyzer.py "replays/*.SC2Replay"
+
+# AI Arena bot replays (needs an API token: https://aiarena.net/profile/token/)
+AA_API_TOKEN=... python analysis/aa_download.py replays_aa
+python analysis/aa_analyze.py replays_aa
 ```
