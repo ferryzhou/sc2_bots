@@ -74,6 +74,51 @@ economy loses slowly; dying to a timing loses instantly.
 For common strategy archetypes along this spectrum — and how to detect and
 counter each — see [`STRATEGY.md`](STRATEGY.md).
 
+## Tech and upgrades: the third investment
+
+Economy and army are not the only places resources go. **Tech** (new buildings,
+units, and abilities) and **upgrades** (attack/armor and unit improvements) are a
+third form of investment — and, like economy, they pay off *over time* rather
+than immediately. Every gas spent on research or a tech building is army you
+don't have *right now*, in exchange for a stronger army *later*. So tech sits on
+the same now-vs-later tension as economy.
+
+What makes tech and upgrades distinct:
+
+- **Upgrades compound with army size and game length.** A +1/+1 attack/armor
+  bonus applies to *every* current and future unit. The bigger your army and the
+  longer the game, the more each upgrade is worth — they multiply your army
+  rather than add to it. An upgraded smaller army routinely beats a larger
+  unupgraded one.
+- **Tech changes what's *possible*, not just how much.** Economy and army are
+  quantities; tech unlocks new options — a new unit, an ability, detection,
+  anti-air. It's how you access answers you simply don't have at lower tech.
+- **Tech creates power spikes and timing windows.** Finishing a key upgrade or
+  tech is a moment you're suddenly stronger (a spike to attack on), while the
+  research is in progress you're weaker (a window to be punished). See the timing
+  section below.
+
+Key ideas for spending on tech:
+
+- **Tech is an investment with the same greed risk.** Rushing high tech on a thin
+  army is as punishable as a greedy economy — you're weak during the window it's
+  coming online. Skipping tech entirely, though, leaves you outclassed once the
+  opponent's stronger units and upgrades arrive.
+- **Keep upgrade structures always working.** Idle research is wasted the same way
+  idle production is. Start attack/armor upgrades as soon as the economy supports
+  them, and prioritize the path that helps your core army most (attack to push,
+  armor to survive many small hits).
+- **Tech reactively as a counter.** Much teching is a response to scouting:
+  detection against cloak, anti-air against air, splash against massed light.
+  Reading the need before it's fatal is part of scouting.
+- **Tech switches cost tempo.** Transitioning your composition to exploit or
+  counter the opponent is powerful, but it costs time and resources and opens a
+  vulnerability window while the new tech and units come online.
+
+Think of it as three competing claims on every resource — **economy, army, and
+tech/upgrades** — with economy and tech both being bets on *later* that leave you
+thinner *now*.
+
 ## Timing: strength is relative and changes over time
 
 Army strength is never absolute — it only matters **relative to the opponent at
