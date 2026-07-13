@@ -69,17 +69,24 @@ ARMY_COMP: dict[UnitID, dict] = {
     UnitID.STALKER: {"proportion": 1.0, "priority": 0},
 }
 
-# late-game extension, gated on being maxed AND banking (so it can never
-# dilute early army like the failed immortal experiment): colossus AoE is
-# the close-out vs mass queen/ling turtles and maxed deathballs - the
-# 47-min QueenBot ladder loss was won on trades (51k killed) but never
-# closed
+# Gas-spending late composition. Diagnosed from the Hestia loss (27-min
+# macro attrition): a pure-stalker army (125m/50g) is mineral-heavy, so
+# with 2 assimilators/base we FLOODED gas (5176 unspent) while every
+# mineral was spent and army production capped at 17 stalkers. Immortals
+# (275m/100g, anti-armored - great vs Terran mech) and colossus
+# (300m/200g, AoE) drain the excess gas AND give more army-value-per-
+# mineral, easing the true constraint. Gated on time + gas bank (NOT
+# supply, which floating prevents us from reaching) so it only kicks in
+# once established and floating - never diluting early army like the
+# always-on immortal experiment (cycle 8) that regressed.
 LATE_COMP: dict[UnitID, dict] = {
-    UnitID.COLOSSUS: {"proportion": 0.2, "priority": 0},
-    UnitID.STALKER: {"proportion": 0.8, "priority": 1},
+    UnitID.IMMORTAL: {"proportion": 0.3, "priority": 0},
+    UnitID.COLOSSUS: {"proportion": 0.2, "priority": 1},
+    UnitID.STALKER: {"proportion": 0.5, "priority": 2},
 }
-LATE_COMP_SUPPLY: float = 180.0
-LATE_COMP_BANK: int = 1200
+# switch to the gas-spending comp once we're mid-game and floating gas
+LATE_COMP_AFTER: float = 420.0  # 7:00
+LATE_COMP_GAS_BANK: int = 300
 
 # used while defending early aggression - zealots are the only gateway unit
 # available before cybercore tech and hold rushes far better than nothing
@@ -364,8 +371,9 @@ class PhoenixBot(AresBot):
         if self.build_order_runner.build_completed:
             if self._emergency:
                 comp = self._emergency_comp
-            elif (self.supply_used >= LATE_COMP_SUPPLY
-                  and self.minerals >= LATE_COMP_BANK):
+            elif (self.time > LATE_COMP_AFTER
+                  and self.vespene > LATE_COMP_GAS_BANK):
+                # floating gas: spend it on gas-heavy tech units
                 comp = LATE_COMP
             else:
                 comp = ARMY_COMP
@@ -393,8 +401,10 @@ class PhoenixBot(AresBot):
                     )
                 )
             else:
+                # mineral income was the true constraint in the Hestia loss
+                # (all minerals spent, army capped) - saturate up to 5 bases
                 macro_plan.add(
-                    BuildWorkers(to_count=min(66, 22 * len(self.townhalls)))
+                    BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
                 )
                 macro_plan.add(SpawnController(comp))
                 # upgrades only once we're stable: past the rush window AND
@@ -429,7 +439,7 @@ class PhoenixBot(AresBot):
                 # that fight, a half-built nexus doesn't
                 if not self._all_in_read:
                     macro_plan.add(
-                        ExpansionController(to_count=4, max_pending=1)
+                        ExpansionController(to_count=5, max_pending=1)
                     )
                 macro_plan.add(
                     GasBuildingController(to_count=len(self.townhalls) * 2)
