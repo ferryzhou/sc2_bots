@@ -441,8 +441,14 @@ class PhoenixBot(AresBot):
                     macro_plan.add(
                         ExpansionController(to_count=5, max_pending=1)
                     )
+                # match gas income to the comp: a mineral-heavy stalker
+                # army floods gas at 2 geysers/base (the Hestia loss). Take
+                # full gas only once the gas-spending comp is active.
+                gas_per_base = 2 if comp is LATE_COMP else 1
                 macro_plan.add(
-                    GasBuildingController(to_count=len(self.townhalls) * 2)
+                    GasBuildingController(
+                        to_count=len(self.townhalls) * gas_per_base
+                    )
                 )
         else:
             macro_plan.add(SpawnController(ARMY_COMP))
