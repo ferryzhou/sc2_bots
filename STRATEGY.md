@@ -193,11 +193,17 @@ Scout for these signals and infer the economy–army commitment:
 - **Expansion timing.** Earlier than standard = greedy; later or absent = an
   all-in or timing.
 - **Gas timing and count.** Early/heavy gas = rushing tech or a gas-heavy unit
-  (a rush or tech play), not pure economy.
-- **Production count.** Many production buildings on a small economy = an army
-  commitment (timing/all-in).
+  (a rush or tech play), not pure economy. **No gas at all on one base**, by
+  contrast, is a gas-light mass-unit all-in (mass zealot / mass marine) — a loud
+  tell that is easy to miss because it's an *absence*.
+- **Production count relative to base.** Many production buildings on a *single*
+  base is the shape of a gateway/rax all-in — e.g. 4 gateways on one base is a
+  4-gate. Weight production-per-base heavily: 3–4 production on one base is an
+  all-in until disproven, not "standard macro."
 - **Proxies and positioning.** Buildings toward your base, or an army moving out
-  early, signal aggression.
+  early, signal aggression — and a proxy or warp-in pylon near your base is an
+  alarm *on its own*, even if you never scouted their main. Don't wait for a full
+  base scout to react to a warp-in at your doorstep.
 - **Tech buildings and add-ons.** They telegraph the units and abilities coming
   minutes ahead — react to the building, not the army. Watch especially for the
   enablers of cloak, burrow, and air.
