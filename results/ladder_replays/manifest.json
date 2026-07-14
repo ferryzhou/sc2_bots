@@ -1,272 +1,110 @@
 [
  {
-  "match": 4873802,
-  "opponent": "Klakinn",
+  "match": 4875442,
+  "opponent": "SiriusBot",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-12T21:58:03.247814Z",
-  "game_steps": 10724,
-  "file": "loss_Klakinn_4873802.SC2Replay"
+  "when": "2026-07-13T21:10:54.235431Z",
+  "game_steps": 23773,
+  "file": "loss_SiriusBot_4875442.SC2Replay"
  },
  {
-  "match": 4873795,
-  "opponent": "Stockfish",
+  "match": 4875441,
+  "opponent": "GenesisLotus",
   "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-12T21:27:14.848660Z",
-  "game_steps": 17097,
-  "file": "win_Stockfish_4873795.SC2Replay"
+  "cause": "crash",
+  "when": "2026-07-13T19:53:37.367927Z",
+  "game_steps": 8984,
+  "file": "win_GenesisLotus_4875441.SC2Replay"
  },
  {
-  "match": 4872602,
-  "opponent": "Apidae",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T21:53:08.748705Z",
-  "game_steps": 12342,
-  "file": "loss_Apidae_4872602.SC2Replay"
- },
- {
-  "match": 4872601,
-  "opponent": "QueenBot",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-12T05:14:10.203187Z",
-  "game_steps": 53513,
-  "file": "win_QueenBot_4872601.SC2Replay"
- },
- {
-  "match": 4872600,
-  "opponent": "WorkingAsIntended",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-11T15:53:50.680039Z",
-  "game_steps": 20101,
-  "file": "win_WorkingAsIntended_4872600.SC2Replay"
- },
- {
-  "match": 4872599,
-  "opponent": "Crawler",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T16:47:34.365279Z",
-  "game_steps": 7108,
-  "file": "loss_Crawler_4872599.SC2Replay"
- },
- {
-  "match": 4872598,
-  "opponent": "KoB",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-11T17:40:45.137359Z",
-  "game_steps": 13873,
-  "file": "win_KoB_4872598.SC2Replay"
- },
- {
-  "match": 4872597,
-  "opponent": "zig-reapers",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-12T09:22:41.719665Z",
-  "game_steps": 16656,
-  "file": "win_zig-reapers_4872597.SC2Replay"
- },
- {
-  "match": 4872596,
+  "match": 4875413,
   "opponent": "GriffinBot",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-11T23:36:46.053542Z",
-  "game_steps": 32034,
-  "file": "loss_GriffinBot_4872596.SC2Replay"
+  "when": "2026-07-13T22:55:16.888541Z",
+  "game_steps": 19672,
+  "file": "loss_GriffinBot_4875413.SC2Replay"
  },
  {
-  "match": 4872544,
-  "opponent": "sharpy_protoss_test1",
+  "match": 4875080,
+  "opponent": "GriffinBot",
   "result": "win",
   "cause": "game_rules",
-  "when": "2026-07-11T18:16:45.017852Z",
-  "game_steps": 17778,
-  "file": "win_sharpy_protoss_test1_4872544.SC2Replay"
+  "when": "2026-07-13T21:26:17.600564Z",
+  "game_steps": 12490,
+  "file": "win_GriffinBot_4875080.SC2Replay"
  },
  {
-  "match": 4872527,
-  "opponent": "Horizon",
-  "result": "tie",
-  "cause": "game_rules",
-  "when": "2026-07-11T16:45:28.165840Z",
-  "game_steps": 80642,
-  "file": "tie_Horizon_4872527.SC2Replay"
- },
- {
-  "match": 4872411,
-  "opponent": "Asteria",
+  "match": 4874850,
+  "opponent": "GriffinBot",
   "result": "win",
   "cause": "game_rules",
-  "when": "2026-07-12T08:24:33.882311Z",
-  "game_steps": 14154,
-  "file": "win_Asteria_4872411.SC2Replay"
+  "when": "2026-07-13T19:34:19.134620Z",
+  "game_steps": 28886,
+  "file": "win_GriffinBot_4874850.SC2Replay"
  },
  {
-  "match": 4872354,
-  "opponent": "Hestia",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-12T07:30:41.226238Z",
-  "game_steps": 16137,
-  "file": "win_Hestia_4872354.SC2Replay"
- },
- {
-  "match": 4872256,
-  "opponent": "GLM_Bot",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-12T02:34:30.478316Z",
-  "game_steps": 16305,
-  "file": "win_GLM_Bot_4872256.SC2Replay"
- },
- {
-  "match": 4872244,
-  "opponent": "Persephone",
+  "match": 4874712,
+  "opponent": "GriffinBot",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-12T12:38:50.668950Z",
-  "game_steps": 19169,
-  "file": "loss_Persephone_4872244.SC2Replay"
+  "when": "2026-07-14T00:21:32.946990Z",
+  "game_steps": 20380,
+  "file": "loss_GriffinBot_4874712.SC2Replay"
  },
  {
-  "match": 4872192,
-  "opponent": "Klakinn",
+  "match": 4874662,
+  "opponent": "GriffinBot",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-12T00:08:39.326274Z",
-  "game_steps": 10666,
-  "file": "loss_Klakinn_4872192.SC2Replay"
+  "when": "2026-07-13T22:42:08.359910Z",
+  "game_steps": 23194,
+  "file": "loss_GriffinBot_4874662.SC2Replay"
  },
  {
-  "match": 4872143,
-  "opponent": "PerilousProtossBot",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-11T23:05:29.948888Z",
-  "game_steps": 14382,
-  "file": "win_PerilousProtossBot_4872143.SC2Replay"
- },
- {
-  "match": 4871966,
-  "opponent": "Lissy",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-12T06:25:04.351432Z",
-  "game_steps": 16047,
-  "file": "win_Lissy_4871966.SC2Replay"
- },
- {
-  "match": 4871798,
-  "opponent": "muravev",
+  "match": 4874600,
+  "opponent": "GriffinBot",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-12T11:50:50.891291Z",
-  "game_steps": 21424,
-  "file": "loss_muravev_4871798.SC2Replay"
+  "when": "2026-07-13T20:37:48.197755Z",
+  "game_steps": 21064,
+  "file": "loss_GriffinBot_4874600.SC2Replay"
  },
  {
-  "match": 4871565,
-  "opponent": "Princess-Mika",
+  "match": 4874495,
+  "opponent": "GriffinBot",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-11T22:28:22.012049Z",
-  "game_steps": 15794,
-  "file": "loss_Princess-Mika_4871565.SC2Replay"
+  "when": "2026-07-13T23:43:30.062874Z",
+  "game_steps": 16472,
+  "file": "loss_GriffinBot_4874495.SC2Replay"
  },
  {
-  "match": 4871445,
-  "opponent": "ZEALOCALYPSE",
+  "match": 4873072,
+  "opponent": "oberon",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-11T23:49:31.971752Z",
-  "game_steps": 8200,
-  "file": "loss_ZEALOCALYPSE_4871445.SC2Replay"
+  "when": "2026-07-13T09:26:29.063815Z",
+  "game_steps": 8347,
+  "file": "loss_oberon_4873072.SC2Replay"
  },
  {
-  "match": 4871399,
-  "opponent": "OneBaseStalkerBot",
+  "match": 4873071,
+  "opponent": "AxeFighter",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-12T01:41:00.344084Z",
-  "game_steps": 11558,
-  "file": "loss_OneBaseStalkerBot_4871399.SC2Replay"
+  "when": "2026-07-12T22:12:52.269066Z",
+  "game_steps": 17864,
+  "file": "loss_AxeFighter_4873071.SC2Replay"
  },
  {
-  "match": 4871379,
-  "opponent": "27turtles",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-11T21:24:26.022748Z",
-  "game_steps": 14630,
-  "file": "win_27turtles_4871379.SC2Replay"
- },
- {
-  "match": 4871334,
-  "opponent": "Creepy_duo_canon",
+  "match": 4873070,
+  "opponent": "Thssprtssbt",
   "result": "loss",
   "cause": "game_rules",
-  "when": "2026-07-12T10:40:59.994121Z",
-  "game_steps": 9568,
-  "file": "loss_Creepy_duo_canon_4871334.SC2Replay"
- },
- {
-  "match": 4871312,
-  "opponent": "Montka",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-11T20:46:19.262947Z",
-  "game_steps": 15231,
-  "file": "win_Montka_4871312.SC2Replay"
- },
- {
-  "match": 4871289,
-  "opponent": "Terranosaur",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-12T05:51:17.906496Z",
-  "game_steps": 21863,
-  "file": "win_Terranosaur_4871289.SC2Replay"
- },
- {
-  "match": 4871240,
-  "opponent": "smokinggunbot",
-  "result": "win",
-  "cause": "game_rules",
-  "when": "2026-07-11T19:35:20.280425Z",
-  "game_steps": 13828,
-  "file": "win_smokinggunbot_4871240.SC2Replay"
- },
- {
-  "match": 4871215,
-  "opponent": "kas",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T19:10:53.783425Z",
-  "game_steps": 19830,
-  "file": "loss_kas_4871215.SC2Replay"
- },
- {
-  "match": 4871163,
-  "opponent": "PiG_Bot",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T20:12:08.703706Z",
-  "game_steps": 16218,
-  "file": "loss_PiG_Bot_4871163.SC2Replay"
- },
- {
-  "match": 4870698,
-  "opponent": "nida",
-  "result": "loss",
-  "cause": "game_rules",
-  "when": "2026-07-11T06:58:49.784627Z",
-  "game_steps": 20290,
-  "file": "loss_nida_4870698.SC2Replay"
+  "when": "2026-07-13T08:31:13.180648Z",
+  "game_steps": 13902,
+  "file": "loss_Thssprtssbt_4873070.SC2Replay"
  }
 ]
