@@ -19,6 +19,7 @@ from .principles import (
 )
 from .strategy import Archetype, classify_opponent
 from .harassment import harass_advice
+from .combat import Engagement, assess_engagement
 from .rules import evaluate_rules
 from .advisor import StrategicAdvisor
 
@@ -75,6 +76,45 @@ def test_efficiency_idle_waste() -> None:
     st = GameState(value_killed=1000, value_lost=500, minerals=800, idle_production=2)
     _check("floating money / idle production -> idle_waste flagged",
            assess_efficiency(st).idle_waste)
+
+
+def test_engagement_favorable() -> None:
+    st = GameState(army_supply=30, enemy_army_supply=20)
+    _check("bigger army -> engage", assess_engagement(st).verdict == Engagement.ENGAGE)
+
+
+def test_engagement_unfavorable_avoid() -> None:
+    st = GameState(army_supply=12, enemy_army_supply=24)
+    _check("much smaller army in the open -> avoid",
+           assess_engagement(st).verdict == Engagement.AVOID)
+
+
+def test_engagement_defend_at_home() -> None:
+    st = GameState(army_supply=16, enemy_army_supply=20, fighting_at_home=True,
+                   have_terrain_advantage=True)
+    v = assess_engagement(st).verdict
+    _check("behind but defender's advantage -> engage or defend, not avoid",
+           v in (Engagement.DEFEND, Engagement.ENGAGE))
+
+
+def test_engagement_upgrade_edge_flips_it() -> None:
+    even = GameState(army_supply=20, enemy_army_supply=20, upgrades_done=0, enemy_upgrades=0)
+    upg = GameState(army_supply=20, enemy_army_supply=20, upgrades_done=6, enemy_upgrades=0)
+    _check("equal armies, no upgrades -> not a clear engage",
+           assess_engagement(even).verdict != Engagement.ENGAGE)
+    _check("equal armies but big upgrade edge -> engage",
+           assess_engagement(upg).verdict == Engagement.ENGAGE)
+
+
+def test_engagement_unknown_without_scouting() -> None:
+    _check("no enemy army info -> unknown",
+           assess_engagement(GameState(army_supply=20)).verdict == Engagement.UNKNOWN)
+
+
+def test_engagement_trading_down_vetoes() -> None:
+    st = GameState(army_supply=26, enemy_army_supply=20, value_killed=400, value_lost=1200)
+    _check("favorable size but trading down -> don't engage",
+           assess_engagement(st).verdict != Engagement.ENGAGE)
 
 
 def test_classify_cheese() -> None:

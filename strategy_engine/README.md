@@ -11,6 +11,7 @@ stay in lockstep.
 | `strategy.py`   | `STRATEGY.md`      | Opponent classification (detection) and counter stances. |
 | `rules.py`      | `RULES.md`         | Concrete, checkable rules as predicate functions. |
 | `harassment.py` | harassment sections| Harass and anti-harass decisions. |
+| `combat.py`     | `COMBAT.md`        | The should-engage decision (`assess_engagement`): army strength x upgrade edge x terrain/home/reinforcements/composition, with a trading-down veto. |
 | `advisor.py`    | all of the above   | `StrategicAdvisor` ties everything into one `Advice` per step. |
 
 ## Design

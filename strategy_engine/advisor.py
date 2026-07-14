@@ -28,11 +28,13 @@ from .strategy import (
 )
 from .rules import RuleHit, evaluate_rules
 from .harassment import HarassAdvice, harass_advice
+from .combat import EngagementAdvice, assess_engagement
 
 
 @dataclass
 class Advice:
     efficiency: Efficiency
+    engagement: EngagementAdvice
     investment: InvestmentAdvice
     timing: PowerTiming
     classification: Classification
@@ -47,6 +49,7 @@ class Advice:
         lines = [
             f"efficiency: {eff.verdict.value} (trade {eff.trade_ratio:.2f})"
             + ("  [idle resources!]" if eff.idle_waste else ""),
+            f"engagement: {self.engagement.verdict.value} (ratio {self.engagement.effective_ratio:.2f})",
             f"posture:    {self.investment.posture}",
             f"invest:     {' > '.join(i.value for i in self.investment.priority)}",
             f"timing:     {self.timing.value}",
@@ -74,6 +77,7 @@ class StrategicAdvisor:
         classification = classify_opponent(state)
         return Advice(
             efficiency=assess_efficiency(state),
+            engagement=assess_engagement(state),
             investment=recommend_investment(state),
             timing=power_timing(state),
             classification=classification,
