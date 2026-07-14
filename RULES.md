@@ -91,6 +91,26 @@ Each section maps to a principle by number.
 - Use spellcasters and abilities proactively (stim, blink, EMP, storm, fungal)
   rather than hoarding energy.
 
+## 9a. Fight only favorable engagements
+
+Encoded in `strategy_engine/combat.py` (`assess_engagement`).
+
+- Estimate effective strength, not raw supply: `army_supply x upgrade_edge x
+  situational`, where situational stacks terrain/surround (+15%), defender's
+  advantage at home (+15%), reinforcements close (+10%), favorable composition
+  (+20%), minus bad position (-20%) and enemy cloak/air without detection (-20%).
+- Engage when the effective ratio is comfortably favorable (>= ~1.1) **and** you
+  are not already trading down.
+- Avoid / disengage when the ratio is unfavorable (<= ~0.9) away from home, or
+  when trades are going against you regardless of size — don't feed a losing
+  fight.
+- Hold (don't retreat) when behind at home if defender's advantage keeps the
+  effective ratio close (>= ~0.7); don't take even coinflips out in the open.
+- An upgrade/tech-tier edge is efficiency bought in advance: let it raise the
+  effective ratio, and start fights that a raw-supply count would call even.
+- Get detection/anti-air in place *before* engaging when the enemy has cloak or
+  air; fighting blind applies the -20% penalty for a reason.
+
 ## 9b. Harass to attack the investment
 
 Attacking:

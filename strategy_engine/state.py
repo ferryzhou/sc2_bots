@@ -52,6 +52,15 @@ class GameState:
     value_killed: float = 0.0  # enemy resource value we have destroyed
     value_lost: float = 0.0    # our resource value the enemy has destroyed
 
+    # --- engagement context (for the combat/should-engage decision) ---
+    enemy_upgrades: Optional[int] = None   # scouted enemy upgrade count
+    have_detection: bool = False           # we have detection with the army
+    fighting_at_home: bool = False         # engagement near our bases/defense
+    reinforcements_close: bool = False     # our production is near the fight
+    have_terrain_advantage: bool = False   # high ground / choke / good surround
+    positional_disadvantage: bool = False  # up a ramp / open vs. range / surrounded
+    composition_favorable: Optional[bool] = None  # our comp counters theirs
+
     # --- scouted enemy state (None == unknown) ---
     last_scouted_time: Optional[float] = None
     enemy_base_count: Optional[int] = None
