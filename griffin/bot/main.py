@@ -101,6 +101,25 @@ EMERGENCY_COMP: dict[UnitID, dict] = {
     UnitID.MARINE: {"proportion": 1.0, "priority": 0},
 }
 
+# Gas-draining late composition. Every ladder long-game loss floated
+# 3000-5000 unspent GAS (Princess-Mika 3908, WorkingAsIntended 4156,
+# AxeFighter 4940) while army production capped on mineral-cheap marines -
+# so when the army died, griffin couldn't reconvert the bank fast enough to
+# survive the enemy remax. This shifts toward tanks (150m/125g: a gas sink
+# AND splash vs the mass-unit remax) and marauders once established AND
+# actually floating gas. Gated on the gas bank (NOT supply, which floating
+# keeps us from reaching) so it never dilutes early army - mirrors
+# PhoenixBot's LATE_COMP fix for the identical float problem. Not used vs
+# protoss, which already runs a gas-heavy ghost/tank comp.
+LATE_COMP: dict[UnitID, dict] = {
+    UnitID.MARINE: {"proportion": 0.3, "priority": 1},
+    UnitID.MARAUDER: {"proportion": 0.25, "priority": 1},
+    UnitID.SIEGETANK: {"proportion": 0.3, "priority": 0},
+    UnitID.MEDIVAC: {"proportion": 0.15, "priority": 2},
+}
+LATE_COMP_AFTER: float = 600.0  # 10:00
+LATE_COMP_GAS_BANK: int = 800
+
 # early-rush window: proximity aggression before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
 # one-base/two-base all-in window: griffin's dominant ladder loss (zig-reapers,
@@ -640,6 +659,16 @@ class GriffinBot(AresBot):
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
             comp = EMERGENCY_COMP if self._emergency else self._army_comp
+            # late-game gas drain: once established and floating gas, shift to
+            # the tank-heavy comp so the bank becomes army+splash and griffin
+            # can trade/remax with zerg instead of banking dead resources
+            if (
+                not self._emergency
+                and self.enemy_race != Race.Protoss
+                and self.time > LATE_COMP_AFTER
+                and self.vespene > LATE_COMP_GAS_BANK
+            ):
+                comp = LATE_COMP
             # reactive vikings: only once enemy air combat units are seen
             # (a permanent viking share was tried and went 1-5 - air-blind
             # supply can't shoot a ground push; see the vs-terran NOTE).
@@ -680,8 +709,17 @@ class GriffinBot(AresBot):
                             base_location=self.start_location,
                         )
                     )
+                # add_production_at_bank: the core remax fix. Without it,
+                # production caps at the comp ratio and griffin floats its
+                # income (3-5k gas in long-game losses); building extra
+                # rax/factories/starports when banking lets it spend the
+                # bank and rebuild its army as fast as it loses it.
                 macro_plan.add(
-                    ProductionController(comp, base_location=self.start_location)
+                    ProductionController(
+                        comp,
+                        base_location=self.start_location,
+                        add_production_at_bank=(300, 200),
+                    )
                 )
                 # long games: keep taking bases so a mined-out economy
                 # doesn't decide the 60-min grinds
