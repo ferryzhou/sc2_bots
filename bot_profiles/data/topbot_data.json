@@ -1,0 +1,11064 @@
+{
+ "Deimos": {
+  "meta": {
+   "id": 730,
+   "name": "Deimos",
+   "race": "P",
+   "type": "python",
+   "pub": false,
+   "elo": 2295,
+   "created": "2024-07",
+   "updated": "2026-07-07"
+  },
+  "record": {
+   "W": 104,
+   "L": 45,
+   "draw": 1,
+   "byrace": {
+    "T": [
+     42,
+     18
+    ],
+    "Z": [
+     15,
+     17
+    ],
+    "P": [
+     26,
+     6
+    ],
+    "R": [
+     21,
+     4
+    ]
+   }
+  },
+  "tough": [
+   [
+    "negativeZero",
+    0,
+    5,
+    "P"
+   ],
+   [
+    "ANIbot",
+    2,
+    6,
+    "T"
+   ],
+   [
+    "Clicadinha",
+    1,
+    4,
+    "Z"
+   ],
+   [
+    "12PoolBot",
+    3,
+    5,
+    "Z"
+   ],
+   [
+    "Roro",
+    3,
+    5,
+    "T"
+   ],
+   [
+    "zig-spudde",
+    1,
+    3,
+    "T"
+   ],
+   [
+    "EvilZoe",
+    0,
+    1,
+    "Z"
+   ],
+   [
+    "SharpenedEdge",
+    0,
+    1,
+    "P"
+   ],
+   [
+    "Caninana",
+    4,
+    4,
+    "Z"
+   ]
+  ],
+  "best": [
+   [
+    "theBigBot",
+    10,
+    0,
+    "P"
+   ],
+   [
+    "changeling",
+    9,
+    0,
+    "R"
+   ],
+   [
+    "Aeolus",
+    8,
+    0,
+    "P"
+   ],
+   [
+    "Phobos",
+    8,
+    0,
+    "T"
+   ],
+   [
+    "TyrT",
+    7,
+    0,
+    "T"
+   ],
+   [
+    "BenBotBC",
+    7,
+    1,
+    "T"
+   ],
+   [
+    "Eris",
+    6,
+    3,
+    "Z"
+   ],
+   [
+    "GPT",
+    5,
+    2,
+    "T"
+   ],
+   [
+    "Chance",
+    4,
+    1,
+    "R"
+   ],
+   [
+    "Mulebot",
+    4,
+    1,
+    "T"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "Z",
+    "min": 32.5,
+    "build": [
+     [
+      "Probe",
+      23
+     ],
+     [
+      "Stalker",
+      15
+     ],
+     [
+      "Pylon",
+      9
+     ],
+     [
+      "Gateway",
+      5
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "RoboticsFacility",
+      1
+     ],
+     [
+      "Adept",
+      1
+     ],
+     [
+      "Observer",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.8,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 1.9,
+     "RoboticsFacility": 3.1,
+     "Stalker": 3.3,
+     "Adept": 7.7,
+     "Observer": 8.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 36.0,
+      "opp_sup": 43.5,
+      "army": 875,
+      "opp_army": 1250,
+      "wk": 22,
+      "opp_wk": 18
+     },
+     {
+      "m": 6,
+      "sup": 50.0,
+      "opp_sup": 46.0,
+      "army": 2450,
+      "opp_army": 1350,
+      "wk": 22,
+      "opp_wk": 19
+     },
+     {
+      "m": 8,
+      "sup": 66.0,
+      "opp_sup": 65.0,
+      "army": 3050,
+      "opp_army": 1825,
+      "wk": 26,
+      "opp_wk": 23
+     },
+     {
+      "m": 12,
+      "sup": 103.0,
+      "opp_sup": 106.0,
+      "army": 4475,
+      "opp_army": 3425,
+      "wk": 44,
+      "opp_wk": 33
+     }
+    ],
+    "match": 4053027,
+    "won": true,
+    "opp": "12PoolBot"
+   },
+   {
+    "opp_race": "Z",
+    "min": 32.3,
+    "build": [
+     [
+      "Probe",
+      48
+     ],
+     [
+      "AdeptPhaseShift",
+      32
+     ],
+     [
+      "Phoenix",
+      9
+     ],
+     [
+      "Pylon",
+      8
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Adept",
+      4
+     ],
+     [
+      "Stalker",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Gateway",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "ShieldBattery",
+      2
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "RoboticsFacility",
+      1
+     ],
+     [
+      "ChangelingZealot",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.9,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 2.0,
+     "Stargate": 3.2,
+     "Adept": 3.3,
+     "AdeptPhaseShift": 3.3,
+     "Phoenix": 4.5,
+     "Stalker": 6.3,
+     "ShieldBattery": 7.2,
+     "RoboticsFacility": 7.4,
+     "ChangelingZealot": 8.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 42.0,
+      "opp_sup": 46.5,
+      "army": 625,
+      "opp_army": 650,
+      "wk": 30,
+      "opp_wk": 33
+     },
+     {
+      "m": 6,
+      "sup": 64.0,
+      "opp_sup": 77.0,
+      "army": 1550,
+      "opp_army": 875,
+      "wk": 44,
+      "opp_wk": 53
+     },
+     {
+      "m": 8,
+      "sup": 85.0,
+      "opp_sup": 96.5,
+      "army": 3425,
+      "opp_army": 1875,
+      "wk": 48,
+      "opp_wk": 58
+     },
+     {
+      "m": 12,
+      "sup": 142.0,
+      "opp_sup": 187.0,
+      "army": 5925,
+      "opp_army": 4650,
+      "wk": 73,
+      "opp_wk": 88
+     }
+    ],
+    "match": 4056658,
+    "won": true,
+    "opp": "Eris"
+   },
+   {
+    "opp_race": "T",
+    "min": 30.1,
+    "build": [
+     [
+      "Probe",
+      54
+     ],
+     [
+      "AdeptPhaseShift",
+      14
+     ],
+     [
+      "Stalker",
+      8
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "Assimilator",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Adept",
+      2
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "Stargate",
+      1
+     ],
+     [
+      "Phoenix",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.8,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 1.9,
+     "Stargate": 3.1,
+     "Adept": 3.2,
+     "AdeptPhaseShift": 3.2,
+     "Stalker": 4.4,
+     "Phoenix": 4.5
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 38.0,
+      "opp_sup": 34.0,
+      "army": 675,
+      "opp_army": 400,
+      "wk": 26,
+      "opp_wk": 25
+     },
+     {
+      "m": 6,
+      "sup": 51.0,
+      "opp_sup": 59.0,
+      "army": 950,
+      "opp_army": 1050,
+      "wk": 35,
+      "opp_wk": 34
+     },
+     {
+      "m": 8,
+      "sup": 75.0,
+      "opp_sup": 84.0,
+      "army": 2525,
+      "opp_army": 2050,
+      "wk": 45,
+      "opp_wk": 45
+     },
+     {
+      "m": 12,
+      "sup": 111.0,
+      "opp_sup": 94.0,
+      "army": 4425,
+      "opp_army": 1925,
+      "wk": 54,
+      "opp_wk": 59
+     }
+    ],
+    "match": 4057994,
+    "won": true,
+    "opp": "changeling"
+   },
+   {
+    "opp_race": "Z",
+    "min": 28.9,
+    "build": [
+     [
+      "AdeptPhaseShift",
+      73
+     ],
+     [
+      "Probe",
+      46
+     ],
+     [
+      "Adept",
+      11
+     ],
+     [
+      "Pylon",
+      10
+     ],
+     [
+      "Stalker",
+      9
+     ],
+     [
+      "Gateway",
+      5
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "Stargate",
+      1
+     ],
+     [
+      "TwilightCouncil",
+      1
+     ],
+     [
+      "VoidRay",
+      1
+     ],
+     [
+      "RoboticsFacility",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.8,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 1.9,
+     "Stargate": 3.1,
+     "Adept": 3.5,
+     "AdeptPhaseShift": 3.5,
+     "TwilightCouncil": 4.6,
+     "VoidRay": 4.9,
+     "RoboticsFacility": 6.9,
+     "Stalker": 7.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 42.0,
+      "opp_sup": 37.5,
+      "army": 250,
+      "opp_army": 800,
+      "wk": 30,
+      "opp_wk": 22
+     },
+     {
+      "m": 6,
+      "sup": 69.0,
+      "opp_sup": 68.5,
+      "army": 1400,
+      "opp_army": 1325,
+      "wk": 44,
+      "opp_wk": 38
+     },
+     {
+      "m": 8,
+      "sup": 82.0,
+      "opp_sup": 83.0,
+      "army": 2675,
+      "opp_army": 2700,
+      "wk": 45,
+      "opp_wk": 35
+     },
+     {
+      "m": 12,
+      "sup": 89.0,
+      "opp_sup": 116.0,
+      "army": 2975,
+      "opp_army": 3450,
+      "wk": 42,
+      "opp_wk": 54
+     }
+    ],
+    "match": 4055434,
+    "won": true,
+    "opp": "Caninana"
+   }
+  ],
+  "src_zip": null
+ },
+ "Eris": {
+  "meta": {
+   "id": 248,
+   "name": "Eris",
+   "race": "Z",
+   "type": "python",
+   "pub": false,
+   "elo": 2283,
+   "created": "2021-02",
+   "updated": "2026-07-13"
+  },
+  "record": {
+   "W": 96,
+   "L": 38,
+   "draw": 16,
+   "byrace": {
+    "Z": [
+     40,
+     9
+    ],
+    "T": [
+     35,
+     25
+    ],
+    "P": [
+     19,
+     2
+    ],
+    "R": [
+     2,
+     2
+    ]
+   }
+  },
+  "tough": [
+   [
+    "Ketroc",
+    8,
+    13,
+    "T"
+   ],
+   [
+    "Spiny",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "AlienAsh",
+    1,
+    2,
+    "Z"
+   ],
+   [
+    "Chance",
+    0,
+    1,
+    "R"
+   ],
+   [
+    "MicroMachine",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "BugFinder",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "Crustacean",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "MiningMachine",
+    1,
+    1,
+    "T"
+   ],
+   [
+    "SharkbotTest",
+    1,
+    1,
+    "P"
+   ],
+   [
+    "MixedBreed",
+    2,
+    1,
+    "R"
+   ]
+  ],
+  "best": [
+   [
+    "Jensiiibot",
+    10,
+    1,
+    "T"
+   ],
+   [
+    "gotest",
+    9,
+    0,
+    "Z"
+   ],
+   [
+    "BenBotBC",
+    15,
+    7,
+    "T"
+   ],
+   [
+    "ZoeDev",
+    10,
+    4,
+    "Z"
+   ],
+   [
+    "SF4G",
+    6,
+    0,
+    "P"
+   ],
+   [
+    "HarvesterZerg",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "LucidZJS",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Paul",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Basic",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "negativeZero",
+    2,
+    0,
+    "P"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "Phobos": {
+  "meta": {
+   "id": 611,
+   "name": "Phobos",
+   "race": "T",
+   "type": "python",
+   "pub": false,
+   "elo": 2150,
+   "created": "2023-06",
+   "updated": "2026-07-12"
+  },
+  "record": {
+   "W": 83,
+   "L": 64,
+   "draw": 3,
+   "byrace": {
+    "R": [
+     2,
+     6
+    ],
+    "T": [
+     20,
+     23
+    ],
+    "Z": [
+     33,
+     20
+    ],
+    "P": [
+     28,
+     15
+    ]
+   }
+  },
+  "tough": [
+   [
+    "Ketroc",
+    0,
+    5,
+    "T"
+   ],
+   [
+    "Xena",
+    1,
+    4,
+    "R"
+   ],
+   [
+    "DominionDog",
+    0,
+    3,
+    "T"
+   ],
+   [
+    "QueenBot",
+    0,
+    3,
+    "Z"
+   ],
+   [
+    "Dovahkiin",
+    0,
+    3,
+    "Z"
+   ],
+   [
+    "MicroMachine",
+    0,
+    3,
+    "T"
+   ],
+   [
+    "SharpShadows",
+    1,
+    3,
+    "P"
+   ],
+   [
+    "SF4G",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "SharpenedEdge",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "spudde",
+    0,
+    2,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "Apidae",
+    5,
+    0,
+    "P"
+   ],
+   [
+    "SaShaBot",
+    5,
+    0,
+    "Z"
+   ],
+   [
+    "DadBotTest",
+    5,
+    0,
+    "Z"
+   ],
+   [
+    "Raiden-p-bot",
+    4,
+    0,
+    "P"
+   ],
+   [
+    "DadBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "PhantomBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "12PoolBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "zigster",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "nida",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "Zozo",
+    3,
+    1,
+    "P"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "P",
+    "min": 16.8,
+    "build": [
+     [
+      "SCV",
+      47
+     ],
+     [
+      "Marine",
+      24
+     ],
+     [
+      "SupplyDepot",
+      8
+     ],
+     [
+      "Marauder",
+      7
+     ],
+     [
+      "Barracks",
+      5
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Reaper",
+      2
+     ],
+     [
+      "BarracksTechLab",
+      2
+     ],
+     [
+      "Starport",
+      2
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "StarportTechLab",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 0.9,
+     "Refinery": 1.0,
+     "BarracksReactor": 2.0,
+     "Marine": 3.3,
+     "Reaper": 4.0,
+     "BarracksTechLab": 4.4,
+     "Marauder": 5.4,
+     "Factory": 5.5,
+     "Starport": 6.5,
+     "StarportTechLab": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 36.0,
+      "opp_sup": 38.0,
+      "army": 400,
+      "opp_army": 425,
+      "wk": 27,
+      "opp_wk": 30
+     },
+     {
+      "m": 6,
+      "sup": 65.0,
+      "opp_sup": 64.0,
+      "army": 1175,
+      "opp_army": 1275,
+      "wk": 38,
+      "opp_wk": 44
+     },
+     {
+      "m": 8,
+      "sup": 77.0,
+      "opp_sup": 81.0,
+      "army": 1150,
+      "opp_army": 2475,
+      "wk": 45,
+      "opp_wk": 46
+     },
+     {
+      "m": 12,
+      "sup": 52.0,
+      "opp_sup": 136.0,
+      "army": 850,
+      "opp_army": 5725,
+      "wk": 40,
+      "opp_wk": 72
+     }
+    ],
+    "match": 4043820,
+    "won": false,
+    "opp": "Deimos"
+   }
+  ],
+  "src_zip": null
+ },
+ "BenBotBC": {
+  "meta": {
+   "id": 115,
+   "name": "BenBotBC",
+   "race": "T",
+   "type": "java",
+   "pub": false,
+   "elo": 2143,
+   "created": "2019-12",
+   "updated": "2026-07-14"
+  },
+  "record": {
+   "W": 43,
+   "L": 89,
+   "draw": 18,
+   "byrace": {
+    "P": [
+     12,
+     53
+    ],
+    "R": [
+     22,
+     3
+    ],
+    "T": [
+     7,
+     9
+    ],
+    "Z": [
+     2,
+     24
+    ]
+   }
+  },
+  "tough": [
+   [
+    "TheGoldenArmada",
+    3,
+    17,
+    "P"
+   ],
+   [
+    "CreepyBot",
+    0,
+    7,
+    "Z"
+   ],
+   [
+    "TyrP",
+    4,
+    10,
+    "P"
+   ],
+   [
+    "AdditionalPylons",
+    0,
+    6,
+    "P"
+   ],
+   [
+    "MavBot3",
+    0,
+    6,
+    "P"
+   ],
+   [
+    "TyrZ",
+    0,
+    5,
+    "Z"
+   ],
+   [
+    "Paul",
+    0,
+    5,
+    "Z"
+   ],
+   [
+    "Sharpy_MadAI",
+    0,
+    4,
+    "P"
+   ],
+   [
+    "SharpenedEdge",
+    0,
+    4,
+    "P"
+   ],
+   [
+    "ANIbot",
+    0,
+    4,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "A.L.E.R.T.",
+    14,
+    2,
+    "R"
+   ],
+   [
+    "A.L.E.R.T.-dev",
+    8,
+    1,
+    "R"
+   ],
+   [
+    "BenBotv2",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "TheUnseenz",
+    1,
+    0,
+    "P"
+   ],
+   [
+    "Rusty",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "BetterWorkerRush",
+    1,
+    0,
+    "P"
+   ],
+   [
+    "BCMACHINE",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "Fire",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "ValinMarineBot",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "Octopus_v2",
+    2,
+    2,
+    "P"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "Zozo": {
+  "meta": {
+   "id": 496,
+   "name": "Zozo",
+   "race": "P",
+   "type": "python",
+   "pub": false,
+   "elo": 2109,
+   "created": "2022-08",
+   "updated": "2026-04-22"
+  },
+  "record": {
+   "W": 96,
+   "L": 53,
+   "draw": 1,
+   "byrace": {
+    "Z": [
+     35,
+     17
+    ],
+    "T": [
+     40,
+     19
+    ],
+    "P": [
+     12,
+     13
+    ],
+    "R": [
+     9,
+     4
+    ]
+   }
+  },
+  "tough": [
+   [
+    "negativeZero",
+    0,
+    5,
+    "P"
+   ],
+   [
+    "Eris",
+    0,
+    4,
+    "Z"
+   ],
+   [
+    "Dysnomia",
+    0,
+    4,
+    "Z"
+   ],
+   [
+    "Zoe",
+    0,
+    4,
+    "Z"
+   ],
+   [
+    "Xena",
+    1,
+    4,
+    "R"
+   ],
+   [
+    "XenaP",
+    1,
+    4,
+    "P"
+   ],
+   [
+    "TyrP",
+    0,
+    3,
+    "P"
+   ],
+   [
+    "QueenBot",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "EvilZoe",
+    3,
+    2,
+    "Z"
+   ]
+  ],
+  "best": [
+   [
+    "BenBotBC",
+    25,
+    17,
+    "T"
+   ],
+   [
+    "SharkbotTest",
+    7,
+    1,
+    "P"
+   ],
+   [
+    "XenaT",
+    6,
+    1,
+    "T"
+   ],
+   [
+    "12PoolBot",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "XenaZ",
+    4,
+    1,
+    "Z"
+   ],
+   [
+    "MicroMachine",
+    4,
+    1,
+    "T"
+   ],
+   [
+    "DadBotTest",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "DadBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "sharkbot",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "whalemean",
+    3,
+    0,
+    "R"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "Xena": {
+  "meta": {
+   "id": 446,
+   "name": "Xena",
+   "race": "R",
+   "type": "cpplinux",
+   "pub": false,
+   "elo": 2103,
+   "created": "2022-06",
+   "updated": "2025-09-30"
+  },
+  "record": {
+   "W": 90,
+   "L": 56,
+   "draw": 4,
+   "byrace": {
+    "Z": [
+     49,
+     26
+    ],
+    "P": [
+     15,
+     14
+    ],
+    "R": [
+     8,
+     2
+    ],
+    "T": [
+     18,
+     14
+    ]
+   }
+  },
+  "tough": [
+   [
+    "EvilZoe",
+    1,
+    8,
+    "Z"
+   ],
+   [
+    "negativeZero",
+    1,
+    6,
+    "P"
+   ],
+   [
+    "MicroMachine",
+    1,
+    5,
+    "T"
+   ],
+   [
+    "BenBotBC",
+    2,
+    5,
+    "T"
+   ],
+   [
+    "12PoolBot",
+    1,
+    4,
+    "Z"
+   ],
+   [
+    "Dysnomia",
+    1,
+    4,
+    "Z"
+   ],
+   [
+    "Eris",
+    2,
+    4,
+    "Z"
+   ],
+   [
+    "sharkbot",
+    1,
+    2,
+    "P"
+   ],
+   [
+    "Tyr",
+    1,
+    2,
+    "R"
+   ],
+   [
+    "Ketroc",
+    1,
+    1,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "Krillin",
+    8,
+    1,
+    "Z"
+   ],
+   [
+    "Zoe",
+    6,
+    0,
+    "Z"
+   ],
+   [
+    "XenaT",
+    5,
+    1,
+    "T"
+   ],
+   [
+    "Zozo",
+    4,
+    1,
+    "P"
+   ],
+   [
+    "DadBotTest",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "whalemean",
+    3,
+    0,
+    "R"
+   ],
+   [
+    "TyrT",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "XenaZ",
+    4,
+    2,
+    "Z"
+   ],
+   [
+    "DadBot",
+    3,
+    1,
+    "Z"
+   ],
+   [
+    "Dovahkiin",
+    3,
+    1,
+    "Z"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "MicroMachine": {
+  "meta": {
+   "id": 49,
+   "name": "MicroMachine",
+   "race": "T",
+   "type": "cpplinux",
+   "pub": true,
+   "elo": 2094,
+   "created": "2019-06",
+   "updated": "2022-05-11"
+  },
+  "record": {
+   "W": 138,
+   "L": 8,
+   "draw": 4,
+   "byrace": {
+    "P": [
+     2,
+     5
+    ],
+    "T": [
+     135,
+     1
+    ],
+    "Z": [
+     1,
+     2
+    ]
+   }
+  },
+  "tough": [
+   [
+    "TyrP",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "TyrZ",
+    1,
+    2,
+    "Z"
+   ],
+   [
+    "AdditionalPylons",
+    0,
+    1,
+    "P"
+   ],
+   [
+    "ThreeWayLover",
+    0,
+    1,
+    "P"
+   ],
+   [
+    "SharpenedEdge",
+    1,
+    1,
+    "P"
+   ],
+   [
+    "dantheman",
+    4,
+    1,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "TestBot",
+    128,
+    0,
+    "T"
+   ],
+   [
+    "dantheman",
+    4,
+    1,
+    "T"
+   ],
+   [
+    "BetterWorkerRush",
+    1,
+    0,
+    "P"
+   ],
+   [
+    "dantheman_3",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "Jensiiibot",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "AllBot",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "SharpenedEdge",
+    1,
+    1,
+    "P"
+   ],
+   [
+    "TyrZ",
+    1,
+    2,
+    "Z"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "ArgoBot": {
+  "meta": {
+   "id": 966,
+   "name": "ArgoBot",
+   "race": "P",
+   "type": "dotnetcore",
+   "pub": false,
+   "elo": 2065,
+   "created": "2025-11",
+   "updated": "2026-05-08"
+  },
+  "record": {
+   "W": 90,
+   "L": 32,
+   "draw": 28,
+   "byrace": {
+    "Z": [
+     29,
+     9
+    ],
+    "R": [
+     9,
+     4
+    ],
+    "P": [
+     23,
+     11
+    ],
+    "T": [
+     29,
+     8
+    ]
+   }
+  },
+  "tough": [
+   [
+    "Zozo",
+    0,
+    4,
+    "P"
+   ],
+   [
+    "Dysnomia",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "Eris",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "BotTato",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "BenBotBC",
+    1,
+    2,
+    "T"
+   ],
+   [
+    "sharkbot",
+    1,
+    2,
+    "P"
+   ],
+   [
+    "SpeedlingBot",
+    1,
+    2,
+    "Z"
+   ],
+   [
+    "PerilousProtossBot",
+    1,
+    2,
+    "P"
+   ],
+   [
+    "whalemean",
+    2,
+    2,
+    "R"
+   ],
+   [
+    "Roro",
+    2,
+    2,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "KerrigansTorment",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "GPT",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "smallBly",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "Mulebot",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "TyrT",
+    4,
+    1,
+    "T"
+   ],
+   [
+    "LordSuperKing",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "WickedBot",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "ZeratulsRevenge",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "Aeolus",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "AvocaDOS",
+    3,
+    0,
+    "T"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "Z",
+    "min": 56.6,
+    "build": [
+     [
+      "Probe",
+      33
+     ],
+     [
+      "PhotonCannon",
+      6
+     ],
+     [
+      "Pylon",
+      5
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "ShieldBattery",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Stalker",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "Tempest",
+      2
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "Forge",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "FleetBeacon",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.3,
+     "Gateway": 0.8,
+     "Forge": 0.9,
+     "PhotonCannon": 1.8,
+     "Assimilator": 2.4,
+     "CyberneticsCore": 2.6,
+     "ShieldBattery": 3.6,
+     "Stalker": 4.1,
+     "Stargate": 4.4,
+     "FleetBeacon": 5.5,
+     "Tempest": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 33.0,
+      "opp_sup": 50.0,
+      "army": 350,
+      "opp_army": 1000,
+      "wk": 28,
+      "opp_wk": 29
+     },
+     {
+      "m": 6,
+      "sup": 41.0,
+      "opp_sup": 69.0,
+      "army": 350,
+      "opp_army": 1450,
+      "wk": 33,
+      "opp_wk": 41
+     },
+     {
+      "m": 8,
+      "sup": 61.0,
+      "opp_sup": 105.0,
+      "army": 2050,
+      "opp_army": 2075,
+      "wk": 33,
+      "opp_wk": 69
+     },
+     {
+      "m": 12,
+      "sup": 94.0,
+      "opp_sup": 200.0,
+      "army": 5525,
+      "opp_army": 6775,
+      "wk": 33,
+      "opp_wk": 98
+     }
+    ],
+    "match": 4656653,
+    "won": true,
+    "opp": "PhantomBot"
+   },
+   {
+    "opp_race": "Z",
+    "min": 49.9,
+    "build": [
+     [
+      "Probe",
+      22
+     ],
+     [
+      "Pylon",
+      6
+     ],
+     [
+      "PhotonCannon",
+      6
+     ],
+     [
+      "ShieldBattery",
+      3
+     ],
+     [
+      "Tempest",
+      3
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "Stalker",
+      2
+     ],
+     [
+      "Nexus",
+      1
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "Forge",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "FleetBeacon",
+      1
+     ],
+     [
+      "ChangelingZealot",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.3,
+     "Gateway": 0.8,
+     "Forge": 0.9,
+     "Assimilator": 1.1,
+     "PhotonCannon": 1.8,
+     "CyberneticsCore": 2.0,
+     "ShieldBattery": 2.8,
+     "Stargate": 3.2,
+     "Stalker": 3.4,
+     "FleetBeacon": 4.2,
+     "Tempest": 6.2,
+     "ChangelingZealot": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 26.0,
+      "opp_sup": 44.0,
+      "army": 350,
+      "opp_army": 675,
+      "wk": 22,
+      "opp_wk": 31
+     },
+     {
+      "m": 6,
+      "sup": 34.0,
+      "opp_sup": 63.0,
+      "army": 775,
+      "opp_army": 1150,
+      "wk": 22,
+      "opp_wk": 43
+     },
+     {
+      "m": 8,
+      "sup": 46.0,
+      "opp_sup": 94.5,
+      "army": 2050,
+      "opp_army": 1625,
+      "wk": 22,
+      "opp_wk": 67
+     },
+     {
+      "m": 12,
+      "sup": 71.0,
+      "opp_sup": 139.0,
+      "army": 3250,
+      "opp_army": 3225,
+      "wk": 34,
+      "opp_wk": 80
+     }
+    ],
+    "match": 4655980,
+    "won": true,
+    "opp": "PhantomTest"
+   },
+   {
+    "opp_race": "T",
+    "min": 31.0,
+    "build": [
+     [
+      "Probe",
+      22
+     ],
+     [
+      "Pylon",
+      6
+     ],
+     [
+      "PhotonCannon",
+      6
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "ShieldBattery",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "Stalker",
+      2
+     ],
+     [
+      "Tempest",
+      2
+     ],
+     [
+      "Nexus",
+      1
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "FleetBeacon",
+      1
+     ],
+     [
+      "Forge",
+      1
+     ],
+     [
+      "Mothership",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.3,
+     "Assimilator": 0.5,
+     "Gateway": 1.1,
+     "CyberneticsCore": 2.2,
+     "ShieldBattery": 3.1,
+     "Stargate": 3.1,
+     "Stalker": 3.4,
+     "FleetBeacon": 4.2,
+     "Forge": 4.7,
+     "PhotonCannon": 5.5,
+     "Tempest": 6.6,
+     "Mothership": 6.9
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 26.0,
+      "opp_sup": 35.0,
+      "army": 350,
+      "opp_army": 425,
+      "wk": 22,
+      "opp_wk": 25
+     },
+     {
+      "m": 6,
+      "sup": 42.0,
+      "opp_sup": 56.0,
+      "army": 775,
+      "opp_army": 625,
+      "wk": 22,
+      "opp_wk": 37
+     },
+     {
+      "m": 8,
+      "sup": 50.0,
+      "opp_sup": 87.0,
+      "army": 2425,
+      "opp_army": 1525,
+      "wk": 22,
+      "opp_wk": 52
+     },
+     {
+      "m": 12,
+      "sup": 73.0,
+      "opp_sup": 129.0,
+      "army": 3625,
+      "opp_army": 2125,
+      "wk": 32,
+      "opp_wk": 72
+     }
+    ],
+    "match": 4659017,
+    "won": true,
+    "opp": "AvocaDOS"
+   },
+   {
+    "opp_race": "P",
+    "min": 28.8,
+    "build": [
+     [
+      "Probe",
+      32
+     ],
+     [
+      "Pylon",
+      6
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "ShieldBattery",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Stalker",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "Forge",
+      1
+     ],
+     [
+      "FleetBeacon",
+      1
+     ],
+     [
+      "PhotonCannon",
+      1
+     ],
+     [
+      "Tempest",
+      1
+     ],
+     [
+      "Mothership",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.3,
+     "Assimilator": 0.5,
+     "Gateway": 1.1,
+     "CyberneticsCore": 2.2,
+     "ShieldBattery": 3.3,
+     "Stalker": 3.5,
+     "Stargate": 3.5,
+     "Forge": 4.6,
+     "FleetBeacon": 4.7,
+     "PhotonCannon": 6.4,
+     "Tempest": 6.8,
+     "Mothership": 7.6
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 27.0,
+      "opp_sup": 25.0,
+      "army": 350,
+      "opp_army": 0,
+      "wk": 23,
+      "opp_wk": 24
+     },
+     {
+      "m": 6,
+      "sup": 43.0,
+      "opp_sup": 41.0,
+      "army": 775,
+      "opp_army": 425,
+      "wk": 26,
+      "opp_wk": 31
+     },
+     {
+      "m": 8,
+      "sup": 61.0,
+      "opp_sup": 66.0,
+      "army": 2425,
+      "opp_army": 1275,
+      "wk": 33,
+      "opp_wk": 44
+     },
+     {
+      "m": 12,
+      "sup": 89.0,
+      "opp_sup": 101.0,
+      "army": 5300,
+      "opp_army": 2125,
+      "wk": 33,
+      "opp_wk": 70
+     }
+    ],
+    "match": 4652728,
+    "won": false,
+    "opp": "LunaxVRR"
+   }
+  ],
+  "src_zip": null
+ },
+ "GPT": {
+  "meta": {
+   "id": 732,
+   "name": "GPT",
+   "race": "T",
+   "type": "cpplinux",
+   "pub": false,
+   "elo": 2056,
+   "created": "2024-07",
+   "updated": "2026-07-01"
+  },
+  "record": {
+   "W": 75,
+   "L": 69,
+   "draw": 6,
+   "byrace": {
+    "T": [
+     18,
+     34
+    ],
+    "P": [
+     23,
+     14
+    ],
+    "R": [
+     10,
+     11
+    ],
+    "Z": [
+     24,
+     10
+    ]
+   }
+  },
+  "tough": [
+   [
+    "BenBotBC",
+    0,
+    9,
+    "T"
+   ],
+   [
+    "ANIbot",
+    0,
+    8,
+    "T"
+   ],
+   [
+    "Eris",
+    0,
+    6,
+    "Z"
+   ],
+   [
+    "Roro",
+    2,
+    6,
+    "T"
+   ],
+   [
+    "Aeolus",
+    1,
+    5,
+    "P"
+   ],
+   [
+    "Xena",
+    2,
+    5,
+    "R"
+   ],
+   [
+    "changeling",
+    2,
+    4,
+    "R"
+   ],
+   [
+    "Deimos",
+    2,
+    4,
+    "P"
+   ],
+   [
+    "negativeZero",
+    2,
+    3,
+    "P"
+   ],
+   [
+    "clone",
+    1,
+    2,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "12PoolBot",
+    9,
+    1,
+    "Z"
+   ],
+   [
+    "Caninana",
+    7,
+    1,
+    "Z"
+   ],
+   [
+    "theBigBot",
+    6,
+    0,
+    "P"
+   ],
+   [
+    "TyrT",
+    5,
+    1,
+    "T"
+   ],
+   [
+    "norman",
+    4,
+    0,
+    "P"
+   ],
+   [
+    "Clicadinha",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "buckshot",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "PhantomTest",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "AresRandomExample",
+    2,
+    0,
+    "R"
+   ],
+   [
+    "Phobos",
+    3,
+    2,
+    "T"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "P",
+    "min": 64.0,
+    "build": [
+     [
+      "SCV",
+      47
+     ],
+     [
+      "Marine",
+      19
+     ],
+     [
+      "SupplyDepot",
+      11
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "SiegeTank",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Marauder",
+      2
+     ],
+     [
+      "EngineeringBay",
+      2
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 0.9,
+     "Refinery": 1.0,
+     "Marine": 2.4,
+     "BarracksReactor": 2.4,
+     "Factory": 3.0,
+     "FactoryTechLab": 4.0,
+     "BarracksTechLab": 5.1,
+     "SiegeTank": 5.3,
+     "Starport": 5.8,
+     "Marauder": 6.8,
+     "Medivac": 7.4,
+     "EngineeringBay": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 36.0,
+      "opp_sup": 38.0,
+      "army": 300,
+      "opp_army": 300,
+      "wk": 23,
+      "opp_wk": 31
+     },
+     {
+      "m": 6,
+      "sup": 65.0,
+      "opp_sup": 66.0,
+      "army": 1275,
+      "opp_army": 2100,
+      "wk": 36,
+      "opp_wk": 41
+     },
+     {
+      "m": 8,
+      "sup": 97.0,
+      "opp_sup": 105.0,
+      "army": 2800,
+      "opp_army": 4325,
+      "wk": 46,
+      "opp_wk": 52
+     },
+     {
+      "m": 12,
+      "sup": 113.0,
+      "opp_sup": 81.0,
+      "army": 3250,
+      "opp_army": 3150,
+      "wk": 46,
+      "opp_wk": 40
+     }
+    ],
+    "match": 4050885,
+    "won": false,
+    "opp": "negativeZero"
+   },
+   {
+    "opp_race": "T",
+    "min": 34.2,
+    "build": [
+     [
+      "Marine",
+      40
+     ],
+     [
+      "SCV",
+      20
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Barracks",
+      5
+     ],
+     [
+      "Marauder",
+      5
+     ],
+     [
+      "CommandCenter",
+      1
+     ],
+     [
+      "Refinery",
+      1
+     ],
+     [
+      "EngineeringBay",
+      1
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 0.9,
+     "Refinery": 1.0,
+     "Marine": 2.4,
+     "EngineeringBay": 2.4,
+     "BarracksReactor": 2.6,
+     "BarracksTechLab": 3.4,
+     "Marauder": 4.8
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 40.0,
+      "opp_sup": 43.0,
+      "army": 775,
+      "opp_army": 625,
+      "wk": 20,
+      "opp_wk": 25
+     },
+     {
+      "m": 6,
+      "sup": 47.0,
+      "opp_sup": 41.0,
+      "army": 1200,
+      "opp_army": 750,
+      "wk": 20,
+      "opp_wk": 25
+     },
+     {
+      "m": 8,
+      "sup": 40.0,
+      "opp_sup": 46.0,
+      "army": 725,
+      "opp_army": 900,
+      "wk": 20,
+      "opp_wk": 25
+     },
+     {
+      "m": 12,
+      "sup": 47.0,
+      "opp_sup": 44.0,
+      "army": 1250,
+      "opp_army": 1100,
+      "wk": 20,
+      "opp_wk": 25
+     }
+    ],
+    "match": 4050701,
+    "won": false,
+    "opp": "zig-spudde"
+   },
+   {
+    "opp_race": "T",
+    "min": 27.5,
+    "build": [
+     [
+      "SCV",
+      47
+     ],
+     [
+      "Marine",
+      23
+     ],
+     [
+      "SupplyDepot",
+      11
+     ],
+     [
+      "Barracks",
+      4
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "SiegeTank",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Medivac",
+      2
+     ],
+     [
+      "EngineeringBay",
+      2
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 0.9,
+     "Refinery": 1.0,
+     "Marine": 2.4,
+     "Factory": 2.5,
+     "BarracksReactor": 2.9,
+     "FactoryTechLab": 3.5,
+     "BarracksTechLab": 4.6,
+     "Starport": 4.9,
+     "SiegeTank": 5.0,
+     "Medivac": 6.9,
+     "EngineeringBay": 7.2
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 36.0,
+      "opp_sup": 37.0,
+      "army": 200,
+      "opp_army": 300,
+      "wk": 25,
+      "opp_wk": 26
+     },
+     {
+      "m": 6,
+      "sup": 69.0,
+      "opp_sup": 65.0,
+      "army": 1350,
+      "opp_army": 1500,
+      "wk": 39,
+      "opp_wk": 37
+     },
+     {
+      "m": 8,
+      "sup": 75.0,
+      "opp_sup": 83.0,
+      "army": 1525,
+      "opp_army": 1900,
+      "wk": 46,
+      "opp_wk": 50
+     },
+     {
+      "m": 12,
+      "sup": 99.0,
+      "opp_sup": 154.0,
+      "army": 3550,
+      "opp_army": 5150,
+      "wk": 40,
+      "opp_wk": 78
+     }
+    ],
+    "match": 4058087,
+    "won": false,
+    "opp": "Roro"
+   },
+   {
+    "opp_race": "P",
+    "min": 25.1,
+    "build": [
+     [
+      "Marine",
+      40
+     ],
+     [
+      "SCV",
+      20
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Barracks",
+      5
+     ],
+     [
+      "Marauder",
+      5
+     ],
+     [
+      "CommandCenter",
+      1
+     ],
+     [
+      "Refinery",
+      1
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "EngineeringBay",
+      1
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 0.9,
+     "Refinery": 1.0,
+     "Marine": 2.4,
+     "BarracksReactor": 2.4,
+     "EngineeringBay": 2.5,
+     "BarracksTechLab": 3.3,
+     "Marauder": 4.7
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 40.0,
+      "opp_sup": 40.0,
+      "army": 725,
+      "opp_army": 1025,
+      "wk": 20,
+      "opp_wk": 24
+     },
+     {
+      "m": 6,
+      "sup": 51.0,
+      "opp_sup": 48.0,
+      "army": 1500,
+      "opp_army": 1725,
+      "wk": 20,
+      "opp_wk": 24
+     },
+     {
+      "m": 8,
+      "sup": 65.0,
+      "opp_sup": 64.0,
+      "army": 2000,
+      "opp_army": 3525,
+      "wk": 20,
+      "opp_wk": 24
+     },
+     {
+      "m": 12,
+      "sup": 63.0,
+      "opp_sup": 65.0,
+      "army": 2000,
+      "opp_army": 3350,
+      "wk": 20,
+      "opp_wk": 24
+     }
+    ],
+    "match": 4047877,
+    "won": false,
+    "opp": "negativeZero"
+   }
+  ],
+  "src_zip": null
+ },
+ "SharpenedEdge": {
+  "meta": {
+   "id": 40,
+   "name": "SharpenedEdge",
+   "race": "P",
+   "type": "python",
+   "pub": false,
+   "elo": 2042,
+   "created": "2019-06",
+   "updated": "2025-11-13"
+  },
+  "record": {
+   "W": 91,
+   "L": 51,
+   "draw": 8,
+   "byrace": {
+    "T": [
+     35,
+     43
+    ],
+    "P": [
+     29,
+     7
+    ],
+    "R": [
+     27,
+     1
+    ]
+   }
+  },
+  "tough": [
+   [
+    "MicroMachine",
+    3,
+    19,
+    "T"
+   ],
+   [
+    "Jensiiibot",
+    3,
+    12,
+    "T"
+   ],
+   [
+    "TestBot",
+    7,
+    10,
+    "T"
+   ],
+   [
+    "m1ndb0t-P",
+    2,
+    2,
+    "P"
+   ],
+   [
+    "TheHarvester",
+    1,
+    1,
+    "P"
+   ],
+   [
+    "TyrP",
+    3,
+    2,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "A.L.E.R.T.",
+    22,
+    0,
+    "R"
+   ],
+   [
+    "AdditionalPylons",
+    12,
+    0,
+    "P"
+   ],
+   [
+    "ANIbot",
+    11,
+    1,
+    "T"
+   ],
+   [
+    "BetterWorkerRush",
+    8,
+    2,
+    "P"
+   ],
+   [
+    "A.L.E.R.T.-dev",
+    5,
+    1,
+    "R"
+   ],
+   [
+    "Ketroc",
+    5,
+    1,
+    "T"
+   ],
+   [
+    "BenBotBC",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "Sharpy_MadAI",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "TyrP",
+    3,
+    2,
+    "P"
+   ],
+   [
+    "dantheman_3",
+    1,
+    0,
+    "T"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "tito": {
+  "meta": {
+   "id": 1045,
+   "name": "tito",
+   "race": "Z",
+   "type": "cpplinux",
+   "pub": false,
+   "elo": 2036,
+   "created": "2026-02",
+   "updated": "2026-07-13"
+  },
+  "record": {
+   "W": 72,
+   "L": 44,
+   "draw": 34,
+   "byrace": {
+    "Z": [
+     15,
+     26
+    ],
+    "P": [
+     32,
+     15
+    ],
+    "T": [
+     19,
+     3
+    ],
+    "R": [
+     6,
+     0
+    ]
+   }
+  },
+  "tough": [
+   [
+    "negativeZero",
+    0,
+    6,
+    "P"
+   ],
+   [
+    "WaterLeak",
+    0,
+    4,
+    "Z"
+   ],
+   [
+    "72Tortoises",
+    0,
+    3,
+    "Z"
+   ],
+   [
+    "EPNRoach",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "Princess-Mika",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "SharkGull",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "Clicadinha",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "Princess-Mika-Test",
+    1,
+    2,
+    "Z"
+   ],
+   [
+    "BigDaddy",
+    1,
+    2,
+    "T"
+   ],
+   [
+    "muravev",
+    1,
+    2,
+    "Z"
+   ]
+  ],
+  "best": [
+   [
+    "TheLAW",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "QueenBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "puck",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "SiriusBot",
+    3,
+    0,
+    "R"
+   ],
+   [
+    "DoopyBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Siriusly",
+    3,
+    0,
+    "R"
+   ],
+   [
+    "27turtles",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "WildLupo",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "PrimordialOrigin",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "Creepy_duo_canon",
+    3,
+    1,
+    "P"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "Z",
+    "min": 54.1,
+    "build": [
+     [
+      "Drone",
+      59
+     ],
+     [
+      "CreepTumor",
+      15
+     ],
+     [
+      "Overlord",
+      10
+     ],
+     [
+      "CreepTumorQueen",
+      8
+     ],
+     [
+      "Extractor",
+      6
+     ],
+     [
+      "Queen",
+      6
+     ],
+     [
+      "Roach",
+      5
+     ],
+     [
+      "Zergling",
+      4
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "EvolutionChamber",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "RoachWarren",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.2,
+     "SpawningPool": 1.4,
+     "Queen": 3.3,
+     "RoachWarren": 4.0,
+     "CreepTumorQueen": 4.3,
+     "EvolutionChamber": 4.8,
+     "CreepTumor": 4.9,
+     "Roach": 5.9,
+     "Zergling": 7.8
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 45.0,
+      "opp_sup": 39.0,
+      "army": 525,
+      "opp_army": 850,
+      "wk": 36,
+      "opp_wk": 24
+     },
+     {
+      "m": 6,
+      "sup": 62.0,
+      "opp_sup": 55.5,
+      "army": 1025,
+      "opp_army": 925,
+      "wk": 44,
+      "opp_wk": 38
+     },
+     {
+      "m": 8,
+      "sup": 97.0,
+      "opp_sup": 51.0,
+      "army": 1825,
+      "opp_army": 500,
+      "wk": 69,
+      "opp_wk": 41
+     },
+     {
+      "m": 12,
+      "sup": 115.0,
+      "opp_sup": 36.0,
+      "army": 2575,
+      "opp_army": 475,
+      "wk": 80,
+      "opp_wk": 26
+     }
+    ],
+    "match": 4663531,
+    "won": true,
+    "opp": "PolyMorph"
+   },
+   {
+    "opp_race": "Z",
+    "min": 43.1,
+    "build": [
+     [
+      "Drone",
+      60
+     ],
+     [
+      "Overlord",
+      8
+     ],
+     [
+      "Zergling",
+      4
+     ],
+     [
+      "Queen",
+      4
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "Extractor",
+      3
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "CreepTumorQueen",
+      1
+     ],
+     [
+      "RoachWarren",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.2,
+     "SpawningPool": 1.7,
+     "Zergling": 3.3,
+     "Queen": 3.6,
+     "CreepTumorQueen": 5.4,
+     "RoachWarren": 5.7
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 47.0,
+      "opp_sup": 48.0,
+      "army": 525,
+      "opp_army": 1250,
+      "wk": 35,
+      "opp_wk": 23
+     },
+     {
+      "m": 6,
+      "sup": 29.0,
+      "opp_sup": 73.0,
+      "army": 175,
+      "opp_army": 1650,
+      "wk": 27,
+      "opp_wk": 39
+     },
+     {
+      "m": 8,
+      "sup": 29.0,
+      "opp_sup": 114.0,
+      "army": 175,
+      "opp_army": 3150,
+      "wk": 27,
+      "opp_wk": 57
+     },
+     {
+      "m": 12,
+      "sup": 29.0,
+      "opp_sup": 167.0,
+      "army": 175,
+      "opp_army": 5550,
+      "wk": 27,
+      "opp_wk": 90
+     }
+    ],
+    "match": 4647661,
+    "won": false,
+    "opp": "72Tortoises"
+   },
+   {
+    "opp_race": "Z",
+    "min": 37.3,
+    "build": [
+     [
+      "Drone",
+      51
+     ],
+     [
+      "Zergling",
+      26
+     ],
+     [
+      "Overlord",
+      10
+     ],
+     [
+      "CreepTumor",
+      8
+     ],
+     [
+      "CreepTumorQueen",
+      6
+     ],
+     [
+      "Queen",
+      5
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "Extractor",
+      3
+     ],
+     [
+      "SpawningPool",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.4,
+     "SpawningPool": 0.6,
+     "Zergling": 2.1,
+     "Queen": 2.5,
+     "CreepTumorQueen": 5.9,
+     "CreepTumor": 6.5
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 40.0,
+      "opp_sup": 31.5,
+      "army": 675,
+      "opp_army": 875,
+      "wk": 22,
+      "opp_wk": 15
+     },
+     {
+      "m": 6,
+      "sup": 61.5,
+      "opp_sup": 34.5,
+      "army": 825,
+      "opp_army": 850,
+      "wk": 46,
+      "opp_wk": 16
+     },
+     {
+      "m": 8,
+      "sup": 68.5,
+      "opp_sup": 45.5,
+      "army": 1500,
+      "opp_army": 800,
+      "wk": 49,
+      "opp_wk": 28
+     },
+     {
+      "m": 12,
+      "sup": 112.0,
+      "opp_sup": 87.5,
+      "army": 1725,
+      "opp_army": 875,
+      "wk": 81,
+      "opp_wk": 63
+     }
+    ],
+    "match": 4656056,
+    "won": false,
+    "opp": "PolyMorph"
+   },
+   {
+    "opp_race": "Z",
+    "min": 33.1,
+    "build": [
+     [
+      "Zergling",
+      50
+     ],
+     [
+      "Drone",
+      46
+     ],
+     [
+      "Overlord",
+      8
+     ],
+     [
+      "Queen",
+      5
+     ],
+     [
+      "CreepTumorQueen",
+      5
+     ],
+     [
+      "CreepTumor",
+      4
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "Extractor",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.4,
+     "SpawningPool": 0.6,
+     "Zergling": 2.1,
+     "Queen": 2.5,
+     "CreepTumorQueen": 6.6,
+     "CreepTumor": 7.2
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 34.5,
+      "opp_sup": 23.0,
+      "army": 700,
+      "opp_army": 0,
+      "wk": 14,
+      "opp_wk": 21
+     },
+     {
+      "m": 6,
+      "sup": 55.0,
+      "opp_sup": 27.0,
+      "army": 1275,
+      "opp_army": 0,
+      "wk": 28,
+      "opp_wk": 26
+     },
+     {
+      "m": 8,
+      "sup": 67.5,
+      "opp_sup": 27.0,
+      "army": 1400,
+      "opp_army": 0,
+      "wk": 42,
+      "opp_wk": 27
+     },
+     {
+      "m": 12,
+      "sup": 104.0,
+      "opp_sup": 27.0,
+      "army": 1825,
+      "opp_army": 0,
+      "wk": 81,
+      "opp_wk": 27
+     }
+    ],
+    "match": 4663545,
+    "won": false,
+    "opp": "72Tortoises"
+   }
+  ],
+  "src_zip": null
+ },
+ "who": {
+  "meta": {
+   "id": 1030,
+   "name": "who",
+   "race": "R",
+   "type": "python",
+   "pub": true,
+   "elo": 2033,
+   "created": "2026-02",
+   "updated": "2026-07-03"
+  },
+  "record": {
+   "W": 81,
+   "L": 38,
+   "draw": 31,
+   "byrace": {
+    "Z": [
+     27,
+     13
+    ],
+    "P": [
+     28,
+     9
+    ],
+    "T": [
+     22,
+     12
+    ],
+    "R": [
+     4,
+     4
+    ]
+   }
+  },
+  "tough": [
+   [
+    "Roro",
+    0,
+    3,
+    "T"
+   ],
+   [
+    "Eris",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "ArgoBot",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "Dodo",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "KerrigansTorment",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "WaterLeak",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "BenBotBC",
+    2,
+    3,
+    "T"
+   ],
+   [
+    "LunaxVRR",
+    1,
+    2,
+    "P"
+   ],
+   [
+    "Xena",
+    1,
+    2,
+    "R"
+   ],
+   [
+    "whalemean",
+    1,
+    2,
+    "R"
+   ]
+  ],
+  "best": [
+   [
+    "Aeolus",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "Sharkling",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Mulebot",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "PhantomTest",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "norman",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "TyrT",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "SpeedlingBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "SharpenedEdge",
+    3,
+    1,
+    "P"
+   ],
+   [
+    "72Tortoises",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "LordSuperKing",
+    2,
+    0,
+    "P"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "P",
+    "min": 43.5,
+    "build": [
+     [
+      "Drone",
+      42
+     ],
+     [
+      "Mutalisk",
+      11
+     ],
+     [
+      "Overlord",
+      7
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "Spire",
+      1
+     ],
+     [
+      "SpineCrawler",
+      1
+     ],
+     [
+      "Queen",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.0,
+     "SpawningPool": 0.5,
+     "Spire": 3.0,
+     "SpineCrawler": 3.2,
+     "Queen": 3.9,
+     "Mutalisk": 5.2
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 31.0,
+      "opp_sup": 42.0,
+      "army": 175,
+      "opp_army": 800,
+      "wk": 19,
+      "opp_wk": 25
+     },
+     {
+      "m": 6,
+      "sup": 46.0,
+      "opp_sup": 59.0,
+      "army": 1375,
+      "opp_army": 2350,
+      "wk": 26,
+      "opp_wk": 26
+     },
+     {
+      "m": 8,
+      "sup": 61.0,
+      "opp_sup": 76.0,
+      "army": 2175,
+      "opp_army": 3275,
+      "wk": 38,
+      "opp_wk": 28
+     },
+     {
+      "m": 12,
+      "sup": 111.0,
+      "opp_sup": 130.0,
+      "army": 4375,
+      "opp_army": 4625,
+      "wk": 59,
+      "opp_wk": 58
+     }
+    ],
+    "match": 4659807,
+    "won": true,
+    "opp": "norman"
+   },
+   {
+    "opp_race": "P",
+    "min": 41.8,
+    "build": [
+     [
+      "Probe",
+      16
+     ],
+     [
+      "Zealot",
+      9
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Pylon",
+      2
+     ],
+     [
+      "Gateway",
+      2
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.8,
+     "Zealot": 2.3
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 34.0,
+      "opp_sup": 29.0,
+      "army": 900,
+      "opp_army": 0,
+      "wk": 16,
+      "opp_wk": 25
+     },
+     {
+      "m": 6,
+      "sup": 34.0,
+      "opp_sup": 27.0,
+      "army": 900,
+      "opp_army": 0,
+      "wk": 16,
+      "opp_wk": 23
+     },
+     {
+      "m": 8,
+      "sup": 34.0,
+      "opp_sup": 34.0,
+      "army": 900,
+      "opp_army": 0,
+      "wk": 16,
+      "opp_wk": 30
+     },
+     {
+      "m": 12,
+      "sup": 34.0,
+      "opp_sup": 33.0,
+      "army": 900,
+      "opp_army": 125,
+      "wk": 16,
+      "opp_wk": 29
+     }
+    ],
+    "match": 4625265,
+    "won": true,
+    "opp": "HelioShard"
+   },
+   {
+    "opp_race": "Z",
+    "min": 30.5,
+    "build": [
+     [
+      "SCV",
+      27
+     ],
+     [
+      "WidowMine",
+      18
+     ],
+     [
+      "SupplyDepot",
+      10
+     ],
+     [
+      "KD8Charge",
+      7
+     ],
+     [
+      "Medivac",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "Factory",
+      2
+     ],
+     [
+      "Barracks",
+      1
+     ],
+     [
+      "Reaper",
+      1
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "Armory",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.2,
+     "Barracks": 0.7,
+     "Refinery": 0.8,
+     "Factory": 2.2,
+     "Reaper": 2.5,
+     "BarracksReactor": 2.5,
+     "Armory": 3.2,
+     "KD8Charge": 3.2,
+     "Starport": 3.7,
+     "WidowMine": 4.0,
+     "FactoryTechLab": 4.3,
+     "Medivac": 5.7,
+     "BarracksTechLab": 6.7
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 33.0,
+      "opp_sup": 41.0,
+      "army": 500,
+      "opp_army": 775,
+      "wk": 23,
+      "opp_wk": 28
+     },
+     {
+      "m": 6,
+      "sup": 60.0,
+      "opp_sup": 51.0,
+      "army": 1800,
+      "opp_army": 1000,
+      "wk": 24,
+      "opp_wk": 34
+     },
+     {
+      "m": 8,
+      "sup": 82.0,
+      "opp_sup": 49.0,
+      "army": 2700,
+      "opp_army": 750,
+      "wk": 29,
+      "opp_wk": 35
+     },
+     {
+      "m": 12,
+      "sup": 121.0,
+      "opp_sup": 65.0,
+      "army": 3850,
+      "opp_army": 1600,
+      "wk": 45,
+      "opp_wk": 39
+     }
+    ],
+    "match": 4659813,
+    "won": true,
+    "opp": "PhantomBot"
+   },
+   {
+    "opp_race": "T",
+    "min": 27.9,
+    "build": [
+     [
+      "Probe",
+      33
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Gateway",
+      6
+     ],
+     [
+      "Stalker",
+      5
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "Nexus",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.8,
+     "Gateway": 2.1,
+     "CyberneticsCore": 3.2,
+     "Assimilator": 3.2,
+     "Stalker": 5.2
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 22.0,
+      "opp_sup": 30.0,
+      "army": 0,
+      "opp_army": 300,
+      "wk": 19,
+      "opp_wk": 22
+     },
+     {
+      "m": 6,
+      "sup": 33.0,
+      "opp_sup": 41.0,
+      "army": 700,
+      "opp_army": 350,
+      "wk": 23,
+      "opp_wk": 29
+     },
+     {
+      "m": 8,
+      "sup": 27.0,
+      "opp_sup": 68.0,
+      "army": 350,
+      "opp_army": 1250,
+      "wk": 23,
+      "opp_wk": 39
+     },
+     {
+      "m": 12,
+      "sup": 46.0,
+      "opp_sup": 101.0,
+      "army": 1575,
+      "opp_army": 1825,
+      "wk": 28,
+      "opp_wk": 67
+     }
+    ],
+    "match": 4656102,
+    "won": false,
+    "opp": "BenBotBC"
+   }
+  ],
+  "src_zip": null
+ },
+ "Caninana": {
+  "meta": {
+   "id": 390,
+   "name": "Caninana",
+   "race": "Z",
+   "type": "cpplinux",
+   "pub": false,
+   "elo": 2025,
+   "created": "2022-02",
+   "updated": "2026-06-16"
+  },
+  "record": {
+   "W": 92,
+   "L": 54,
+   "draw": 4,
+   "byrace": {
+    "P": [
+     47,
+     21
+    ],
+    "Z": [
+     25,
+     15
+    ],
+    "T": [
+     20,
+     17
+    ],
+    "R": [
+     0,
+     1
+    ]
+   }
+  },
+  "tough": [
+   [
+    "DominionDog",
+    2,
+    6,
+    "T"
+   ],
+   [
+    "Ketroc",
+    3,
+    5,
+    "T"
+   ],
+   [
+    "Dovahkiin",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "Rasputin",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "MechaShark",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "BenBotBC",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "Tyckles",
+    0,
+    1,
+    "P"
+   ],
+   [
+    "SaShaBot",
+    0,
+    1,
+    "Z"
+   ],
+   [
+    "ErisTest",
+    0,
+    1,
+    "Z"
+   ],
+   [
+    "Chance",
+    0,
+    1,
+    "R"
+   ]
+  ],
+  "best": [
+   [
+    "One-Test",
+    28,
+    17,
+    "P"
+   ],
+   [
+    "LucidPJS",
+    9,
+    1,
+    "P"
+   ],
+   [
+    "LucidTJS",
+    9,
+    1,
+    "T"
+   ],
+   [
+    "QueenBot",
+    6,
+    0,
+    "Z"
+   ],
+   [
+    "One",
+    6,
+    1,
+    "P"
+   ],
+   [
+    "Trinity",
+    4,
+    0,
+    "P"
+   ],
+   [
+    "SHIELD-TEST",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "PhantomTest",
+    11,
+    8,
+    "Z"
+   ],
+   [
+    "BaronessZuli",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "gotest",
+    2,
+    0,
+    "Z"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "smallBly": {
+  "meta": {
+   "id": 338,
+   "name": "smallBly",
+   "race": "Z",
+   "type": "python",
+   "pub": false,
+   "elo": 1996,
+   "created": "2021-08",
+   "updated": "2026-04-26"
+  },
+  "record": {
+   "W": 63,
+   "L": 77,
+   "draw": 10,
+   "byrace": {
+    "T": [
+     23,
+     32
+    ],
+    "Z": [
+     27,
+     19
+    ],
+    "P": [
+     13,
+     25
+    ],
+    "R": [
+     0,
+     1
+    ]
+   }
+  },
+  "tough": [
+   [
+    "negativeZero",
+    0,
+    12,
+    "P"
+   ],
+   [
+    "spudde",
+    1,
+    8,
+    "T"
+   ],
+   [
+    "ZoeDev",
+    0,
+    7,
+    "Z"
+   ],
+   [
+    "BenBotBC",
+    8,
+    14,
+    "T"
+   ],
+   [
+    "RStrelok",
+    0,
+    3,
+    "T"
+   ],
+   [
+    "VeTerran",
+    0,
+    3,
+    "T"
+   ],
+   [
+    "TheGoldenArmada",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "FourGateBot",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "EvilZoe",
+    2,
+    3,
+    "Z"
+   ],
+   [
+    "CheeseIt",
+    2,
+    3,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "SunTzuBot",
+    6,
+    0,
+    "Z"
+   ],
+   [
+    "BaronessZuli",
+    6,
+    0,
+    "Z"
+   ],
+   [
+    "ANI_dev",
+    9,
+    4,
+    "T"
+   ],
+   [
+    "MLP",
+    3,
+    1,
+    "P"
+   ],
+   [
+    "WizardHat",
+    3,
+    1,
+    "P"
+   ],
+   [
+    "Strelok",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "SluggerBot-alpha",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "PhantomTest",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "sharkbot",
+    3,
+    2,
+    "P"
+   ],
+   [
+    "Zoe",
+    1,
+    0,
+    "Z"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "DominionDog": {
+  "meta": {
+   "id": 223,
+   "name": "DominionDog",
+   "race": "T",
+   "type": "java",
+   "pub": false,
+   "elo": 1987,
+   "created": "2020-12",
+   "updated": "2026-04-10"
+  },
+  "record": {
+   "W": 74,
+   "L": 51,
+   "draw": 25,
+   "byrace": {
+    "P": [
+     15,
+     11
+    ],
+    "T": [
+     56,
+     38
+    ],
+    "Z": [
+     3,
+     2
+    ]
+   }
+  },
+  "tough": [
+   [
+    "MicroMachine",
+    8,
+    11,
+    "T"
+   ],
+   [
+    "MMTest",
+    0,
+    3,
+    "T"
+   ],
+   [
+    "AdditionalPylons",
+    3,
+    4,
+    "P"
+   ],
+   [
+    "WizardHat",
+    1,
+    2,
+    "P"
+   ],
+   [
+    "Strelok",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "Spiny",
+    0,
+    1,
+    "Z"
+   ],
+   [
+    "Zerg001",
+    0,
+    1,
+    "Z"
+   ],
+   [
+    "BugFinder",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "TheHarvester",
+    2,
+    2,
+    "P"
+   ],
+   [
+    "FourGateDev",
+    4,
+    3,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "Jensiiibot",
+    21,
+    14,
+    "T"
+   ],
+   [
+    "TestBot",
+    9,
+    2,
+    "T"
+   ],
+   [
+    "Ketroc",
+    7,
+    2,
+    "T"
+   ],
+   [
+    "BenBotBC",
+    5,
+    2,
+    "T"
+   ],
+   [
+    "RStrelok",
+    3,
+    1,
+    "T"
+   ],
+   [
+    "terran002",
+    3,
+    1,
+    "T"
+   ],
+   [
+    "FourGateDev",
+    4,
+    3,
+    "P"
+   ],
+   [
+    "Derg",
+    1,
+    0,
+    "Z"
+   ],
+   [
+    "ThreeWayLover",
+    1,
+    0,
+    "P"
+   ],
+   [
+    "BetterWorkerRush",
+    1,
+    0,
+    "P"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "chito": {
+  "meta": {
+   "id": 1091,
+   "name": "chito",
+   "race": "Z",
+   "type": "cpplinux",
+   "pub": false,
+   "elo": 1977,
+   "created": "2026-04",
+   "updated": "2026-07-05"
+  },
+  "record": {
+   "W": 113,
+   "L": 34,
+   "draw": 3,
+   "byrace": {
+    "P": [
+     36,
+     7
+    ],
+    "Z": [
+     40,
+     11
+    ],
+    "T": [
+     21,
+     13
+    ],
+    "R": [
+     14,
+     3
+    ],
+    "?": [
+     2,
+     0
+    ]
+   }
+  },
+  "tough": [
+   [
+    "puck",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "DominionDog",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "Eris",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "WaterLeak",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "BenBotBC",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "JimmyBot",
+    1,
+    2,
+    "R"
+   ],
+   [
+    "BigDaddy",
+    1,
+    2,
+    "T"
+   ],
+   [
+    "ArtZerg",
+    1,
+    2,
+    "Z"
+   ],
+   [
+    "JimmyBotZ",
+    0,
+    1,
+    "Z"
+   ],
+   [
+    "sharkbot",
+    0,
+    1,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "WorkingAsIntended",
+    3,
+    0,
+    "R"
+   ],
+   [
+    "QueenBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "JimmyBotT",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "Dasyatis",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "Apidae",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "TheLAW",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "SharkGull",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "norman",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "Nothing",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "LordSuperKing",
+    3,
+    0,
+    "P"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "T",
+    "min": 48.3,
+    "build": [
+     [
+      "Drone",
+      52
+     ],
+     [
+      "Zergling",
+      38
+     ],
+     [
+      "Overlord",
+      8
+     ],
+     [
+      "CreepTumor",
+      6
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "Extractor",
+      3
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "CreepTumorQueen",
+      1
+     ],
+     [
+      "EvolutionChamber",
+      1
+     ],
+     [
+      "Changeling",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.4,
+     "Extractor": 0.7,
+     "Zergling": 1.8,
+     "Queen": 2.3,
+     "CreepTumorQueen": 4.0,
+     "CreepTumor": 4.6,
+     "EvolutionChamber": 5.5,
+     "Changeling": 6.6
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 26.0,
+      "opp_sup": 29.0,
+      "army": 450,
+      "opp_army": 250,
+      "wk": 17,
+      "opp_wk": 23
+     },
+     {
+      "m": 6,
+      "sup": 51.0,
+      "opp_sup": 38.0,
+      "army": 600,
+      "opp_army": 675,
+      "wk": 39,
+      "opp_wk": 27
+     },
+     {
+      "m": 8,
+      "sup": 71.0,
+      "opp_sup": 57.0,
+      "army": 1400,
+      "opp_army": 925,
+      "wk": 46,
+      "opp_wk": 39
+     },
+     {
+      "m": 12,
+      "sup": 149.0,
+      "opp_sup": 90.0,
+      "army": 3875,
+      "opp_army": 2675,
+      "wk": 75,
+      "opp_wk": 52
+     }
+    ],
+    "match": 4732302,
+    "won": true,
+    "opp": "smokinggunbot"
+   },
+   {
+    "opp_race": "T",
+    "min": 45.4,
+    "build": [
+     [
+      "Drone",
+      48
+     ],
+     [
+      "Zergling",
+      48
+     ],
+     [
+      "Overlord",
+      7
+     ],
+     [
+      "CreepTumor",
+      6
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "Extractor",
+      2
+     ],
+     [
+      "Queen",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "CreepTumorQueen",
+      1
+     ],
+     [
+      "EvolutionChamber",
+      1
+     ],
+     [
+      "Changeling",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.4,
+     "Extractor": 0.7,
+     "Zergling": 1.8,
+     "Queen": 2.3,
+     "CreepTumorQueen": 4.1,
+     "CreepTumor": 4.6,
+     "EvolutionChamber": 6.0,
+     "Changeling": 7.2
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 23.5,
+      "opp_sup": 30.0,
+      "army": 375,
+      "opp_army": 500,
+      "wk": 16,
+      "opp_wk": 19
+     },
+     {
+      "m": 6,
+      "sup": 46.0,
+      "opp_sup": 39.0,
+      "army": 400,
+      "opp_army": 700,
+      "wk": 37,
+      "opp_wk": 24
+     },
+     {
+      "m": 8,
+      "sup": 46.0,
+      "opp_sup": 44.0,
+      "army": 425,
+      "opp_army": 400,
+      "wk": 37,
+      "opp_wk": 31
+     },
+     {
+      "m": 12,
+      "sup": 60.0,
+      "opp_sup": 66.0,
+      "army": 1175,
+      "opp_army": 550,
+      "wk": 40,
+      "opp_wk": 48
+     }
+    ],
+    "match": 4735386,
+    "won": true,
+    "opp": "SiriusBot"
+   },
+   {
+    "opp_race": "T",
+    "min": 36.0,
+    "build": [
+     [
+      "Zergling",
+      92
+     ],
+     [
+      "Drone",
+      16
+     ],
+     [
+      "Overlord",
+      7
+     ],
+     [
+      "CreepTumor",
+      6
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "Queen",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "Extractor",
+      1
+     ],
+     [
+      "CreepTumorQueen",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.4,
+     "Extractor": 0.7,
+     "Zergling": 1.8,
+     "Queen": 2.3,
+     "CreepTumorQueen": 4.0,
+     "CreepTumor": 4.6
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 36.0,
+      "opp_sup": 0.0,
+      "army": 1050,
+      "opp_army": 0,
+      "wk": 12,
+      "opp_wk": 0
+     },
+     {
+      "m": 6,
+      "sup": 54.0,
+      "opp_sup": 0.0,
+      "army": 2100,
+      "opp_army": 0,
+      "wk": 12,
+      "opp_wk": 0
+     },
+     {
+      "m": 8,
+      "sup": 73.0,
+      "opp_sup": 0.0,
+      "army": 2900,
+      "opp_army": 0,
+      "wk": 13,
+      "opp_wk": 0
+     },
+     {
+      "m": 12,
+      "sup": 111.0,
+      "opp_sup": 0.0,
+      "army": 4900,
+      "opp_army": 0,
+      "wk": 13,
+      "opp_wk": 0
+     }
+    ],
+    "match": 4737399,
+    "won": true,
+    "opp": "whalemean"
+   },
+   {
+    "opp_race": "P",
+    "min": 34.4,
+    "build": [
+     [
+      "Zergling",
+      50
+     ],
+     [
+      "Drone",
+      41
+     ],
+     [
+      "Overlord",
+      7
+     ],
+     [
+      "Queen",
+      4
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "CreepTumorQueen",
+      3
+     ],
+     [
+      "Extractor",
+      2
+     ],
+     [
+      "Changeling",
+      2
+     ],
+     [
+      "SporeCrawler",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "EvolutionChamber",
+      1
+     ],
+     [
+      "CreepTumor",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.4,
+     "Extractor": 0.7,
+     "Zergling": 1.8,
+     "Queen": 2.3,
+     "Changeling": 5.3,
+     "CreepTumorQueen": 6.9,
+     "EvolutionChamber": 7.0,
+     "SporeCrawler": 7.1,
+     "CreepTumor": 7.5
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 25.5,
+      "opp_sup": 27.0,
+      "army": 300,
+      "opp_army": 0,
+      "wk": 21,
+      "opp_wk": 24
+     },
+     {
+      "m": 6,
+      "sup": 47.5,
+      "opp_sup": 35.0,
+      "army": 900,
+      "opp_army": 775,
+      "wk": 29,
+      "opp_wk": 23
+     },
+     {
+      "m": 8,
+      "sup": 64.0,
+      "opp_sup": 48.0,
+      "army": 1475,
+      "opp_army": 1825,
+      "wk": 38,
+      "opp_wk": 23
+     },
+     {
+      "m": 12,
+      "sup": 113.5,
+      "opp_sup": 79.0,
+      "army": 2125,
+      "opp_army": 2875,
+      "wk": 72,
+      "opp_wk": 42
+     }
+    ],
+    "match": 4736694,
+    "won": true,
+    "opp": "Zozo"
+   }
+  ],
+  "src_zip": null
+ },
+ "VeTerran-revived": {
+  "meta": {
+   "id": 517,
+   "name": "VeTerran-revived",
+   "race": "T",
+   "type": "cpplinux",
+   "pub": true,
+   "elo": 1972,
+   "created": "2022-10",
+   "updated": "2022-10-25"
+  },
+  "record": {
+   "W": 95,
+   "L": 53,
+   "draw": 2,
+   "byrace": {
+    "Z": [
+     43,
+     18
+    ],
+    "P": [
+     19,
+     14
+    ],
+    "T": [
+     28,
+     18
+    ],
+    "R": [
+     5,
+     3
+    ]
+   }
+  },
+  "tough": [
+   [
+    "Eris",
+    0,
+    7,
+    "Z"
+   ],
+   [
+    "negativeZero",
+    0,
+    6,
+    "P"
+   ],
+   [
+    "MicroMachine",
+    0,
+    6,
+    "T"
+   ],
+   [
+    "Ketroc",
+    0,
+    6,
+    "T"
+   ],
+   [
+    "EvilZoe",
+    1,
+    5,
+    "Z"
+   ],
+   [
+    "SharpenedEdge",
+    2,
+    4,
+    "P"
+   ],
+   [
+    "DominionDog",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "XenaZ",
+    1,
+    2,
+    "Z"
+   ],
+   [
+    "Chance",
+    0,
+    1,
+    "R"
+   ],
+   [
+    "Zozo",
+    3,
+    3,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "sharkbot",
+    6,
+    0,
+    "P"
+   ],
+   [
+    "BenBotBC",
+    6,
+    0,
+    "T"
+   ],
+   [
+    "Dysnomia",
+    6,
+    0,
+    "Z"
+   ],
+   [
+    "spudde",
+    6,
+    0,
+    "T"
+   ],
+   [
+    "TyrT",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "sludge-revived",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "12PoolBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Dovahkiin",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Sharkling",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Xena",
+    4,
+    2,
+    "R"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "WickedBot": {
+  "meta": {
+   "id": 797,
+   "name": "WickedBot",
+   "race": "T",
+   "type": "python",
+   "pub": false,
+   "elo": 1940,
+   "created": "2024-11",
+   "updated": "2026-07-11"
+  },
+  "record": {
+   "W": 59,
+   "L": 63,
+   "draw": 28,
+   "byrace": {
+    "Z": [
+     28,
+     21
+    ],
+    "T": [
+     10,
+     25
+    ],
+    "R": [
+     4,
+     4
+    ],
+    "P": [
+     17,
+     13
+    ]
+   }
+  },
+  "tough": [
+   [
+    "Saimon",
+    0,
+    6,
+    "Z"
+   ],
+   [
+    "VeTerran_another",
+    0,
+    5,
+    "T"
+   ],
+   [
+    "PhantomTest",
+    2,
+    6,
+    "Z"
+   ],
+   [
+    "ANI_dev",
+    1,
+    5,
+    "T"
+   ],
+   [
+    "27turtles",
+    2,
+    4,
+    "T"
+   ],
+   [
+    "Klakinn",
+    2,
+    4,
+    "P"
+   ],
+   [
+    "clone",
+    1,
+    3,
+    "T"
+   ],
+   [
+    "zig-spudde",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "Mulebot",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "buckshot",
+    0,
+    2,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "72Tortoises",
+    7,
+    1,
+    "Z"
+   ],
+   [
+    "zig-reapers",
+    6,
+    1,
+    "T"
+   ],
+   [
+    "QueenBot",
+    6,
+    3,
+    "Z"
+   ],
+   [
+    "Dodo",
+    5,
+    2,
+    "Z"
+   ],
+   [
+    "nida",
+    5,
+    2,
+    "P"
+   ],
+   [
+    "AresRandomExample",
+    4,
+    2,
+    "R"
+   ],
+   [
+    "Crawler",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "smallBly",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "PerilousProtossBot",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "Apidae",
+    4,
+    3,
+    "P"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "Z",
+    "min": 52.1,
+    "build": [
+     [
+      "SCV",
+      44
+     ],
+     [
+      "Marine",
+      21
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "Medivac",
+      3
+     ],
+     [
+      "EngineeringBay",
+      2
+     ],
+     [
+      "Bunker",
+      1
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ],
+     [
+      "FactoryReactor",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.0,
+     "Refinery": 1.0,
+     "Bunker": 2.2,
+     "Marine": 2.5,
+     "BarracksReactor": 2.5,
+     "Factory": 3.0,
+     "BarracksTechLab": 3.8,
+     "Starport": 4.2,
+     "FactoryReactor": 4.3,
+     "Marauder": 5.8,
+     "Medivac": 5.9,
+     "EngineeringBay": 6.2
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 35.0,
+      "opp_sup": 49.0,
+      "army": 200,
+      "opp_army": 700,
+      "wk": 26,
+      "opp_wk": 35
+     },
+     {
+      "m": 6,
+      "sup": 60.0,
+      "opp_sup": 86.0,
+      "army": 1225,
+      "opp_army": 1575,
+      "wk": 36,
+      "opp_wk": 51
+     },
+     {
+      "m": 8,
+      "sup": 85.0,
+      "opp_sup": 110.0,
+      "army": 1750,
+      "opp_army": 3425,
+      "wk": 46,
+      "opp_wk": 64
+     },
+     {
+      "m": 12,
+      "sup": 150.0,
+      "opp_sup": 66.0,
+      "army": 3625,
+      "opp_army": 775,
+      "wk": 84,
+      "opp_wk": 46
+     }
+    ],
+    "match": 4059221,
+    "won": true,
+    "opp": "QueenBot"
+   },
+   {
+    "opp_race": "Z",
+    "min": 47.6,
+    "build": [
+     [
+      "SCV",
+      43
+     ],
+     [
+      "Marine",
+      20
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Medivac",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "EngineeringBay",
+      2
+     ],
+     [
+      "Bunker",
+      1
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ],
+     [
+      "FactoryReactor",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.0,
+     "Refinery": 1.0,
+     "Bunker": 2.2,
+     "Marine": 2.5,
+     "BarracksReactor": 2.5,
+     "Factory": 3.0,
+     "BarracksTechLab": 3.9,
+     "Starport": 4.2,
+     "FactoryReactor": 4.4,
+     "Marauder": 5.5,
+     "Medivac": 6.0,
+     "EngineeringBay": 6.3
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 35.0,
+      "opp_sup": 49.0,
+      "army": 250,
+      "opp_army": 700,
+      "wk": 25,
+      "opp_wk": 36
+     },
+     {
+      "m": 6,
+      "sup": 62.0,
+      "opp_sup": 86.0,
+      "army": 1225,
+      "opp_army": 1575,
+      "wk": 35,
+      "opp_wk": 51
+     },
+     {
+      "m": 8,
+      "sup": 79.0,
+      "opp_sup": 99.0,
+      "army": 1475,
+      "opp_army": 2450,
+      "wk": 47,
+      "opp_wk": 63
+     },
+     {
+      "m": 12,
+      "sup": 131.0,
+      "opp_sup": 101.0,
+      "army": 2475,
+      "opp_army": 2450,
+      "wk": 76,
+      "opp_wk": 57
+     }
+    ],
+    "match": 4045014,
+    "won": true,
+    "opp": "QueenBot"
+   },
+   {
+    "opp_race": "Z",
+    "min": 47.4,
+    "build": [
+     [
+      "SCV",
+      44
+     ],
+     [
+      "Marine",
+      20
+     ],
+     [
+      "SupplyDepot",
+      8
+     ],
+     [
+      "Medivac",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "EngineeringBay",
+      2
+     ],
+     [
+      "Bunker",
+      1
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ],
+     [
+      "FactoryReactor",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.0,
+     "Refinery": 1.0,
+     "Bunker": 2.2,
+     "Marine": 2.5,
+     "BarracksReactor": 2.5,
+     "Factory": 3.0,
+     "BarracksTechLab": 3.8,
+     "Starport": 4.1,
+     "FactoryReactor": 4.3,
+     "Marauder": 5.4,
+     "Medivac": 6.0,
+     "EngineeringBay": 6.1
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 36.0,
+      "opp_sup": 49.0,
+      "army": 250,
+      "opp_army": 700,
+      "wk": 26,
+      "opp_wk": 36
+     },
+     {
+      "m": 6,
+      "sup": 62.0,
+      "opp_sup": 85.0,
+      "army": 1225,
+      "opp_army": 1575,
+      "wk": 38,
+      "opp_wk": 53
+     },
+     {
+      "m": 8,
+      "sup": 84.0,
+      "opp_sup": 108.0,
+      "army": 1825,
+      "opp_army": 3075,
+      "wk": 46,
+      "opp_wk": 65
+     },
+     {
+      "m": 12,
+      "sup": 115.0,
+      "opp_sup": 116.0,
+      "army": 2275,
+      "opp_army": 2175,
+      "wk": 66,
+      "opp_wk": 66
+     }
+    ],
+    "match": 4050500,
+    "won": true,
+    "opp": "QueenBot"
+   },
+   {
+    "opp_race": "T",
+    "min": 47.1,
+    "build": [
+     [
+      "SCV",
+      46
+     ],
+     [
+      "Marine",
+      28
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Barracks",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "Reaper",
+      3
+     ],
+     [
+      "KD8Charge",
+      3
+     ],
+     [
+      "BarracksReactor",
+      2
+     ],
+     [
+      "Bunker",
+      2
+     ],
+     [
+      "Marauder",
+      2
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "FactoryReactor",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 0.9,
+     "Refinery": 1.0,
+     "Reaper": 2.7,
+     "BarracksTechLab": 3.2,
+     "KD8Charge": 3.6,
+     "BarracksReactor": 3.6,
+     "Marine": 4.0,
+     "Factory": 5.2,
+     "Bunker": 5.6,
+     "FactoryReactor": 6.6,
+     "Starport": 6.6,
+     "Marauder": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 33.0,
+      "opp_sup": 37.0,
+      "army": 150,
+      "opp_army": 300,
+      "wk": 26,
+      "opp_wk": 28
+     },
+     {
+      "m": 6,
+      "sup": 58.0,
+      "opp_sup": 60.0,
+      "army": 1000,
+      "opp_army": 950,
+      "wk": 36,
+      "opp_wk": 41
+     },
+     {
+      "m": 8,
+      "sup": 106.0,
+      "opp_sup": 86.0,
+      "army": 2475,
+      "opp_army": 1400,
+      "wk": 54,
+      "opp_wk": 60
+     },
+     {
+      "m": 12,
+      "sup": 137.0,
+      "opp_sup": 144.0,
+      "army": 3000,
+      "opp_army": 4450,
+      "wk": 83,
+      "opp_wk": 84
+     }
+    ],
+    "match": 4652924,
+    "won": false,
+    "opp": "Roro"
+   }
+  ],
+  "src_zip": null
+ },
+ "TyrP": {
+  "meta": {
+   "id": 64,
+   "name": "TyrP",
+   "race": "P",
+   "type": "dotnetcore",
+   "pub": false,
+   "elo": 1933,
+   "created": "2019-07",
+   "updated": "2026-07-12"
+  },
+  "record": {
+   "W": 77,
+   "L": 67,
+   "draw": 6,
+   "byrace": {
+    "T": [
+     32,
+     48
+    ],
+    "Z": [
+     13,
+     12
+    ],
+    "P": [
+     14,
+     7
+    ],
+    "R": [
+     18,
+     0
+    ]
+   }
+  },
+  "tough": [
+   [
+    "TestBot",
+    5,
+    23,
+    "T"
+   ],
+   [
+    "Jensiiibot",
+    13,
+    21,
+    "T"
+   ],
+   [
+    "SharpenedEdge",
+    1,
+    3,
+    "P"
+   ],
+   [
+    "Spiny",
+    4,
+    5,
+    "Z"
+   ],
+   [
+    "Blunty",
+    1,
+    2,
+    "Z"
+   ],
+   [
+    "Kagamine",
+    3,
+    3,
+    "Z"
+   ],
+   [
+    "Rusty",
+    2,
+    2,
+    "T"
+   ],
+   [
+    "RoachRush",
+    1,
+    1,
+    "Z"
+   ],
+   [
+    "OneBaseBc",
+    1,
+    1,
+    "T"
+   ],
+   [
+    "TyrZ",
+    1,
+    1,
+    "Z"
+   ]
+  ],
+  "best": [
+   [
+    "A.L.E.R.T.",
+    18,
+    0,
+    "R"
+   ],
+   [
+    "ThreeWayLover",
+    6,
+    2,
+    "P"
+   ],
+   [
+    "dantheman",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "Strelok",
+    4,
+    1,
+    "T"
+   ],
+   [
+    "Sharpy_MadAI",
+    3,
+    1,
+    "P"
+   ],
+   [
+    "MicroMachine",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "BetterWorkerRush",
+    2,
+    1,
+    "P"
+   ],
+   [
+    "TheCinderBlock",
+    1,
+    0,
+    "Z"
+   ],
+   [
+    "Krillin",
+    1,
+    0,
+    "Z"
+   ],
+   [
+    "BenBotBC",
+    1,
+    0,
+    "T"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "WoundMaker": {
+  "meta": {
+   "id": 1149,
+   "name": "WoundMaker",
+   "race": "Z",
+   "type": "python",
+   "pub": false,
+   "elo": 1932,
+   "created": "2026-05",
+   "updated": "2026-05-17"
+  },
+  "record": {
+   "W": 112,
+   "L": 36,
+   "draw": 2,
+   "byrace": {
+    "P": [
+     42,
+     5
+    ],
+    "T": [
+     30,
+     12
+    ],
+    "Z": [
+     32,
+     18
+    ],
+    "R": [
+     8,
+     1
+    ]
+   }
+  },
+  "tough": [
+   [
+    "Eris",
+    0,
+    5,
+    "Z"
+   ],
+   [
+    "Roro",
+    0,
+    5,
+    "T"
+   ],
+   [
+    "chito",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "BotTato",
+    1,
+    3,
+    "T"
+   ],
+   [
+    "Mulebot",
+    1,
+    3,
+    "T"
+   ],
+   [
+    "12PoolBot",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "WaterLeak",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "Sharkling",
+    1,
+    2,
+    "Z"
+   ],
+   [
+    "ArtZerg",
+    0,
+    1,
+    "Z"
+   ],
+   [
+    "muravev",
+    0,
+    1,
+    "Z"
+   ]
+  ],
+  "best": [
+   [
+    "Clicadinha",
+    5,
+    0,
+    "Z"
+   ],
+   [
+    "Apidae",
+    6,
+    2,
+    "P"
+   ],
+   [
+    "JimmyBot",
+    4,
+    0,
+    "R"
+   ],
+   [
+    "clone",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "MechaShark",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "Aeolus",
+    4,
+    0,
+    "P"
+   ],
+   [
+    "Cyne",
+    4,
+    0,
+    "P"
+   ],
+   [
+    "CynEX",
+    4,
+    0,
+    "P"
+   ],
+   [
+    "JimmyBotT",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "JimmyBotZ",
+    4,
+    0,
+    "Z"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "T",
+    "min": 51.0,
+    "build": [
+     [
+      "Drone",
+      25
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "Overlord",
+      3
+     ],
+     [
+      "Hatchery",
+      1
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "Spire",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.2,
+     "SpawningPool": 4.7,
+     "Spire": 7.3
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 23.0,
+      "opp_sup": 3.0,
+      "army": 0,
+      "opp_army": 0,
+      "wk": 23,
+      "opp_wk": 3
+     },
+     {
+      "m": 6,
+      "sup": 21.0,
+      "opp_sup": 3.0,
+      "army": 0,
+      "opp_army": 0,
+      "wk": 21,
+      "opp_wk": 3
+     },
+     {
+      "m": 8,
+      "sup": 22.0,
+      "opp_sup": 3.0,
+      "army": 175,
+      "opp_army": 0,
+      "wk": 20,
+      "opp_wk": 3
+     },
+     {
+      "m": 12,
+      "sup": 72.0,
+      "opp_sup": 5.0,
+      "army": 2775,
+      "opp_army": 0,
+      "wk": 36,
+      "opp_wk": 3
+     }
+    ],
+    "match": 4782281,
+    "won": false,
+    "opp": "Mulebot"
+   },
+   {
+    "opp_race": "T",
+    "min": 31.6,
+    "build": [
+     [
+      "Drone",
+      33
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "Overlord",
+      3
+     ],
+     [
+      "Roach",
+      3
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "RoachWarren",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.2,
+     "SpawningPool": 4.9,
+     "RoachWarren": 6.0,
+     "Roach": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 13.0,
+      "opp_sup": 11.0,
+      "army": 0,
+      "opp_army": 150,
+      "wk": 12,
+      "opp_wk": 6
+     },
+     {
+      "m": 6,
+      "sup": 14.0,
+      "opp_sup": 22.0,
+      "army": 0,
+      "opp_army": 350,
+      "wk": 14,
+      "opp_wk": 13
+     },
+     {
+      "m": 8,
+      "sup": 31.0,
+      "opp_sup": 23.0,
+      "army": 800,
+      "opp_army": 400,
+      "wk": 15,
+      "opp_wk": 15
+     },
+     {
+      "m": 12,
+      "sup": 60.0,
+      "opp_sup": 38.0,
+      "army": 1700,
+      "opp_army": 400,
+      "wk": 31,
+      "opp_wk": 27
+     }
+    ],
+    "match": 4778979,
+    "won": false,
+    "opp": "Roro"
+   },
+   {
+    "opp_race": "T",
+    "min": 30.5,
+    "build": [
+     [
+      "Drone",
+      87
+     ],
+     [
+      "CreepTumor",
+      62
+     ],
+     [
+      "CreepTumorQueen",
+      21
+     ],
+     [
+      "Overlord",
+      14
+     ],
+     [
+      "Queen",
+      10
+     ],
+     [
+      "Hatchery",
+      4
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "EvolutionChamber",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "InfestationPit",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 2.0,
+     "Extractor": 3.6,
+     "Queen": 3.9,
+     "CreepTumorQueen": 4.0,
+     "CreepTumor": 4.6,
+     "EvolutionChamber": 5.5,
+     "InfestationPit": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 54.0,
+      "opp_sup": 37.0,
+      "army": 700,
+      "opp_army": 300,
+      "wk": 37,
+      "opp_wk": 28
+     },
+     {
+      "m": 6,
+      "sup": 81.0,
+      "opp_sup": 59.0,
+      "army": 1400,
+      "opp_army": 950,
+      "wk": 59,
+      "opp_wk": 42
+     },
+     {
+      "m": 8,
+      "sup": 125.0,
+      "opp_sup": 87.0,
+      "army": 2475,
+      "opp_army": 1425,
+      "wk": 83,
+      "opp_wk": 60
+     },
+     {
+      "m": 12,
+      "sup": 199.0,
+      "opp_sup": 139.0,
+      "army": 9900,
+      "opp_army": 4675,
+      "wk": 95,
+      "opp_wk": 79
+     }
+    ],
+    "match": 4784749,
+    "won": false,
+    "opp": "Roro"
+   },
+   {
+    "opp_race": "T",
+    "min": 27.9,
+    "build": [
+     [
+      "Drone",
+      49
+     ],
+     [
+      "Roach",
+      9
+     ],
+     [
+      "CreepTumor",
+      9
+     ],
+     [
+      "Overlord",
+      7
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "CreepTumorQueen",
+      3
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "RoachWarren",
+      1
+     ],
+     [
+      "InfestationPit",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.5,
+     "Extractor": 0.6,
+     "RoachWarren": 1.6,
+     "Queen": 2.6,
+     "Roach": 3.0,
+     "CreepTumorQueen": 5.3,
+     "CreepTumor": 5.8,
+     "InfestationPit": 7.3
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 41.0,
+      "opp_sup": 26.0,
+      "army": 1075,
+      "opp_army": 50,
+      "wk": 19,
+      "opp_wk": 20
+     },
+     {
+      "m": 6,
+      "sup": 50.0,
+      "opp_sup": 41.0,
+      "army": 850,
+      "opp_army": 650,
+      "wk": 32,
+      "opp_wk": 24
+     },
+     {
+      "m": 8,
+      "sup": 60.0,
+      "opp_sup": 76.0,
+      "army": 900,
+      "opp_army": 2000,
+      "wk": 47,
+      "opp_wk": 38
+     },
+     {
+      "m": 12,
+      "sup": 136.0,
+      "opp_sup": 137.0,
+      "army": 1925,
+      "opp_army": 3400,
+      "wk": 82,
+      "opp_wk": 68
+     }
+    ],
+    "match": 4784752,
+    "won": true,
+    "opp": "Mulebot"
+   }
+  ],
+  "src_zip": null
+ },
+ "Roro": {
+  "meta": {
+   "id": 379,
+   "name": "Roro",
+   "race": "T",
+   "type": "python",
+   "pub": false,
+   "elo": 1922,
+   "created": "2022-01",
+   "updated": "2026-01-08"
+  },
+  "record": {
+   "W": 69,
+   "L": 74,
+   "draw": 7,
+   "byrace": {
+    "Z": [
+     17,
+     19
+    ],
+    "P": [
+     40,
+     31
+    ],
+    "T": [
+     11,
+     22
+    ],
+    "R": [
+     1,
+     2
+    ]
+   }
+  },
+  "tough": [
+   [
+    "negativeZero",
+    4,
+    18,
+    "P"
+   ],
+   [
+    "Ketroc",
+    1,
+    8,
+    "T"
+   ],
+   [
+    "BenBotBC",
+    0,
+    4,
+    "T"
+   ],
+   [
+    "Zoe",
+    1,
+    4,
+    "Z"
+   ],
+   [
+    "BaronessZuli",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "Apidae",
+    1,
+    3,
+    "P"
+   ],
+   [
+    "QueenBot",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "spudde",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "TyrT",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "Eris",
+    0,
+    2,
+    "Z"
+   ]
+  ],
+  "best": [
+   [
+    "One-Test",
+    12,
+    4,
+    "P"
+   ],
+   [
+    "PerilousProtossBot",
+    7,
+    0,
+    "P"
+   ],
+   [
+    "One",
+    5,
+    2,
+    "P"
+   ],
+   [
+    "SharpShadows",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "MilkWang1",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "27turtles",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "CaninanaV046",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "Dovahkiin",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "zigster",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "MechaShark",
+    2,
+    1,
+    "T"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "PhantomBot": {
+  "meta": {
+   "id": 510,
+   "name": "PhantomBot",
+   "race": "Z",
+   "type": "python",
+   "pub": false,
+   "elo": 1921,
+   "created": "2022-10",
+   "updated": "2026-07-12"
+  },
+  "record": {
+   "W": 56,
+   "L": 84,
+   "draw": 10,
+   "byrace": {
+    "P": [
+     8,
+     20
+    ],
+    "R": [
+     5,
+     14
+    ],
+    "T": [
+     5,
+     17
+    ],
+    "Z": [
+     38,
+     33
+    ]
+   }
+  },
+  "tough": [
+   [
+    "TyrT",
+    0,
+    7,
+    "T"
+   ],
+   [
+    "BrazilianLingFloodBot",
+    0,
+    4,
+    "Z"
+   ],
+   [
+    "Dovahkiin",
+    0,
+    4,
+    "Z"
+   ],
+   [
+    "sharkbot",
+    2,
+    5,
+    "P"
+   ],
+   [
+    "whalemean",
+    1,
+    4,
+    "R"
+   ],
+   [
+    "XenaP",
+    0,
+    3,
+    "P"
+   ],
+   [
+    "Zoe",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "Tyr",
+    1,
+    3,
+    "R"
+   ],
+   [
+    "Caninana",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "LucidPJS",
+    1,
+    3,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "QueenBot",
+    6,
+    1,
+    "Z"
+   ],
+   [
+    "Sharkling",
+    5,
+    1,
+    "Z"
+   ],
+   [
+    "DadBot",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "DadBotTest",
+    4,
+    1,
+    "Z"
+   ],
+   [
+    "LucidZJS",
+    4,
+    1,
+    "Z"
+   ],
+   [
+    "SunTzuBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "LucidTJS",
+    3,
+    0,
+    "T"
+   ],
+   [
+    "TyrP",
+    5,
+    3,
+    "P"
+   ],
+   [
+    "SaShaBot",
+    4,
+    2,
+    "Z"
+   ],
+   [
+    "Rasputin",
+    2,
+    0,
+    "Z"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "BotTato": {
+  "meta": {
+   "id": 759,
+   "name": "BotTato",
+   "race": "T",
+   "type": "python",
+   "pub": false,
+   "elo": 1909,
+   "created": "2024-09",
+   "updated": "2026-07-04"
+  },
+  "record": {
+   "W": 38,
+   "L": 75,
+   "draw": 37,
+   "byrace": {
+    "P": [
+     15,
+     22
+    ],
+    "Z": [
+     4,
+     23
+    ],
+    "T": [
+     15,
+     28
+    ],
+    "R": [
+     4,
+     2
+    ]
+   }
+  },
+  "tough": [
+   [
+    "smokinggunbot",
+    0,
+    8,
+    "T"
+   ],
+   [
+    "Positive_Null",
+    0,
+    7,
+    "Z"
+   ],
+   [
+    "muravev",
+    0,
+    5,
+    "Z"
+   ],
+   [
+    "muravevProtoss",
+    0,
+    5,
+    "P"
+   ],
+   [
+    "Gordon",
+    1,
+    5,
+    "T"
+   ],
+   [
+    "Crawler",
+    0,
+    4,
+    "Z"
+   ],
+   [
+    "GenesisLotus",
+    1,
+    4,
+    "P"
+   ],
+   [
+    "Alexa",
+    3,
+    5,
+    "T"
+   ],
+   [
+    "49Terrapins",
+    3,
+    5,
+    "P"
+   ],
+   [
+    "oberon",
+    1,
+    3,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "BlackCompany",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "GhostProtocol",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "DSSTL",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "PrimordialOrigin",
+    4,
+    2,
+    "P"
+   ],
+   [
+    "CtrlZedPY",
+    3,
+    1,
+    "R"
+   ],
+   [
+    "Laser-Circus",
+    3,
+    2,
+    "P"
+   ],
+   [
+    "miniTestikZ",
+    1,
+    0,
+    "Z"
+   ],
+   [
+    "AvocaDOS",
+    1,
+    0,
+    "T"
+   ],
+   [
+    "smallBly",
+    1,
+    0,
+    "Z"
+   ],
+   [
+    "who",
+    1,
+    1,
+    "R"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "P",
+    "min": 66.2,
+    "build": [
+     [
+      "SCV",
+      35
+     ],
+     [
+      "KD8Charge",
+      6
+     ],
+     [
+      "SupplyDepot",
+      4
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "Marine",
+      4
+     ],
+     [
+      "Reaper",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Barracks",
+      2
+     ],
+     [
+      "Factory",
+      2
+     ],
+     [
+      "SiegeTank",
+      2
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ],
+     [
+      "EngineeringBay",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.3,
+     "Refinery": 0.7,
+     "Barracks": 1.1,
+     "Factory": 2.9,
+     "Reaper": 2.9,
+     "BarracksReactor": 3.2,
+     "KD8Charge": 3.9,
+     "FactoryTechLab": 3.9,
+     "Marine": 5.8,
+     "Starport": 6.2,
+     "SiegeTank": 6.2,
+     "EngineeringBay": 8.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 28.0,
+      "opp_sup": 39.0,
+      "army": 100,
+      "opp_army": 400,
+      "wk": 25,
+      "opp_wk": 27
+     },
+     {
+      "m": 6,
+      "sup": 35.0,
+      "opp_sup": 56.0,
+      "army": 675,
+      "opp_army": 850,
+      "wk": 24,
+      "opp_wk": 38
+     },
+     {
+      "m": 8,
+      "sup": 46.0,
+      "opp_sup": 83.0,
+      "army": 1000,
+      "opp_army": 1650,
+      "wk": 28,
+      "opp_wk": 51
+     },
+     {
+      "m": 12,
+      "sup": 63.0,
+      "opp_sup": 149.0,
+      "army": 1725,
+      "opp_army": 5425,
+      "wk": 40,
+      "opp_wk": 59
+     }
+    ],
+    "match": 4058065,
+    "won": true,
+    "opp": "Laser-Circus"
+   },
+   {
+    "opp_race": "P",
+    "min": 59.9,
+    "build": [
+     [
+      "SCV",
+      35
+     ],
+     [
+      "Marine",
+      8
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Refinery",
+      5
+     ],
+     [
+      "Reaper",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "KD8Charge",
+      3
+     ],
+     [
+      "BarracksReactor",
+      2
+     ],
+     [
+      "SiegeTank",
+      2
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ],
+     [
+      "Medivac",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.3,
+     "Refinery": 0.7,
+     "Barracks": 1.1,
+     "Factory": 2.7,
+     "Reaper": 2.9,
+     "BarracksReactor": 3.1,
+     "FactoryTechLab": 3.9,
+     "KD8Charge": 4.4,
+     "Starport": 6.1,
+     "Marine": 6.2,
+     "SiegeTank": 6.5,
+     "Medivac": 7.9
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 30.0,
+      "opp_sup": 29.0,
+      "army": 200,
+      "opp_army": 0,
+      "wk": 25,
+      "opp_wk": 27
+     },
+     {
+      "m": 6,
+      "sup": 49.0,
+      "opp_sup": 44.0,
+      "army": 925,
+      "opp_army": 0,
+      "wk": 32,
+      "opp_wk": 41
+     },
+     {
+      "m": 8,
+      "sup": 66.0,
+      "opp_sup": 69.0,
+      "army": 1925,
+      "opp_army": 0,
+      "wk": 38,
+      "opp_wk": 56
+     },
+     {
+      "m": 12,
+      "sup": 104.0,
+      "opp_sup": 124.0,
+      "army": 3675,
+      "opp_army": 3200,
+      "wk": 52,
+      "opp_wk": 80
+     }
+    ],
+    "match": 4044941,
+    "won": true,
+    "opp": "DSSTL"
+   },
+   {
+    "opp_race": "P",
+    "min": 43.3,
+    "build": [
+     [
+      "SCV",
+      35
+     ],
+     [
+      "SupplyDepot",
+      5
+     ],
+     [
+      "Refinery",
+      5
+     ],
+     [
+      "KD8Charge",
+      4
+     ],
+     [
+      "Marine",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "Reaper",
+      3
+     ],
+     [
+      "Factory",
+      2
+     ],
+     [
+      "BarracksReactor",
+      2
+     ],
+     [
+      "FactoryTechLab",
+      2
+     ],
+     [
+      "Starport",
+      1
+     ],
+     [
+      "SiegeTank",
+      1
+     ],
+     [
+      "Medivac",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.3,
+     "Refinery": 0.7,
+     "Barracks": 1.1,
+     "Factory": 2.8,
+     "Reaper": 3.0,
+     "BarracksReactor": 3.1,
+     "KD8Charge": 3.8,
+     "FactoryTechLab": 3.8,
+     "Marine": 5.5,
+     "Starport": 5.6,
+     "SiegeTank": 5.8,
+     "Medivac": 7.5,
+     "EngineeringBay": 7.8
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 29.0,
+      "opp_sup": 36.0,
+      "army": 200,
+      "opp_army": 125,
+      "wk": 25,
+      "opp_wk": 29
+     },
+     {
+      "m": 6,
+      "sup": 41.0,
+      "opp_sup": 62.0,
+      "army": 725,
+      "opp_army": 1100,
+      "wk": 31,
+      "opp_wk": 41
+     },
+     {
+      "m": 8,
+      "sup": 68.0,
+      "opp_sup": 83.0,
+      "army": 1450,
+      "opp_army": 2225,
+      "wk": 38,
+      "opp_wk": 44
+     },
+     {
+      "m": 12,
+      "sup": 42.0,
+      "opp_sup": 107.0,
+      "army": 2225,
+      "opp_army": 4875,
+      "wk": 16,
+      "opp_wk": 44
+     }
+    ],
+    "match": 4050554,
+    "won": true,
+    "opp": "PrimordialOrigin"
+   },
+   {
+    "opp_race": "P",
+    "min": 41.7,
+    "build": [
+     [
+      "SCV",
+      36
+     ],
+     [
+      "SupplyDepot",
+      6
+     ],
+     [
+      "Refinery",
+      5
+     ],
+     [
+      "Marine",
+      5
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Reaper",
+      3
+     ],
+     [
+      "Barracks",
+      2
+     ],
+     [
+      "KD8Charge",
+      2
+     ],
+     [
+      "SiegeTank",
+      2
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "BarracksReactor",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "Starport",
+      1
+     ],
+     [
+      "EngineeringBay",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.3,
+     "Refinery": 0.7,
+     "Barracks": 1.1,
+     "Factory": 2.7,
+     "Reaper": 2.9,
+     "BarracksReactor": 3.3,
+     "FactoryTechLab": 4.0,
+     "KD8Charge": 5.9,
+     "Marine": 6.7,
+     "Starport": 6.9,
+     "SiegeTank": 7.1,
+     "EngineeringBay": 7.2
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 28.0,
+      "opp_sup": 35.0,
+      "army": 100,
+      "opp_army": 125,
+      "wk": 25,
+      "opp_wk": 29
+     },
+     {
+      "m": 6,
+      "sup": 41.0,
+      "opp_sup": 60.0,
+      "army": 400,
+      "opp_army": 750,
+      "wk": 32,
+      "opp_wk": 42
+     },
+     {
+      "m": 8,
+      "sup": 64.0,
+      "opp_sup": 72.0,
+      "army": 1550,
+      "opp_army": 1900,
+      "wk": 39,
+      "opp_wk": 43
+     },
+     {
+      "m": 12,
+      "sup": 36.0,
+      "opp_sup": 76.0,
+      "army": 1200,
+      "opp_army": 3075,
+      "wk": 20,
+      "opp_wk": 42
+     }
+    ],
+    "match": 4049647,
+    "won": true,
+    "opp": "PrimordialOrigin"
+   }
+  ],
+  "src_zip": null
+ },
+ "sharkbot": {
+  "meta": {
+   "id": 168,
+   "name": "sharkbot",
+   "race": "P",
+   "type": "dotnetcore",
+   "pub": false,
+   "elo": 1903,
+   "created": "2020-07",
+   "updated": "2026-07-09"
+  },
+  "record": {
+   "W": 76,
+   "L": 49,
+   "draw": 25,
+   "byrace": {
+    "Z": [
+     11,
+     4
+    ],
+    "T": [
+     41,
+     39
+    ],
+    "P": [
+     22,
+     5
+    ],
+    "R": [
+     2,
+     1
+    ]
+   }
+  },
+  "tough": [
+   [
+    "BugFinder",
+    0,
+    5,
+    "T"
+   ],
+   [
+    "TestBot",
+    2,
+    6,
+    "T"
+   ],
+   [
+    "MicroMachine",
+    0,
+    4,
+    "T"
+   ],
+   [
+    "spudde",
+    3,
+    5,
+    "T"
+   ],
+   [
+    "WorthlessBot",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "Ketroc",
+    1,
+    2,
+    "T"
+   ],
+   [
+    "BlinkerBot",
+    0,
+    1,
+    "P"
+   ],
+   [
+    "Jensiiibot",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "RookieBot",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "Fidolina",
+    0,
+    1,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "BenBotBC",
+    26,
+    7,
+    "T"
+   ],
+   [
+    "m1ndb0t-P",
+    14,
+    2,
+    "P"
+   ],
+   [
+    "Trolly",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "Snowbot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "BaronessZuli",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "KAI",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "sharpy_PVP_EZ",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "ANI_dev",
+    4,
+    3,
+    "T"
+   ],
+   [
+    "Surge",
+    1,
+    0,
+    "Z"
+   ],
+   [
+    "A.L.E.R.T.",
+    1,
+    0,
+    "R"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "whalemean": {
+  "meta": {
+   "id": 262,
+   "name": "whalemean",
+   "race": "R",
+   "type": "dotnetcore",
+   "pub": false,
+   "elo": 1896,
+   "created": "2021-03",
+   "updated": "2026-03-03"
+  },
+  "record": {
+   "W": 61,
+   "L": 82,
+   "draw": 7,
+   "byrace": {
+    "P": [
+     28,
+     33
+    ],
+    "T": [
+     11,
+     25
+    ],
+    "R": [
+     2,
+     3
+    ],
+    "Z": [
+     20,
+     21
+    ]
+   }
+  },
+  "tough": [
+   [
+    "Zoe",
+    0,
+    6,
+    "Z"
+   ],
+   [
+    "negativeZero",
+    20,
+    24,
+    "P"
+   ],
+   [
+    "BenBotBC",
+    4,
+    8,
+    "T"
+   ],
+   [
+    "Ketroc",
+    1,
+    5,
+    "T"
+   ],
+   [
+    "DominionDog",
+    1,
+    4,
+    "T"
+   ],
+   [
+    "Xena",
+    0,
+    2,
+    "R"
+   ],
+   [
+    "XenaP",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "XenaT",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "DadBotTest",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "Nightmare",
+    2,
+    3,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "Dovahkiin",
+    5,
+    3,
+    "Z"
+   ],
+   [
+    "sharkbot",
+    3,
+    1,
+    "P"
+   ],
+   [
+    "smallBly",
+    3,
+    1,
+    "Z"
+   ],
+   [
+    "DadBot",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "EmptySeatTest",
+    1,
+    0,
+    "R"
+   ],
+   [
+    "MavBot",
+    1,
+    0,
+    "P"
+   ],
+   [
+    "WizardHat",
+    1,
+    0,
+    "P"
+   ],
+   [
+    "SkevidBotP",
+    1,
+    0,
+    "P"
+   ],
+   [
+    "Rasputin",
+    1,
+    0,
+    "Z"
+   ],
+   [
+    "PhantomTest",
+    1,
+    0,
+    "Z"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "JimmyBotP": {
+  "meta": {
+   "id": 1058,
+   "name": "JimmyBotP",
+   "race": "P",
+   "type": "python",
+   "pub": false,
+   "elo": 1887,
+   "created": "2026-03",
+   "updated": "2026-07-14"
+  },
+  "record": {
+   "W": 60,
+   "L": 78,
+   "draw": 12,
+   "byrace": {
+    "Z": [
+     27,
+     37
+    ],
+    "P": [
+     17,
+     19
+    ],
+    "T": [
+     14,
+     17
+    ],
+    "R": [
+     2,
+     5
+    ]
+   }
+  },
+  "tough": [
+   [
+    "QueenBot",
+    0,
+    5,
+    "Z"
+   ],
+   [
+    "Crawler",
+    0,
+    5,
+    "Z"
+   ],
+   [
+    "Apidae",
+    0,
+    4,
+    "P"
+   ],
+   [
+    "BigDaddy",
+    0,
+    4,
+    "T"
+   ],
+   [
+    "norman",
+    0,
+    4,
+    "P"
+   ],
+   [
+    "nida",
+    0,
+    4,
+    "P"
+   ],
+   [
+    "TheLAW",
+    0,
+    4,
+    "T"
+   ],
+   [
+    "WaterLeak",
+    0,
+    3,
+    "Z"
+   ],
+   [
+    "SiriusBot",
+    0,
+    3,
+    "R"
+   ],
+   [
+    "27turtles",
+    1,
+    3,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "PolyMorph",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "onlyfans",
+    4,
+    1,
+    "T"
+   ],
+   [
+    "49Terrapins",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "KoB",
+    3,
+    1,
+    "Z"
+   ],
+   [
+    "DoopyBot",
+    3,
+    1,
+    "Z"
+   ],
+   [
+    "JimmyBotZ",
+    3,
+    1,
+    "Z"
+   ],
+   [
+    "smokinggunbot",
+    3,
+    1,
+    "T"
+   ],
+   [
+    "titania",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "PrimordialOrigin",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "WildLupo",
+    2,
+    0,
+    "P"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "Z",
+    "min": 48.9,
+    "build": [
+     [
+      "Probe",
+      41
+     ],
+     [
+      "Stalker",
+      9
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Immortal",
+      2
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "RoboticsFacility",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.6,
+     "Gateway": 1.1,
+     "Assimilator": 1.9,
+     "CyberneticsCore": 2.5,
+     "Stalker": 4.0,
+     "RoboticsFacility": 4.2,
+     "Immortal": 6.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 42.0,
+      "opp_sup": 46.0,
+      "army": 350,
+      "opp_army": 1350,
+      "wk": 34,
+      "opp_wk": 22
+     },
+     {
+      "m": 6,
+      "sup": 33.0,
+      "opp_sup": 68.5,
+      "army": 525,
+      "opp_army": 1225,
+      "wk": 21,
+      "opp_wk": 36
+     },
+     {
+      "m": 8,
+      "sup": 51.0,
+      "opp_sup": 104.0,
+      "army": 1900,
+      "opp_army": 1950,
+      "wk": 23,
+      "opp_wk": 57
+     },
+     {
+      "m": 12,
+      "sup": 92.0,
+      "opp_sup": 199.5,
+      "army": 3400,
+      "opp_army": 7550,
+      "wk": 47,
+      "opp_wk": 79
+     }
+    ],
+    "match": 4695552,
+    "won": false,
+    "opp": "72Tortoises"
+   },
+   {
+    "opp_race": "T",
+    "min": 44.3,
+    "build": [
+     [
+      "Probe",
+      51
+     ],
+     [
+      "Pylon",
+      6
+     ],
+     [
+      "Stalker",
+      6
+     ],
+     [
+      "Nexus",
+      3
+     ],
+     [
+      "Assimilator",
+      3
+     ],
+     [
+      "Gateway",
+      3
+     ],
+     [
+      "Oracle",
+      3
+     ],
+     [
+      "Sentry",
+      2
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "RoboticsFacility",
+      1
+     ],
+     [
+      "Immortal",
+      1
+     ],
+     [
+      "Forge",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Assimilator": 0.4,
+     "Pylon": 0.7,
+     "Gateway": 1.2,
+     "CyberneticsCore": 2.7,
+     "RoboticsFacility": 3.6,
+     "Stalker": 4.2,
+     "Sentry": 5.0,
+     "Oracle": 5.8,
+     "Immortal": 6.4,
+     "Forge": 7.9
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 32.0,
+      "opp_sup": 35.0,
+      "army": 175,
+      "opp_army": 300,
+      "wk": 26,
+      "opp_wk": 24
+     },
+     {
+      "m": 6,
+      "sup": 53.0,
+      "opp_sup": 62.0,
+      "army": 1175,
+      "opp_army": 1050,
+      "wk": 39,
+      "opp_wk": 35
+     },
+     {
+      "m": 8,
+      "sup": 83.0,
+      "opp_sup": 94.0,
+      "army": 2575,
+      "opp_army": 2225,
+      "wk": 51,
+      "opp_wk": 49
+     },
+     {
+      "m": 12,
+      "sup": 42.0,
+      "opp_sup": 153.0,
+      "army": 0,
+      "opp_army": 4350,
+      "wk": 34,
+      "opp_wk": 78
+     }
+    ],
+    "match": 4691744,
+    "won": false,
+    "opp": "27turtles"
+   },
+   {
+    "opp_race": "T",
+    "min": 43.2,
+    "build": [
+     [
+      "Probe",
+      55
+     ],
+     [
+      "Stalker",
+      8
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Nexus",
+      3
+     ],
+     [
+      "Gateway",
+      3
+     ],
+     [
+      "Assimilator",
+      3
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "RoboticsFacility",
+      1
+     ],
+     [
+      "Immortal",
+      1
+     ],
+     [
+      "Forge",
+      1
+     ],
+     [
+      "TwilightCouncil",
+      1
+     ],
+     [
+      "Sentry",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.6,
+     "Gateway": 1.0,
+     "Assimilator": 1.9,
+     "CyberneticsCore": 2.4,
+     "Stalker": 3.9,
+     "RoboticsFacility": 4.3,
+     "Immortal": 6.7,
+     "Forge": 7.3,
+     "TwilightCouncil": 7.4,
+     "Sentry": 7.6
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 37.0,
+      "opp_sup": 29.0,
+      "army": 350,
+      "opp_army": 150,
+      "wk": 29,
+      "opp_wk": 24
+     },
+     {
+      "m": 6,
+      "sup": 61.0,
+      "opp_sup": 59.0,
+      "army": 1225,
+      "opp_army": 1150,
+      "wk": 43,
+      "opp_wk": 36
+     },
+     {
+      "m": 8,
+      "sup": 86.0,
+      "opp_sup": 85.0,
+      "army": 2250,
+      "opp_army": 2200,
+      "wk": 57,
+      "opp_wk": 49
+     },
+     {
+      "m": 12,
+      "sup": 65.0,
+      "opp_sup": 130.0,
+      "army": 175,
+      "opp_army": 3050,
+      "wk": 57,
+      "opp_wk": 76
+     }
+    ],
+    "match": 4696327,
+    "won": false,
+    "opp": "27turtles"
+   },
+   {
+    "opp_race": "Z",
+    "min": 39.4,
+    "build": [
+     [
+      "Probe",
+      50
+     ],
+     [
+      "Stalker",
+      9
+     ],
+     [
+      "Pylon",
+      8
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "Nexus",
+      3
+     ],
+     [
+      "Assimilator",
+      3
+     ],
+     [
+      "Oracle",
+      3
+     ],
+     [
+      "Sentry",
+      2
+     ],
+     [
+      "Immortal",
+      2
+     ],
+     [
+      "Forge",
+      2
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "RoboticsFacility",
+      1
+     ],
+     [
+      "TwilightCouncil",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Assimilator": 0.4,
+     "Pylon": 0.7,
+     "Gateway": 1.2,
+     "CyberneticsCore": 2.7,
+     "RoboticsFacility": 3.6,
+     "Sentry": 4.0,
+     "Stalker": 4.7,
+     "Oracle": 4.8,
+     "Immortal": 6.1,
+     "Forge": 7.2,
+     "TwilightCouncil": 7.3
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 40.0,
+      "opp_sup": 46.0,
+      "army": 325,
+      "opp_army": 700,
+      "wk": 32,
+      "opp_wk": 32
+     },
+     {
+      "m": 6,
+      "sup": 62.0,
+      "opp_sup": 74.0,
+      "army": 1350,
+      "opp_army": 1400,
+      "wk": 44,
+      "opp_wk": 50
+     },
+     {
+      "m": 8,
+      "sup": 89.0,
+      "opp_sup": 115.0,
+      "army": 2575,
+      "opp_army": 3000,
+      "wk": 57,
+      "opp_wk": 73
+     },
+     {
+      "m": 12,
+      "sup": 177.0,
+      "opp_sup": 139.0,
+      "army": 7325,
+      "opp_army": 4300,
+      "wk": 82,
+      "opp_wk": 73
+     }
+    ],
+    "match": 4691717,
+    "won": false,
+    "opp": "QueenBot"
+   }
+  ],
+  "src_zip": null
+ },
+ "TyrT": {
+  "meta": {
+   "id": 167,
+   "name": "TyrT",
+   "race": "T",
+   "type": "dotnetcore",
+   "pub": false,
+   "elo": 1884,
+   "created": "2020-07",
+   "updated": "2026-05-02"
+  },
+  "record": {
+   "W": 71,
+   "L": 73,
+   "draw": 6,
+   "byrace": {
+    "T": [
+     16,
+     30
+    ],
+    "R": [
+     9,
+     5
+    ],
+    "P": [
+     20,
+     15
+    ],
+    "Z": [
+     26,
+     23
+    ]
+   }
+  },
+  "tough": [
+   [
+    "BenBotBC",
+    9,
+    16,
+    "T"
+   ],
+   [
+    "Dysnomia",
+    2,
+    7,
+    "Z"
+   ],
+   [
+    "Jensiiibot",
+    1,
+    3,
+    "T"
+   ],
+   [
+    "Eris",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "negativeZero",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "Xena",
+    0,
+    2,
+    "R"
+   ],
+   [
+    "XenaP",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "XenaT",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "MicroMachine",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "EvilZoe",
+    0,
+    2,
+    "Z"
+   ]
+  ],
+  "best": [
+   [
+    "FourGateDev",
+    5,
+    2,
+    "P"
+   ],
+   [
+    "Trolly",
+    3,
+    1,
+    "P"
+   ],
+   [
+    "Ketroc",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "m1ndb0t-P",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "Snowbot",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "Noobgam2",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "zUnkP",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "Caninana",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "DadBot",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "SaShaBot",
+    2,
+    0,
+    "Z"
+   ]
+  ],
+  "builds": [],
+  "src_zip": null
+ },
+ "LunaxVRR": {
+  "meta": {
+   "id": 924,
+   "name": "LunaxVRR",
+   "race": "P",
+   "type": "python",
+   "pub": false,
+   "elo": 1883,
+   "created": "2025-08",
+   "updated": "2026-06-26"
+  },
+  "record": {
+   "W": 60,
+   "L": 57,
+   "draw": 33,
+   "byrace": {
+    "Z": [
+     32,
+     10
+    ],
+    "T": [
+     12,
+     20
+    ],
+    "P": [
+     14,
+     22
+    ],
+    "R": [
+     2,
+     5
+    ]
+   }
+  },
+  "tough": [
+   [
+    "TyrT",
+    0,
+    4,
+    "T"
+   ],
+   [
+    "Zozo",
+    0,
+    3,
+    "P"
+   ],
+   [
+    "GPT",
+    0,
+    3,
+    "T"
+   ],
+   [
+    "Sharkling",
+    0,
+    3,
+    "Z"
+   ],
+   [
+    "Aeolus",
+    0,
+    3,
+    "P"
+   ],
+   [
+    "Xena",
+    0,
+    3,
+    "R"
+   ],
+   [
+    "PerilousProtossBot",
+    0,
+    3,
+    "P"
+   ],
+   [
+    "sharkbot",
+    0,
+    3,
+    "P"
+   ],
+   [
+    "Dysnomia",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "ZeratulsRevenge",
+    0,
+    2,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "smallBly",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "12PoolBot",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "SharpenedEdge",
+    4,
+    0,
+    "P"
+   ],
+   [
+    "Dodo",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "norman",
+    3,
+    0,
+    "P"
+   ],
+   [
+    "SpeedlingBot",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "KerrigansTorment",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Clicadinha",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "PiG_Bot",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "Roro",
+    2,
+    0,
+    "T"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "T",
+    "min": 39.4,
+    "build": [
+     [
+      "Probe",
+      37
+     ],
+     [
+      "Pylon",
+      5
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "PhotonCannon",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "Tempest",
+      2
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "Forge",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "ShieldBattery",
+      1
+     ],
+     [
+      "FleetBeacon",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.6,
+     "Gateway": 1.0,
+     "Assimilator": 1.1,
+     "Forge": 1.6,
+     "CyberneticsCore": 2.3,
+     "PhotonCannon": 2.6,
+     "Stargate": 3.3,
+     "ShieldBattery": 3.7,
+     "FleetBeacon": 4.3,
+     "Tempest": 6.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 24.0,
+      "opp_sup": 32.0,
+      "army": 0,
+      "opp_army": 150,
+      "wk": 24,
+      "opp_wk": 26
+     },
+     {
+      "m": 6,
+      "sup": 40.0,
+      "opp_sup": 60.0,
+      "army": 425,
+      "opp_army": 350,
+      "wk": 30,
+      "opp_wk": 38
+     },
+     {
+      "m": 8,
+      "sup": 65.0,
+      "opp_sup": 93.0,
+      "army": 1275,
+      "opp_army": 2500,
+      "wk": 43,
+      "opp_wk": 52
+     },
+     {
+      "m": 12,
+      "sup": 125.0,
+      "opp_sup": 119.0,
+      "army": 4675,
+      "opp_army": 1500,
+      "wk": 70,
+      "opp_wk": 83
+     }
+    ],
+    "match": 4659524,
+    "won": true,
+    "opp": "Mulebot"
+   },
+   {
+    "opp_race": "T",
+    "min": 39.3,
+    "build": [
+     [
+      "Probe",
+      39
+     ],
+     [
+      "Pylon",
+      5
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "PhotonCannon",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "Tempest",
+      2
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "Forge",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "ShieldBattery",
+      1
+     ],
+     [
+      "FleetBeacon",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.6,
+     "Gateway": 1.0,
+     "Assimilator": 1.0,
+     "Forge": 1.6,
+     "CyberneticsCore": 2.2,
+     "PhotonCannon": 2.6,
+     "Stargate": 3.2,
+     "ShieldBattery": 3.7,
+     "FleetBeacon": 4.3,
+     "Tempest": 5.9
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 25.0,
+      "opp_sup": 44.0,
+      "army": 0,
+      "opp_army": 200,
+      "wk": 24,
+      "opp_wk": 35
+     },
+     {
+      "m": 6,
+      "sup": 41.0,
+      "opp_sup": 69.0,
+      "army": 425,
+      "opp_army": 900,
+      "wk": 31,
+      "opp_wk": 48
+     },
+     {
+      "m": 8,
+      "sup": 66.0,
+      "opp_sup": 95.0,
+      "army": 1275,
+      "opp_army": 950,
+      "wk": 45,
+      "opp_wk": 67
+     },
+     {
+      "m": 12,
+      "sup": 129.0,
+      "opp_sup": 146.0,
+      "army": 4775,
+      "opp_army": 3125,
+      "wk": 68,
+      "opp_wk": 98
+     }
+    ],
+    "match": 4656525,
+    "won": false,
+    "opp": "Mulebot"
+   },
+   {
+    "opp_race": "Z",
+    "min": 34.4,
+    "build": [
+     [
+      "Probe",
+      38
+     ],
+     [
+      "Pylon",
+      5
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "PhotonCannon",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "Tempest",
+      2
+     ],
+     [
+      "Forge",
+      1
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "ShieldBattery",
+      1
+     ],
+     [
+      "FleetBeacon",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.6,
+     "Forge": 1.0,
+     "Gateway": 1.2,
+     "Assimilator": 1.4,
+     "PhotonCannon": 2.0,
+     "CyberneticsCore": 2.6,
+     "Stargate": 3.6,
+     "ShieldBattery": 3.7,
+     "FleetBeacon": 4.6,
+     "Tempest": 6.3
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 25.0,
+      "opp_sup": 43.5,
+      "army": 0,
+      "opp_army": 550,
+      "wk": 24,
+      "opp_wk": 32
+     },
+     {
+      "m": 6,
+      "sup": 40.0,
+      "opp_sup": 64.5,
+      "army": 425,
+      "opp_army": 1075,
+      "wk": 30,
+      "opp_wk": 48
+     },
+     {
+      "m": 8,
+      "sup": 66.0,
+      "opp_sup": 91.5,
+      "army": 1700,
+      "opp_army": 4225,
+      "wk": 44,
+      "opp_wk": 46
+     },
+     {
+      "m": 12,
+      "sup": 81.0,
+      "opp_sup": 164.5,
+      "army": 2550,
+      "opp_army": 9975,
+      "wk": 51,
+      "opp_wk": 44
+     }
+    ],
+    "match": 4656520,
+    "won": false,
+    "opp": "Dysnomia"
+   },
+   {
+    "opp_race": "T",
+    "min": 34.1,
+    "build": [
+     [
+      "Probe",
+      40
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Zealot",
+      6
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "Gateway",
+      1
+     ],
+     [
+      "CyberneticsCore",
+      1
+     ],
+     [
+      "FleetBeacon",
+      1
+     ],
+     [
+      "Carrier",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.3,
+     "Gateway": 0.8,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 2.0,
+     "Zealot": 2.3,
+     "Stargate": 3.7,
+     "FleetBeacon": 5.8,
+     "Carrier": 7.8
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 35.0,
+      "opp_sup": 29.0,
+      "army": 400,
+      "opp_army": 200,
+      "wk": 24,
+      "opp_wk": 22
+     },
+     {
+      "m": 6,
+      "sup": 49.0,
+      "opp_sup": 43.0,
+      "army": 400,
+      "opp_army": 400,
+      "wk": 33,
+      "opp_wk": 30
+     },
+     {
+      "m": 8,
+      "sup": 66.0,
+      "opp_sup": 75.0,
+      "army": 1380,
+      "opp_army": 1250,
+      "wk": 46,
+      "opp_wk": 44
+     },
+     {
+      "m": 12,
+      "sup": 132.0,
+      "opp_sup": 141.0,
+      "army": 5010,
+      "opp_army": 3175,
+      "wk": 69,
+      "opp_wk": 76
+     }
+    ],
+    "match": 4656524,
+    "won": true,
+    "opp": "BenBotBC"
+   }
+  ],
+  "src_zip": null
+ },
+ "WaterLeak": {
+  "meta": {
+   "id": 1032,
+   "name": "WaterLeak",
+   "race": "Z",
+   "type": "python",
+   "pub": false,
+   "elo": 1876,
+   "created": "2026-02",
+   "updated": "2026-04-12"
+  },
+  "record": {
+   "W": 65,
+   "L": 55,
+   "draw": 30,
+   "byrace": {
+    "Z": [
+     32,
+     12
+    ],
+    "T": [
+     12,
+     20
+    ],
+    "P": [
+     16,
+     21
+    ],
+    "R": [
+     5,
+     2
+    ]
+   }
+  },
+  "tough": [
+   [
+    "clone",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "27turtles",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "muravev",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "BotTato",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "Mulebot",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "Zozo",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "PerilousProtossBot",
+    0,
+    2,
+    "P"
+   ],
+   [
+    "Eris",
+    0,
+    2,
+    "Z"
+   ],
+   [
+    "BenBotBC",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "Roro",
+    0,
+    2,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "Clicadinha",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Princess-Mika",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "Princess-Mika-Test",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "BigDaddy",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "SharkGull",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "Laser-Circus",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "WickedBot",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "version_2.0",
+    2,
+    0,
+    "T"
+   ],
+   [
+    "ZeratulsRevenge",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "SpeedlingBot",
+    2,
+    0,
+    "Z"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "T",
+    "min": 43.9,
+    "build": [
+     [
+      "Roach",
+      25
+     ],
+     [
+      "Drone",
+      19
+     ],
+     [
+      "Overlord",
+      7
+     ],
+     [
+      "Hatchery",
+      1
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "Extractor",
+      1
+     ],
+     [
+      "RoachWarren",
+      1
+     ],
+     [
+      "Queen",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.5,
+     "Extractor": 0.6,
+     "RoachWarren": 1.6,
+     "Queen": 2.5,
+     "Roach": 3.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 44.0,
+      "opp_sup": 32.0,
+      "army": 1275,
+      "opp_army": 200,
+      "wk": 16,
+      "opp_wk": 25
+     },
+     {
+      "m": 6,
+      "sup": 36.0,
+      "opp_sup": 46.0,
+      "army": 875,
+      "opp_army": 575,
+      "wk": 16,
+      "opp_wk": 29
+     },
+     {
+      "m": 8,
+      "sup": 34.0,
+      "opp_sup": 70.0,
+      "army": 775,
+      "opp_army": 1675,
+      "wk": 16,
+      "opp_wk": 41
+     },
+     {
+      "m": 12,
+      "sup": 30.0,
+      "opp_sup": 121.0,
+      "army": 575,
+      "opp_army": 3525,
+      "wk": 16,
+      "opp_wk": 64
+     }
+    ],
+    "match": 4656788,
+    "won": false,
+    "opp": "27turtles"
+   },
+   {
+    "opp_race": "Z",
+    "min": 42.9,
+    "build": [
+     [
+      "Zergling",
+      64
+     ],
+     [
+      "Drone",
+      44
+     ],
+     [
+      "Overlord",
+      7
+     ],
+     [
+      "Queen",
+      4
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "Extractor",
+      1
+     ],
+     [
+      "BanelingNest",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.4,
+     "Extractor": 2.5,
+     "Zergling": 3.2,
+     "Queen": 3.4,
+     "BanelingNest": 3.6
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 41.0,
+      "opp_sup": 50.0,
+      "army": 900,
+      "opp_army": 1150,
+      "wk": 18,
+      "opp_wk": 26
+     },
+     {
+      "m": 6,
+      "sup": 60.0,
+      "opp_sup": 69.0,
+      "army": 1750,
+      "opp_army": 1050,
+      "wk": 29,
+      "opp_wk": 44
+     },
+     {
+      "m": 8,
+      "sup": 43.0,
+      "opp_sup": 73.0,
+      "army": 1575,
+      "opp_army": 1125,
+      "wk": 19,
+      "opp_wk": 48
+     },
+     {
+      "m": 12,
+      "sup": 42.0,
+      "opp_sup": 127.5,
+      "army": 1500,
+      "opp_army": 3750,
+      "wk": 22,
+      "opp_wk": 72
+     }
+    ],
+    "match": 4631099,
+    "won": false,
+    "opp": "72Tortoises"
+   },
+   {
+    "opp_race": "T",
+    "min": 21.0,
+    "build": [
+     [
+      "Roach",
+      25
+     ],
+     [
+      "Drone",
+      19
+     ],
+     [
+      "Overlord",
+      8
+     ],
+     [
+      "Hatchery",
+      1
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "Extractor",
+      1
+     ],
+     [
+      "RoachWarren",
+      1
+     ],
+     [
+      "Queen",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.5,
+     "Extractor": 0.6,
+     "RoachWarren": 1.6,
+     "Queen": 2.5,
+     "Roach": 3.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 42.0,
+      "opp_sup": 37.0,
+      "army": 1175,
+      "opp_army": 300,
+      "wk": 16,
+      "opp_wk": 28
+     },
+     {
+      "m": 6,
+      "sup": 58.0,
+      "opp_sup": 27.0,
+      "army": 1975,
+      "opp_army": 400,
+      "wk": 16,
+      "opp_wk": 15
+     },
+     {
+      "m": 8,
+      "sup": 44.0,
+      "opp_sup": 14.0,
+      "army": 1275,
+      "opp_army": 525,
+      "wk": 16,
+      "opp_wk": 4
+     },
+     {
+      "m": 12,
+      "sup": 34.0,
+      "opp_sup": 59.0,
+      "army": 775,
+      "opp_army": 950,
+      "wk": 16,
+      "opp_wk": 40
+     }
+    ],
+    "match": 4664124,
+    "won": false,
+    "opp": "Roro"
+   },
+   {
+    "opp_race": "T",
+    "min": 20.1,
+    "build": [
+     [
+      "Roach",
+      25
+     ],
+     [
+      "Drone",
+      19
+     ],
+     [
+      "Overlord",
+      8
+     ],
+     [
+      "Hatchery",
+      1
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "Extractor",
+      1
+     ],
+     [
+      "RoachWarren",
+      1
+     ],
+     [
+      "Queen",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.5,
+     "Extractor": 0.6,
+     "RoachWarren": 1.6,
+     "Queen": 2.5,
+     "Roach": 3.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 42.0,
+      "opp_sup": 35.0,
+      "army": 1175,
+      "opp_army": 300,
+      "wk": 16,
+      "opp_wk": 26
+     },
+     {
+      "m": 6,
+      "sup": 58.0,
+      "opp_sup": 33.0,
+      "army": 1975,
+      "opp_army": 675,
+      "wk": 16,
+      "opp_wk": 18
+     },
+     {
+      "m": 8,
+      "sup": 32.0,
+      "opp_sup": 26.0,
+      "army": 675,
+      "opp_army": 925,
+      "wk": 16,
+      "opp_wk": 11
+     },
+     {
+      "m": 12,
+      "sup": 32.0,
+      "opp_sup": 61.0,
+      "army": 675,
+      "opp_army": 1425,
+      "wk": 16,
+      "opp_wk": 41
+     }
+    ],
+    "match": 4659626,
+    "won": false,
+    "opp": "Roro"
+   }
+  ],
+  "src_zip": null
+ },
+ "JimmyBot": {
+  "meta": {
+   "id": 1080,
+   "name": "JimmyBot",
+   "race": "R",
+   "type": "python",
+   "pub": false,
+   "elo": 1860,
+   "created": "2026-03",
+   "updated": "2026-07-14"
+  },
+  "record": {
+   "W": 71,
+   "L": 74,
+   "draw": 5,
+   "byrace": {
+    "Z": [
+     33,
+     27
+    ],
+    "P": [
+     21,
+     16
+    ],
+    "T": [
+     12,
+     28
+    ],
+    "R": [
+     3,
+     2
+    ],
+    "?": [
+     2,
+     1
+    ]
+   }
+  },
+  "tough": [
+   [
+    "TheLAW",
+    0,
+    4,
+    "T"
+   ],
+   [
+    "clone",
+    0,
+    4,
+    "T"
+   ],
+   [
+    "norman",
+    0,
+    3,
+    "P"
+   ],
+   [
+    "onlyfans",
+    0,
+    3,
+    "T"
+   ],
+   [
+    "QueenBot",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "nida",
+    1,
+    3,
+    "P"
+   ],
+   [
+    "27turtles",
+    1,
+    3,
+    "T"
+   ],
+   [
+    "72Tortoises",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "muravev",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "BigDaddy",
+    1,
+    3,
+    "T"
+   ]
+  ],
+  "best": [
+   [
+    "Princess-Mika",
+    3,
+    0,
+    "Z"
+   ],
+   [
+    "PiG_Bot",
+    3,
+    1,
+    "P"
+   ],
+   [
+    "Crawler",
+    3,
+    1,
+    "Z"
+   ],
+   [
+    "49Terrapins",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "MY_SCRIPTING_SON",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "Tyckles",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "PrimordialOrigin",
+    2,
+    0,
+    "P"
+   ],
+   [
+    "gotest",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "KoB",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "oberon",
+    2,
+    0,
+    "T"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "Z",
+    "min": 65.4,
+    "build": [
+     [
+      "Zergling",
+      100
+     ],
+     [
+      "Drone",
+      15
+     ],
+     [
+      "Overlord",
+      7
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "Queen",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.5,
+     "Zergling": 1.9,
+     "Queen": 2.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 35.5,
+      "opp_sup": 10.0,
+      "army": 850,
+      "opp_army": 0,
+      "wk": 13,
+      "opp_wk": 9
+     },
+     {
+      "m": 6,
+      "sup": 51.5,
+      "opp_sup": 5.0,
+      "army": 1875,
+      "opp_army": 0,
+      "wk": 13,
+      "opp_wk": 4
+     },
+     {
+      "m": 8,
+      "sup": 67.5,
+      "opp_sup": 14.0,
+      "army": 2875,
+      "opp_army": 0,
+      "wk": 13,
+      "opp_wk": 13
+     },
+     {
+      "m": 12,
+      "sup": 103.5,
+      "opp_sup": 23.0,
+      "army": 4375,
+      "opp_army": 0,
+      "wk": 13,
+      "opp_wk": 21
+     }
+    ],
+    "match": 4710357,
+    "won": false,
+    "opp": "muravev"
+   },
+   {
+    "opp_race": "Z",
+    "min": 45.2,
+    "build": [
+     [
+      "Drone",
+      55
+     ],
+     [
+      "Roach",
+      13
+     ],
+     [
+      "Overlord",
+      12
+     ],
+     [
+      "CreepTumor",
+      9
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "CreepTumorQueen",
+      4
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "Changeling",
+      2
+     ],
+     [
+      "EvolutionChamber",
+      2
+     ],
+     [
+      "SpawningPool",
+      1
+     ],
+     [
+      "RoachWarren",
+      1
+     ],
+     [
+      "HydraliskDen",
+      1
+     ]
+    ],
+    "first_seen": {
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.8,
+     "Extractor": 2.9,
+     "RoachWarren": 2.9,
+     "Queen": 3.7,
+     "Roach": 4.3,
+     "CreepTumorQueen": 5.4,
+     "CreepTumor": 6.0,
+     "Changeling": 6.4,
+     "EvolutionChamber": 7.2,
+     "HydraliskDen": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 44.0,
+      "opp_sup": 46.0,
+      "army": 450,
+      "opp_army": 700,
+      "wk": 28,
+      "opp_wk": 31
+     },
+     {
+      "m": 6,
+      "sup": 68.0,
+      "opp_sup": 73.0,
+      "army": 1250,
+      "opp_army": 1575,
+      "wk": 45,
+      "opp_wk": 45
+     },
+     {
+      "m": 8,
+      "sup": 101.0,
+      "opp_sup": 109.0,
+      "army": 2325,
+      "opp_army": 2475,
+      "wk": 53,
+      "opp_wk": 74
+     },
+     {
+      "m": 12,
+      "sup": 200.0,
+      "opp_sup": 134.0,
+      "army": 6350,
+      "opp_army": 2300,
+      "wk": 86,
+      "opp_wk": 90
+     }
+    ],
+    "match": 4709082,
+    "won": true,
+    "opp": "QueenBot"
+   },
+   {
+    "opp_race": "T",
+    "min": 39.0,
+    "build": [
+     [
+      "SCV",
+      47
+     ],
+     [
+      "Marine",
+      25
+     ],
+     [
+      "SupplyDepot",
+      6
+     ],
+     [
+      "CommandCenter",
+      5
+     ],
+     [
+      "Barracks",
+      4
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.1,
+     "Marine": 2.6,
+     "Refinery": 2.8,
+     "BarracksTechLab": 4.0,
+     "Factory": 7.4
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 34.0,
+      "opp_sup": 34.0,
+      "army": 300,
+      "opp_army": 575,
+      "wk": 25,
+      "opp_wk": 22
+     },
+     {
+      "m": 6,
+      "sup": 59.0,
+      "opp_sup": 56.0,
+      "army": 800,
+      "opp_army": 1425,
+      "wk": 38,
+      "opp_wk": 30
+     },
+     {
+      "m": 8,
+      "sup": 65.0,
+      "opp_sup": 76.0,
+      "army": 850,
+      "opp_army": 2225,
+      "wk": 43,
+      "opp_wk": 42
+     },
+     {
+      "m": 12,
+      "sup": 94.0,
+      "opp_sup": 118.0,
+      "army": 1200,
+      "opp_army": 4600,
+      "wk": 60,
+      "opp_wk": 59
+     }
+    ],
+    "match": 4712399,
+    "won": false,
+    "opp": "RustyNikolaj"
+   },
+   {
+    "opp_race": "Z",
+    "min": 36.4,
+    "build": [
+     [
+      "SCV",
+      30
+     ],
+     [
+      "Marine",
+      13
+     ],
+     [
+      "SupplyDepot",
+      8
+     ],
+     [
+      "SiegeTank",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "Starport",
+      2
+     ],
+     [
+      "StarportTechLab",
+      2
+     ],
+     [
+      "Barracks",
+      1
+     ],
+     [
+      "EngineeringBay",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "FusionCore",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 1.1,
+     "Refinery": 1.5,
+     "EngineeringBay": 1.8,
+     "Marine": 2.6,
+     "Factory": 3.2,
+     "FactoryTechLab": 4.2,
+     "Starport": 4.7,
+     "SiegeTank": 5.4,
+     "StarportTechLab": 5.5,
+     "FusionCore": 7.0
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 35.0,
+      "opp_sup": 36.0,
+      "army": 300,
+      "opp_army": 650,
+      "wk": 25,
+      "opp_wk": 23
+     },
+     {
+      "m": 6,
+      "sup": 50.0,
+      "opp_sup": 62.0,
+      "army": 1050,
+      "opp_army": 650,
+      "wk": 30,
+      "opp_wk": 42
+     },
+     {
+      "m": 8,
+      "sup": 58.0,
+      "opp_sup": 84.0,
+      "army": 1850,
+      "opp_army": 1000,
+      "wk": 30,
+      "opp_wk": 70
+     },
+     {
+      "m": 12,
+      "sup": 86.0,
+      "opp_sup": 183.0,
+      "army": 4350,
+      "opp_army": 5825,
+      "wk": 30,
+      "opp_wk": 71
+     }
+    ],
+    "match": 4712383,
+    "won": false,
+    "opp": "PolyMorph"
+   }
+  ],
+  "src_zip": null
+ },
+ "JimmyBotT": {
+  "meta": {
+   "id": 1079,
+   "name": "JimmyBotT",
+   "race": "T",
+   "type": "python",
+   "pub": false,
+   "elo": 1860,
+   "created": "2026-03",
+   "updated": "2026-07-14"
+  },
+  "record": {
+   "W": 68,
+   "L": 71,
+   "draw": 11,
+   "byrace": {
+    "Z": [
+     38,
+     20
+    ],
+    "P": [
+     14,
+     21
+    ],
+    "T": [
+     10,
+     26
+    ],
+    "R": [
+     4,
+     4
+    ],
+    "?": [
+     2,
+     0
+    ]
+   }
+  },
+  "tough": [
+   [
+    "TheLAW",
+    0,
+    5,
+    "T"
+   ],
+   [
+    "Nothing",
+    0,
+    5,
+    "P"
+   ],
+   [
+    "clone",
+    0,
+    5,
+    "T"
+   ],
+   [
+    "muravev",
+    0,
+    5,
+    "Z"
+   ],
+   [
+    "BigDaddy",
+    0,
+    5,
+    "T"
+   ],
+   [
+    "QueenBot",
+    0,
+    4,
+    "Z"
+   ],
+   [
+    "LordSuperKing",
+    0,
+    3,
+    "P"
+   ],
+   [
+    "WaterLeak",
+    0,
+    3,
+    "Z"
+   ],
+   [
+    "72Tortoises",
+    0,
+    3,
+    "Z"
+   ],
+   [
+    "nida",
+    1,
+    3,
+    "P"
+   ]
+  ],
+  "best": [
+   [
+    "Clicadinha",
+    5,
+    0,
+    "Z"
+   ],
+   [
+    "Princess-Mika",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "smokinggunbot",
+    4,
+    0,
+    "T"
+   ],
+   [
+    "Lissy",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "JimmyBotZ",
+    4,
+    0,
+    "Z"
+   ],
+   [
+    "Crawler",
+    4,
+    1,
+    "Z"
+   ],
+   [
+    "ArtZerg",
+    4,
+    1,
+    "Z"
+   ],
+   [
+    "27turtles",
+    3,
+    1,
+    "T"
+   ],
+   [
+    "PolyMorph",
+    2,
+    0,
+    "Z"
+   ],
+   [
+    "MindMatrix",
+    2,
+    0,
+    "?"
+   ]
+  ],
+  "builds": [
+   {
+    "opp_race": "Z",
+    "min": 50.1,
+    "build": [
+     [
+      "SCV",
+      41
+     ],
+     [
+      "Marine",
+      13
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "SiegeTank",
+      3
+     ],
+     [
+      "Starport",
+      2
+     ],
+     [
+      "StarportTechLab",
+      2
+     ],
+     [
+      "Barracks",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "Bunker",
+      1
+     ],
+     [
+      "FusionCore",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 1.1,
+     "Refinery": 1.4,
+     "Marine": 2.6,
+     "Factory": 2.7,
+     "FactoryTechLab": 3.7,
+     "Starport": 4.8,
+     "SiegeTank": 5.2,
+     "StarportTechLab": 5.8,
+     "Bunker": 5.9,
+     "FusionCore": 7.7
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 36.0,
+      "opp_sup": 36.0,
+      "army": 300,
+      "opp_army": 200,
+      "wk": 26,
+      "opp_wk": 27
+     },
+     {
+      "m": 6,
+      "sup": 53.0,
+      "opp_sup": 65.0,
+      "army": 1050,
+      "opp_army": 850,
+      "wk": 34,
+      "opp_wk": 45
+     },
+     {
+      "m": 8,
+      "sup": 82.0,
+      "opp_sup": 111.0,
+      "army": 1850,
+      "opp_army": 2100,
+      "wk": 46,
+      "opp_wk": 55
+     },
+     {
+      "m": 12,
+      "sup": 103.0,
+      "opp_sup": 125.5,
+      "army": 4350,
+      "opp_army": 5575,
+      "wk": 48,
+      "opp_wk": 55
+     }
+    ],
+    "match": 4710376,
+    "won": false,
+    "opp": "muravev"
+   },
+   {
+    "opp_race": "Z",
+    "min": 45.9,
+    "build": [
+     [
+      "SCV",
+      41
+     ],
+     [
+      "Marine",
+      13
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "SiegeTank",
+      3
+     ],
+     [
+      "Starport",
+      2
+     ],
+     [
+      "StarportTechLab",
+      2
+     ],
+     [
+      "Barracks",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "Bunker",
+      1
+     ],
+     [
+      "FusionCore",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 1.1,
+     "Refinery": 1.4,
+     "Marine": 2.6,
+     "Factory": 2.7,
+     "FactoryTechLab": 3.7,
+     "Starport": 4.8,
+     "SiegeTank": 5.2,
+     "StarportTechLab": 5.6,
+     "Bunker": 5.9,
+     "FusionCore": 7.6
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 36.0,
+      "opp_sup": 46.0,
+      "army": 300,
+      "opp_army": 700,
+      "wk": 26,
+      "opp_wk": 32
+     },
+     {
+      "m": 6,
+      "sup": 55.0,
+      "opp_sup": 76.0,
+      "army": 1050,
+      "opp_army": 1400,
+      "wk": 34,
+      "opp_wk": 50
+     },
+     {
+      "m": 8,
+      "sup": 76.0,
+      "opp_sup": 108.0,
+      "army": 1850,
+      "opp_army": 2650,
+      "wk": 46,
+      "opp_wk": 70
+     },
+     {
+      "m": 12,
+      "sup": 61.0,
+      "opp_sup": 120.0,
+      "army": 3475,
+      "opp_army": 4575,
+      "wk": 20,
+      "opp_wk": 70
+     }
+    ],
+    "match": 4710054,
+    "won": false,
+    "opp": "QueenBot"
+   },
+   {
+    "opp_race": "T",
+    "min": 42.2,
+    "build": [
+     [
+      "SCV",
+      40
+     ],
+     [
+      "Marine",
+      13
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "SiegeTank",
+      3
+     ],
+     [
+      "Starport",
+      2
+     ],
+     [
+      "StarportTechLab",
+      2
+     ],
+     [
+      "Barracks",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ],
+     [
+      "FactoryTechLab",
+      1
+     ],
+     [
+      "Bunker",
+      1
+     ],
+     [
+      "FusionCore",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 1.1,
+     "Refinery": 1.4,
+     "Marine": 2.6,
+     "Factory": 2.7,
+     "FactoryTechLab": 3.7,
+     "Starport": 5.0,
+     "SiegeTank": 5.2,
+     "Bunker": 5.8,
+     "StarportTechLab": 5.9,
+     "FusionCore": 7.8
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 37.0,
+      "opp_sup": 30.0,
+      "army": 300,
+      "opp_army": 300,
+      "wk": 26,
+      "opp_wk": 23
+     },
+     {
+      "m": 6,
+      "sup": 51.0,
+      "opp_sup": 53.0,
+      "army": 1050,
+      "opp_army": 850,
+      "wk": 33,
+      "opp_wk": 34
+     },
+     {
+      "m": 8,
+      "sup": 67.0,
+      "opp_sup": 69.0,
+      "army": 1250,
+      "opp_army": 950,
+      "wk": 44,
+      "opp_wk": 46
+     },
+     {
+      "m": 12,
+      "sup": 79.0,
+      "opp_sup": 134.0,
+      "army": 2300,
+      "opp_army": 2450,
+      "wk": 37,
+      "opp_wk": 74
+     }
+    ],
+    "match": 4709231,
+    "won": false,
+    "opp": "onlyfans"
+   },
+   {
+    "opp_race": "P",
+    "min": 41.2,
+    "build": [
+     [
+      "SCV",
+      52
+     ],
+     [
+      "Marine",
+      25
+     ],
+     [
+      "SupplyDepot",
+      8
+     ],
+     [
+      "CommandCenter",
+      5
+     ],
+     [
+      "Barracks",
+      5
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BarracksTechLab",
+      1
+     ],
+     [
+      "EngineeringBay",
+      1
+     ],
+     [
+      "Factory",
+      1
+     ]
+    ],
+    "first_seen": {
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.1,
+     "Marine": 2.6,
+     "Refinery": 2.8,
+     "BarracksTechLab": 3.9,
+     "EngineeringBay": 7.2,
+     "Factory": 7.3
+    },
+    "traj": [
+     {
+      "m": 4,
+      "sup": 35.0,
+      "opp_sup": 35.0,
+      "army": 350,
+      "opp_army": 350,
+      "wk": 26,
+      "opp_wk": 28
+     },
+     {
+      "m": 6,
+      "sup": 64.0,
+      "opp_sup": 50.0,
+      "army": 850,
+      "opp_army": 875,
+      "wk": 41,
+      "opp_wk": 35
+     },
+     {
+      "m": 8,
+      "sup": 78.0,
+      "opp_sup": 59.0,
+      "army": 650,
+      "opp_army": 1050,
+      "wk": 58,
+      "opp_wk": 42
+     },
+     {
+      "m": 12,
+      "sup": 131.0,
+      "opp_sup": 105.0,
+      "army": 1950,
+      "opp_army": 4100,
+      "wk": 82,
+      "opp_wk": 56
+     }
+    ],
+    "match": 4712309,
+    "won": false,
+    "opp": "LordSuperKing"
+   }
+  ],
+  "src_zip": null
+ },
+ "12PoolBot": {
+  "meta": {
+   "id": 357,
+   "name": "12PoolBot",
+   "race": "Z",
+   "type": "python",
+   "pub": true,
+   "elo": 1858,
+   "created": "2021-12",
+   "updated": "2026-04-04"
+  },
+  "record": {
+   "W": 34,
+   "L": 109,
+   "draw": 7,
+   "byrace": {
+    "P": [
+     22,
+     74
+    ],
+    "T": [
+     6,
+     18
+    ],
+    "Z": [
+     6,
+     17
+    ]
+   }
+  },
+  "tough": [
+   [
+    "negativeZero",
+    20,
+    73,
+    "P"
+   ],
+   [
+    "BenBotBC",
+    4,
+    12,
+    "T"
+   ],
+   [
+    "Zoe",
+    0,
+    6,
+    "Z"
+   ],
+   [
+    "ProFarTBOT",
+    0,
+    3,
+    "Z"
+   ],
+   [
+    "PhantomTest",
+    1,
+    3,
+    "Z"
+   ],
+   [
+    "MechaShark",
+    0,
+    2,
+    "T"
+   ],
+   [
+    "Ketroc",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "MicroMachine",
+    0,
+    1,
+    "T"
+   ],
+   [
+    "Caninana",
+    0,
+    1,
+    "Z"
+   ],
+   [
+    "Eris",
+    0,
+    1,
+    "Z"
+   ]
+  ],
+  "best": [
+   [
+    "Dovahkiin",
+    3,
+    2,
+    "Z"
+   ],
+   [
+    "SharkbotTest",
+    2,
+    1,
+    "P"
+   ],
+   [
+    "Seven",
+    1,
+    0,
+    "Z"
+   ],
+   [
+    "DominionDog",
+    2,
+    2,
+    "T"
+   ],
+   [
+    "ZoeDev",
+    1,
+    1,
+    "Z"
+   ],
+   [
+    "PhantomTest",
+    1,
+    3,
+    "Z"
+   ]
+  ],
+  "builds": [],
+  "src_zip": true
+ }
+}

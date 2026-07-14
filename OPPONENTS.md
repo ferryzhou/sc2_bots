@@ -5,9 +5,11 @@
 adapting opponent. On the AI Arena ladder that model is missing one structural
 fact that dominates results: **our opponents are computer programs, and most of
 them play very close to the same build every single game.** This document adds
-the principles that follow from that fact. It is grounded in
-[`bot_profiles/`](bot_profiles/) — 92 GriffinBot ladder games and the extracted
-opponent build orders behind them.
+the principles that follow from that fact. It is grounded in GriffinBot's 92
+ladder games ([`results/LADDER_ANALYSIS.md`](results/LADDER_ANALYSIS.md) and
+[`bot_profiles/data/griffin_matches.json`](bot_profiles/data/griffin_matches.json))
+and the opponent build orders behind them. For objective, standalone profiles of
+the ladder's top bots, see [`bot_profiles/`](bot_profiles/).
 
 ## The core observation: matchups are (nearly) binary
 
@@ -52,8 +54,9 @@ non‑deterministic — but against this field the ordering flips:
   is only to check the build hasn't changed — and to trigger the prepared
   counter earlier if confirmed.
 - **Update the prior after every game.** A lost replay is a bug report. The
-  per‑opponent profiles in [`bot_profiles/`](bot_profiles/) are that table in
-  human‑readable form; the same data can drive an in‑bot lookup.
+  objective bot profiles in [`bot_profiles/`](bot_profiles/) are that kind of
+  table in human‑readable form; the same per‑opponent data can drive an in‑bot
+  lookup.
 - **When there is no prior (new opponent), fall back to STRATEGY.md** — classify
   from live scouting and err toward safety.
 
@@ -135,8 +138,10 @@ for these, in priority order (most losses first):
 | **Protoss air / cannon / robo** | Asteria (tempest), sharpy (void), DasyBot (immortal), Apidae (cannon) | Un‑scouted tech we can't answer | Scout the tech building, react early (turrets/vikings/focus) |
 | **Passive / broken** | JackBot2.0, BioBotGod, Visenya, CyraxxDKAkron | — (they stall) | Macro straight up, free win |
 
-See [`bot_profiles/`](bot_profiles/) for the per‑opponent build order, economy
-trajectory, strengths/weaknesses, and specific counter.
+The specific opponents above come from GriffinBot's own match history
+([`bot_profiles/data/griffin_matches.json`](bot_profiles/data/griffin_matches.json)).
+For objective build orders, records, strengths/weaknesses, and counters on the
+ladder's top bots, see the profiles in [`bot_profiles/`](bot_profiles/).
 
 ## How this connects back to the core model
 

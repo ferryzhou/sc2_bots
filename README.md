@@ -10,7 +10,7 @@ This project is a collection of AI bots for StarCraft II, developed using Python
 *   `phoenix`: PhoenixBot, a Protoss bot built on the ares-sc2 framework with data-driven openings (details in `phoenix/README.md`).
 *   `griffin`: GriffinBot, a Terran bio+tank bot built on ares-sc2, the Terran counterpart of PhoenixBot (details in `griffin/README.md`).
 *   Replay analysis tool (`analysis/sc2reader_analyzer.py`) to extract build orders, unit production, upgrades, and generate performance graphs.
-*   `bot_profiles/`: A scouting dossier on the AI Arena ladder opponents GriffinBot faces — per-bot build order, economy trajectory, strengths/weaknesses, and the counter, derived from replay data. See `OPPONENTS.md` for the framework on playing a field of deterministic bots.
+*   `bot_profiles/`: Objective scouting profiles of the top AI Arena ladder bots — each bot's own race, strategy, build order, per-race record, strengths, and weaknesses, derived from its source (when public), its replays, and its match history. See `OPPONENTS.md` for the framework on playing a field of deterministic bots.
 *   Scripts to run bots locally against the computer or other bots.
 
 **Directory Structure:**
