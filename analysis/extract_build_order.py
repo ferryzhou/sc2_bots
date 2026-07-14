@@ -83,8 +83,8 @@ def extract(path, who=None):
             steps.append((e.second, "structure", e.unit.name))
         elif e.name in ("UnitBornEvent", "UnitInitEvent"):
             n = e.unit.name
-            # Ignore non-units: larva/eggs and AI Arena control "Beacon" markers.
-            if n not in STRUCTURES and not n.startswith("Beacon") and n not in ("Larva", "Egg", "Broodling"):
+            # Ignore non-units: unnamed morphs, larva/eggs, AI Arena "Beacon" markers.
+            if n and n not in STRUCTURES and not n.startswith("Beacon") and n not in ("Larva", "Egg", "Broodling"):
                 unit_counts[n] += 1
                 if n not in unit_first:
                     unit_first[n] = e.second
