@@ -232,8 +232,8 @@ class PhoenixBot(AresBot):
     async def on_step(self, iteration: int) -> None:
         await super(PhoenixBot, self).on_step(iteration)
 
-        self._update_emergency()
         self._all_in_read: bool = self._enemy_all_in
+        self._update_emergency()
         self._counter_proxy_structures()
         self._macro()
 
@@ -350,11 +350,21 @@ class PhoenixBot(AresBot):
         intel_rush: bool = bool(
             self.mediator.get_did_enemy_rush or self.mediator.get_is_proxy_zealot
         )
-        if intel_rush or self._early_aggression_seen():
+        # Two triggers: an EARLY rush (proximity / intel, <5min) OR a
+        # mid-game ONE-BASE ALL-IN (_all_in_read, 3:30-11min). The latter
+        # was the gap: one-base timings (ZEALOCALYPSE, OneBaseStalkerBot)
+        # hit at 6-10min - past the early window - and out-produced us 2-4x
+        # while we kept our economic opening. Both now abort the build and
+        # drop into lockdown (pump army + batteries, no expand/greed).
+        early_rush = (intel_rush or self._early_aggression_seen()) and (
+            self.time < EARLY_THREAT_UNTIL
+        )
+        if early_rush or self._all_in_read:
             self._last_threat_time = self.time
-            if not self._emergency and self.time < EARLY_THREAT_UNTIL:
+            if not self._emergency:
                 self._emergency = True
-                logger.warning(f"{self.time_formatted} EMERGENCY: early rush detected")
+                reason = "early rush" if early_rush else "one-base all-in"
+                logger.warning(f"{self.time_formatted} EMERGENCY: {reason}")
                 if not self.build_order_runner.build_completed:
                     # hand control to the reactive macro plan immediately
                     self.build_order_runner.set_build_completed()
