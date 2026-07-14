@@ -89,10 +89,13 @@ Treat your opponent model as a probability you refine, never a fact you know.
   literally "scout, and when unsure err toward safety."
 - `recommend_investment` drops to a **safe** posture (army first, greed delayed)
   the moment pressure is detected, matching "default to safe when blind."
-
-What it does not yet do — and a natural next step — is **dead-reckoning**:
-estimating the enemy's current army/economy from the last sighting plus elapsed
-time, so decisions degrade gracefully instead of falling straight to `UNKNOWN`.
+- **Dead-reckoning** (`information.py`): when the last scout is stale,
+  `estimate_enemy` / `project_enemy` age the last sighting forward — adding the
+  army their production could have made and the workers they could have added, as
+  a floor with decaying confidence. The advisor runs classification, timing, and
+  engagement on this projection so they **degrade gracefully instead of falling
+  straight to `UNKNOWN`**, while own-side rules (including "keep scouting") still
+  run on the real state — a projection never hides the need to re-scout.
 
 ## Connects to
 
