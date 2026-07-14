@@ -49,6 +49,21 @@ def classify_opponent(state: GameState) -> Classification:
     count vs. army supply, expansion timing, tech/production, proxies, static
     defense, and -- loudest of all -- what is *missing*.
     """
+    # A proxy / warp-in near our base, or an early army push, is an alarm on its
+    # own -- it does not require having scouted the enemy's base. Fire before the
+    # "unknown" gate so home-visible aggression is never missed for lack of a scout.
+    home_aggression = state.enemy_proxy or (
+        state.enemy_army_moving_out and state.game_minutes < 5.0
+    )
+    if home_aggression and not state.enemy_known:
+        sig: List[str] = []
+        if state.enemy_proxy:
+            sig.append("proxy / warp-in near our base")
+        if state.enemy_army_moving_out:
+            sig.append("enemy army moving out early")
+        sig.append("aggression seen from home without a base scout -- treat as all-in until disproven")
+        return Classification(Archetype.CHEESE_ALLIN, 0.6, sig)
+
     if not state.enemy_known or state.scouting_stale:
         return Classification(
             Archetype.UNKNOWN,
@@ -63,6 +78,7 @@ def classify_opponent(state: GameState) -> Classification:
     prod = state.enemy_production_structures or 0
     tech = state.enemy_tech_structures or 0
     defense = state.enemy_static_defense or 0
+    gas = state.enemy_gas_count  # None == not scouted
     expected = _expected_bases(minutes)
 
     signals: List[str] = []
@@ -89,9 +105,24 @@ def classify_opponent(state: GameState) -> Classification:
     if bases < expected:
         timing_score += 1
         signals.append(f"expansion behind standard ({bases} vs ~{expected})")
-    if prod >= 3 and bases <= 2:
+    # Production count relative to base is the core tell. Many production
+    # buildings on a *single* base is the shape of a gateway/rax all-in and
+    # counts double -- this is what a scout of the 4-gate actually sees.
+    if bases <= 1 and prod >= 3:
+        timing_score += 2
+        signals.append(f"{prod} production buildings on one base -- gateway/rax all-in shape")
+    elif prod >= 3 and bases <= 2:
         timing_score += 1
         signals.append(f"many production buildings ({prod}) on a small economy")
+    # No gas on one base with multiple production = a mass-gateway/zealot (or
+    # mass-marine) all-in -- the clearest gas-light aggression tell.
+    if bases <= 1 and gas == 0 and prod >= 2 and minutes > 1.5:
+        timing_score += 1
+        signals.append("no gas + multiple production on one base -- gas-light mass-unit all-in")
+    # Stalled economy: workers capped low on one base = resources going to army.
+    if bases <= 1 and workers is not None and workers <= 18 and minutes > 2.0:
+        timing_score += 1
+        signals.append(f"worker count stalled ({workers}) on one base -- committing to army")
     if army is not None and army >= state.army_supply + 4:
         timing_score += 1
         signals.append("army supply spiking ahead of ours")

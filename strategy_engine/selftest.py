@@ -17,7 +17,7 @@ from .principles import (
     power_timing,
     assess_efficiency,
 )
-from .strategy import Archetype, classify_opponent
+from .strategy import Archetype, classify_opponent, counter_stance
 from .harassment import harass_advice
 from .combat import Engagement, assess_engagement
 from .information import estimate_enemy, project_enemy
@@ -160,6 +160,46 @@ def test_classify_cheese() -> None:
     )
     _check("one base + proxy + early aggression -> cheese",
            classify_opponent(st).archetype == Archetype.CHEESE_ALLIN)
+
+
+def test_detect_four_gate_from_partial_scout() -> None:
+    # Regression: a realistic early scout of a 4-gate zealot all-in used to be
+    # misread as "standard" (see analysis of the lishimin loss). It must now be
+    # caught as aggression from partial info.
+    scouted = GameState(game_time=135, last_scouted_time=130, army_supply=2,
+                        enemy_base_count=1, enemy_worker_count=16,
+                        enemy_production_structures=3, enemy_gas_count=0)
+    c = classify_opponent(scouted)
+    _check("scout @2:00 (1 base, 3 gates, no gas) -> timing attack",
+           c.archetype == Archetype.TIMING_ATTACK)
+    _check("4-gate read yields a defensive counter",
+           counter_stance(c).posture == "defensive")
+
+    moving = GameState(game_time=200, last_scouted_time=195, army_supply=5,
+                       enemy_base_count=1, enemy_production_structures=3,
+                       enemy_army_moving_out=True)
+    _check("one base + army moving out -> timing attack",
+           classify_opponent(moving).archetype == Archetype.TIMING_ATTACK)
+
+
+def test_detect_proxy_without_base_scout() -> None:
+    # A proxy / warp-in pylon near our base must raise an all-in alarm even when
+    # we never scouted the enemy's base (used to return UNKNOWN).
+    st = GameState(game_time=210, army_supply=5, enemy_proxy=True)
+    c = classify_opponent(st)
+    _check("proxy near home without a base scout -> cheese/all-in",
+           c.archetype == Archetype.CHEESE_ALLIN)
+    _check("proxy alarm yields a defensive counter",
+           counter_stance(c).posture == "defensive")
+
+
+def test_no_false_alarm_on_standard_opener() -> None:
+    # A normal one-base opening about to expand must NOT be flagged as an all-in.
+    st = GameState(game_time=150, last_scouted_time=148, army_supply=4,
+                   enemy_base_count=1, enemy_worker_count=18,
+                   enemy_production_structures=1, enemy_gas_count=1)
+    _check("normal 1-base-into-expand -> standard, not an all-in",
+           classify_opponent(st).archetype == Archetype.STANDARD)
 
 
 def test_classify_greedy_and_counter() -> None:
