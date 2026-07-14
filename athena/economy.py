@@ -26,6 +26,13 @@ class Economy:
         if (advice.defense.prioritize_army and bot.supply_army < 8
                 and bot.time < 240 and bot.minerals < 200):
             return
+        # If the library wants static defense and the Forge isn't down yet, stop
+        # probing once a pylon exists and bank for the Forge, so it lands ~0:55
+        # (the winners' timing) instead of ~1:10.
+        if (advice.defense.static_defense >= 1 and not bot.structures(U.FORGE)
+                and bot.already_pending(U.FORGE) == 0 and bot.structures(U.PYLON)
+                and bot.minerals < 150):
+            return
         for nexus in bot.townhalls.ready.idle:
             if bot.can_afford(U.PROBE) and bot.supply_left > 0:
                 nexus.train(U.PROBE)
