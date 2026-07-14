@@ -85,6 +85,14 @@ class Production:
             and bot.townhalls.amount >= 2 and bot.can_afford(U.ROBOTICSBAY)
         ):
             await bot.build(U.ROBOTICSBAY, near=self._pylon(bot))
+        # a 2nd robotics facility vs Zerg so colossus (the splash core of the
+        # deathball) come at ~2x the rate -- one robo can't build enough to win.
+        if (
+            bot.enemy_race == Race.Zerg and bot.structures(U.ROBOTICSBAY).ready
+            and bot.structures(U.ROBOTICSFACILITY).amount + bot.already_pending(U.ROBOTICSFACILITY) < 2
+            and bot.townhalls.amount >= 3 and bot.can_afford(U.ROBOTICSFACILITY)
+        ):
+            await bot.build(U.ROBOTICSFACILITY, near=self._pylon(bot))
         # army upgrades from the twilight council
         twi = bot.structures(U.TWILIGHTCOUNCIL).ready.idle
         if twi:
@@ -183,7 +191,10 @@ class Production:
         for gate in bot.structures(U.GATEWAY).ready.idle:
             stalkers = bot.units(U.STALKER).amount
             zealots = bot.units(U.ZEALOT).amount
-            want_zealot = zealots <= stalkers if zealot_heavy else zealots * 2 <= stalkers
+            # vs Zerg go ~2:1 zealot:stalker -- charging zealots tank/absorb the
+            # ling surround while colossus splash does the killing; stalkers get
+            # surrounded and die. Otherwise a balanced gateway army.
+            want_zealot = zealots < 2 * stalkers if zealot_heavy else zealots * 2 <= stalkers
             can_stalk = bot.structures(U.CYBERNETICSCORE).ready and bot.can_afford(U.STALKER)
             if want_zealot and bot.can_afford(U.ZEALOT):
                 gate.train(U.ZEALOT)
