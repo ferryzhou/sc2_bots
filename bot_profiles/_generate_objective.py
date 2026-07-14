@@ -1230,21 +1230,38 @@ ANALYSIS.update({
      "trade in the open).",
      "Survive → its one base loses to your expand."]),
  "QueenBot": dict(
-   summary="A **queen/creep macro Zerg**: heavy queen count with mass creep "
-     "spread and a big drone economy, into roach/ling. Defensive macro. Strong vs "
-     "Terran in a large sample (51-41).",
-   opening="Economic Zerg; many queens + spore/spine, mass creep tumors, drone-"
-     "heavy.",
-   strategy=["Queens + static defense + creep to defend, drone hard, remax roach/"
-     "ling late.",
-     "Very defensive early — leans on queens/creep to survive to a macro game."],
-   strengths=["Strong defensive economy; good vs Terran (51-41) and Protoss (15-8)."],
-   weaknesses=["Queen-heavy is slow/immobile early — punishable by fast pressure; "
-     "roach/ling lacks splash.",
-     "Cedes map control while turtling on creep."],
-   beat=["Pressure before its economy snowballs; out-range roaches (tanks/"
-     "colossus).",
-     "Take the map — it turtles; deny creep spread."]),
+   summary="A **queen-massing macro Zerg** (ares-sc2, open source). True to its "
+     "name, its core army composition is literally **Queens** (proportion 1.0) — "
+     "backed by a hatch-first economy, heavy creep, nydus, and worker defence, "
+     "teching Lair→Hive with +missile/+armor upgrades. Strong vs Terran (51-41).",
+   opening="Hatch-first economic open (from `zerg_builds.yml`): 12 drone, "
+     "overlord scout to the enemy natural, 15 expand, gas, Spawning Pool ~13, "
+     "then Queens in pairs — economy and queen count first, not early army.",
+   strategy=[
+     "Masses **Queens** as the main army (transfuse, anti-air, and creep spread) "
+     "— an unusual queen-centric composition, with ling/roach support.",
+     "Hatch-first macro: drones to ~70 workers (min(70, bases×22)), constant "
+     "creep tumors, and dedicated nydus + worker-defence managers.",
+     "Teches Lair once it has 7+ queens, then Hive at ~170 supply; researches "
+     "+missile/+armor 1/2/3 and overlord speed.",
+     "Defensive and economy-first — leans on queens + creep + static defence to "
+     "reach a strong upgraded late game."],
+   strengths=[
+     "Strong defensive economy; good vs Terran (51-41) and Protoss (15-8).",
+     "Queens give transfuse sustain, anti-air, and free creep/vision — hard to "
+     "harass or all-in.",
+     "Reaches a fully-upgraded Hive army if the game goes long."],
+   weaknesses=[
+     "Queens are slow and can't chase — it cedes map control and is passive; a "
+     "greedy opponent can out-expand it.",
+     "The queen-heavy army lacks hard splash and hitting power — a maxed "
+     "splashy/upgraded army out-values it late.",
+     "Weak in the Zerg mirror-ish aggression window before creep/queens set up."],
+   beat=[
+     "Take the map and out-expand it — it turtles on creep and won't punish greed.",
+     "Out-range and out-splash the queen/roach army (tanks/colossus/tempest); "
+     "don't melee into creep + transfuse.",
+     "Deny creep spread to cut its vision and queen mobility."]),
  "Hellcannon": dict(
    summary="A **cannon + gateway Protoss**: photon cannons for defense with a "
      "zealot/gateway army and forge upgrades. Semi-turtle into gateway aggression. "
@@ -1312,15 +1329,32 @@ ANALYSIS.update({
      "corruptors); splash the gateway units.",
      "Match upgrades and force favorable fights."]),
  "Krillin": dict(
-   summary="A **macro/aggression Zerg** (a long-time small ladder bot). Even-ish "
-     "form (58-67) but very weak vs Terran (3-24). (Closed source, build not "
-     "captured this sample.)",
-   strategy=["Zerg macro/aggression (ling/roach — build not observed; scout it)."],
-   strengths=["Competitive vs Protoss (18-13) and Random (18-15)."],
-   weaknesses=["Badly weak vs Terran (3-24) — tank/mech splash dominates it."],
-   beat=["As Terran, tanks/mech + splash and position — the sample says you're "
-     "heavily favored.",
-     "Otherwise standard anti-Zerg: splash + macro; deny creep."]),
+   summary="A simple **12-pool mass-speedling aggro Zerg** (open source, older "
+     "python-sc2 bot). It opens 12-pool, gets metabolic boost, injects with "
+     "queens, and a-moves zerglings at the enemy. Even-ish form (58-67) but very "
+     "weak vs Terran (3-24).",
+   opening="12-pool (drone to 12, Spawning Pool, Extractor) into Metabolic Boost "
+     "(ling speed); queens for injects.",
+   strategy=[
+     "Pumps zerglings and sends them to attack the enemy (idle lings a-move the "
+     "enemy base/structures) — a straightforward speedling aggression bot.",
+     "Queens inject the hatchery for larva; a natural 'rush-wait' position lets "
+     "it pressure or defend.",
+     "Minimal tech/economy beyond lings + speed — an older, simple design."],
+   strengths=[
+     "Early speedling pressure can overwhelm greedy or un-walled openings; "
+     "competitive vs Protoss (18-13) and Random (18-15).",
+     "Simple and consistent — always applies ling pressure."],
+   weaknesses=[
+     "Badly weak vs Terran (3-24) — tanks/hellions/mines splash the a-moving "
+     "lings apart.",
+     "One-dimensional: little tech or splash, and the a-move lings feed into "
+     "walls and defensive positions.",
+     "Thin economy behind the aggression."],
+   beat=[
+     "Wall + splash (tanks/hellions as T, storm/colossus, banelings) and hold — "
+     "the a-move lings break on static defence.",
+     "Survive the ling aggression, then out-macro its thin economy."]),
  "PhantomTest": dict(
    summary="A **Zerg** dev/test bot currently performing poorly (31-109), "
      "collapsing vs Protoss (10-74). A work-in-progress, not a current threat. "
@@ -1387,7 +1421,7 @@ def bot_md(name, e):
     L.append(f"| **AI Arena Elo** | ~{m['elo']} (top-tier ladder bot) |")
     L.append(f"| **On ladder since** | {m['created']} |")
     L.append(f"| **Last source update** | {m['updated']} |")
-    CODE_READ = {"12PoolBot", "who"}  # bots whose source I actually read
+    CODE_READ = {"12PoolBot", "who", "QueenBot", "Krillin"}  # source actually read
     if name in CODE_READ:
         src = "yes — Python source read directly for this profile"
     elif m["pub"]:
@@ -1482,12 +1516,15 @@ weaknesses, and how to beat it.
   show *current form and matchup tendencies*, not lifetime totals. The Elo column
   is the real ranking signal; treat the per-race **win %** as the matchup read.
 - **Builds** are extracted from each bot's own replays (s2protocol tracker
-  events). Where recent replays were cleaned/unavailable, the build wasn't
-  directly observed and the strategy is inferred from race + record (+ reputation
-  for well-known bots) — each profile says which.
+  events). Many strong bots have their **replays cleaned by the author** (a
+  privacy/retention setting — e.g. Eris, BenBotBC, MicroMachine keep 0
+  downloadable replays), so their build can't be captured from replays at all;
+  those profiles are from race + record (+ reputation for well-known bots) and
+  say so. Older replays don't help — they're cleaned first.
 - **Open-source bots** (source publicly downloadable) are read from their actual
-  code — those profiles are the most authoritative. Currently: 12PoolBot, who
-  (and the C++/closed ones are from replays + record).
+  code — those profiles are the most authoritative. Currently: **12PoolBot, who,
+  QueenBot, Krillin** (Python). Compiled/closed bots (C++, .NET, Java) are from
+  replays + record.
 - Bots iterate constantly (some self-tune per game), so re-check periodically.
 - Raw data: [`data/topbot_data.json`](data/topbot_data.json),
   [`data/stats/`](data/stats/). Regenerate with
