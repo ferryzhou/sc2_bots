@@ -654,7 +654,13 @@ class GriffinBot(AresBot):
             self._emergency = False
 
     def _macro(self) -> None:
-        self.register_behavior(Mining())
+        # dynamic gas throttle: bio is mineral-heavy, so when gas floods
+        # (long-game losses banked 3-5k) ease workers off gas onto minerals -
+        # cuts the waste and speeds toward max supply (mineral-gated). Gentle
+        # (2, not 1) so it never starves the tank-heavy LATE_COMP. From
+        # PhoenixBot's fix for the same float.
+        workers_per_gas = 2 if self.vespene > 800 else 3
+        self.register_behavior(Mining(workers_per_gas=workers_per_gas))
 
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
@@ -709,17 +715,13 @@ class GriffinBot(AresBot):
                             base_location=self.start_location,
                         )
                     )
-                # add_production_at_bank: the core remax fix. Without it,
-                # production caps at the comp ratio and griffin floats its
-                # income (3-5k gas in long-game losses); building extra
-                # rax/factories/starports when banking lets it spend the
-                # bank and rebuild its army as fast as it loses it.
+                # NOTE: add_production_at_bank=(300,200) here regressed the
+                # gauntlet 1-5 (griffin over-built rax/factories and starved
+                # its army - wiped in long games). Phoenix drains the float
+                # purely via the comp switch below, not extra production;
+                # matched that.
                 macro_plan.add(
-                    ProductionController(
-                        comp,
-                        base_location=self.start_location,
-                        add_production_at_bank=(300, 200),
-                    )
+                    ProductionController(comp, base_location=self.start_location)
                 )
                 # long games: keep taking bases so a mined-out economy
                 # doesn't decide the 60-min grinds
