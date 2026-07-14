@@ -17,12 +17,15 @@ weaknesses, and how to beat it.
   show *current form and matchup tendencies*, not lifetime totals. The Elo column
   is the real ranking signal; treat the per-race **win %** as the matchup read.
 - **Builds** are extracted from each bot's own replays (s2protocol tracker
-  events). Where recent replays were cleaned/unavailable, the build wasn't
-  directly observed and the strategy is inferred from race + record (+ reputation
-  for well-known bots) — each profile says which.
+  events). Many strong bots have their **replays cleaned by the author** (a
+  privacy/retention setting — e.g. Eris, BenBotBC, MicroMachine keep 0
+  downloadable replays), so their build can't be captured from replays at all;
+  those profiles are from race + record (+ reputation for well-known bots) and
+  say so. Older replays don't help — they're cleaned first.
 - **Open-source bots** (source publicly downloadable) are read from their actual
-  code — those profiles are the most authoritative. Currently: 12PoolBot, who
-  (and the C++/closed ones are from replays + record).
+  code — those profiles are the most authoritative. Currently: **12PoolBot, who,
+  QueenBot, Krillin** (Python). Compiled/closed bots (C++, .NET, Java) are from
+  replays + record.
 - Bots iterate constantly (some self-tune per game), so re-check periodically.
 - Raw data: [`data/topbot_data.json`](data/topbot_data.json),
   [`data/stats/`](data/stats/). Regenerate with

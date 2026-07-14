@@ -4,7 +4,7 @@
 
 ## Summary
 
-A **macro/aggression Zerg** (a long-time small ladder bot). Even-ish form (58-67) but very weak vs Terran (3-24). (Closed source, build not captured this sample.)
+A simple **12-pool mass-speedling aggro Zerg** (open source, older python-sc2 bot). It opens 12-pool, gets metabolic boost, injects with queens, and a-moves zerglings at the enemy. Even-ish form (58-67) but very weak vs Terran (3-24).
 
 ## Identity
 
@@ -15,11 +15,15 @@ A **macro/aggression Zerg** (a long-time small ladder bot). Even-ish form (58-67
 | **AI Arena Elo** | ~1600 (top-tier ladder bot) |
 | **On ladder since** | 2019-06 |
 | **Last source update** | 2019-10-05 |
-| **Source public** | yes (Python source publicly downloadable; this profile is from replays + record) |
+| **Source public** | yes — Python source read directly for this profile |
 
 ## Strategy
 
-- Zerg macro/aggression (ling/roach — build not observed; scout it).
+**Opening:** 12-pool (drone to 12, Spawning Pool, Extractor) into Metabolic Boost (ling speed); queens for injects.
+
+- Pumps zerglings and sends them to attack the enemy (idle lings a-move the enemy base/structures) — a straightforward speedling aggression bot.
+- Queens inject the hatchery for larva; a natural 'rush-wait' position lets it pressure or defend.
+- Minimal tech/economy beyond lings + speed — an older, simple design.
 
 ## Performance (recent ladder sample)
 
@@ -38,16 +42,19 @@ A **macro/aggression Zerg** (a long-time small ladder bot). Even-ish form (58-67
 
 ## Strengths
 
-- Competitive vs Protoss (18-13) and Random (18-15).
+- Early speedling pressure can overwhelm greedy or un-walled openings; competitive vs Protoss (18-13) and Random (18-15).
+- Simple and consistent — always applies ling pressure.
 
 ## Weaknesses
 
-- Badly weak vs Terran (3-24) — tank/mech splash dominates it.
+- Badly weak vs Terran (3-24) — tanks/hellions/mines splash the a-moving lings apart.
+- One-dimensional: little tech or splash, and the a-move lings feed into walls and defensive positions.
+- Thin economy behind the aggression.
 
 ## How to beat it
 
-1. As Terran, tanks/mech + splash and position — the sample says you're heavily favored.
-2. Otherwise standard anti-Zerg: splash + macro; deny creep.
+1. Wall + splash (tanks/hellions as T, storm/colossus, banelings) and hold — the a-move lings break on static defence.
+2. Survive the ling aggression, then out-macro its thin economy.
 
 ---
 *Sources: AI Arena API (record + per-race + per-opponent over a recent match sample) and build orders extracted from this bot’s own replays. Closed-source: strategy inferred from observed builds and results.*

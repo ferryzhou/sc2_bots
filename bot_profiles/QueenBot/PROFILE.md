@@ -4,7 +4,7 @@
 
 ## Summary
 
-A **queen/creep macro Zerg**: heavy queen count with mass creep spread and a big drone economy, into roach/ling. Defensive macro. Strong vs Terran in a large sample (51-41).
+A **queen-massing macro Zerg** (ares-sc2, open source). True to its name, its core army composition is literally **Queens** (proportion 1.0) — backed by a hatch-first economy, heavy creep, nydus, and worker defence, teching Lair→Hive with +missile/+armor upgrades. Strong vs Terran (51-41).
 
 ## Identity
 
@@ -15,14 +15,16 @@ A **queen/creep macro Zerg**: heavy queen count with mass creep spread and a big
 | **AI Arena Elo** | ~1611 (top-tier ladder bot) |
 | **On ladder since** | 2020-10 |
 | **Last source update** | 2026-03-06 |
-| **Source public** | yes (Python source publicly downloadable; this profile is from replays + record) |
+| **Source public** | yes — Python source read directly for this profile |
 
 ## Strategy
 
-**Opening:** Economic Zerg; many queens + spore/spine, mass creep tumors, drone-heavy.
+**Opening:** Hatch-first economic open (from `zerg_builds.yml`): 12 drone, overlord scout to the enemy natural, 15 expand, gas, Spawning Pool ~13, then Queens in pairs — economy and queen count first, not early army.
 
-- Queens + static defense + creep to defend, drone hard, remax roach/ling late.
-- Very defensive early — leans on queens/creep to survive to a macro game.
+- Masses **Queens** as the main army (transfuse, anti-air, and creep spread) — an unusual queen-centric composition, with ling/roach support.
+- Hatch-first macro: drones to ~70 workers (min(70, bases×22)), constant creep tumors, and dedicated nydus + worker-defence managers.
+- Teches Lair once it has 7+ queens, then Hive at ~170 supply; researches +missile/+armor 1/2/3 and overlord speed.
+- Defensive and economy-first — leans on queens + creep + static defence to reach a strong upgraded late game.
 
 ## Performance (recent ladder sample)
 
@@ -42,16 +44,20 @@ A **queen/creep macro Zerg**: heavy queen count with mass creep spread and a big
 ## Strengths
 
 - Strong defensive economy; good vs Terran (51-41) and Protoss (15-8).
+- Queens give transfuse sustain, anti-air, and free creep/vision — hard to harass or all-in.
+- Reaches a fully-upgraded Hive army if the game goes long.
 
 ## Weaknesses
 
-- Queen-heavy is slow/immobile early — punishable by fast pressure; roach/ling lacks splash.
-- Cedes map control while turtling on creep.
+- Queens are slow and can't chase — it cedes map control and is passive; a greedy opponent can out-expand it.
+- The queen-heavy army lacks hard splash and hitting power — a maxed splashy/upgraded army out-values it late.
+- Weak in the Zerg mirror-ish aggression window before creep/queens set up.
 
 ## How to beat it
 
-1. Pressure before its economy snowballs; out-range roaches (tanks/colossus).
-2. Take the map — it turtles; deny creep spread.
+1. Take the map and out-expand it — it turtles on creep and won't punish greed.
+2. Out-range and out-splash the queen/roach army (tanks/colossus/tempest); don't melee into creep + transfuse.
+3. Deny creep spread to cut its vision and queen mobility.
 
 ---
 *Sources: AI Arena API (record + per-race + per-opponent over a recent match sample) and build orders extracted from this bot’s own replays. Closed-source: strategy inferred from observed builds and results.*
