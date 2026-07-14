@@ -78,9 +78,14 @@ class Economy:
                     return
 
     async def _expand(self, bot, advice):
-        # The library decides when we're too threatened to expand.
+        # The library decides when we're too threatened to expand -- but if our
+        # cannons/wall are holding and we have some army, take the map anyway:
+        # out-scaling a thin-economy ling flood is how we win (bot_profiles/12PoolBot,
+        # "then punish the thin economy"). Otherwise sit tight.
         if advice.defense.prioritize_army:
-            return
+            cannons_up = bot.structures(U.PHOTONCANNON).ready.amount >= advice.defense.static_defense
+            if not (cannons_up and bot.townhalls.amount < 3 and bot.supply_army >= 8):
+                return
         if bot.townhalls.amount >= 4 or bot.already_pending(U.NEXUS) or not bot.can_afford(U.NEXUS):
             return
         # Take the natural early no matter what (Protoss macro fundamentals);

@@ -77,11 +77,12 @@ class Production:
             and bot.can_afford(U.TWILIGHTCOUNCIL)
         ):
             await bot.build(U.TWILIGHTCOUNCIL, near=self._pylon(bot))
-        # robotics bay -> colossus (splash vs mass-light Zerg)
+        # robotics bay -> colossus: splash is the hard counter to the ling flood
+        # (bot_profiles/12PoolBot). Get it up on 2 bases, not 3.
         if (
             bot.enemy_race == Race.Zerg and bot.structures(U.ROBOTICSFACILITY).ready
             and not bot.structures(U.ROBOTICSBAY) and bot.already_pending(U.ROBOTICSBAY) == 0
-            and bot.townhalls.amount >= 3 and bot.can_afford(U.ROBOTICSBAY)
+            and bot.townhalls.amount >= 2 and bot.can_afford(U.ROBOTICSBAY)
         ):
             await bot.build(U.ROBOTICSBAY, near=self._pylon(bot))
         # army upgrades from the twilight council
@@ -155,8 +156,13 @@ class Production:
         forge = bot.structures(U.FORGE).ready.idle
         if not forge:
             return
-        for up in (UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, UpgradeId.PROTOSSGROUNDARMORSLEVEL1,
-                   UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, UpgradeId.PROTOSSGROUNDARMORSLEVEL2):
+        W1, A1 = UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1, UpgradeId.PROTOSSGROUNDARMORSLEVEL1
+        W2, A2 = UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2, UpgradeId.PROTOSSGROUNDARMORSLEVEL2
+        W3, A3 = UpgradeId.PROTOSSGROUNDWEAPONSLEVEL3, UpgradeId.PROTOSSGROUNDARMORSLEVEL3
+        # vs Zerg (mass lings) armor first -- +1 armor turns a 5-dmg ling into 4,
+        # a huge trade swing; otherwise weapons first.
+        order = (A1, W1, A2, W2, A3, W3) if bot.enemy_race == Race.Zerg else (W1, A1, W2, A2, W3, A3)
+        for up in order:
             if bot.already_pending_upgrade(up) == 0 and bot.can_afford(up):
                 forge.first.research(up)
                 return
