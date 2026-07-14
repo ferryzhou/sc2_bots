@@ -114,25 +114,42 @@ class Production:
         base = bot.townhalls.closest_to(bot.enemy_start_locations[0]) if bot.townhalls else None
         if base is None:
             return
-        # place toward the ramp/wall (where the attack comes) while covering the base
-        near = base.position.towards(bot.game_info.map_center, 4)
         cannons = bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON)
         batteries = bot.structures(U.SHIELDBATTERY).amount + bot.already_pending(U.SHIELDBATTERY)
 
         # Cannons are the primary hold (need only a Forge -> up fast, no micro).
+        # Split them between the mineral line (ling/zealot runbys that dive workers)
+        # and the ramp choke (a frontal push).
         if bot.structures(U.FORGE).ready and cannons < want and bot.can_afford(U.PHOTONCANNON):
-            await bot.build(U.PHOTONCANNON, near=near)
+            await bot.build(U.PHOTONCANNON, near=self._cannon_pos(bot, base, cannons))
             return
         # A couple of shield batteries sustain the wall/cannons once cyber is up
-        # (great vs. zealots -- they heal shields).
+        # (great vs. zealots -- they heal shields). Place at the choke.
         if (plan.emergency and bot.structures(U.CYBERNETICSCORE).ready
                 and batteries < 2 and bot.can_afford(U.SHIELDBATTERY)):
-            await bot.build(U.SHIELDBATTERY, near=near)
+            await bot.build(U.SHIELDBATTERY, near=self._choke_pos(bot, base))
             return
-        # detection: a cannon also detects
+        # detection: a cannon also detects -- cover the mineral line
         if (plan.need_detection and bot.structures(U.FORGE).ready
                 and cannons < want + 1 and bot.can_afford(U.PHOTONCANNON)):
-            await bot.build(U.PHOTONCANNON, near=near)
+            await bot.build(U.PHOTONCANNON, near=self._mineral_line_pos(bot, base))
+
+    def _mineral_line_pos(self, bot, base):
+        mins = bot.mineral_field.closer_than(10, base)
+        if mins:
+            return base.position.towards(mins.center, 4)
+        return base.position.towards(bot.game_info.map_center, -3)
+
+    def _choke_pos(self, bot, base):
+        try:
+            return bot.main_base_ramp.top_center.towards(base.position, 3)
+        except Exception:
+            return base.position.towards(bot.game_info.map_center, 6)
+
+    def _cannon_pos(self, bot, base, index):
+        # Alternate, mineral line first (runby protection is what loses to lings),
+        # then the choke; extras spread across both.
+        return self._mineral_line_pos(bot, base) if index % 2 == 0 else self._choke_pos(bot, base)
 
     async def _upgrades(self, bot):
         forge = bot.structures(U.FORGE).ready.idle
