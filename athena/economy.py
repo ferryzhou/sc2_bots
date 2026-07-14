@@ -45,8 +45,13 @@ class Economy:
             and bot.can_afford(U.PYLON)
             and ((bot.supply_left <= threshold and pending < 2) or (floating and pending < 3))
         ):
-            nexus = bot.townhalls.ready.random if bot.townhalls.ready else bot.townhalls.first
-            await bot.build(U.PYLON, near=nexus.position.towards(bot.game_info.map_center, 6))
+            # First pylon goes on the ramp to power the wall; later pylons at base.
+            wall_pylon = bot.wall.pylon_pos(bot)
+            if wall_pylon is not None and not bot.structures(U.PYLON):
+                await bot.build(U.PYLON, near=wall_pylon)
+            else:
+                nexus = bot.townhalls.ready.random if bot.townhalls.ready else bot.townhalls.first
+                await bot.build(U.PYLON, near=nexus.position.towards(bot.game_info.map_center, 6))
 
     async def _gas(self, bot):
         # two gas per base, but only once we have a gateway (no point before tech)

@@ -26,10 +26,12 @@ class Production:
 
     async def _tech(self, bot, advice):
         gates = bot.structures(U.GATEWAY)
-        # first gateway
+        # first gateway -- on the ramp wall if we can
         if gates.amount + bot.already_pending(U.GATEWAY) == 0:
             if bot.can_afford(U.GATEWAY):
-                await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
+                wall_pos = bot.wall.building_pos(bot, 0)
+                near = wall_pos if wall_pos is not None else self._pylon(bot).position.towards(bot.game_info.map_center, 5)
+                await bot.build(U.GATEWAY, near=near)
             return
         # EMERGENCY: under a rush, rush a 2nd gateway for zealots, then let the
         # cyber core + shield battery below come up fast (battery holds a zealot
@@ -39,10 +41,12 @@ class Production:
                     and bot.can_afford(U.GATEWAY) and bot.minerals > 130):
                 await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
                 return
-        # cybernetics core after the first gateway
+        # cybernetics core after the first gateway -- completes the ramp wall
         if gates.ready and not bot.structures(U.CYBERNETICSCORE) and bot.already_pending(U.CYBERNETICSCORE) == 0:
             if bot.can_afford(U.CYBERNETICSCORE):
-                await bot.build(U.CYBERNETICSCORE, near=self._pylon(bot))
+                wall_pos = bot.wall.building_pos(bot, 1)
+                near = wall_pos if wall_pos is not None else self._pylon(bot)
+                await bot.build(U.CYBERNETICSCORE, near=near)
             return
         if not bot.structures(U.CYBERNETICSCORE).ready:
             return

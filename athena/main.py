@@ -19,12 +19,14 @@ from strategy import Strategy
 from economy import Economy
 from production import Production
 from army import Army
+from wall import Wall
 
 
 class AthenaBot(BotAI):
     def __init__(self):
         super().__init__()
         self.enemy_memory = {}
+        self.wall = Wall()
         self.perception = Perception()
         self.strategy = Strategy()
         self.economy = Economy()

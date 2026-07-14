@@ -47,7 +47,15 @@ class Army:
             for u in army:
                 u.attack(target)
         else:
+            # plug the ramp wall gap with a zealot while it's still open
+            hold = bot.wall.hold_pos(bot)
+            plug = None
+            if hold is not None and bot.wall.gap_open(bot) and army:
+                plug = army.closest_to(hold)
+                plug.attack(hold)
             for u in army:
+                if plug is not None and u.tag == plug.tag:
+                    continue
                 if u.distance_to(rally) > 8:
                     u.move(rally)
         self._observer(bot, army)
@@ -78,6 +86,10 @@ class Army:
         return bot.enemy_start_locations[0]
 
     def _rally(self, bot):
+        # Hold the ramp choke while we're on one base (defends the wall).
+        hold = bot.wall.hold_pos(bot)
+        if hold is not None and bot.townhalls.amount <= 1:
+            return hold
         if bot.townhalls:
             base = bot.townhalls.closest_to(bot.enemy_start_locations[0])
             return base.position.towards(bot.game_info.map_center, 8)
