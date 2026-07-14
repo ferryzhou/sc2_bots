@@ -7,7 +7,7 @@ priority and we aren't under threat.
 
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId as U
-from strategy_engine import Investment, Archetype
+from strategy_engine import Investment
 
 
 class Economy:
@@ -60,13 +60,8 @@ class Economy:
                     return
 
     async def _expand(self, bot, advice):
-        arch = advice.classification.archetype
-        # Only a *genuine all-in* stops us expanding. A confirmed cheese halts all
-        # expansion; a timing attack halts further expansion only while our army
-        # is too thin to peel off and hold it.
-        if arch == Archetype.CHEESE_ALLIN:
-            return
-        if arch == Archetype.TIMING_ATTACK and bot.supply_army < 15 and bot.time < 360:
+        # The library decides when we're too threatened to expand.
+        if advice.defense.prioritize_army:
             return
         if bot.townhalls.amount >= 4 or bot.already_pending(U.NEXUS) or not bot.can_afford(U.NEXUS):
             return

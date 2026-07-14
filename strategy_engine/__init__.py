@@ -36,6 +36,7 @@ from .strategy import Archetype, Classification, classify_opponent, counter_stan
 from .rules import Rule, RuleHit, evaluate_rules
 from .harassment import HarassAdvice, harass_advice
 from .combat import Engagement, EngagementAdvice, assess_engagement
+from .defense import DefensePlan, assess_defense
 from .information import EnemyEstimate, estimate_enemy, project_enemy
 from .advisor import StrategicAdvisor, Advice
 
@@ -61,6 +62,8 @@ __all__ = [
     "Engagement",
     "EngagementAdvice",
     "assess_engagement",
+    "DefensePlan",
+    "assess_defense",
     "EnemyEstimate",
     "estimate_enemy",
     "project_enemy",

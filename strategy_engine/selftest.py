@@ -20,6 +20,7 @@ from .principles import (
 from .strategy import Archetype, classify_opponent, counter_stance
 from .harassment import harass_advice
 from .combat import Engagement, assess_engagement
+from .defense import assess_defense
 from .information import estimate_enemy, project_enemy
 from .rules import evaluate_rules
 from .advisor import StrategicAdvisor
@@ -160,6 +161,31 @@ def test_classify_cheese() -> None:
     )
     _check("one base + proxy + early aggression -> cheese",
            classify_opponent(st).archetype == Archetype.CHEESE_ALLIN)
+
+
+def test_defense_plan_on_rush() -> None:
+    # Scouted 4-gate / one-base aggression -> emergency defense from the library.
+    st = GameState(game_time=110, last_scouted_time=105, army_supply=2,
+                   enemy_base_count=1, enemy_production_structures=3, enemy_gas_count=0)
+    d = assess_defense(st)
+    _check("rush read -> emergency", d.emergency)
+    _check("rush -> wants static defense", d.static_defense >= 1)
+    _check("rush -> army before economy", d.prioritize_army and d.hold_position)
+
+
+def test_defense_pull_workers_when_breached() -> None:
+    st = GameState(game_time=120, last_scouted_time=118, army_supply=1,
+                   enemy_base_count=1, enemy_production_structures=4,
+                   enemy_army_supply=8, enemy_army_moving_out=True)
+    _check("breached with no army -> pull workers", assess_defense(st).pull_workers)
+
+
+def test_no_defense_emergency_when_safe() -> None:
+    # Standard macro opponent, we have an army -> no emergency.
+    st = GameState(game_time=420, last_scouted_time=410, army_supply=30,
+                   enemy_base_count=3, enemy_worker_count=50, enemy_army_supply=20,
+                   enemy_production_structures=2)
+    _check("safe macro game -> no defense emergency", not assess_defense(st).emergency)
 
 
 def test_detect_four_gate_from_partial_scout() -> None:
