@@ -7,7 +7,7 @@ priority and we aren't under threat.
 
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId as U
-from strategy_engine import Investment, Archetype
+from strategy_engine import Investment
 
 
 class Economy:
@@ -22,6 +22,10 @@ class Economy:
         cap = min(75, 22 * max(1, bot.townhalls.amount) + 6)
         if bot.supply_workers >= cap:
             return
+        # Under an emergency with little army, save minerals for gateway units.
+        if (advice.defense.prioritize_army and bot.supply_army < 8
+                and bot.time < 240 and bot.minerals < 200):
+            return
         for nexus in bot.townhalls.ready.idle:
             if bot.can_afford(U.PROBE) and bot.supply_left > 0:
                 nexus.train(U.PROBE)
@@ -32,15 +36,22 @@ class Economy:
         production = max(1, bot.structures(U.GATEWAY).amount + bot.structures(U.WARPGATE).amount)
         threshold = 3 + 2 * production
         pending = bot.already_pending(U.PYLON)
-        floating = bot.minerals > 400
+        # Extra "spend the float" pylons only once we're established -- never in
+        # the opening, where pylon spam delays the first gateway.
+        floating = bot.minerals > 500 and bot.supply_cap >= 32
         if (
             bot.supply_cap < 200
             and bot.townhalls
             and bot.can_afford(U.PYLON)
-            and ((bot.supply_left <= threshold and pending < 3) or (floating and pending < 4))
+            and ((bot.supply_left <= threshold and pending < 2) or (floating and pending < 3))
         ):
-            nexus = bot.townhalls.ready.random if bot.townhalls.ready else bot.townhalls.first
-            await bot.build(U.PYLON, near=nexus.position.towards(bot.game_info.map_center, 6))
+            # First pylon goes on the ramp to power the wall; later pylons at base.
+            wall_pylon = bot.wall.pylon_pos(bot)
+            if wall_pylon is not None and not bot.structures(U.PYLON):
+                await bot.build(U.PYLON, near=wall_pylon)
+            else:
+                nexus = bot.townhalls.ready.random if bot.townhalls.ready else bot.townhalls.first
+                await bot.build(U.PYLON, near=nexus.position.towards(bot.game_info.map_center, 6))
 
     async def _gas(self, bot):
         # two gas per base, but only once we have a gateway (no point before tech)
@@ -60,13 +71,8 @@ class Economy:
                     return
 
     async def _expand(self, bot, advice):
-        arch = advice.classification.archetype
-        # Only a *genuine all-in* stops us expanding. A confirmed cheese halts all
-        # expansion; a timing attack halts further expansion only while our army
-        # is too thin to peel off and hold it.
-        if arch == Archetype.CHEESE_ALLIN:
-            return
-        if arch == Archetype.TIMING_ATTACK and bot.supply_army < 15 and bot.time < 360:
+        # The library decides when we're too threatened to expand.
+        if advice.defense.prioritize_army:
             return
         if bot.townhalls.amount >= 4 or bot.already_pending(U.NEXUS) or not bot.can_afford(U.NEXUS):
             return

@@ -32,8 +32,12 @@ class Army:
         if threat_base is not None:
             enemies = bot.enemy_units.closer_than(30, threat_base)
             target = enemies.closest_to(threat_base) if enemies else threat_base
+            tpos = target.position if hasattr(target, "position") else target
             for u in army:
-                u.attack(target.position if hasattr(target, "position") else target)
+                u.attack(tpos)
+            # library says the base is breached and army is too thin -> pull workers
+            if advice.defense.pull_workers and enemies:
+                self._pull_workers(bot, threat_base, tpos)
             self._observer(bot, army)
             return
 
@@ -43,15 +47,23 @@ class Army:
             for u in army:
                 u.attack(target)
         else:
+            # plug the ramp wall gap with a zealot while it's still open
+            hold = bot.wall.hold_pos(bot)
+            plug = None
+            if hold is not None and bot.wall.gap_open(bot) and army:
+                plug = army.closest_to(hold)
+                plug.attack(hold)
             for u in army:
+                if plug is not None and u.tag == plug.tag:
+                    continue
                 if u.distance_to(rally) > 8:
                     u.move(rally)
         self._observer(bot, army)
 
     def _should_attack(self, bot, advice, army):
         eng = advice.engagement.verdict
-        # Committed all-in defense: never leave home while a real all-in is live.
-        if advice.investment.posture == "safe" and bot.time < 300 and bot.supply_army < 25:
+        # Library says hold at home (defending an all-in) -> never move out.
+        if advice.defense.hold_position:
             return False
         if bot.supply_used >= 175:            # near max -- move out before we cap
             return True
@@ -74,6 +86,10 @@ class Army:
         return bot.enemy_start_locations[0]
 
     def _rally(self, bot):
+        # Hold the ramp choke while we're on one base (defends the wall).
+        hold = bot.wall.hold_pos(bot)
+        if hold is not None and bot.townhalls.amount <= 1:
+            return hold
         if bot.townhalls:
             base = bot.townhalls.closest_to(bot.enemy_start_locations[0])
             return base.position.towards(bot.game_info.map_center, 8)
@@ -84,6 +100,14 @@ class Army:
             if bot.enemy_units.filter(lambda u: u.can_attack and u.distance_to(th) < 30):
                 return th
         return None
+
+    def _pull_workers(self, bot, base, target):
+        # Pull a portion of the probes at the breached base to fight; leave a few
+        # mining so the economy isn't wiped by the pull itself.
+        probes = bot.workers.closer_than(20, base)
+        n_fight = max(0, probes.amount - 6)
+        for probe in probes[:n_fight]:
+            probe.attack(target)
 
     def _observer(self, bot, army):
         obs = bot.units(U.OBSERVER)

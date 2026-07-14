@@ -29,6 +29,7 @@ from .strategy import (
 from .rules import RuleHit, evaluate_rules
 from .harassment import HarassAdvice, harass_advice
 from .combat import EngagementAdvice, assess_engagement
+from .defense import DefensePlan, assess_defense
 from .information import EnemyEstimate, project_enemy
 
 
@@ -40,6 +41,7 @@ class Advice:
     timing: PowerTiming
     classification: Classification
     counter: CounterStance
+    defense: DefensePlan
     harass: HarassAdvice
     enemy_estimate: EnemyEstimate
     rule_hits: List[RuleHit]
@@ -59,6 +61,12 @@ class Advice:
             f"({self.classification.confidence:.0%})",
             f"counter:    {self.counter.posture}",
         ]
+        if self.defense.emergency:
+            d = self.defense
+            lines.append(
+                f"DEFENSE:    emergency -- static x{d.static_defense}, "
+                f"army-first{', PULL WORKERS' if d.pull_workers else ''}"
+                f"{', get detection' if d.need_detection else ''}")
         est = self.enemy_estimate
         if est.has_data and not est.is_fresh:
             lines.append(f"enemy read:  projected (dead-reckoned, conf {est.confidence:.0%})")
@@ -91,6 +99,7 @@ class StrategicAdvisor:
             timing=power_timing(enemy_view),
             classification=classification,
             counter=counter_stance(classification),
+            defense=assess_defense(enemy_view),
             harass=harass_advice(enemy_view),
             enemy_estimate=estimate,
             rule_hits=evaluate_rules(state),

@@ -10,7 +10,6 @@ from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId as U
 from sc2.ids.upgrade_id import UpgradeId
 from sc2.data import Race
-from strategy_engine import Archetype
 
 
 class Production:
@@ -27,15 +26,27 @@ class Production:
 
     async def _tech(self, bot, advice):
         gates = bot.structures(U.GATEWAY)
-        # first gateway
+        # first gateway -- on the ramp wall if we can
         if gates.amount + bot.already_pending(U.GATEWAY) == 0:
             if bot.can_afford(U.GATEWAY):
-                await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
+                wall_pos = bot.wall.building_pos(bot, 0)
+                near = wall_pos if wall_pos is not None else self._pylon(bot).position.towards(bot.game_info.map_center, 5)
+                await bot.build(U.GATEWAY, near=near)
             return
-        # cybernetics core after the first gateway
+        # EMERGENCY: under a rush, rush a 2nd gateway for zealots, then let the
+        # cyber core + shield battery below come up fast (battery holds a zealot
+        # 4-gate). The library told us to prioritize army; we execute both.
+        if advice.defense.prioritize_army and bot.supply_army < 12:
+            if (gates.amount + bot.already_pending(U.GATEWAY) < 2
+                    and bot.can_afford(U.GATEWAY) and bot.minerals > 130):
+                await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
+                return
+        # cybernetics core after the first gateway -- completes the ramp wall
         if gates.ready and not bot.structures(U.CYBERNETICSCORE) and bot.already_pending(U.CYBERNETICSCORE) == 0:
             if bot.can_afford(U.CYBERNETICSCORE):
-                await bot.build(U.CYBERNETICSCORE, near=self._pylon(bot))
+                wall_pos = bot.wall.building_pos(bot, 1)
+                near = wall_pos if wall_pos is not None else self._pylon(bot)
+                await bot.build(U.CYBERNETICSCORE, near=near)
             return
         if not bot.structures(U.CYBERNETICSCORE).ready:
             return
@@ -69,8 +80,8 @@ class Production:
                 twi.first.research(up)
         # scale gateways with economy -- spend the money, don't float
         target_gates = min(10, 2 * bot.townhalls.ready.amount + 1)
-        if advice.investment.posture == "safe":
-            target_gates = min(10, target_gates + 2)   # under threat, more army production
+        if advice.defense.prioritize_army:
+            target_gates = min(10, target_gates + 2)   # library says defend -> more army production
         # allow two in flight, and build extra whenever minerals are piling up
         max_pending = 2 if bot.minerals > 350 else 1
         if (
@@ -82,21 +93,29 @@ class Production:
             await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
 
     async def _defense(self, bot, advice):
-        # static defense only when the advisor smells an all-in
-        if advice.classification.archetype not in (Archetype.CHEESE_ALLIN, Archetype.TIMING_ATTACK):
+        # The library decides how much to defend; we translate it into Protoss
+        # structures. No hard-coded archetype logic here.
+        plan = advice.defense
+        want = plan.static_defense
+        if want <= 0 and not plan.need_detection:
             return
         base = bot.townhalls.closest_to(bot.enemy_start_locations[0]) if bot.townhalls else None
         if base is None:
             return
         near = base.position.towards(bot.game_info.map_center, 4)
-        # shield battery (needs cyber) is the cheapest hold
-        if bot.structures(U.CYBERNETICSCORE).ready and bot.structures(U.SHIELDBATTERY).amount + bot.already_pending(U.SHIELDBATTERY) < 2:
-            if bot.can_afford(U.SHIELDBATTERY):
+        have = (bot.structures(U.SHIELDBATTERY).amount + bot.already_pending(U.SHIELDBATTERY)
+                + bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON))
+        if have < want:
+            # shield battery (needs cyber) is the fastest early hold; else a cannon
+            if bot.structures(U.CYBERNETICSCORE).ready and bot.can_afford(U.SHIELDBATTERY):
                 await bot.build(U.SHIELDBATTERY, near=near)
                 return
-        # a couple of cannons if we have a forge
-        if bot.structures(U.FORGE).ready and bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON) < 2:
-            if bot.can_afford(U.PHOTONCANNON):
+            if bot.structures(U.FORGE).ready and bot.can_afford(U.PHOTONCANNON):
+                await bot.build(U.PHOTONCANNON, near=near)
+                return
+        # detection: a cannon also detects; observer is trained in _train
+        if plan.need_detection and bot.structures(U.FORGE).ready and bot.can_afford(U.PHOTONCANNON):
+            if bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON) < want + 1:
                 await bot.build(U.PHOTONCANNON, near=near)
 
     async def _upgrades(self, bot):
