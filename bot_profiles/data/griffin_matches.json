@@ -1,0 +1,2094 @@
+{
+ "opp": {
+  "Leviabyss": {
+   "W": 0,
+   "L": 0,
+   "tie": 0,
+   "other": 1,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869660,
+     "type": "MatchCancelled",
+     "outcome": "MatchCancelled",
+     "map": 150,
+     "when": "2026-07-10T10:30:00.178219Z",
+     "steps": 0,
+     "replay": null
+    }
+   ]
+  },
+  "Zummok": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869811,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 154,
+     "when": "2026-07-10T12:02:37.119774Z",
+     "steps": 11601,
+     "replay": true
+    }
+   ]
+  },
+  "DoopyBot": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869812,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 150,
+     "when": "2026-07-10T21:55:33.273418Z",
+     "steps": 21362,
+     "replay": true
+    }
+   ]
+  },
+  "DoopyBot-Test": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869813,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 154,
+     "when": "2026-07-10T21:10:53.905548Z",
+     "steps": 24590,
+     "replay": true
+    }
+   ]
+  },
+  "CodeX001": {
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869815,
+     "type": "Tie",
+     "outcome": "tie",
+     "map": 156,
+     "when": "2026-07-10T23:13:36.168553Z",
+     "steps": 80644,
+     "replay": true
+    }
+   ]
+  },
+  "Creepy_macro": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869817,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 150,
+     "when": "2026-07-10T13:00:54.313165Z",
+     "steps": 28628,
+     "replay": true
+    }
+   ]
+  },
+  "Creepy_sentry": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869818,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 156,
+     "when": "2026-07-11T00:33:20.577838Z",
+     "steps": 20572,
+     "replay": true
+    }
+   ]
+  },
+  "MangoShark": {
+   "W": 0,
+   "L": 0,
+   "tie": 0,
+   "other": 1,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869819,
+     "type": "InitializationError",
+     "outcome": "InitializationError",
+     "map": 150,
+     "when": "2026-07-10T23:42:07.384114Z",
+     "steps": 0,
+     "replay": null
+    }
+   ]
+  },
+  "Chance": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869820,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 152,
+     "when": "2026-07-10T13:08:43.274052Z",
+     "steps": 12668,
+     "replay": true
+    }
+   ]
+  },
+  "Forge": {
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869821,
+     "type": "Tie",
+     "outcome": "tie",
+     "map": 150,
+     "when": "2026-07-10T14:44:44.265072Z",
+     "steps": 80641,
+     "replay": true
+    }
+   ]
+  },
+  "BioBotGod": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869822,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 150,
+     "when": "2026-07-11T01:47:06.673398Z",
+     "steps": 55020,
+     "replay": true
+    }
+   ]
+  },
+  "iGottaCRush": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869823,
+     "type": "Player2Crash",
+     "outcome": "W",
+     "map": 154,
+     "when": "2026-07-10T15:29:04.994886Z",
+     "steps": 12520,
+     "replay": true
+    }
+   ]
+  },
+  "protossinger": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869824,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 151,
+     "when": "2026-07-10T16:02:02.472639Z",
+     "steps": 10650,
+     "replay": true
+    }
+   ]
+  },
+  "LoremIpsum": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869825,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 150,
+     "when": "2026-07-10T15:57:43.949636Z",
+     "steps": 16813,
+     "replay": true
+    }
+   ]
+  },
+  "PrimordialOrigin": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869826,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 150,
+     "when": "2026-07-11T04:36:18.341046Z",
+     "steps": 19949,
+     "replay": true
+    }
+   ]
+  },
+  "Alexa": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869827,
+     "type": "Player2Crash",
+     "outcome": "W",
+     "map": 155,
+     "when": "2026-07-11T03:27:33.680615Z",
+     "steps": 52484,
+     "replay": true
+    }
+   ]
+  },
+  "WildLupo": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869828,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 151,
+     "when": "2026-07-10T15:08:01.892280Z",
+     "steps": 20836,
+     "replay": true
+    }
+   ]
+  },
+  "Starlight": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869829,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 155,
+     "when": "2026-07-10T13:40:15.012299Z",
+     "steps": 19164,
+     "replay": true
+    }
+   ]
+  },
+  "MY_SCRIPTING_SON": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869830,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-11T03:33:35.633005Z",
+     "steps": 14792,
+     "replay": true
+    }
+   ]
+  },
+  "Laser-Circus": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869831,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 152,
+     "when": "2026-07-10T18:45:45.725436Z",
+     "steps": 29540,
+     "replay": true
+    }
+   ]
+  },
+  "Siriusly": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869833,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 151,
+     "when": "2026-07-10T19:41:23.480042Z",
+     "steps": 18575,
+     "replay": true
+    }
+   ]
+  },
+  "DownedStar1": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869834,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 155,
+     "when": "2026-07-10T11:35:17.320405Z",
+     "steps": 19156,
+     "replay": true
+    }
+   ]
+  },
+  "Myztery": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869835,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 149,
+     "when": "2026-07-10T16:18:40.770073Z",
+     "steps": 15814,
+     "replay": true
+    }
+   ]
+  },
+  "TheCatSC2Bot": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869836,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 152,
+     "when": "2026-07-10T17:17:48.617698Z",
+     "steps": 17636,
+     "replay": true
+    }
+   ]
+  },
+  "BobbyBotV13": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869814,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-10T08:03:08.931655Z",
+     "steps": 20276,
+     "replay": true
+    }
+   ]
+  },
+  "CryptBotRevival": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869816,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 152,
+     "when": "2026-07-10T10:36:08.128548Z",
+     "steps": 16343,
+     "replay": true
+    }
+   ]
+  },
+  "Slowpoke": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4869832,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 154,
+     "when": "2026-07-10T11:18:14.749202Z",
+     "steps": 29460,
+     "replay": true
+    }
+   ]
+  },
+  "zig-reapers": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872603,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 151,
+     "when": "2026-07-12T14:19:37.597673Z",
+     "steps": 12204,
+     "replay": true
+    }
+   ]
+  },
+  "KoB": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872604,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 150,
+     "when": "2026-07-11T20:10:56.236359Z",
+     "steps": 13845,
+     "replay": true
+    },
+    {
+     "match": 4874712,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 155,
+     "when": "2026-07-14T00:21:32.946990Z",
+     "steps": 20380,
+     "replay": true
+    }
+   ]
+  },
+  "Crawler": {
+   "W": 1,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872605,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 150,
+     "when": "2026-07-12T00:19:54.518659Z",
+     "steps": 13556,
+     "replay": true
+    },
+    {
+     "match": 4873058,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 150,
+     "when": "2026-07-12T23:56:35.938702Z",
+     "steps": 8028,
+     "replay": true
+    }
+   ]
+  },
+  "WorkingAsIntended": {
+   "W": 0,
+   "L": 3,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872606,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-12T00:12:19.165284Z",
+     "steps": 16587,
+     "replay": true
+    },
+    {
+     "match": 4873060,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 150,
+     "when": "2026-07-13T02:17:50.137974Z",
+     "steps": 28788,
+     "replay": true
+    },
+    {
+     "match": 4874662,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-13T22:42:08.359910Z",
+     "steps": 23194,
+     "replay": true
+    }
+   ]
+  },
+  "QueenBot": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872607,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 155,
+     "when": "2026-07-12T10:22:50.821158Z",
+     "steps": 25835,
+     "replay": true
+    }
+   ]
+  },
+  "Apidae": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872608,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 154,
+     "when": "2026-07-11T21:15:29.628911Z",
+     "steps": 12591,
+     "replay": true
+    }
+   ]
+  },
+  "ZEALOCALYPSE": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871446,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-11T15:16:01.017578Z",
+     "steps": 9274,
+     "replay": true
+    }
+   ]
+  },
+  "smokinggunbot": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871241,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-11T16:07:45.861860Z",
+     "steps": 23672,
+     "replay": true
+    }
+   ]
+  },
+  "PiG_Bot": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871164,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 151,
+     "when": "2026-07-11T16:30:15.424892Z",
+     "steps": 17980,
+     "replay": true
+    }
+   ]
+  },
+  "Montka": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871313,
+     "type": "Player2Win",
+     "outcome": "W",
+     "map": 152,
+     "when": "2026-07-11T17:20:57.850855Z",
+     "steps": 20995,
+     "replay": true
+    }
+   ]
+  },
+  "27turtles": {
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871380,
+     "type": "Player2Win",
+     "outcome": "W",
+     "map": 155,
+     "when": "2026-07-11T18:13:04.237372Z",
+     "steps": 26509,
+     "replay": true
+    },
+    {
+     "match": 4874850,
+     "type": "Player2Win",
+     "outcome": "W",
+     "map": 151,
+     "when": "2026-07-13T19:34:19.134620Z",
+     "steps": 28886,
+     "replay": true
+    }
+   ]
+  },
+  "sharpy_protoss_test1": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872545,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-11T18:44:54.413958Z",
+     "steps": 11498,
+     "replay": true
+    }
+   ]
+  },
+  "PerilousProtossBot": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872144,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-11T19:23:20.517727Z",
+     "steps": 12544,
+     "replay": true
+    }
+   ]
+  },
+  "kas": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871216,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 154,
+     "when": "2026-07-11T20:45:35.283145Z",
+     "steps": 17118,
+     "replay": true
+    }
+   ]
+  },
+  "Princess-Mika": {
+   "W": 0,
+   "L": 3,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871566,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-11T21:58:18.667250Z",
+     "steps": 26474,
+     "replay": true
+    },
+    {
+     "match": 4873055,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 151,
+     "when": "2026-07-13T02:37:53.230739Z",
+     "steps": 19952,
+     "replay": true
+    },
+    {
+     "match": 4874600,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-13T20:37:48.197755Z",
+     "steps": 21064,
+     "replay": true
+    }
+   ]
+  },
+  "Horizon": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872528,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 154,
+     "when": "2026-07-11T22:31:33.476174Z",
+     "steps": 27466,
+     "replay": true
+    }
+   ]
+  },
+  "Klakinn": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872193,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-11T22:50:05.779176Z",
+     "steps": 10634,
+     "replay": true
+    }
+   ]
+  },
+  "lishimin": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872596,
+     "type": "Player2Win",
+     "outcome": "W",
+     "map": 151,
+     "when": "2026-07-11T23:36:46.053542Z",
+     "steps": 32034,
+     "replay": true
+    }
+   ]
+  },
+  "Persephone": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872245,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-12T01:48:22.981618Z",
+     "steps": 14706,
+     "replay": true
+    }
+   ]
+  },
+  "Asteria": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872412,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-12T02:33:07.980353Z",
+     "steps": 15330,
+     "replay": true
+    }
+   ]
+  },
+  "Terranosaur": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871290,
+     "type": "Player2Win",
+     "outcome": "W",
+     "map": 150,
+     "when": "2026-07-12T07:40:51.513954Z",
+     "steps": 37938,
+     "replay": true
+    }
+   ]
+  },
+  "Lissy": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871967,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 155,
+     "when": "2026-07-12T08:15:13.166938Z",
+     "steps": 21292,
+     "replay": true
+    }
+   ]
+  },
+  "Creepy_duo_canon": {
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871335,
+     "type": "Tie",
+     "outcome": "tie",
+     "map": 156,
+     "when": "2026-07-12T11:43:51.293135Z",
+     "steps": 44062,
+     "replay": true
+    }
+   ]
+  },
+  "OneBaseStalkerBot": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871400,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-12T12:28:54.535367Z",
+     "steps": 12110,
+     "replay": true
+    }
+   ]
+  },
+  "Hestia": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872355,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-12T13:15:42.931027Z",
+     "steps": 24100,
+     "replay": true
+    },
+    {
+     "match": 4875444,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 151,
+     "when": "2026-07-14T09:38:35.507991Z",
+     "steps": 18132,
+     "replay": true
+    }
+   ]
+  },
+  "GLM_Bot": {
+   "W": 1,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4872257,
+     "type": "Player2Win",
+     "outcome": "W",
+     "map": 149,
+     "when": "2026-07-12T14:02:36.461444Z",
+     "steps": 42484,
+     "replay": true
+    },
+    {
+     "match": 4873063,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 155,
+     "when": "2026-07-13T13:40:43.068002Z",
+     "steps": 22681,
+     "replay": true
+    },
+    {
+     "match": 4875443,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 151,
+     "when": "2026-07-14T11:35:41.059869Z",
+     "steps": 38939,
+     "replay": true
+    }
+   ]
+  },
+  "muravev": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4871799,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-12T14:10:56.365843Z",
+     "steps": 20426,
+     "replay": true
+    }
+   ]
+  },
+  "GenesisLotus": {
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873056,
+     "type": "Player2Crash",
+     "outcome": "W",
+     "map": 156,
+     "when": "2026-07-13T00:52:01.959989Z",
+     "steps": 9067,
+     "replay": true
+    },
+    {
+     "match": 4875441,
+     "type": "Player2Crash",
+     "outcome": "W",
+     "map": 151,
+     "when": "2026-07-13T19:53:37.367927Z",
+     "steps": 8984,
+     "replay": true
+    }
+   ]
+  },
+  "muravevTerran": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873059,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 155,
+     "when": "2026-07-13T12:08:31.619921Z",
+     "steps": 19140,
+     "replay": true
+    },
+    {
+     "match": 4875027,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-14T02:55:49.630148Z",
+     "steps": 21674,
+     "replay": true
+    }
+   ]
+  },
+  "DasyBot": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873061,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-12T23:32:47.475484Z",
+     "steps": 16424,
+     "replay": true
+    },
+    {
+     "match": 4874495,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 154,
+     "when": "2026-07-13T23:43:30.062874Z",
+     "steps": 16472,
+     "replay": true
+    }
+   ]
+  },
+  "Visenya": {
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873062,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 150,
+     "when": "2026-07-12T23:05:19.497594Z",
+     "steps": 16185,
+     "replay": true
+    },
+    {
+     "match": 4875080,
+     "type": "Player2Win",
+     "outcome": "W",
+     "map": 156,
+     "when": "2026-07-13T21:26:17.600564Z",
+     "steps": 12490,
+     "replay": true
+    }
+   ]
+  },
+  "StarK234_0000": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873064,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-13T02:59:11.767103Z",
+     "steps": 22364,
+     "replay": true
+    },
+    {
+     "match": 4875300,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-14T00:41:37.059710Z",
+     "steps": 26392,
+     "replay": true
+    }
+   ]
+  },
+  "Starcraft-Agent-v01": {
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873065,
+     "type": "Tie",
+     "outcome": "tie",
+     "map": 156,
+     "when": "2026-07-13T04:56:03.694366Z",
+     "steps": 80644,
+     "replay": true
+    }
+   ]
+  },
+  "BioBot": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873066,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-13T05:25:27.775830Z",
+     "steps": 21668,
+     "replay": true
+    }
+   ]
+  },
+  "JackBot2.0": {
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873067,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 152,
+     "when": "2026-07-13T06:33:46.007047Z",
+     "steps": 47188,
+     "replay": true
+    },
+    {
+     "match": 4875440,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 149,
+     "when": "2026-07-14T04:56:12.932048Z",
+     "steps": 35008,
+     "replay": true
+    }
+   ]
+  },
+  "CyraxxDKAkron": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873068,
+     "type": "Player1Win",
+     "outcome": "W",
+     "map": 152,
+     "when": "2026-07-13T07:23:33.766936Z",
+     "steps": 15192,
+     "replay": true
+    }
+   ]
+  },
+  "Stark234_PR02": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873069,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-12T22:40:31.792548Z",
+     "steps": 23468,
+     "replay": true
+    },
+    {
+     "match": 4875361,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-14T00:56:40.312937Z",
+     "steps": 22844,
+     "replay": true
+    }
+   ]
+  },
+  "Thssprtssbt": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873070,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-13T08:31:13.180648Z",
+     "steps": 13902,
+     "replay": true
+    },
+    {
+     "match": 4875386,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-14T11:52:55.885637Z",
+     "steps": 15514,
+     "replay": true
+    }
+   ]
+  },
+  "AxeFighter": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873071,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 154,
+     "when": "2026-07-12T22:12:52.269066Z",
+     "steps": 17864,
+     "replay": true
+    },
+    {
+     "match": 4875413,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-13T22:55:16.888541Z",
+     "steps": 19672,
+     "replay": true
+    }
+   ]
+  },
+  "oberon": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873072,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 151,
+     "when": "2026-07-13T09:26:29.063815Z",
+     "steps": 8347,
+     "replay": true
+    },
+    {
+     "match": 4875445,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 149,
+     "when": "2026-07-14T06:12:57.561381Z",
+     "steps": 7921,
+     "replay": true
+    }
+   ]
+  },
+  "SiriusBot": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873057,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 156,
+     "when": "2026-07-12T21:41:08.690249Z",
+     "steps": 16178,
+     "replay": true
+    },
+    {
+     "match": 4875442,
+     "type": "Player2Win",
+     "outcome": "L",
+     "map": 155,
+     "when": "2026-07-13T21:10:54.235431Z",
+     "steps": 23773,
+     "replay": true
+    }
+   ]
+  },
+  "onlyfans": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 1,
+   "maps": [],
+   "results": [
+    {
+     "match": 4873017,
+     "type": "InitializationError",
+     "outcome": "InitializationError",
+     "map": 156,
+     "when": "2026-07-13T10:42:01.100043Z",
+     "steps": 0,
+     "replay": null
+    },
+    {
+     "match": 4874757,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 155,
+     "when": "2026-07-14T08:33:09.700987Z",
+     "steps": 17560,
+     "replay": true
+    }
+   ]
+  },
+  "Princess-Mika-Test": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "maps": [],
+   "results": [
+    {
+     "match": 4874646,
+     "type": "Player1Win",
+     "outcome": "L",
+     "map": 152,
+     "when": "2026-07-14T07:46:19.764159Z",
+     "steps": 15042,
+     "replay": true
+    }
+   ]
+  }
+ },
+ "summary": [
+  {
+   "name": "GLM_Bot",
+   "games": 3,
+   "W": 1,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 3
+  },
+  {
+   "name": "WorkingAsIntended",
+   "games": 3,
+   "W": 0,
+   "L": 3,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 3
+  },
+  {
+   "name": "Princess-Mika",
+   "games": 3,
+   "W": 0,
+   "L": 3,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 3
+  },
+  {
+   "name": "27turtles",
+   "games": 2,
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "GenesisLotus",
+   "games": 2,
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "Visenya",
+   "games": 2,
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "JackBot2.0",
+   "games": 2,
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "Crawler",
+   "games": 2,
+   "W": 1,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "KoB",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "Hestia",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "muravevTerran",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "DasyBot",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "StarK234_0000",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "Stark234_PR02",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "Thssprtssbt",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "AxeFighter",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "oberon",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "SiriusBot",
+   "games": 2,
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 2
+  },
+  {
+   "name": "onlyfans",
+   "games": 2,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 1,
+   "n_replays": 1
+  },
+  {
+   "name": "Zummok",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "DoopyBot-Test",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Creepy_sentry",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Chance",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "BioBotGod",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "iGottaCRush",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "PrimordialOrigin",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Alexa",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "WildLupo",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Starlight",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Laser-Circus",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Siriusly",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "DownedStar1",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Myztery",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "TheCatSC2Bot",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "CryptBotRevival",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Montka",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "lishimin",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Terranosaur",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "CyraxxDKAkron",
+   "games": 1,
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Leviabyss",
+   "games": 1,
+   "W": 0,
+   "L": 0,
+   "tie": 0,
+   "other": 1,
+   "n_replays": 0
+  },
+  {
+   "name": "DoopyBot",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "CodeX001",
+   "games": 1,
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Creepy_macro",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "MangoShark",
+   "games": 1,
+   "W": 0,
+   "L": 0,
+   "tie": 0,
+   "other": 1,
+   "n_replays": 0
+  },
+  {
+   "name": "Forge",
+   "games": 1,
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "protossinger",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "LoremIpsum",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "MY_SCRIPTING_SON",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "BobbyBotV13",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Slowpoke",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "zig-reapers",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "QueenBot",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Apidae",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "ZEALOCALYPSE",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "smokinggunbot",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "PiG_Bot",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "sharpy_protoss_test1",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "PerilousProtossBot",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "kas",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Horizon",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Klakinn",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Persephone",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Asteria",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Lissy",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Creepy_duo_canon",
+   "games": 1,
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "OneBaseStalkerBot",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "muravev",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Starcraft-Agent-v01",
+   "games": 1,
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "BioBot",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  },
+  {
+   "name": "Princess-Mika-Test",
+   "games": 1,
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0,
+   "n_replays": 1
+  }
+ ]
+}

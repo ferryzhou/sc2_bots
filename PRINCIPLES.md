@@ -77,7 +77,11 @@ The whole game is a running negotiation of this trade-off. Falling behind on
 economy loses slowly; dying to a timing loses instantly.
 
 For common strategy archetypes along this spectrum — and how to detect and
-counter each — see [`STRATEGY.md`](STRATEGY.md).
+counter each — see [`STRATEGY.md`](STRATEGY.md). For how these principles
+specialize when the opponent is a *deterministic bot* that plays the same build
+every game (the AI Arena ladder) — opponent priors, opening safety, and
+per-opponent counters — see [`OPPONENTS.md`](OPPONENTS.md) and the concrete
+per-bot dossiers in [`bot_profiles/`](bot_profiles/).
 
 ## Tech and upgrades: the third investment
 

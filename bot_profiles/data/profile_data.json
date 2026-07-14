@@ -1,0 +1,10723 @@
+{
+ "Leviabyss": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1133,
+   "created": "2026-05-09",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 0,
+   "tie": 0,
+   "other": 1
+  },
+  "replays_parsed": []
+ },
+ "Zummok": {
+  "meta": {
+   "race": "T",
+   "type": "cpplinux",
+   "id": 1179,
+   "created": "2026-06-28",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Zummok",
+    "opp_race_in_replay": "Terran",
+    "minutes": 12.1,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      21
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ],
+     [
+      "BeaconClaim",
+      1
+     ],
+     [
+      "BeaconExpand",
+      1
+     ],
+     [
+      "BeaconRally",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 15.0,
+      "our_army": 400,
+      "their_army": 0,
+      "our_workers": 25,
+      "their_workers": 15
+     },
+     {
+      "m": 6,
+      "our_supply": 58.0,
+      "their_supply": 15.0,
+      "our_army": 1050,
+      "their_army": 0,
+      "our_workers": 36,
+      "their_workers": 15
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 15.0,
+      "our_army": 2175,
+      "their_army": 0,
+      "our_workers": 45,
+      "their_workers": 15
+     },
+     {
+      "m": 10,
+      "our_supply": 111.0,
+      "their_supply": 15.0,
+      "our_army": 3825,
+      "their_army": 0,
+      "our_workers": 55,
+      "their_workers": 14
+     },
+     {
+      "m": 12,
+      "our_supply": 133.0,
+      "their_supply": 2.0,
+      "our_army": 4550,
+      "their_army": 0,
+      "our_workers": 65,
+      "their_workers": 2
+     }
+    ],
+    "match": 4869811,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "DoopyBot": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1044,
+   "created": "2026-02-23",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "DoopyBot",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 22.3,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      26
+     ],
+     [
+      "Zergling",
+      18
+     ],
+     [
+      "Overlord",
+      5
+     ],
+     [
+      "Extractor",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.7,
+     "Extractor": 0.7,
+     "Queen": 6.0,
+     "SpineCrawler": 6.1,
+     "Zergling": 6.7
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 22.0,
+      "our_army": 400,
+      "their_army": 0,
+      "our_workers": 25,
+      "their_workers": 22
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 29.0,
+      "our_army": 1050,
+      "their_army": 225,
+      "our_workers": 37,
+      "their_workers": 22
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 40.0,
+      "our_army": 2175,
+      "their_army": 1100,
+      "our_workers": 45,
+      "their_workers": 19
+     },
+     {
+      "m": 10,
+      "our_supply": 104.0,
+      "their_supply": 58.0,
+      "our_army": 3750,
+      "their_army": 1025,
+      "our_workers": 51,
+      "their_workers": 31
+     },
+     {
+      "m": 12,
+      "our_supply": 123.0,
+      "their_supply": 103.5,
+      "our_army": 4425,
+      "their_army": 3375,
+      "our_workers": 53,
+      "their_workers": 59
+     },
+     {
+      "m": 16,
+      "our_supply": 63.0,
+      "their_supply": 118.5,
+      "our_army": 1575,
+      "their_army": 5875,
+      "our_workers": 37,
+      "their_workers": 54
+     },
+     {
+      "m": 20,
+      "our_supply": 1.0,
+      "their_supply": 199.5,
+      "our_army": 0,
+      "their_army": 7125,
+      "our_workers": 1,
+      "their_workers": 116
+     }
+    ],
+    "match": 4869812,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "DoopyBot-Test": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1057,
+   "created": "2026-03-10",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "DoopyBot-Test",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 25.6,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      63
+     ],
+     [
+      "Zergling",
+      24
+     ],
+     [
+      "Overlord",
+      12
+     ],
+     [
+      "Extractor",
+      6
+     ],
+     [
+      "Roach",
+      5
+     ],
+     [
+      "CreepTumor",
+      5
+     ],
+     [
+      "Hatchery",
+      4
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.6,
+     "Extractor": 1.7,
+     "RoachWarren": 2.7,
+     "Queen": 3.6,
+     "EvolutionChamber": 4.0,
+     "Zergling": 4.2,
+     "CreepTumorQueen": 4.5,
+     "Roach": 4.5,
+     "CreepTumor": 5.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 33.0,
+      "their_supply": 45.0,
+      "our_army": 350,
+      "their_army": 1125,
+      "our_workers": 24,
+      "their_workers": 27
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 72.0,
+      "our_army": 650,
+      "their_army": 1225,
+      "our_workers": 34,
+      "their_workers": 49
+     },
+     {
+      "m": 8,
+      "our_supply": 75.0,
+      "their_supply": 116.0,
+      "our_army": 1725,
+      "their_army": 3000,
+      "our_workers": 45,
+      "their_workers": 51
+     },
+     {
+      "m": 10,
+      "our_supply": 104.0,
+      "their_supply": 149.0,
+      "our_army": 3250,
+      "their_army": 5500,
+      "our_workers": 51,
+      "their_workers": 52
+     },
+     {
+      "m": 12,
+      "our_supply": 136.0,
+      "their_supply": 175.5,
+      "our_army": 4550,
+      "their_army": 7250,
+      "our_workers": 68,
+      "their_workers": 54
+     },
+     {
+      "m": 16,
+      "our_supply": 187.0,
+      "their_supply": 198.5,
+      "our_army": 7475,
+      "their_army": 9675,
+      "our_workers": 68,
+      "their_workers": 54
+     },
+     {
+      "m": 20,
+      "our_supply": 200.0,
+      "their_supply": 162.0,
+      "our_army": 8575,
+      "their_army": 9025,
+      "our_workers": 68,
+      "their_workers": 51
+     }
+    ],
+    "match": 4869813,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "CodeX001": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1117,
+   "created": "2026-05-05",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "CodeX001",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 84.0,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      12
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ],
+     [
+      "BeaconClaim",
+      1
+     ],
+     [
+      "BeaconExpand",
+      1
+     ],
+     [
+      "BeaconRally",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 12.0,
+      "our_army": 350,
+      "their_army": 0,
+      "our_workers": 25,
+      "their_workers": 12
+     },
+     {
+      "m": 6,
+      "our_supply": 51.0,
+      "their_supply": 12.0,
+      "our_army": 525,
+      "their_army": 0,
+      "our_workers": 36,
+      "their_workers": 12
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 12.0,
+      "our_army": 1675,
+      "their_army": 0,
+      "our_workers": 45,
+      "their_workers": 12
+     },
+     {
+      "m": 10,
+      "our_supply": 110.0,
+      "their_supply": 12.0,
+      "our_army": 4075,
+      "their_army": 0,
+      "our_workers": 49,
+      "their_workers": 12
+     },
+     {
+      "m": 12,
+      "our_supply": 147.0,
+      "their_supply": 12.0,
+      "our_army": 6350,
+      "their_army": 0,
+      "our_workers": 64,
+      "their_workers": 12
+     },
+     {
+      "m": 16,
+      "our_supply": 148.0,
+      "their_supply": 12.0,
+      "our_army": 6350,
+      "their_army": 0,
+      "our_workers": 68,
+      "their_workers": 12
+     },
+     {
+      "m": 20,
+      "our_supply": 148.0,
+      "their_supply": 12.0,
+      "our_army": 6350,
+      "their_army": 0,
+      "our_workers": 68,
+      "their_workers": 12
+     }
+    ],
+    "match": 4869815,
+    "our_outcome": "tie",
+    "type": "Tie"
+   }
+  ]
+ },
+ "Creepy_macro": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 988,
+   "created": "2025-12-30",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Creepy_macro",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 29.8,
+    "enemy_build_8min": [
+     [
+      "CreepTumor",
+      49
+     ],
+     [
+      "Drone",
+      47
+     ],
+     [
+      "CreepTumorQueen",
+      15
+     ],
+     [
+      "Overlord",
+      8
+     ],
+     [
+      "Queen",
+      7
+     ],
+     [
+      "Zergling",
+      6
+     ],
+     [
+      "Hatchery",
+      4
+     ],
+     [
+      "Extractor",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.8,
+     "Extractor": 1.7,
+     "Zergling": 2.3,
+     "Queen": 2.8,
+     "CreepTumorQueen": 2.8,
+     "CreepTumor": 3.4,
+     "HydraliskDen": 7.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 35.0,
+      "their_supply": 38.0,
+      "our_army": 350,
+      "their_army": 675,
+      "our_workers": 25,
+      "their_workers": 25
+     },
+     {
+      "m": 6,
+      "our_supply": 52.0,
+      "their_supply": 53.0,
+      "our_army": 875,
+      "their_army": 1050,
+      "our_workers": 36,
+      "their_workers": 39
+     },
+     {
+      "m": 8,
+      "our_supply": 79.0,
+      "their_supply": 90.0,
+      "our_army": 2125,
+      "their_army": 1925,
+      "our_workers": 45,
+      "their_workers": 61
+     },
+     {
+      "m": 10,
+      "our_supply": 93.0,
+      "their_supply": 150.0,
+      "our_army": 2500,
+      "their_army": 4200,
+      "our_workers": 57,
+      "their_workers": 74
+     },
+     {
+      "m": 12,
+      "our_supply": 102.0,
+      "their_supply": 200.0,
+      "our_army": 2500,
+      "their_army": 8550,
+      "our_workers": 68,
+      "their_workers": 74
+     },
+     {
+      "m": 16,
+      "our_supply": 102.0,
+      "their_supply": 235.0,
+      "our_army": 2500,
+      "their_army": 10300,
+      "our_workers": 68,
+      "their_workers": 86
+     },
+     {
+      "m": 20,
+      "our_supply": 111.0,
+      "their_supply": 296.5,
+      "our_army": 1900,
+      "their_army": 10125,
+      "our_workers": 65,
+      "their_workers": 151
+     }
+    ],
+    "match": 4869817,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "Creepy_sentry": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1167,
+   "created": "2026-06-06",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Creepy_sentry",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 21.4,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      32
+     ],
+     [
+      "Adept",
+      13
+     ],
+     [
+      "AdeptPhaseShift",
+      9
+     ],
+     [
+      "Sentry",
+      8
+     ],
+     [
+      "Pylon",
+      6
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Oracle",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.9,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 2.1,
+     "Sentry": 3.2,
+     "Adept": 3.9,
+     "AdeptPhaseShift": 5.1,
+     "Oracle": 5.5
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 42.0,
+      "our_army": 400,
+      "their_army": 800,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 43.0,
+      "their_supply": 44.0,
+      "our_army": 475,
+      "their_army": 775,
+      "our_workers": 32,
+      "their_workers": 27
+     },
+     {
+      "m": 8,
+      "our_supply": 51.0,
+      "their_supply": 63.0,
+      "our_army": 775,
+      "their_army": 1100,
+      "our_workers": 32,
+      "their_workers": 37
+     },
+     {
+      "m": 10,
+      "our_supply": 71.0,
+      "their_supply": 72.0,
+      "our_army": 1625,
+      "their_army": 950,
+      "our_workers": 32,
+      "their_workers": 48
+     },
+     {
+      "m": 12,
+      "our_supply": 92.0,
+      "their_supply": 92.0,
+      "our_army": 2775,
+      "their_army": 1500,
+      "our_workers": 32,
+      "their_workers": 56
+     },
+     {
+      "m": 16,
+      "our_supply": 138.0,
+      "their_supply": 135.0,
+      "our_army": 5675,
+      "their_army": 1725,
+      "our_workers": 45,
+      "their_workers": 91
+     },
+     {
+      "m": 20,
+      "our_supply": 184.0,
+      "their_supply": 22.0,
+      "our_army": 9725,
+      "their_army": 150,
+      "our_workers": 47,
+      "their_workers": 13
+     }
+    ],
+    "match": 4869818,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "MangoShark": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1172,
+   "created": "2026-06-17",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 0,
+   "tie": 0,
+   "other": 1
+  },
+  "replays_parsed": []
+ },
+ "Chance": {
+  "meta": {
+   "race": "R",
+   "type": "python",
+   "id": 117,
+   "created": "2020-01-22",
+   "zip_public": true
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Chance",
+    "opp_race_in_replay": "Terran",
+    "minutes": 13.2,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      18
+     ],
+     [
+      "Marine",
+      4
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "SupplyDepot",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 0.9,
+     "Bunker": 2.0,
+     "Marine": 2.5
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 33.0,
+      "their_supply": 22.0,
+      "our_army": 400,
+      "their_army": 200,
+      "our_workers": 22,
+      "their_workers": 18
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 22.0,
+      "our_army": 1350,
+      "their_army": 200,
+      "our_workers": 23,
+      "their_workers": 18
+     },
+     {
+      "m": 8,
+      "our_supply": 75.0,
+      "their_supply": 22.0,
+      "our_army": 2400,
+      "their_army": 200,
+      "our_workers": 23,
+      "their_workers": 18
+     },
+     {
+      "m": 10,
+      "our_supply": 97.0,
+      "their_supply": 22.0,
+      "our_army": 3450,
+      "their_army": 200,
+      "our_workers": 23,
+      "their_workers": 18
+     },
+     {
+      "m": 12,
+      "our_supply": 109.0,
+      "their_supply": 1.0,
+      "our_army": 4150,
+      "their_army": 0,
+      "our_workers": 23,
+      "their_workers": 0
+     }
+    ],
+    "match": 4869820,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Forge": {
+  "meta": {
+   "race": "P",
+   "type": "cpplinux",
+   "id": 1185,
+   "created": "2026-07-05",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Forge",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 84.0,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      39
+     ],
+     [
+      "Gateway",
+      8
+     ],
+     [
+      "Pylon",
+      4
+     ],
+     [
+      "Phoenix",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "Zealot",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.9,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 2.0,
+     "ShieldBattery": 3.0,
+     "Adept": 3.6,
+     "Stargate": 3.7,
+     "Zealot": 4.3,
+     "Stalker": 5.0,
+     "Phoenix": 5.4,
+     "TwilightCouncil": 6.8,
+     "Oracle": 7.1
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 34.0,
+      "their_supply": 33.0,
+      "our_army": 350,
+      "their_army": 225,
+      "our_workers": 24,
+      "their_workers": 25
+     },
+     {
+      "m": 6,
+      "our_supply": 48.0,
+      "their_supply": 54.0,
+      "our_army": 750,
+      "their_army": 1000,
+      "our_workers": 34,
+      "their_workers": 39
+     },
+     {
+      "m": 8,
+      "our_supply": 73.0,
+      "their_supply": 61.0,
+      "our_army": 1625,
+      "their_army": 1600,
+      "our_workers": 45,
+      "their_workers": 39
+     },
+     {
+      "m": 10,
+      "our_supply": 91.0,
+      "their_supply": 63.0,
+      "our_army": 3175,
+      "their_army": 2000,
+      "our_workers": 49,
+      "their_workers": 39
+     },
+     {
+      "m": 12,
+      "our_supply": 107.0,
+      "their_supply": 76.0,
+      "our_army": 3175,
+      "their_army": 2800,
+      "our_workers": 64,
+      "their_workers": 39
+     },
+     {
+      "m": 16,
+      "our_supply": 107.0,
+      "their_supply": 100.0,
+      "our_army": 3175,
+      "their_army": 4950,
+      "our_workers": 67,
+      "their_workers": 39
+     },
+     {
+      "m": 20,
+      "our_supply": 107.0,
+      "their_supply": 106.0,
+      "our_army": 3175,
+      "their_army": 5550,
+      "our_workers": 67,
+      "their_workers": 39
+     }
+    ],
+    "match": 4869821,
+    "our_outcome": "tie",
+    "type": "Tie"
+   }
+  ]
+ },
+ "BioBotGod": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1189,
+   "created": "2026-07-10",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "BioBotGod",
+    "opp_race_in_replay": "Terran",
+    "minutes": 57.3,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      24
+     ],
+     [
+      "SupplyDepot",
+      2
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ],
+     [
+      "BeaconClaim",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Refinery": 0.8
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 24.0,
+      "our_army": 350,
+      "their_army": 0,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 24.0,
+      "our_army": 1050,
+      "their_army": 0,
+      "our_workers": 37,
+      "their_workers": 24
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 24.0,
+      "our_army": 2175,
+      "their_army": 0,
+      "our_workers": 45,
+      "their_workers": 24
+     },
+     {
+      "m": 10,
+      "our_supply": 104.0,
+      "their_supply": 24.0,
+      "our_army": 3750,
+      "their_army": 0,
+      "our_workers": 51,
+      "their_workers": 24
+     },
+     {
+      "m": 12,
+      "our_supply": 119.0,
+      "their_supply": 24.0,
+      "our_army": 3750,
+      "their_army": 0,
+      "our_workers": 66,
+      "their_workers": 24
+     },
+     {
+      "m": 16,
+      "our_supply": 119.0,
+      "their_supply": 24.0,
+      "our_army": 3750,
+      "their_army": 0,
+      "our_workers": 68,
+      "their_workers": 24
+     },
+     {
+      "m": 20,
+      "our_supply": 119.0,
+      "their_supply": 24.0,
+      "our_army": 3750,
+      "their_army": 0,
+      "our_workers": 68,
+      "their_workers": 24
+     }
+    ],
+    "match": 4869822,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "iGottaCRush": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1093,
+   "created": "2026-04-14",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "iGottaCRush",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 13.0,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      31
+     ],
+     [
+      "Pylon",
+      15
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ],
+     [
+      "BeaconClaim",
+      1
+     ],
+     [
+      "BeaconExpand",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.5,
+     "Forge": 1.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 40.0,
+      "their_supply": 17.0,
+      "our_army": 700,
+      "their_army": 0,
+      "our_workers": 22,
+      "their_workers": 16
+     },
+     {
+      "m": 6,
+      "our_supply": 61.0,
+      "their_supply": 17.0,
+      "our_army": 1800,
+      "their_army": 0,
+      "our_workers": 22,
+      "their_workers": 16
+     },
+     {
+      "m": 8,
+      "our_supply": 84.0,
+      "their_supply": 16.0,
+      "our_army": 2800,
+      "their_army": 0,
+      "our_workers": 22,
+      "their_workers": 15
+     },
+     {
+      "m": 10,
+      "our_supply": 107.0,
+      "their_supply": 11.0,
+      "our_army": 4050,
+      "their_army": 0,
+      "our_workers": 22,
+      "their_workers": 10
+     },
+     {
+      "m": 12,
+      "our_supply": 123.0,
+      "their_supply": 10.0,
+      "our_army": 5000,
+      "their_army": 0,
+      "our_workers": 22,
+      "their_workers": 7
+     }
+    ],
+    "match": 4869823,
+    "our_outcome": "W",
+    "type": "Player2Crash"
+   }
+  ]
+ },
+ "protossinger": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1126,
+   "created": "2026-05-07",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "protossinger",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 11.1,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      24
+     ],
+     [
+      "Zealot",
+      15
+     ],
+     [
+      "Pylon",
+      10
+     ],
+     [
+      "Stalker",
+      7
+     ],
+     [
+      "Gateway",
+      5
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.5,
+     "Gateway": 1.6,
+     "Assimilator": 1.8,
+     "CyberneticsCore": 2.7,
+     "Zealot": 3.3,
+     "Stalker": 4.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 35.0,
+      "their_supply": 32.0,
+      "our_army": 350,
+      "their_army": 275,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 43.0,
+      "their_supply": 48.0,
+      "our_army": 750,
+      "their_army": 1725,
+      "our_workers": 29,
+      "their_workers": 24
+     },
+     {
+      "m": 8,
+      "our_supply": 33.0,
+      "their_supply": 68.0,
+      "our_army": 200,
+      "their_army": 2625,
+      "our_workers": 26,
+      "their_workers": 24
+     },
+     {
+      "m": 10,
+      "our_supply": 1.0,
+      "their_supply": 84.0,
+      "our_army": 0,
+      "their_army": 3425,
+      "our_workers": 1,
+      "their_workers": 24
+     }
+    ],
+    "match": 4869824,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "LoremIpsum": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1078,
+   "created": "2026-03-25",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "LoremIpsum",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 17.5,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      74
+     ],
+     [
+      "CreepTumor",
+      15
+     ],
+     [
+      "Overlord",
+      9
+     ],
+     [
+      "Extractor",
+      5
+     ],
+     [
+      "Zergling",
+      4
+     ],
+     [
+      "Queen",
+      4
+     ],
+     [
+      "CreepTumorQueen",
+      4
+     ],
+     [
+      "Roach",
+      4
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "SporeCrawler",
+      3
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 1.4,
+     "SpawningPool": 1.8,
+     "Zergling": 3.5,
+     "Queen": 3.9,
+     "CreepTumorQueen": 4.3,
+     "RoachWarren": 4.7,
+     "CreepTumor": 4.8,
+     "SporeCrawler": 5.0,
+     "Roach": 6.1,
+     "HydraliskDen": 7.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 39.0,
+      "our_army": 350,
+      "their_army": 625,
+      "our_workers": 25,
+      "their_workers": 29
+     },
+     {
+      "m": 6,
+      "our_supply": 57.0,
+      "their_supply": 66.0,
+      "our_army": 650,
+      "their_army": 1200,
+      "our_workers": 36,
+      "their_workers": 44
+     },
+     {
+      "m": 8,
+      "our_supply": 76.0,
+      "their_supply": 95.0,
+      "our_army": 1725,
+      "their_army": 1400,
+      "our_workers": 45,
+      "their_workers": 71
+     },
+     {
+      "m": 10,
+      "our_supply": 109.0,
+      "their_supply": 97.0,
+      "our_army": 3425,
+      "their_army": 1400,
+      "our_workers": 55,
+      "their_workers": 79
+     },
+     {
+      "m": 12,
+      "our_supply": 121.0,
+      "their_supply": 190.0,
+      "our_army": 3875,
+      "their_army": 5300,
+      "our_workers": 68,
+      "their_workers": 76
+     },
+     {
+      "m": 16,
+      "our_supply": 7.0,
+      "their_supply": 177.5,
+      "our_army": 400,
+      "their_army": 4625,
+      "our_workers": 2,
+      "their_workers": 76
+     }
+    ],
+    "match": 4869825,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "PrimordialOrigin": {
+  "meta": {
+   "race": "P",
+   "type": "cpplinux",
+   "id": 809,
+   "created": "2024-12-05",
+   "zip_public": true
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "PrimordialOrigin",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 20.8,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      44
+     ],
+     [
+      "Gateway",
+      8
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Stalker",
+      5
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Sentry",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.3,
+     "Gateway": 0.8,
+     "Assimilator": 0.9,
+     "CyberneticsCore": 2.2,
+     "RoboticsFacility": 3.1,
+     "Adept": 4.1,
+     "Observer": 4.9,
+     "RoboticsBay": 4.9,
+     "Stalker": 5.1,
+     "Colossus": 7.3,
+     "Sentry": 7.6
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 33.0,
+      "their_supply": 36.0,
+      "our_army": 350,
+      "their_army": 125,
+      "our_workers": 24,
+      "their_workers": 29
+     },
+     {
+      "m": 6,
+      "our_supply": 51.0,
+      "their_supply": 63.0,
+      "our_army": 675,
+      "their_army": 1100,
+      "our_workers": 35,
+      "their_workers": 42
+     },
+     {
+      "m": 8,
+      "our_supply": 76.0,
+      "their_supply": 85.0,
+      "our_army": 1475,
+      "their_army": 3425,
+      "our_workers": 45,
+      "their_workers": 44
+     },
+     {
+      "m": 10,
+      "our_supply": 91.0,
+      "their_supply": 101.0,
+      "our_army": 2900,
+      "their_army": 4250,
+      "our_workers": 51,
+      "their_workers": 44
+     },
+     {
+      "m": 12,
+      "our_supply": 108.0,
+      "their_supply": 109.0,
+      "our_army": 3175,
+      "their_army": 5200,
+      "our_workers": 68,
+      "their_workers": 44
+     },
+     {
+      "m": 16,
+      "our_supply": 169.0,
+      "their_supply": 93.0,
+      "our_army": 6600,
+      "their_army": 3300,
+      "our_workers": 66,
+      "their_workers": 44
+     },
+     {
+      "m": 20,
+      "our_supply": 198.0,
+      "their_supply": 0.0,
+      "our_army": 10525,
+      "their_army": 0,
+      "our_workers": 66,
+      "their_workers": 0
+     }
+    ],
+    "match": 4869826,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Alexa": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 729,
+   "created": "2024-07-06",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Alexa",
+    "opp_race_in_replay": "Terran",
+    "minutes": 54.7,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      23
+     ],
+     [
+      "Marine",
+      16
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "SupplyDepot",
+      2
+     ],
+     [
+      "Barracks",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.7,
+     "Barracks": 1.3,
+     "Refinery": 1.5,
+     "Marine": 2.8,
+     "Factory": 3.5,
+     "EngineeringBay": 4.3,
+     "FactoryTechLab": 4.5,
+     "Armory": 5.4,
+     "Starport": 6.0,
+     "SiegeTank": 7.5
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 33.0,
+      "their_supply": 15.0,
+      "our_army": 350,
+      "their_army": 100,
+      "our_workers": 24,
+      "their_workers": 12
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 24.0,
+      "our_army": 650,
+      "their_army": 150,
+      "our_workers": 34,
+      "their_workers": 14
+     },
+     {
+      "m": 8,
+      "our_supply": 75.0,
+      "their_supply": 51.0,
+      "our_army": 1725,
+      "their_army": 1025,
+      "our_workers": 45,
+      "their_workers": 26
+     },
+     {
+      "m": 10,
+      "our_supply": 107.0,
+      "their_supply": 83.0,
+      "our_army": 2975,
+      "their_army": 2575,
+      "our_workers": 55,
+      "their_workers": 38
+     },
+     {
+      "m": 12,
+      "our_supply": 119.0,
+      "their_supply": 111.0,
+      "our_army": 3750,
+      "their_army": 4075,
+      "our_workers": 68,
+      "their_workers": 45
+     },
+     {
+      "m": 16,
+      "our_supply": 119.0,
+      "their_supply": 199.0,
+      "our_army": 3750,
+      "their_army": 8625,
+      "our_workers": 68,
+      "their_workers": 66
+     },
+     {
+      "m": 20,
+      "our_supply": 119.0,
+      "their_supply": 200.0,
+      "our_army": 3750,
+      "their_army": 9525,
+      "our_workers": 68,
+      "their_workers": 66
+     }
+    ],
+    "match": 4869827,
+    "our_outcome": "W",
+    "type": "Player2Crash"
+   }
+  ]
+ },
+ "WildLupo": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1026,
+   "created": "2026-02-09",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "WildLupo",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 21.7,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      37
+     ],
+     [
+      "Zealot",
+      10
+     ],
+     [
+      "Pylon",
+      6
+     ],
+     [
+      "Stalker",
+      6
+     ],
+     [
+      "Gateway",
+      5
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Assimilator": 0.4,
+     "Pylon": 0.7,
+     "Gateway": 1.3,
+     "CyberneticsCore": 2.4,
+     "Zealot": 3.1,
+     "TwilightCouncil": 3.4,
+     "Stalker": 4.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 34.0,
+      "our_army": 350,
+      "their_army": 375,
+      "our_workers": 25,
+      "their_workers": 22
+     },
+     {
+      "m": 6,
+      "our_supply": 50.0,
+      "their_supply": 55.0,
+      "our_army": 525,
+      "their_army": 1575,
+      "our_workers": 35,
+      "their_workers": 29
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 83.0,
+      "our_army": 1675,
+      "their_army": 2575,
+      "our_workers": 45,
+      "their_workers": 42
+     },
+     {
+      "m": 10,
+      "our_supply": 105.0,
+      "their_supply": 110.0,
+      "our_army": 3875,
+      "their_army": 3625,
+      "our_workers": 49,
+      "their_workers": 49
+     },
+     {
+      "m": 12,
+      "our_supply": 148.0,
+      "their_supply": 141.0,
+      "our_army": 5500,
+      "their_army": 5000,
+      "our_workers": 65,
+      "their_workers": 65
+     },
+     {
+      "m": 16,
+      "our_supply": 155.0,
+      "their_supply": 109.0,
+      "our_army": 5600,
+      "their_army": 1750,
+      "our_workers": 63,
+      "their_workers": 71
+     },
+     {
+      "m": 20,
+      "our_supply": 200.0,
+      "their_supply": 3.0,
+      "our_army": 10700,
+      "their_army": 0,
+      "our_workers": 66,
+      "their_workers": 3
+     }
+    ],
+    "match": 4869828,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Starlight": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1052,
+   "created": "2026-03-06",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Starlight",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 20.0,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      36
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Pylon",
+      3
+     ],
+     [
+      "PhotonCannon",
+      3
+     ],
+     [
+      "ShieldBattery",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Forge",
+      2
+     ],
+     [
+      "Zealot",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.3,
+     "Forge": 2.1,
+     "Gateway": 2.6,
+     "PhotonCannon": 4.4,
+     "Zealot": 4.4,
+     "Assimilator": 4.8,
+     "CyberneticsCore": 6.1,
+     "ShieldBattery": 7.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 18.0,
+      "our_army": 350,
+      "their_army": 100,
+      "our_workers": 25,
+      "their_workers": 16
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 31.0,
+      "our_army": 1025,
+      "their_army": 100,
+      "our_workers": 36,
+      "their_workers": 27
+     },
+     {
+      "m": 8,
+      "our_supply": 77.0,
+      "their_supply": 51.0,
+      "our_army": 1625,
+      "their_army": 550,
+      "our_workers": 45,
+      "their_workers": 40
+     },
+     {
+      "m": 10,
+      "our_supply": 109.0,
+      "their_supply": 77.0,
+      "our_army": 3225,
+      "their_army": 2225,
+      "our_workers": 55,
+      "their_workers": 45
+     },
+     {
+      "m": 12,
+      "our_supply": 142.0,
+      "their_supply": 107.0,
+      "our_army": 5450,
+      "their_army": 4725,
+      "our_workers": 68,
+      "their_workers": 45
+     },
+     {
+      "m": 16,
+      "our_supply": 151.0,
+      "their_supply": 74.0,
+      "our_army": 6800,
+      "their_army": 2550,
+      "our_workers": 60,
+      "their_workers": 44
+     }
+    ],
+    "match": 4869829,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "MY_SCRIPTING_SON": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1023,
+   "created": "2026-02-03",
+   "zip_public": true
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "MY_SCRIPTING_SON",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 15.4,
+    "enemy_build_8min": [
+     [
+      "Zergling",
+      60
+     ],
+     [
+      "Drone",
+      40
+     ],
+     [
+      "Overlord",
+      8
+     ],
+     [
+      "Queen",
+      4
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "Extractor",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.1,
+     "Extractor": 1.4,
+     "Zergling": 3.0,
+     "Queen": 5.3,
+     "RoachWarren": 6.5
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 35.0,
+      "our_army": 350,
+      "their_army": 150,
+      "our_workers": 25,
+      "their_workers": 26
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 60.0,
+      "our_army": 1050,
+      "their_army": 1300,
+      "our_workers": 36,
+      "their_workers": 35
+     },
+     {
+      "m": 8,
+      "our_supply": 61.0,
+      "their_supply": 73.0,
+      "our_army": 1250,
+      "their_army": 1850,
+      "our_workers": 44,
+      "their_workers": 37
+     },
+     {
+      "m": 10,
+      "our_supply": 57.0,
+      "their_supply": 79.0,
+      "our_army": 1275,
+      "their_army": 1950,
+      "our_workers": 36,
+      "their_workers": 38
+     },
+     {
+      "m": 12,
+      "our_supply": 38.0,
+      "their_supply": 88.5,
+      "our_army": 825,
+      "their_army": 2275,
+      "our_workers": 25,
+      "their_workers": 38
+     }
+    ],
+    "match": 4869830,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "Laser-Circus": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 709,
+   "created": "2024-04-21",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Laser-Circus",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 30.8,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      61
+     ],
+     [
+      "Assimilator",
+      6
+     ],
+     [
+      "Pylon",
+      5
+     ],
+     [
+      "Nexus",
+      3
+     ],
+     [
+      "Forge",
+      3
+     ],
+     [
+      "Zealot",
+      3
+     ],
+     [
+      "Gateway",
+      2
+     ],
+     [
+      "ShieldBattery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.5,
+     "Gateway": 0.9,
+     "Forge": 1.5,
+     "CyberneticsCore": 2.1,
+     "Zealot": 2.6,
+     "Assimilator": 3.0,
+     "TwilightCouncil": 5.1,
+     "RoboticsFacility": 7.4,
+     "Stalker": 7.7,
+     "ShieldBattery": 7.9
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 31.0,
+      "our_army": 350,
+      "their_army": 100,
+      "our_workers": 25,
+      "their_workers": 27
+     },
+     {
+      "m": 6,
+      "our_supply": 50.0,
+      "their_supply": 56.0,
+      "our_army": 525,
+      "their_army": 300,
+      "our_workers": 35,
+      "their_workers": 47
+     },
+     {
+      "m": 8,
+      "our_supply": 80.0,
+      "their_supply": 78.0,
+      "our_army": 1800,
+      "their_army": 925,
+      "our_workers": 45,
+      "their_workers": 61
+     },
+     {
+      "m": 10,
+      "our_supply": 100.0,
+      "their_supply": 83.0,
+      "our_army": 3050,
+      "their_army": 1550,
+      "our_workers": 53,
+      "their_workers": 61
+     },
+     {
+      "m": 12,
+      "our_supply": 128.0,
+      "their_supply": 95.0,
+      "our_army": 4800,
+      "their_army": 2025,
+      "our_workers": 58,
+      "their_workers": 61
+     },
+     {
+      "m": 16,
+      "our_supply": 159.0,
+      "their_supply": 79.0,
+      "our_army": 5975,
+      "their_army": 1500,
+      "our_workers": 68,
+      "their_workers": 53
+     },
+     {
+      "m": 20,
+      "our_supply": 164.0,
+      "their_supply": 69.0,
+      "our_army": 5725,
+      "their_army": 4275,
+      "our_workers": 67,
+      "their_workers": 19
+     }
+    ],
+    "match": 4869831,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Siriusly": {
+  "meta": {
+   "race": "R",
+   "type": "dotnetcore",
+   "id": 977,
+   "created": "2025-12-03",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Siriusly",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 19.3,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      99
+     ],
+     [
+      "Overlord",
+      16
+     ],
+     [
+      "Extractor",
+      6
+     ],
+     [
+      "Hatchery",
+      5
+     ],
+     [
+      "Queen",
+      5
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 1.7,
+     "SpawningPool": 1.7,
+     "Queen": 3.8,
+     "RoachWarren": 6.0,
+     "EvolutionChamber": 7.3
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 45.0,
+      "our_army": 350,
+      "their_army": 525,
+      "our_workers": 25,
+      "their_workers": 36
+     },
+     {
+      "m": 6,
+      "our_supply": 53.0,
+      "their_supply": 85.0,
+      "our_army": 925,
+      "their_army": 700,
+      "our_workers": 34,
+      "their_workers": 65
+     },
+     {
+      "m": 8,
+      "our_supply": 75.0,
+      "their_supply": 153.0,
+      "our_army": 1525,
+      "their_army": 3075,
+      "our_workers": 45,
+      "their_workers": 85
+     },
+     {
+      "m": 10,
+      "our_supply": 100.0,
+      "their_supply": 199.0,
+      "our_army": 3750,
+      "their_army": 6075,
+      "our_workers": 47,
+      "their_workers": 85
+     },
+     {
+      "m": 12,
+      "our_supply": 125.0,
+      "their_supply": 193.0,
+      "our_army": 3900,
+      "their_army": 4025,
+      "our_workers": 55,
+      "their_workers": 84
+     },
+     {
+      "m": 16,
+      "our_supply": 170.0,
+      "their_supply": 60.0,
+      "our_army": 7500,
+      "their_army": 1425,
+      "our_workers": 68,
+      "their_workers": 38
+     }
+    ],
+    "match": 4869833,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "DownedStar1": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1109,
+   "created": "2026-04-27",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "DownedStar1",
+    "opp_race_in_replay": "Terran",
+    "minutes": 20.0,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      22
+     ],
+     [
+      "Reaper",
+      6
+     ],
+     [
+      "SupplyDepot",
+      5
+     ],
+     [
+      "SiegeTank",
+      3
+     ],
+     [
+      "Marauder",
+      3
+     ],
+     [
+      "Barracks",
+      2
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "Marine",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.1,
+     "Refinery": 1.2,
+     "BarracksTechLab": 2.2,
+     "Bunker": 2.5,
+     "Reaper": 3.4,
+     "Factory": 3.8,
+     "KD8Charge": 4.8,
+     "FactoryTechLab": 4.8,
+     "Starport": 4.9,
+     "StarportTechLab": 5.7,
+     "SiegeTank": 6.0,
+     "Marauder": 6.1,
+     "Marine": 6.3
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 24.0,
+      "our_army": 400,
+      "their_army": 100,
+      "our_workers": 25,
+      "their_workers": 22
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 38.0,
+      "our_army": 1050,
+      "their_army": 875,
+      "our_workers": 37,
+      "their_workers": 22
+     },
+     {
+      "m": 8,
+      "our_supply": 84.0,
+      "their_supply": 47.0,
+      "our_army": 2175,
+      "their_army": 1650,
+      "our_workers": 45,
+      "their_workers": 22
+     },
+     {
+      "m": 10,
+      "our_supply": 111.0,
+      "their_supply": 64.0,
+      "our_army": 3825,
+      "their_army": 2500,
+      "our_workers": 55,
+      "their_workers": 28
+     },
+     {
+      "m": 12,
+      "our_supply": 127.0,
+      "their_supply": 58.0,
+      "our_army": 3575,
+      "their_army": 1675,
+      "our_workers": 68,
+      "their_workers": 34
+     },
+     {
+      "m": 16,
+      "our_supply": 155.0,
+      "their_supply": 24.0,
+      "our_army": 5100,
+      "their_army": 1800,
+      "our_workers": 68,
+      "their_workers": 5
+     }
+    ],
+    "match": 4869834,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Myztery": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1123,
+   "created": "2026-05-07",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Myztery",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 16.5,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      63
+     ],
+     [
+      "Zergling",
+      10
+     ],
+     [
+      "Overlord",
+      9
+     ],
+     [
+      "CreepTumorQueen",
+      5
+     ],
+     [
+      "Hatchery",
+      4
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "Queen",
+      4
+     ],
+     [
+      "SporeCrawler",
+      3
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.1,
+     "Extractor": 1.7,
+     "Queen": 3.1,
+     "CreepTumorQueen": 4.3,
+     "SporeCrawler": 4.7,
+     "Zergling": 5.4,
+     "EvolutionChamber": 7.0,
+     "HydraliskDen": 7.1,
+     "RoachWarren": 7.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 36.0,
+      "our_army": 350,
+      "their_army": 525,
+      "our_workers": 25,
+      "their_workers": 29
+     },
+     {
+      "m": 6,
+      "our_supply": 57.0,
+      "their_supply": 66.0,
+      "our_army": 650,
+      "their_army": 625,
+      "our_workers": 37,
+      "their_workers": 50
+     },
+     {
+      "m": 8,
+      "our_supply": 76.0,
+      "their_supply": 87.5,
+      "our_army": 1725,
+      "their_army": 1600,
+      "our_workers": 45,
+      "their_workers": 58
+     },
+     {
+      "m": 10,
+      "our_supply": 106.0,
+      "their_supply": 128.0,
+      "our_army": 3500,
+      "their_army": 2225,
+      "our_workers": 51,
+      "their_workers": 80
+     },
+     {
+      "m": 12,
+      "our_supply": 136.0,
+      "their_supply": 102.0,
+      "our_army": 5000,
+      "their_army": 1325,
+      "our_workers": 66,
+      "their_workers": 56
+     },
+     {
+      "m": 16,
+      "our_supply": 195.0,
+      "their_supply": 0.0,
+      "our_army": 7500,
+      "their_army": -200,
+      "our_workers": 68,
+      "their_workers": 0
+     }
+    ],
+    "match": 4869835,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "TheCatSC2Bot": {
+  "meta": {
+   "race": "P",
+   "type": "java",
+   "id": 1049,
+   "created": "2026-03-03",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "TheCatSC2Bot",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 18.4,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      28
+     ],
+     [
+      "Zealot",
+      15
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "Observer",
+      3
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "RoboticsFacility",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Assimilator": 0.8,
+     "Pylon": 1.3,
+     "Gateway": 2.0,
+     "Zealot": 4.0,
+     "CyberneticsCore": 4.0,
+     "RoboticsFacility": 5.7,
+     "TwilightCouncil": 7.1,
+     "Observer": 7.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 31.0,
+      "our_army": 400,
+      "their_army": 300,
+      "our_workers": 25,
+      "their_workers": 25
+     },
+     {
+      "m": 6,
+      "our_supply": 51.0,
+      "their_supply": 55.0,
+      "our_army": 525,
+      "their_army": 900,
+      "our_workers": 36,
+      "their_workers": 28
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 70.0,
+      "our_army": 1675,
+      "their_army": 2000,
+      "our_workers": 45,
+      "their_workers": 28
+     },
+     {
+      "m": 10,
+      "our_supply": 104.0,
+      "their_supply": 92.0,
+      "our_army": 4150,
+      "their_army": 3550,
+      "our_workers": 47,
+      "their_workers": 28
+     },
+     {
+      "m": 12,
+      "our_supply": 143.0,
+      "their_supply": 110.0,
+      "our_army": 5925,
+      "their_army": 4600,
+      "our_workers": 61,
+      "their_workers": 28
+     },
+     {
+      "m": 16,
+      "our_supply": 197.0,
+      "their_supply": 67.0,
+      "our_army": 9575,
+      "their_army": 3000,
+      "our_workers": 66,
+      "their_workers": 19
+     }
+    ],
+    "match": 4869836,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "BobbyBotV13": {
+  "meta": {
+   "race": "R",
+   "type": "python",
+   "id": 1110,
+   "created": "2026-04-28",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "BobbyBotV13",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 21.1,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      52
+     ],
+     [
+      "Zergling",
+      8
+     ],
+     [
+      "Overlord",
+      6
+     ],
+     [
+      "Extractor",
+      3
+     ],
+     [
+      "Roach",
+      3
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "Queen",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 1.3,
+     "SpawningPool": 1.7,
+     "Zergling": 3.3,
+     "RoachWarren": 3.5,
+     "Queen": 3.6,
+     "SpineCrawler": 3.6,
+     "Roach": 4.9,
+     "EvolutionChamber": 7.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 32.0,
+      "their_supply": 31.0,
+      "our_army": 350,
+      "their_army": 550,
+      "our_workers": 23,
+      "their_workers": 16
+     },
+     {
+      "m": 6,
+      "our_supply": 39.0,
+      "their_supply": 48.0,
+      "our_army": 825,
+      "their_army": 1150,
+      "our_workers": 23,
+      "their_workers": 27
+     },
+     {
+      "m": 8,
+      "our_supply": 51.0,
+      "their_supply": 78.0,
+      "our_army": 1350,
+      "their_army": 1150,
+      "our_workers": 23,
+      "their_workers": 55
+     },
+     {
+      "m": 10,
+      "our_supply": 64.0,
+      "their_supply": 117.0,
+      "our_army": 2450,
+      "their_army": 4200,
+      "our_workers": 23,
+      "their_workers": 53
+     },
+     {
+      "m": 12,
+      "our_supply": 37.0,
+      "their_supply": 132.0,
+      "our_army": 650,
+      "their_army": 4400,
+      "our_workers": 23,
+      "their_workers": 53
+     },
+     {
+      "m": 16,
+      "our_supply": 0.0,
+      "their_supply": 200.0,
+      "our_army": 0,
+      "their_army": 9700,
+      "our_workers": 0,
+      "their_workers": 55
+     },
+     {
+      "m": 20,
+      "our_supply": 0.0,
+      "their_supply": 200.0,
+      "our_army": 0,
+      "their_army": 11000,
+      "our_workers": 0,
+      "their_workers": 55
+     }
+    ],
+    "match": 4869814,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "CryptBotRevival": {
+  "meta": {
+   "race": "P",
+   "type": "cpplinux",
+   "id": 1150,
+   "created": "2026-05-15",
+   "zip_public": true
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "CryptBotRevival",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 17.0,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      26
+     ],
+     [
+      "Stalker",
+      8
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Zealot",
+      5
+     ],
+     [
+      "Gateway",
+      2
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.5,
+     "Gateway": 1.0,
+     "Assimilator": 1.4,
+     "Zealot": 2.8,
+     "CyberneticsCore": 2.8,
+     "Stalker": 5.1,
+     "TwilightCouncil": 5.7
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 38.0,
+      "our_army": 350,
+      "their_army": 500,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 46.0,
+      "our_army": 1025,
+      "their_army": 1375,
+      "our_workers": 36,
+      "their_workers": 24
+     },
+     {
+      "m": 8,
+      "our_supply": 77.0,
+      "their_supply": 57.0,
+      "our_army": 1625,
+      "their_army": 2250,
+      "our_workers": 45,
+      "their_workers": 26
+     },
+     {
+      "m": 10,
+      "our_supply": 103.0,
+      "their_supply": 82.0,
+      "our_army": 3225,
+      "their_army": 3125,
+      "our_workers": 54,
+      "their_workers": 36
+     },
+     {
+      "m": 12,
+      "our_supply": 142.0,
+      "their_supply": 93.0,
+      "our_army": 5000,
+      "their_army": 3650,
+      "our_workers": 65,
+      "their_workers": 45
+     },
+     {
+      "m": 16,
+      "our_supply": 198.0,
+      "their_supply": 1.0,
+      "our_army": 9625,
+      "their_army": 0,
+      "our_workers": 67,
+      "their_workers": 0
+     }
+    ],
+    "match": 4869816,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Slowpoke": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1162,
+   "created": "2026-06-04",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Slowpoke",
+    "opp_race_in_replay": "Terran",
+    "minutes": 30.7,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      45
+     ],
+     [
+      "Marine",
+      11
+     ],
+     [
+      "SupplyDepot",
+      5
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Reaper",
+      2
+     ],
+     [
+      "Starport",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.0,
+     "Refinery": 1.1,
+     "Marine": 2.6,
+     "Reaper": 3.3,
+     "BarracksTechLab": 4.3,
+     "Factory": 4.3,
+     "EngineeringBay": 4.8,
+     "FactoryTechLab": 5.3,
+     "Starport": 6.1,
+     "Armory": 6.9,
+     "StarportTechLab": 7.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 34.0,
+      "our_army": 350,
+      "their_army": 350,
+      "our_workers": 25,
+      "their_workers": 26
+     },
+     {
+      "m": 6,
+      "our_supply": 54.0,
+      "their_supply": 54.0,
+      "our_army": 800,
+      "their_army": 700,
+      "our_workers": 36,
+      "their_workers": 39
+     },
+     {
+      "m": 8,
+      "our_supply": 79.0,
+      "their_supply": 70.0,
+      "our_army": 2175,
+      "their_army": 1200,
+      "our_workers": 45,
+      "their_workers": 49
+     },
+     {
+      "m": 10,
+      "our_supply": 91.0,
+      "their_supply": 106.0,
+      "our_army": 2500,
+      "their_army": 2825,
+      "our_workers": 55,
+      "their_workers": 59
+     },
+     {
+      "m": 12,
+      "our_supply": 102.0,
+      "their_supply": 130.0,
+      "our_army": 2500,
+      "their_army": 4200,
+      "our_workers": 68,
+      "their_workers": 68
+     },
+     {
+      "m": 16,
+      "our_supply": 101.0,
+      "their_supply": 200.0,
+      "our_army": 2500,
+      "their_army": 8925,
+      "our_workers": 67,
+      "their_workers": 85
+     },
+     {
+      "m": 20,
+      "our_supply": 143.0,
+      "their_supply": 200.0,
+      "our_army": 4425,
+      "their_army": 9875,
+      "our_workers": 61,
+      "their_workers": 100
+     }
+    ],
+    "match": 4869832,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "zig-reapers": {
+  "meta": {
+   "race": "T",
+   "type": "cpplinux",
+   "id": 574,
+   "created": "2023-01-19",
+   "zip_public": true
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "zig-reapers",
+    "opp_race_in_replay": "Terran",
+    "minutes": 12.7,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      30
+     ],
+     [
+      "Reaper",
+      24
+     ],
+     [
+      "Barracks",
+      7
+     ],
+     [
+      "SupplyDepot",
+      5
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.0,
+     "Refinery": 1.0,
+     "Reaper": 2.9
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 32.0,
+      "our_army": 400,
+      "their_army": 400,
+      "our_workers": 25,
+      "their_workers": 25
+     },
+     {
+      "m": 6,
+      "our_supply": 50.0,
+      "their_supply": 44.0,
+      "our_army": 850,
+      "their_army": 1100,
+      "our_workers": 32,
+      "their_workers": 28
+     },
+     {
+      "m": 8,
+      "our_supply": 12.0,
+      "their_supply": 69.0,
+      "our_army": 100,
+      "their_army": 2500,
+      "our_workers": 10,
+      "their_workers": 35
+     },
+     {
+      "m": 10,
+      "our_supply": 0.0,
+      "their_supply": 94.0,
+      "our_army": 0,
+      "their_army": 4300,
+      "our_workers": 0,
+      "their_workers": 43
+     },
+     {
+      "m": 12,
+      "our_supply": 0.0,
+      "their_supply": 117.0,
+      "our_army": 0,
+      "their_army": 6100,
+      "our_workers": 0,
+      "their_workers": 49
+     }
+    ],
+    "match": 4872603,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "KoB": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 981,
+   "created": "2025-12-11",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "KoB",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 21.2,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      58
+     ],
+     [
+      "Overlord",
+      9
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "Hydralisk",
+      4
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.5,
+     "Extractor": 2.1,
+     "EvolutionChamber": 2.8,
+     "Queen": 3.6,
+     "HydraliskDen": 5.0,
+     "LurkerDenMP": 5.9,
+     "CreepTumorQueen": 7.4,
+     "InfestationPit": 7.5,
+     "Hydralisk": 7.6,
+     "CreepTumor": 8.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 38.0,
+      "their_supply": 38.0,
+      "our_army": 300,
+      "their_army": 350,
+      "our_workers": 27,
+      "their_workers": 30
+     },
+     {
+      "m": 6,
+      "our_supply": 54.0,
+      "their_supply": 55.0,
+      "our_army": 650,
+      "their_army": 350,
+      "our_workers": 39,
+      "their_workers": 49
+     },
+     {
+      "m": 8,
+      "our_supply": 74.0,
+      "their_supply": 79.0,
+      "our_army": 1425,
+      "their_army": 2550,
+      "our_workers": 45,
+      "their_workers": 43
+     },
+     {
+      "m": 10,
+      "our_supply": 83.0,
+      "their_supply": 96.0,
+      "our_army": 2625,
+      "their_army": 2300,
+      "our_workers": 40,
+      "their_workers": 59
+     },
+     {
+      "m": 12,
+      "our_supply": 97.0,
+      "their_supply": 153.0,
+      "our_army": 3650,
+      "their_army": 5050,
+      "our_workers": 40,
+      "their_workers": 75
+     },
+     {
+      "m": 16,
+      "our_supply": 89.0,
+      "their_supply": 200.0,
+      "our_army": 2875,
+      "their_army": 8575,
+      "our_workers": 40,
+      "their_workers": 80
+     },
+     {
+      "m": 20,
+      "our_supply": 0.0,
+      "their_supply": 201.0,
+      "our_army": 0,
+      "their_army": 9025,
+      "our_workers": 0,
+      "their_workers": 84
+     }
+    ],
+    "match": 4874712,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Crawler": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 858,
+   "created": "2025-04-09",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Crawler",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 14.1,
+    "enemy_build_8min": [
+     [
+      "Zergling",
+      120
+     ],
+     [
+      "Drone",
+      16
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "Overlord",
+      3
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.7,
+     "Zergling": 2.2,
+     "Queen": 2.6
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 34.0,
+      "their_supply": 36.0,
+      "our_army": 300,
+      "their_army": 975,
+      "our_workers": 25,
+      "their_workers": 13
+     },
+     {
+      "m": 6,
+      "our_supply": 39.0,
+      "their_supply": 39.0,
+      "our_army": 400,
+      "their_army": 1125,
+      "our_workers": 25,
+      "their_workers": 13
+     },
+     {
+      "m": 8,
+      "our_supply": 57.0,
+      "their_supply": 32.5,
+      "our_army": 1200,
+      "their_army": 800,
+      "our_workers": 29,
+      "their_workers": 13
+     },
+     {
+      "m": 10,
+      "our_supply": 76.0,
+      "their_supply": 28.0,
+      "our_army": 2350,
+      "their_army": 625,
+      "our_workers": 29,
+      "their_workers": 13
+     },
+     {
+      "m": 12,
+      "our_supply": 107.0,
+      "their_supply": 18.0,
+      "our_army": 3500,
+      "their_army": 175,
+      "our_workers": 29,
+      "their_workers": 12
+     }
+    ],
+    "match": 4872605,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "WorkingAsIntended": {
+  "meta": {
+   "race": "R",
+   "type": "python",
+   "id": 1089,
+   "created": "2026-04-11",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 3,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "WorkingAsIntended",
+    "opp_race_in_replay": "Terran",
+    "minutes": 30.0,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      24
+     ],
+     [
+      "Marine",
+      19
+     ],
+     [
+      "SupplyDepot",
+      5
+     ],
+     [
+      "Bunker",
+      4
+     ],
+     [
+      "Hellion",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "Factory",
+      2
+     ],
+     [
+      "BarracksReactor",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.3,
+     "Barracks": 0.8,
+     "Refinery": 1.7,
+     "Bunker": 1.8,
+     "Marine": 2.3,
+     "Factory": 3.1,
+     "Hellion": 4.6,
+     "BarracksReactor": 5.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 37.0,
+      "their_supply": 34.0,
+      "our_army": 350,
+      "their_army": 450,
+      "our_workers": 27,
+      "their_workers": 22
+     },
+     {
+      "m": 6,
+      "our_supply": 54.0,
+      "their_supply": 42.0,
+      "our_army": 700,
+      "their_army": 900,
+      "our_workers": 39,
+      "their_workers": 22
+     },
+     {
+      "m": 8,
+      "our_supply": 77.0,
+      "their_supply": 63.0,
+      "our_army": 1475,
+      "their_army": 1750,
+      "our_workers": 45,
+      "their_workers": 27
+     },
+     {
+      "m": 10,
+      "our_supply": 99.0,
+      "their_supply": 79.0,
+      "our_army": 2825,
+      "their_army": 2350,
+      "our_workers": 51,
+      "their_workers": 34
+     },
+     {
+      "m": 12,
+      "our_supply": 121.0,
+      "their_supply": 119.0,
+      "our_army": 3750,
+      "their_army": 3425,
+      "our_workers": 67,
+      "their_workers": 49
+     },
+     {
+      "m": 16,
+      "our_supply": 150.0,
+      "their_supply": 187.0,
+      "our_army": 4350,
+      "their_army": 6125,
+      "our_workers": 81,
+      "their_workers": 71
+     },
+     {
+      "m": 20,
+      "our_supply": 105.0,
+      "their_supply": 192.0,
+      "our_army": 1450,
+      "their_army": 6450,
+      "our_workers": 77,
+      "their_workers": 82
+     }
+    ],
+    "match": 4873060,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "QueenBot": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 201,
+   "created": "2020-10-05",
+   "zip_public": true
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "QueenBot",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 26.9,
+    "enemy_build_8min": [
+     [
+      "CreepTumor",
+      85
+     ],
+     [
+      "Drone",
+      76
+     ],
+     [
+      "CreepTumorQueen",
+      33
+     ],
+     [
+      "Overlord",
+      11
+     ],
+     [
+      "Queen",
+      10
+     ],
+     [
+      "Hatchery",
+      5
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.2,
+     "SpawningPool": 1.4,
+     "Queen": 3.4,
+     "CreepTumorQueen": 3.4,
+     "CreepTumor": 4.0,
+     "EvolutionChamber": 5.3,
+     "NydusNetwork": 7.7
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 46.0,
+      "our_army": 400,
+      "their_army": 700,
+      "our_workers": 25,
+      "their_workers": 32
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 75.0,
+      "our_army": 1050,
+      "their_army": 1400,
+      "our_workers": 37,
+      "their_workers": 51
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 117.0,
+      "our_army": 2175,
+      "their_army": 2650,
+      "our_workers": 45,
+      "their_workers": 69
+     },
+     {
+      "m": 10,
+      "our_supply": 98.0,
+      "their_supply": 124.0,
+      "our_army": 2150,
+      "their_army": 3000,
+      "our_workers": 55,
+      "their_workers": 78
+     },
+     {
+      "m": 12,
+      "our_supply": 121.0,
+      "their_supply": 143.0,
+      "our_army": 4000,
+      "their_army": 4400,
+      "our_workers": 60,
+      "their_workers": 73
+     },
+     {
+      "m": 16,
+      "our_supply": 104.0,
+      "their_supply": 180.0,
+      "our_army": 5800,
+      "their_army": 8075,
+      "our_workers": 25,
+      "their_workers": 68
+     },
+     {
+      "m": 20,
+      "our_supply": 101.0,
+      "their_supply": 134.0,
+      "our_army": 6375,
+      "their_army": 3700,
+      "our_workers": 15,
+      "their_workers": 68
+     }
+    ],
+    "match": 4872607,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "Apidae": {
+  "meta": {
+   "race": "P",
+   "type": "java",
+   "id": 526,
+   "created": "2022-11-02",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Apidae",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 13.1,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      35
+     ],
+     [
+      "PhotonCannon",
+      6
+     ],
+     [
+      "Pylon",
+      4
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Gateway",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Zealot",
+      2
+     ],
+     [
+      "Sentry",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.5,
+     "Forge": 1.0,
+     "PhotonCannon": 1.8,
+     "Gateway": 4.0,
+     "Assimilator": 4.0,
+     "Zealot": 5.7,
+     "CyberneticsCore": 6.0,
+     "RoboticsFacility": 7.2,
+     "Sentry": 7.3,
+     "Stalker": 7.4
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 25.0,
+      "their_supply": 24.0,
+      "our_army": 50,
+      "their_army": 0,
+      "our_workers": 22,
+      "their_workers": 23
+     },
+     {
+      "m": 6,
+      "our_supply": 24.0,
+      "their_supply": 36.0,
+      "our_army": 0,
+      "their_army": 200,
+      "our_workers": 22,
+      "their_workers": 27
+     },
+     {
+      "m": 8,
+      "our_supply": 26.0,
+      "their_supply": 60.0,
+      "our_army": 100,
+      "their_army": 1125,
+      "our_workers": 22,
+      "their_workers": 38
+     },
+     {
+      "m": 10,
+      "our_supply": 21.0,
+      "their_supply": 93.0,
+      "our_army": 50,
+      "their_army": 3150,
+      "our_workers": 16,
+      "their_workers": 49
+     },
+     {
+      "m": 12,
+      "our_supply": 3.0,
+      "their_supply": 114.0,
+      "our_army": 0,
+      "their_army": 4900,
+      "our_workers": 3,
+      "their_workers": 50
+     }
+    ],
+    "match": 4872608,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "ZEALOCALYPSE": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1154,
+   "created": "2026-05-20",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "ZEALOCALYPSE",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 9.7,
+    "enemy_build_8min": [
+     [
+      "Zealot",
+      31
+     ],
+     [
+      "Probe",
+      18
+     ],
+     [
+      "Pylon",
+      9
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 1.3,
+     "Zealot": 3.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 30.0,
+      "their_supply": 40.0,
+      "our_army": 100,
+      "their_army": 700,
+      "our_workers": 25,
+      "their_workers": 18
+     },
+     {
+      "m": 6,
+      "our_supply": 1.0,
+      "their_supply": 66.0,
+      "our_army": 50,
+      "their_army": 2100,
+      "our_workers": 0,
+      "their_workers": 18
+     },
+     {
+      "m": 8,
+      "our_supply": 0.0,
+      "their_supply": 86.0,
+      "our_army": 0,
+      "their_army": 3000,
+      "our_workers": 0,
+      "their_workers": 18
+     }
+    ],
+    "match": 4871446,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "smokinggunbot": {
+  "meta": {
+   "race": "T",
+   "type": "java",
+   "id": 827,
+   "created": "2025-01-19",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "smokinggunbot",
+    "opp_race_in_replay": "Terran",
+    "minutes": 24.7,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      38
+     ],
+     [
+      "Marine",
+      9
+     ],
+     [
+      "SupplyDepot",
+      6
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Bunker",
+      2
+     ],
+     [
+      "SiegeTank",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.2,
+     "Refinery": 2.2,
+     "Bunker": 2.6,
+     "Marine": 2.8,
+     "Factory": 3.9,
+     "FactoryTechLab": 4.9,
+     "EngineeringBay": 5.4,
+     "SiegeTank": 6.1,
+     "Starport": 6.5,
+     "MissileTurret": 7.1,
+     "StarportTechLab": 7.4
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 29.0,
+      "our_army": 400,
+      "their_army": 250,
+      "our_workers": 25,
+      "their_workers": 23
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 43.0,
+      "our_army": 1050,
+      "their_army": 675,
+      "our_workers": 37,
+      "their_workers": 31
+     },
+     {
+      "m": 8,
+      "our_supply": 82.0,
+      "their_supply": 67.0,
+      "our_army": 2175,
+      "their_army": 1375,
+      "our_workers": 45,
+      "their_workers": 42
+     },
+     {
+      "m": 10,
+      "our_supply": 104.0,
+      "their_supply": 86.0,
+      "our_army": 3750,
+      "their_army": 2050,
+      "our_workers": 53,
+      "their_workers": 52
+     },
+     {
+      "m": 12,
+      "our_supply": 119.0,
+      "their_supply": 114.0,
+      "our_army": 3750,
+      "their_army": 2850,
+      "our_workers": 68,
+      "their_workers": 66
+     },
+     {
+      "m": 16,
+      "our_supply": 151.0,
+      "their_supply": 188.0,
+      "our_army": 6025,
+      "their_army": 5100,
+      "our_workers": 69,
+      "their_workers": 111
+     },
+     {
+      "m": 20,
+      "our_supply": 70.0,
+      "their_supply": 196.0,
+      "our_army": 3750,
+      "their_army": 6750,
+      "our_workers": 23,
+      "their_workers": 109
+     }
+    ],
+    "match": 4871241,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "PiG_Bot": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 720,
+   "created": "2024-06-17",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "PiG_Bot",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 18.7,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      57
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Zealot",
+      7
+     ],
+     [
+      "Assimilator",
+      5
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "Stalker",
+      4
+     ],
+     [
+      "Nexus",
+      3
+     ],
+     [
+      "HighTemplar",
+      3
+     ],
+     [
+      "PhotonCannon",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.8,
+     "Assimilator": 0.9,
+     "CyberneticsCore": 2.1,
+     "Stalker": 3.6,
+     "TwilightCouncil": 3.7,
+     "Sentry": 5.1,
+     "Forge": 5.1,
+     "Zealot": 5.8,
+     "Phoenix": 5.9,
+     "TemplarArchive": 5.9,
+     "PhotonCannon": 6.7,
+     "HighTemplar": 6.9,
+     "RoboticsFacility": 7.5
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 42.0,
+      "our_army": 400,
+      "their_army": 350,
+      "our_workers": 25,
+      "their_workers": 34
+     },
+     {
+      "m": 6,
+      "our_supply": 39.0,
+      "their_supply": 66.0,
+      "our_army": 225,
+      "their_army": 1075,
+      "our_workers": 33,
+      "their_workers": 48
+     },
+     {
+      "m": 8,
+      "our_supply": 37.0,
+      "their_supply": 94.0,
+      "our_army": 250,
+      "their_army": 1950,
+      "our_workers": 26,
+      "their_workers": 66
+     },
+     {
+      "m": 10,
+      "our_supply": 31.0,
+      "their_supply": 87.0,
+      "our_army": 250,
+      "their_army": 1425,
+      "our_workers": 26,
+      "their_workers": 72
+     },
+     {
+      "m": 12,
+      "our_supply": 30.0,
+      "their_supply": 87.0,
+      "our_army": 400,
+      "their_army": 1425,
+      "our_workers": 18,
+      "their_workers": 72
+     },
+     {
+      "m": 16,
+      "our_supply": 2.0,
+      "their_supply": 87.0,
+      "our_army": 50,
+      "their_army": 1475,
+      "our_workers": 1,
+      "their_workers": 72
+     }
+    ],
+    "match": 4871164,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Montka": {
+  "meta": {
+   "race": "R",
+   "type": "python",
+   "id": 1143,
+   "created": "2026-05-14",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Montka",
+    "opp_race_in_replay": "Terran",
+    "minutes": 21.9,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      40
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Marine",
+      6
+     ],
+     [
+      "Barracks",
+      5
+     ],
+     [
+      "Marauder",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BarracksTechLab",
+      2
+     ],
+     [
+      "Medivac",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.3,
+     "Barracks": 0.8,
+     "Refinery": 0.9,
+     "Reaper": 2.9,
+     "BarracksTechLab": 3.0,
+     "Marine": 3.6,
+     "BarracksReactor": 3.6,
+     "Factory": 3.8,
+     "FactoryTechLab": 4.8,
+     "Marauder": 4.9,
+     "Starport": 5.3,
+     "Medivac": 6.9
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 31.0,
+      "our_army": 400,
+      "their_army": 200,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 57.0,
+      "their_supply": 51.0,
+      "our_army": 525,
+      "their_army": 900,
+      "our_workers": 36,
+      "their_workers": 32
+     },
+     {
+      "m": 8,
+      "our_supply": 76.0,
+      "their_supply": 80.0,
+      "our_army": 1725,
+      "their_army": 1925,
+      "our_workers": 45,
+      "their_workers": 44
+     },
+     {
+      "m": 10,
+      "our_supply": 77.0,
+      "their_supply": 82.0,
+      "our_army": 1725,
+      "their_army": 1900,
+      "our_workers": 49,
+      "their_workers": 44
+     },
+     {
+      "m": 12,
+      "our_supply": 114.0,
+      "their_supply": 87.0,
+      "our_army": 2950,
+      "their_army": 2175,
+      "our_workers": 60,
+      "their_workers": 44
+     },
+     {
+      "m": 16,
+      "our_supply": 169.0,
+      "their_supply": 67.0,
+      "our_army": 6325,
+      "their_army": 1075,
+      "our_workers": 68,
+      "their_workers": 44
+     },
+     {
+      "m": 20,
+      "our_supply": 200.0,
+      "their_supply": 15.0,
+      "our_army": 9550,
+      "their_army": 800,
+      "our_workers": 68,
+      "their_workers": 6
+     }
+    ],
+    "match": 4871313,
+    "our_outcome": "W",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "27turtles": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 516,
+   "created": "2022-10-23",
+   "zip_public": false
+  },
+  "record": {
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "27turtles",
+    "opp_race_in_replay": "Terran",
+    "minutes": 30.1,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      45
+     ],
+     [
+      "Marine",
+      10
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "Factory",
+      3
+     ],
+     [
+      "FactoryTechLab",
+      3
+     ],
+     [
+      "BarracksReactor",
+      2
+     ],
+     [
+      "Liberator",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 0.9,
+     "Refinery": 0.9,
+     "Reaper": 2.7,
+     "Factory": 3.3,
+     "Bunker": 4.3,
+     "FactoryReactor": 4.3,
+     "Marine": 4.6,
+     "Starport": 4.6,
+     "BarracksTechLab": 5.9,
+     "BarracksReactor": 6.0,
+     "Liberator": 6.7,
+     "FactoryTechLab": 6.8,
+     "Marauder": 6.9
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 30.0,
+      "our_army": 400,
+      "their_army": 200,
+      "our_workers": 25,
+      "their_workers": 23
+     },
+     {
+      "m": 6,
+      "our_supply": 52.0,
+      "their_supply": 55.0,
+      "our_army": 1050,
+      "their_army": 1050,
+      "our_workers": 33,
+      "their_workers": 36
+     },
+     {
+      "m": 8,
+      "our_supply": 72.0,
+      "their_supply": 82.0,
+      "our_army": 1550,
+      "their_army": 1525,
+      "our_workers": 45,
+      "their_workers": 49
+     },
+     {
+      "m": 10,
+      "our_supply": 78.0,
+      "their_supply": 96.0,
+      "our_army": 2000,
+      "their_army": 1275,
+      "our_workers": 45,
+      "their_workers": 62
+     },
+     {
+      "m": 12,
+      "our_supply": 106.0,
+      "their_supply": 116.0,
+      "our_army": 3125,
+      "their_army": 1425,
+      "our_workers": 44,
+      "their_workers": 80
+     },
+     {
+      "m": 16,
+      "our_supply": 148.0,
+      "their_supply": 87.0,
+      "our_army": 5575,
+      "their_army": 2175,
+      "our_workers": 43,
+      "their_workers": 29
+     },
+     {
+      "m": 20,
+      "our_supply": 163.0,
+      "their_supply": 78.0,
+      "our_army": 6075,
+      "their_army": 2300,
+      "our_workers": 67,
+      "their_workers": 38
+     }
+    ],
+    "match": 4874850,
+    "our_outcome": "W",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "sharpy_protoss_test1": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1181,
+   "created": "2026-06-30",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "sharpy_protoss_test1",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 12.0,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      45
+     ],
+     [
+      "Pylon",
+      8
+     ],
+     [
+      "Zealot",
+      7
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Stalker",
+      2
+     ],
+     [
+      "Stargate",
+      2
+     ],
+     [
+      "VoidRay",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.5,
+     "Assimilator": 0.9,
+     "Gateway": 1.1,
+     "CyberneticsCore": 2.3,
+     "TwilightCouncil": 3.8,
+     "Stalker": 3.9,
+     "Stargate": 4.5,
+     "Zealot": 5.5,
+     "Adept": 5.9,
+     "VoidRay": 6.3
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 37.0,
+      "their_supply": 36.0,
+      "our_army": 350,
+      "their_army": 350,
+      "our_workers": 25,
+      "their_workers": 30
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 60.0,
+      "our_army": 675,
+      "their_army": 975,
+      "our_workers": 36,
+      "their_workers": 43
+     },
+     {
+      "m": 8,
+      "our_supply": 74.0,
+      "their_supply": 94.0,
+      "our_army": 1750,
+      "their_army": 2650,
+      "our_workers": 45,
+      "their_workers": 44
+     },
+     {
+      "m": 10,
+      "our_supply": 22.0,
+      "their_supply": 106.0,
+      "our_army": 400,
+      "their_army": 4475,
+      "our_workers": 17,
+      "their_workers": 44
+     }
+    ],
+    "match": 4872545,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "PerilousProtossBot": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 502,
+   "created": "2022-09-12",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "PerilousProtossBot",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 13.1,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      20
+     ],
+     [
+      "Zealot",
+      10
+     ],
+     [
+      "Pylon",
+      8
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "PhotonCannon",
+      4
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.8,
+     "Gateway": 1.2,
+     "Zealot": 2.7,
+     "Forge": 3.7,
+     "PhotonCannon": 4.5,
+     "CyberneticsCore": 5.2,
+     "ShieldBattery": 7.4,
+     "Assimilator": 7.7
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 17.0,
+      "their_supply": 30.0,
+      "our_army": 50,
+      "their_army": 700,
+      "our_workers": 15,
+      "their_workers": 16
+     },
+     {
+      "m": 6,
+      "our_supply": 0.0,
+      "their_supply": 32.0,
+      "our_army": 0,
+      "their_army": 800,
+      "our_workers": 0,
+      "their_workers": 16
+     },
+     {
+      "m": 8,
+      "our_supply": 0.0,
+      "their_supply": 44.0,
+      "our_army": 0,
+      "their_army": 800,
+      "our_workers": 0,
+      "their_workers": 23
+     },
+     {
+      "m": 10,
+      "our_supply": 0.0,
+      "their_supply": 69.0,
+      "our_army": 0,
+      "their_army": 1750,
+      "our_workers": 0,
+      "their_workers": 33
+     },
+     {
+      "m": 12,
+      "our_supply": 0.0,
+      "their_supply": 97.0,
+      "our_army": 0,
+      "their_army": 2950,
+      "our_workers": 0,
+      "their_workers": 49
+     }
+    ],
+    "match": 4872144,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "kas": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1140,
+   "created": "2026-05-13",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "kas",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 17.8,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      35
+     ],
+     [
+      "Mutalisk",
+      10
+     ],
+     [
+      "Overlord",
+      6
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 0.1,
+     "SpawningPool": 0.5,
+     "Queen": 2.5,
+     "SpineCrawler": 2.6,
+     "Spire": 3.9,
+     "Mutalisk": 6.1
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 20.0,
+      "our_army": 350,
+      "their_army": 175,
+      "our_workers": 25,
+      "their_workers": 18
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 40.0,
+      "our_army": 650,
+      "their_army": 1575,
+      "our_workers": 35,
+      "their_workers": 24
+     },
+     {
+      "m": 8,
+      "our_supply": 46.0,
+      "their_supply": 64.0,
+      "our_army": 1425,
+      "their_army": 2575,
+      "our_workers": 21,
+      "their_workers": 33
+     },
+     {
+      "m": 10,
+      "our_supply": 41.0,
+      "their_supply": 94.0,
+      "our_army": 1575,
+      "their_army": 4175,
+      "our_workers": 14,
+      "their_workers": 41
+     },
+     {
+      "m": 12,
+      "our_supply": 2.0,
+      "their_supply": 115.0,
+      "our_army": 200,
+      "their_army": 5125,
+      "our_workers": 0,
+      "their_workers": 58
+     },
+     {
+      "m": 16,
+      "our_supply": 0.0,
+      "their_supply": 196.0,
+      "our_army": 0,
+      "their_army": 9275,
+      "our_workers": 0,
+      "their_workers": 80
+     }
+    ],
+    "match": 4871216,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Princess-Mika": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 708,
+   "created": "2024-04-21",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 3,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Princess-Mika",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 27.6,
+    "enemy_build_8min": [
+     [
+      "Zergling",
+      66
+     ],
+     [
+      "Drone",
+      44
+     ],
+     [
+      "CreepTumor",
+      9
+     ],
+     [
+      "Overlord",
+      6
+     ],
+     [
+      "CreepTumorQueen",
+      5
+     ],
+     [
+      "Extractor",
+      3
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.7,
+     "Extractor": 1.8,
+     "Zergling": 2.2,
+     "Queen": 3.1,
+     "CreepTumorQueen": 4.0,
+     "CreepTumor": 4.5,
+     "SpineCrawler": 6.6,
+     "EvolutionChamber": 7.1
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 34.0,
+      "their_supply": 30.0,
+      "our_army": 400,
+      "their_army": 925,
+      "our_workers": 22,
+      "their_workers": 15
+     },
+     {
+      "m": 6,
+      "our_supply": 49.0,
+      "their_supply": 45.0,
+      "our_army": 1100,
+      "their_army": 925,
+      "our_workers": 22,
+      "their_workers": 29
+     },
+     {
+      "m": 8,
+      "our_supply": 66.0,
+      "their_supply": 63.5,
+      "our_army": 1950,
+      "their_army": 1300,
+      "our_workers": 22,
+      "their_workers": 35
+     },
+     {
+      "m": 10,
+      "our_supply": 82.0,
+      "their_supply": 80.5,
+      "our_army": 2850,
+      "their_army": 2025,
+      "our_workers": 22,
+      "their_workers": 42
+     },
+     {
+      "m": 12,
+      "our_supply": 99.0,
+      "their_supply": 67.5,
+      "our_army": 3650,
+      "their_army": 800,
+      "our_workers": 22,
+      "their_workers": 45
+     },
+     {
+      "m": 16,
+      "our_supply": 72.0,
+      "their_supply": 55.5,
+      "our_army": 2250,
+      "their_army": 1125,
+      "our_workers": 22,
+      "their_workers": 38
+     },
+     {
+      "m": 20,
+      "our_supply": 41.0,
+      "their_supply": 77.5,
+      "our_army": 900,
+      "their_army": 1475,
+      "our_workers": 22,
+      "their_workers": 47
+     }
+    ],
+    "match": 4871566,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Horizon": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1177,
+   "created": "2026-06-27",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Horizon",
+    "opp_race_in_replay": "Terran",
+    "minutes": 28.6,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      50
+     ],
+     [
+      "Marine",
+      7
+     ],
+     [
+      "SupplyDepot",
+      6
+     ],
+     [
+      "Refinery",
+      6
+     ],
+     [
+      "CommandCenter",
+      4
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "Starport",
+      3
+     ],
+     [
+      "BarracksTechLab",
+      2
+     ],
+     [
+      "Marauder",
+      2
+     ],
+     [
+      "EngineeringBay",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.3,
+     "Barracks": 0.9,
+     "Refinery": 1.0,
+     "Bunker": 2.6,
+     "Reaper": 2.8,
+     "Factory": 2.9,
+     "Marine": 3.2,
+     "FactoryTechLab": 4.8,
+     "Starport": 5.0,
+     "BarracksTechLab": 5.3,
+     "StarportTechLab": 5.9,
+     "Marauder": 6.2,
+     "SiegeTank": 6.2,
+     "EngineeringBay": 7.3,
+     "Raven": 7.8,
+     "Medivac": 7.9
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 35.0,
+      "our_army": 400,
+      "their_army": 250,
+      "our_workers": 25,
+      "their_workers": 27
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 53.0,
+      "our_army": 1050,
+      "their_army": 750,
+      "our_workers": 36,
+      "their_workers": 40
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 90.0,
+      "our_army": 2175,
+      "their_army": 1900,
+      "our_workers": 45,
+      "their_workers": 59
+     },
+     {
+      "m": 10,
+      "our_supply": 111.0,
+      "their_supply": 139.0,
+      "our_army": 3825,
+      "their_army": 3525,
+      "our_workers": 55,
+      "their_workers": 82
+     },
+     {
+      "m": 12,
+      "our_supply": 133.0,
+      "their_supply": 198.0,
+      "our_army": 4075,
+      "their_army": 6725,
+      "our_workers": 68,
+      "their_workers": 82
+     },
+     {
+      "m": 16,
+      "our_supply": 110.0,
+      "their_supply": 162.0,
+      "our_army": 2650,
+      "their_army": 5325,
+      "our_workers": 67,
+      "their_workers": 82
+     },
+     {
+      "m": 20,
+      "our_supply": 92.0,
+      "their_supply": 173.0,
+      "our_army": 2975,
+      "their_army": 5525,
+      "our_workers": 51,
+      "their_workers": 82
+     }
+    ],
+    "match": 4872528,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Klakinn": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 747,
+   "created": "2024-08-11",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Klakinn",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 11.1,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      34
+     ],
+     [
+      "Zealot",
+      31
+     ],
+     [
+      "Pylon",
+      8
+     ],
+     [
+      "Gateway",
+      6
+     ],
+     [
+      "AdeptPhaseShift",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.8,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 2.1,
+     "RoboticsFacility": 3.3,
+     "Adept": 3.4,
+     "AdeptPhaseShift": 3.4,
+     "Stalker": 4.4,
+     "Immortal": 5.3,
+     "Zealot": 5.4,
+     "WarpPrism": 5.9
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 37.0,
+      "their_supply": 40.0,
+      "our_army": 400,
+      "their_army": 175,
+      "our_workers": 25,
+      "their_workers": 32
+     },
+     {
+      "m": 6,
+      "our_supply": 52.0,
+      "their_supply": 62.0,
+      "our_army": 675,
+      "their_army": 1775,
+      "our_workers": 36,
+      "their_workers": 34
+     },
+     {
+      "m": 8,
+      "our_supply": 37.0,
+      "their_supply": 98.0,
+      "our_army": 0,
+      "their_army": 3375,
+      "our_workers": 27,
+      "their_workers": 34
+     },
+     {
+      "m": 10,
+      "our_supply": 6.0,
+      "their_supply": 146.0,
+      "our_army": 50,
+      "their_army": 5575,
+      "our_workers": 5,
+      "their_workers": 34
+     }
+    ],
+    "match": 4872193,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "lishimin": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 772,
+   "created": "2024-10-21",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": []
+ },
+ "Persephone": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1129,
+   "created": "2026-05-09",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Persephone",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 15.3,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      75
+     ],
+     [
+      "Overlord",
+      15
+     ],
+     [
+      "Roach",
+      13
+     ],
+     [
+      "Zergling",
+      6
+     ],
+     [
+      "Queen",
+      5
+     ],
+     [
+      "Extractor",
+      4
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.9,
+     "Extractor": 3.0,
+     "Zergling": 3.6,
+     "Queen": 3.8,
+     "EvolutionChamber": 5.2,
+     "RoachWarren": 5.4,
+     "Roach": 7.1
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 42.0,
+      "our_army": 350,
+      "their_army": 400,
+      "our_workers": 25,
+      "their_workers": 35
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 84.5,
+      "our_army": 1050,
+      "their_army": 900,
+      "our_workers": 36,
+      "their_workers": 63
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 152.0,
+      "our_army": 2175,
+      "their_army": 4275,
+      "our_workers": 45,
+      "their_workers": 66
+     },
+     {
+      "m": 10,
+      "our_supply": 82.0,
+      "their_supply": 170.5,
+      "our_army": 2100,
+      "their_army": 4100,
+      "our_workers": 45,
+      "their_workers": 85
+     },
+     {
+      "m": 12,
+      "our_supply": 61.0,
+      "their_supply": 195.0,
+      "our_army": 975,
+      "their_army": 5575,
+      "our_workers": 45,
+      "their_workers": 84
+     }
+    ],
+    "match": 4872245,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Asteria": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1131,
+   "created": "2026-05-09",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Asteria",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 16.0,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      47
+     ],
+     [
+      "Pylon",
+      9
+     ],
+     [
+      "PhotonCannon",
+      6
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Stargate",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "ShieldBattery",
+      2
+     ],
+     [
+      "Tempest",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Assimilator": 0.6,
+     "Forge": 1.0,
+     "Gateway": 1.3,
+     "PhotonCannon": 1.9,
+     "CyberneticsCore": 2.5,
+     "Stargate": 3.9,
+     "ShieldBattery": 4.2,
+     "FleetBeacon": 5.1,
+     "Tempest": 7.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 30.0,
+      "our_army": 350,
+      "their_army": 0,
+      "our_workers": 25,
+      "their_workers": 29
+     },
+     {
+      "m": 6,
+      "our_supply": 51.0,
+      "their_supply": 52.0,
+      "our_army": 525,
+      "their_army": 0,
+      "our_workers": 36,
+      "their_workers": 42
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 72.0,
+      "our_army": 1675,
+      "their_army": 1275,
+      "our_workers": 45,
+      "their_workers": 51
+     },
+     {
+      "m": 10,
+      "our_supply": 94.0,
+      "their_supply": 103.0,
+      "our_army": 2875,
+      "their_army": 3075,
+      "our_workers": 49,
+      "their_workers": 61
+     },
+     {
+      "m": 12,
+      "our_supply": 65.0,
+      "their_supply": 141.0,
+      "our_army": 850,
+      "their_army": 4975,
+      "our_workers": 52,
+      "their_workers": 76
+     }
+    ],
+    "match": 4872412,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Terranosaur": {
+  "meta": {
+   "race": "T",
+   "type": "dotnetcore",
+   "id": 1184,
+   "created": "2026-07-03",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Terranosaur",
+    "opp_race_in_replay": "Terran",
+    "minutes": 39.5,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      45
+     ],
+     [
+      "Marine",
+      37
+     ],
+     [
+      "SupplyDepot",
+      10
+     ],
+     [
+      "Barracks",
+      4
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "BarracksReactor",
+      2
+     ],
+     [
+      "EngineeringBay",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 1.6,
+     "Refinery": 1.7,
+     "BarracksTechLab": 2.6,
+     "BarracksReactor": 3.2,
+     "Marine": 3.5,
+     "Factory": 5.7,
+     "EngineeringBay": 6.2,
+     "Starport": 7.7
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 45.0,
+      "our_army": 350,
+      "their_army": 300,
+      "our_workers": 25,
+      "their_workers": 32
+     },
+     {
+      "m": 6,
+      "our_supply": 57.0,
+      "their_supply": 79.0,
+      "our_army": 650,
+      "their_army": 1500,
+      "our_workers": 36,
+      "their_workers": 45
+     },
+     {
+      "m": 8,
+      "our_supply": 75.0,
+      "their_supply": 101.0,
+      "our_army": 1775,
+      "their_army": 2100,
+      "our_workers": 45,
+      "their_workers": 49
+     },
+     {
+      "m": 10,
+      "our_supply": 108.0,
+      "their_supply": 154.0,
+      "our_army": 3225,
+      "their_army": 4200,
+      "our_workers": 53,
+      "their_workers": 66
+     },
+     {
+      "m": 12,
+      "our_supply": 136.0,
+      "their_supply": 190.0,
+      "our_army": 5000,
+      "their_army": 6300,
+      "our_workers": 68,
+      "their_workers": 67
+     },
+     {
+      "m": 16,
+      "our_supply": 191.0,
+      "their_supply": 164.0,
+      "our_army": 7400,
+      "their_army": 5600,
+      "our_workers": 66,
+      "their_workers": 59
+     },
+     {
+      "m": 20,
+      "our_supply": 169.0,
+      "their_supply": 185.0,
+      "our_army": 6925,
+      "their_army": 7100,
+      "our_workers": 66,
+      "their_workers": 58
+     }
+    ],
+    "match": 4871290,
+    "our_outcome": "W",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "Lissy": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 275,
+   "created": "2021-04-02",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Lissy",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 22.2,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      52
+     ],
+     [
+      "Zergling",
+      46
+     ],
+     [
+      "CreepTumor",
+      19
+     ],
+     [
+      "Overlord",
+      9
+     ],
+     [
+      "Queen",
+      6
+     ],
+     [
+      "CreepTumorQueen",
+      5
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "SporeCrawler",
+      3
+     ],
+     [
+      "EvolutionChamber",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "Extractor": 1.6,
+     "SpawningPool": 1.7,
+     "Zergling": 3.3,
+     "Queen": 3.6,
+     "CreepTumorQueen": 3.8,
+     "CreepTumor": 4.4,
+     "EvolutionChamber": 6.1,
+     "SporeCrawler": 6.4,
+     "RoachWarren": 7.5
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 39.5,
+      "our_army": 400,
+      "their_army": 525,
+      "our_workers": 25,
+      "their_workers": 29
+     },
+     {
+      "m": 6,
+      "our_supply": 58.0,
+      "their_supply": 62.5,
+      "our_army": 1050,
+      "their_army": 1200,
+      "our_workers": 36,
+      "their_workers": 38
+     },
+     {
+      "m": 8,
+      "our_supply": 65.0,
+      "their_supply": 86.0,
+      "our_army": 1550,
+      "their_army": 1550,
+      "our_workers": 38,
+      "their_workers": 52
+     },
+     {
+      "m": 10,
+      "our_supply": 90.0,
+      "their_supply": 123.5,
+      "our_army": 2750,
+      "their_army": 3200,
+      "our_workers": 44,
+      "their_workers": 66
+     },
+     {
+      "m": 12,
+      "our_supply": 115.0,
+      "their_supply": 148.0,
+      "our_army": 3550,
+      "their_army": 3575,
+      "our_workers": 50,
+      "their_workers": 78
+     },
+     {
+      "m": 16,
+      "our_supply": 168.0,
+      "their_supply": 200.0,
+      "our_army": 6725,
+      "their_army": 6725,
+      "our_workers": 59,
+      "their_workers": 97
+     },
+     {
+      "m": 20,
+      "our_supply": 42.0,
+      "their_supply": 199.5,
+      "our_army": 1550,
+      "their_army": 8250,
+      "our_workers": 22,
+      "their_workers": 97
+     }
+    ],
+    "match": 4871967,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Creepy_duo_canon": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1042,
+   "created": "2026-02-22",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Creepy_duo_canon",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 45.9,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      31
+     ],
+     [
+      "Pylon",
+      10
+     ],
+     [
+      "PhotonCannon",
+      3
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ],
+     [
+      "BeaconClaim",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.5,
+     "Forge": 1.0,
+     "PhotonCannon": 2.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 24.0,
+      "their_supply": 17.0,
+      "our_army": 300,
+      "their_army": 0,
+      "our_workers": 16,
+      "their_workers": 17
+     },
+     {
+      "m": 6,
+      "our_supply": 23.0,
+      "their_supply": 17.0,
+      "our_army": 250,
+      "their_army": 0,
+      "our_workers": 16,
+      "their_workers": 16
+     },
+     {
+      "m": 8,
+      "our_supply": 22.0,
+      "their_supply": 15.0,
+      "our_army": 300,
+      "their_army": 0,
+      "our_workers": 16,
+      "their_workers": 14
+     },
+     {
+      "m": 10,
+      "our_supply": 22.0,
+      "their_supply": 15.0,
+      "our_army": 300,
+      "their_army": 0,
+      "our_workers": 16,
+      "their_workers": 14
+     },
+     {
+      "m": 12,
+      "our_supply": 22.0,
+      "their_supply": 14.0,
+      "our_army": 300,
+      "their_army": 0,
+      "our_workers": 16,
+      "their_workers": 13
+     },
+     {
+      "m": 16,
+      "our_supply": 22.0,
+      "their_supply": 12.0,
+      "our_army": 300,
+      "their_army": 0,
+      "our_workers": 16,
+      "their_workers": 11
+     },
+     {
+      "m": 20,
+      "our_supply": 22.0,
+      "their_supply": 12.0,
+      "our_army": 300,
+      "their_army": 0,
+      "our_workers": 16,
+      "their_workers": 11
+     }
+    ],
+    "match": 4871335,
+    "our_outcome": "tie",
+    "type": "Tie"
+   }
+  ]
+ },
+ "OneBaseStalkerBot": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1180,
+   "created": "2026-06-29",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "OneBaseStalkerBot",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 12.6,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      22
+     ],
+     [
+      "Stalker",
+      21
+     ],
+     [
+      "Pylon",
+      6
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.6,
+     "Gateway": 1.1,
+     "Assimilator": 1.1,
+     "CyberneticsCore": 2.7,
+     "Stalker": 3.9
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 34.0,
+      "our_army": 400,
+      "their_army": 525,
+      "our_workers": 25,
+      "their_workers": 22
+     },
+     {
+      "m": 6,
+      "our_supply": 44.0,
+      "their_supply": 46.0,
+      "our_army": 475,
+      "their_army": 1925,
+      "our_workers": 33,
+      "their_workers": 22
+     },
+     {
+      "m": 8,
+      "our_supply": 33.0,
+      "their_supply": 60.0,
+      "our_army": 150,
+      "their_army": 3325,
+      "our_workers": 26,
+      "their_workers": 22
+     },
+     {
+      "m": 10,
+      "our_supply": 16.0,
+      "their_supply": 76.0,
+      "our_army": 50,
+      "their_army": 4725,
+      "our_workers": 11,
+      "their_workers": 22
+     },
+     {
+      "m": 12,
+      "our_supply": 0.0,
+      "their_supply": 90.0,
+      "our_army": 0,
+      "their_army": 5775,
+      "our_workers": 0,
+      "their_workers": 22
+     }
+    ],
+    "match": 4871400,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Hestia": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1130,
+   "created": "2026-05-09",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Hestia",
+    "opp_race_in_replay": "Terran",
+    "minutes": 25.1,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      42
+     ],
+     [
+      "Hellion",
+      11
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Marine",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Factory",
+      3
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.6,
+     "Barracks": 1.2,
+     "Refinery": 1.2,
+     "Bunker": 2.4,
+     "Marine": 2.7,
+     "Factory": 2.7,
+     "Reaper": 3.4,
+     "Hellion": 4.2,
+     "FactoryTechLab": 4.2,
+     "Starport": 4.7,
+     "StarportTechLab": 5.5,
+     "FactoryReactor": 6.5,
+     "Banshee": 7.0,
+     "EngineeringBay": 7.3,
+     "Armory": 8.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 32.0,
+      "our_army": 350,
+      "their_army": 400,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 60.0,
+      "our_army": 650,
+      "their_army": 1000,
+      "our_workers": 36,
+      "their_workers": 34
+     },
+     {
+      "m": 8,
+      "our_supply": 66.0,
+      "their_supply": 92.0,
+      "our_army": 1575,
+      "their_army": 1900,
+      "our_workers": 39,
+      "their_workers": 47
+     },
+     {
+      "m": 10,
+      "our_supply": 73.0,
+      "their_supply": 125.0,
+      "our_army": 1525,
+      "their_army": 2700,
+      "our_workers": 40,
+      "their_workers": 64
+     },
+     {
+      "m": 12,
+      "our_supply": 98.0,
+      "their_supply": 148.0,
+      "our_army": 2725,
+      "their_army": 4000,
+      "our_workers": 46,
+      "their_workers": 74
+     },
+     {
+      "m": 16,
+      "our_supply": 122.0,
+      "their_supply": 177.0,
+      "our_army": 3375,
+      "their_army": 4200,
+      "our_workers": 74,
+      "their_workers": 85
+     },
+     {
+      "m": 20,
+      "our_supply": 56.0,
+      "their_supply": 191.0,
+      "our_army": 225,
+      "their_army": 6450,
+      "our_workers": 50,
+      "their_workers": 85
+     }
+    ],
+    "match": 4872355,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "GLM_Bot": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 1138,
+   "created": "2026-05-12",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "GLM_Bot",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 44.3,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      80
+     ],
+     [
+      "Zergling",
+      18
+     ],
+     [
+      "Overlord",
+      10
+     ],
+     [
+      "Extractor",
+      6
+     ],
+     [
+      "Hatchery",
+      4
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.9,
+     "Extractor": 2.0,
+     "Queen": 2.8,
+     "Zergling": 3.5,
+     "BanelingNest": 4.3,
+     "RoachWarren": 4.8,
+     "EvolutionChamber": 7.4
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 42.0,
+      "our_army": 350,
+      "their_army": 800,
+      "our_workers": 25,
+      "their_workers": 27
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 66.0,
+      "our_army": 800,
+      "their_army": 1075,
+      "our_workers": 36,
+      "their_workers": 51
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 112.0,
+      "our_army": 2175,
+      "their_army": 1250,
+      "our_workers": 44,
+      "their_workers": 85
+     },
+     {
+      "m": 10,
+      "our_supply": 90.0,
+      "their_supply": 174.0,
+      "our_army": 2500,
+      "their_army": 4275,
+      "our_workers": 54,
+      "their_workers": 83
+     },
+     {
+      "m": 12,
+      "our_supply": 103.0,
+      "their_supply": 180.0,
+      "our_army": 2700,
+      "their_army": 3950,
+      "our_workers": 67,
+      "their_workers": 82
+     },
+     {
+      "m": 16,
+      "our_supply": 198.0,
+      "their_supply": 157.0,
+      "our_army": 6700,
+      "their_army": 3150,
+      "our_workers": 81,
+      "their_workers": 81
+     },
+     {
+      "m": 20,
+      "our_supply": 199.0,
+      "their_supply": 171.0,
+      "our_army": 8250,
+      "their_army": 4400,
+      "our_workers": 82,
+      "their_workers": 81
+     }
+    ],
+    "match": 4872257,
+    "our_outcome": "W",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "muravev": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 832,
+   "created": "2025-01-31",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "muravev",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 21.3,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      70
+     ],
+     [
+      "CreepTumor",
+      14
+     ],
+     [
+      "Overlord",
+      10
+     ],
+     [
+      "Roach",
+      7
+     ],
+     [
+      "Zergling",
+      6
+     ],
+     [
+      "CreepTumorQueen",
+      5
+     ],
+     [
+      "Hatchery",
+      4
+     ],
+     [
+      "Extractor",
+      3
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "SporeCrawler",
+      3
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.7,
+     "Extractor": 2.3,
+     "RoachWarren": 3.3,
+     "Zergling": 3.4,
+     "Queen": 3.6,
+     "EvolutionChamber": 4.5,
+     "CreepTumorQueen": 5.2,
+     "Roach": 5.5,
+     "CreepTumor": 5.8,
+     "SpineCrawler": 6.7,
+     "SporeCrawler": 7.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 37.0,
+      "our_army": 350,
+      "their_army": 625,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 53.0,
+      "their_supply": 63.0,
+      "our_army": 650,
+      "their_army": 725,
+      "our_workers": 36,
+      "their_workers": 47
+     },
+     {
+      "m": 8,
+      "our_supply": 66.0,
+      "their_supply": 98.0,
+      "our_army": 1225,
+      "their_army": 1325,
+      "our_workers": 43,
+      "their_workers": 64
+     },
+     {
+      "m": 10,
+      "our_supply": 89.0,
+      "their_supply": 152.0,
+      "our_army": 2775,
+      "their_army": 3675,
+      "our_workers": 45,
+      "their_workers": 64
+     },
+     {
+      "m": 12,
+      "our_supply": 118.0,
+      "their_supply": 194.0,
+      "our_army": 4300,
+      "their_army": 4100,
+      "our_workers": 49,
+      "their_workers": 100
+     },
+     {
+      "m": 16,
+      "our_supply": 135.0,
+      "their_supply": 200.0,
+      "our_army": 3775,
+      "their_army": 5075,
+      "our_workers": 67,
+      "their_workers": 100
+     },
+     {
+      "m": 20,
+      "our_supply": 1.0,
+      "their_supply": 199.5,
+      "our_army": 0,
+      "their_army": 6475,
+      "our_workers": 1,
+      "their_workers": 100
+     }
+    ],
+    "match": 4871799,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "GenesisLotus": {
+  "meta": {
+   "race": "P",
+   "type": "cpplinux",
+   "id": 876,
+   "created": "2025-05-24",
+   "zip_public": true
+  },
+  "record": {
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "GenesisLotus",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 9.4,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      39
+     ],
+     [
+      "Gateway",
+      7
+     ],
+     [
+      "Pylon",
+      6
+     ],
+     [
+      "Stalker",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Assimilator",
+      2
+     ],
+     [
+      "Sentry",
+      2
+     ],
+     [
+      "AdeptPhaseShift",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.3,
+     "Gateway": 0.7,
+     "Assimilator": 0.9,
+     "CyberneticsCore": 1.8,
+     "Stalker": 3.5,
+     "Sentry": 4.0,
+     "RoboticsFacility": 4.4,
+     "ShieldBattery": 5.0,
+     "Forge": 5.5,
+     "TwilightCouncil": 6.4,
+     "Immortal": 6.9,
+     "Adept": 7.3,
+     "Observer": 7.3,
+     "AdeptPhaseShift": 7.4
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 37.0,
+      "their_supply": 32.0,
+      "our_army": 400,
+      "their_army": 675,
+      "our_workers": 25,
+      "their_workers": 23
+     },
+     {
+      "m": 6,
+      "our_supply": 53.0,
+      "their_supply": 48.0,
+      "our_army": 675,
+      "their_army": 825,
+      "our_workers": 37,
+      "their_workers": 33
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 78.0,
+      "our_army": 1950,
+      "their_army": 2500,
+      "our_workers": 45,
+      "their_workers": 39
+     }
+    ],
+    "match": 4873056,
+    "our_outcome": "W",
+    "type": "Player2Crash"
+   }
+  ]
+ },
+ "muravevTerran": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 836,
+   "created": "2025-02-11",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "muravevTerran",
+    "opp_race_in_replay": "Terran",
+    "minutes": 22.6,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      36
+     ],
+     [
+      "SupplyDepot",
+      5
+     ],
+     [
+      "Reaper",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Refinery",
+      3
+     ],
+     [
+      "FactoryTechLab",
+      3
+     ],
+     [
+      "Cyclone",
+      3
+     ],
+     [
+      "Factory",
+      2
+     ],
+     [
+      "Hellion",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Refinery": 0.6,
+     "Barracks": 1.2,
+     "Factory": 2.6,
+     "Reaper": 3.4,
+     "Hellion": 4.1,
+     "Starport": 4.7,
+     "FactoryTechLab": 4.9,
+     "Cyclone": 6.2,
+     "Raven": 7.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 38.0,
+      "their_supply": 31.0,
+      "our_army": 300,
+      "their_army": 400,
+      "our_workers": 27,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 53.0,
+      "their_supply": 51.0,
+      "our_army": 950,
+      "their_army": 850,
+      "our_workers": 32,
+      "their_workers": 31
+     },
+     {
+      "m": 8,
+      "our_supply": 69.0,
+      "their_supply": 75.0,
+      "our_army": 1150,
+      "their_army": 2100,
+      "our_workers": 42,
+      "their_workers": 41
+     },
+     {
+      "m": 10,
+      "our_supply": 91.0,
+      "their_supply": 98.0,
+      "our_army": 1900,
+      "their_army": 3475,
+      "our_workers": 44,
+      "their_workers": 57
+     },
+     {
+      "m": 12,
+      "our_supply": 125.0,
+      "their_supply": 143.0,
+      "our_army": 4025,
+      "their_army": 5125,
+      "our_workers": 44,
+      "their_workers": 66
+     },
+     {
+      "m": 16,
+      "our_supply": 118.0,
+      "their_supply": 136.0,
+      "our_army": 4250,
+      "their_army": 4075,
+      "our_workers": 35,
+      "their_workers": 66
+     },
+     {
+      "m": 20,
+      "our_supply": 18.0,
+      "their_supply": 173.0,
+      "our_army": 50,
+      "their_army": 7250,
+      "our_workers": 16,
+      "their_workers": 66
+     }
+    ],
+    "match": 4875027,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "DasyBot": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1095,
+   "created": "2026-04-16",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "DasyBot",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 17.2,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      48
+     ],
+     [
+      "Pylon",
+      7
+     ],
+     [
+      "Gateway",
+      4
+     ],
+     [
+      "Assimilator",
+      4
+     ],
+     [
+      "Stalker",
+      4
+     ],
+     [
+      "Immortal",
+      3
+     ],
+     [
+      "Nexus",
+      2
+     ],
+     [
+      "Zealot",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.5,
+     "Gateway": 1.0,
+     "Assimilator": 1.0,
+     "CyberneticsCore": 2.1,
+     "Zealot": 2.9,
+     "Stalker": 3.8,
+     "RoboticsFacility": 3.9,
+     "Immortal": 6.2,
+     "TwilightCouncil": 7.2
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 37.0,
+      "their_supply": 38.0,
+      "our_army": 300,
+      "their_army": 450,
+      "our_workers": 26,
+      "their_workers": 28
+     },
+     {
+      "m": 6,
+      "our_supply": 61.0,
+      "their_supply": 64.0,
+      "our_army": 900,
+      "their_army": 1150,
+      "our_workers": 39,
+      "their_workers": 42
+     },
+     {
+      "m": 8,
+      "our_supply": 77.0,
+      "their_supply": 86.0,
+      "our_army": 1150,
+      "their_army": 2300,
+      "our_workers": 45,
+      "their_workers": 54
+     },
+     {
+      "m": 10,
+      "our_supply": 110.0,
+      "their_supply": 132.0,
+      "our_army": 4175,
+      "their_army": 5250,
+      "our_workers": 45,
+      "their_workers": 67
+     },
+     {
+      "m": 12,
+      "our_supply": 143.0,
+      "their_supply": 186.0,
+      "our_army": 7250,
+      "their_army": 8100,
+      "our_workers": 45,
+      "their_workers": 74
+     },
+     {
+      "m": 16,
+      "our_supply": 0.0,
+      "their_supply": 200.0,
+      "our_army": 0,
+      "their_army": 8700,
+      "our_workers": 0,
+      "their_workers": 74
+     }
+    ],
+    "match": 4874495,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Visenya": {
+  "meta": {
+   "race": "Z",
+   "type": "cpplinux",
+   "id": 555,
+   "created": "2023-01-05",
+   "zip_public": false
+  },
+  "record": {
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Visenya",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 16.9,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      15
+     ],
+     [
+      "Hatchery",
+      5
+     ],
+     [
+      "Overlord",
+      5
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ],
+     [
+      "BeaconClaim",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 11.0,
+      "our_army": 350,
+      "their_army": 0,
+      "our_workers": 25,
+      "their_workers": 11
+     },
+     {
+      "m": 6,
+      "our_supply": 57.0,
+      "their_supply": 11.0,
+      "our_army": 650,
+      "their_army": 0,
+      "our_workers": 37,
+      "their_workers": 11
+     },
+     {
+      "m": 8,
+      "our_supply": 76.0,
+      "their_supply": 11.0,
+      "our_army": 1725,
+      "their_army": 0,
+      "our_workers": 45,
+      "their_workers": 11
+     },
+     {
+      "m": 10,
+      "our_supply": 108.0,
+      "their_supply": 11.0,
+      "our_army": 3425,
+      "their_army": 0,
+      "our_workers": 55,
+      "their_workers": 11
+     },
+     {
+      "m": 12,
+      "our_supply": 128.0,
+      "their_supply": 1.0,
+      "our_army": 3750,
+      "their_army": 0,
+      "our_workers": 74,
+      "their_workers": 1
+     },
+     {
+      "m": 16,
+      "our_supply": 199.0,
+      "their_supply": 0.0,
+      "our_army": 6775,
+      "their_army": 0,
+      "our_workers": 82,
+      "their_workers": 0
+     }
+    ],
+    "match": 4873062,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "StarK234_0000": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1169,
+   "created": "2026-06-08",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "StarK234_0000",
+    "opp_race_in_replay": "Terran",
+    "minutes": 27.5,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      38
+     ],
+     [
+      "Marine",
+      25
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Barracks",
+      5
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "BarracksTechLab",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.4,
+     "Barracks": 1.0,
+     "Refinery": 1.1,
+     "BarracksReactor": 2.2,
+     "Marine": 3.6,
+     "BarracksTechLab": 4.5,
+     "Factory": 4.9,
+     "EngineeringBay": 5.5,
+     "Starport": 7.5
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 37.0,
+      "their_supply": 36.0,
+      "our_army": 300,
+      "their_army": 400,
+      "our_workers": 26,
+      "their_workers": 25
+     },
+     {
+      "m": 6,
+      "our_supply": 54.0,
+      "their_supply": 62.0,
+      "our_army": 650,
+      "their_army": 1200,
+      "our_workers": 39,
+      "their_workers": 37
+     },
+     {
+      "m": 8,
+      "our_supply": 66.0,
+      "their_supply": 72.0,
+      "our_army": 1050,
+      "their_army": 1050,
+      "our_workers": 44,
+      "their_workers": 44
+     },
+     {
+      "m": 10,
+      "our_supply": 92.0,
+      "their_supply": 117.0,
+      "our_army": 2275,
+      "their_army": 2825,
+      "our_workers": 45,
+      "their_workers": 53
+     },
+     {
+      "m": 12,
+      "our_supply": 119.0,
+      "their_supply": 153.0,
+      "our_army": 4225,
+      "their_army": 4800,
+      "our_workers": 51,
+      "their_workers": 60
+     },
+     {
+      "m": 16,
+      "our_supply": 119.0,
+      "their_supply": 175.0,
+      "our_army": 4375,
+      "their_army": 6325,
+      "our_workers": 52,
+      "their_workers": 66
+     },
+     {
+      "m": 20,
+      "our_supply": 57.0,
+      "their_supply": 163.0,
+      "our_army": 1900,
+      "their_army": 6325,
+      "our_workers": 33,
+      "their_workers": 67
+     }
+    ],
+    "match": 4875300,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Starcraft-Agent-v01": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1171,
+   "created": "2026-06-10",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 0,
+   "tie": 1,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Starcraft-Agent-v01",
+    "opp_race_in_replay": "Terran",
+    "minutes": 84.0,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      28
+     ],
+     [
+      "Marine",
+      22
+     ],
+     [
+      "SupplyDepot",
+      9
+     ],
+     [
+      "Marauder",
+      5
+     ],
+     [
+      "Barracks",
+      4
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.1,
+     "Refinery": 2.2,
+     "Marine": 2.6,
+     "BarracksTechLab": 3.6,
+     "Factory": 3.8,
+     "FactoryTechLab": 4.8,
+     "Starport": 4.8,
+     "Marauder": 5.4,
+     "EngineeringBay": 5.6,
+     "MissileTurret": 6.2,
+     "SiegeTank": 6.3,
+     "Medivac": 6.8
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 36.0,
+      "our_army": 350,
+      "their_army": 350,
+      "our_workers": 25,
+      "their_workers": 26
+     },
+     {
+      "m": 6,
+      "our_supply": 53.0,
+      "their_supply": 60.0,
+      "our_army": 925,
+      "their_army": 1700,
+      "our_workers": 36,
+      "their_workers": 28
+     },
+     {
+      "m": 8,
+      "our_supply": 61.0,
+      "their_supply": 54.0,
+      "our_army": 1200,
+      "their_army": 1275,
+      "our_workers": 45,
+      "their_workers": 28
+     },
+     {
+      "m": 10,
+      "our_supply": 74.0,
+      "their_supply": 79.0,
+      "our_army": 1550,
+      "their_army": 2850,
+      "our_workers": 45,
+      "their_workers": 29
+     },
+     {
+      "m": 12,
+      "our_supply": 94.0,
+      "their_supply": 73.0,
+      "our_army": 2875,
+      "their_army": 2000,
+      "our_workers": 45,
+      "their_workers": 37
+     },
+     {
+      "m": 16,
+      "our_supply": 117.0,
+      "their_supply": 92.0,
+      "our_army": 4625,
+      "their_army": 2425,
+      "our_workers": 43,
+      "their_workers": 46
+     },
+     {
+      "m": 20,
+      "our_supply": 122.0,
+      "their_supply": 48.0,
+      "our_army": 5400,
+      "their_army": 1850,
+      "our_workers": 45,
+      "their_workers": 12
+     }
+    ],
+    "match": 4873065,
+    "our_outcome": "tie",
+    "type": "Tie"
+   }
+  ]
+ },
+ "BioBot": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1188,
+   "created": "2026-07-10",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "BioBot",
+    "opp_race_in_replay": "Terran",
+    "minutes": 22.6,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      40
+     ],
+     [
+      "Marine",
+      11
+     ],
+     [
+      "SupplyDepot",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "Barracks",
+      2
+     ],
+     [
+      "Bunker",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Refinery": 0.8,
+     "Barracks": 2.7,
+     "BarracksTechLab": 3.8,
+     "Bunker": 3.9,
+     "Marine": 4.8
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 29.0,
+      "our_army": 350,
+      "their_army": 50,
+      "our_workers": 25,
+      "their_workers": 27
+     },
+     {
+      "m": 6,
+      "our_supply": 57.0,
+      "their_supply": 43.0,
+      "our_army": 650,
+      "their_army": 250,
+      "our_workers": 36,
+      "their_workers": 34
+     },
+     {
+      "m": 8,
+      "our_supply": 76.0,
+      "their_supply": 61.0,
+      "our_army": 1725,
+      "their_army": 750,
+      "our_workers": 45,
+      "their_workers": 43
+     },
+     {
+      "m": 10,
+      "our_supply": 109.0,
+      "their_supply": 85.0,
+      "our_army": 3475,
+      "their_army": 1500,
+      "our_workers": 56,
+      "their_workers": 56
+     },
+     {
+      "m": 12,
+      "our_supply": 129.0,
+      "their_supply": 124.0,
+      "our_army": 3750,
+      "their_army": 2075,
+      "our_workers": 75,
+      "their_workers": 77
+     },
+     {
+      "m": 16,
+      "our_supply": 133.0,
+      "their_supply": 200.0,
+      "our_army": 3750,
+      "their_army": 7075,
+      "our_workers": 82,
+      "their_workers": 84
+     },
+     {
+      "m": 20,
+      "our_supply": 19.0,
+      "their_supply": 184.0,
+      "our_army": 0,
+      "their_army": 6225,
+      "our_workers": 16,
+      "their_workers": 83
+     }
+    ],
+    "match": 4873066,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "JackBot2.0": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1190,
+   "created": "2026-07-10",
+   "zip_public": false
+  },
+  "record": {
+   "W": 2,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "JackBot2.0",
+    "opp_race_in_replay": "Terran",
+    "minutes": 49.2,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      25
+     ],
+     [
+      "SupplyDepot",
+      2
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ],
+     [
+      "BeaconClaim",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Refinery": 0.8
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 24.0,
+      "our_army": 400,
+      "their_army": 0,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 24.0,
+      "our_army": 1050,
+      "their_army": 0,
+      "our_workers": 36,
+      "their_workers": 24
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 24.0,
+      "our_army": 2175,
+      "their_army": 0,
+      "our_workers": 45,
+      "their_workers": 24
+     },
+     {
+      "m": 10,
+      "our_supply": 106.0,
+      "their_supply": 24.0,
+      "our_army": 3575,
+      "their_army": 0,
+      "our_workers": 53,
+      "their_workers": 24
+     },
+     {
+      "m": 12,
+      "our_supply": 125.0,
+      "their_supply": 24.0,
+      "our_army": 3750,
+      "their_army": 0,
+      "our_workers": 71,
+      "their_workers": 24
+     },
+     {
+      "m": 16,
+      "our_supply": 133.0,
+      "their_supply": 24.0,
+      "our_army": 3750,
+      "their_army": 0,
+      "our_workers": 82,
+      "their_workers": 24
+     },
+     {
+      "m": 20,
+      "our_supply": 133.0,
+      "their_supply": 24.0,
+      "our_army": 3750,
+      "their_army": 0,
+      "our_workers": 82,
+      "their_workers": 24
+     }
+    ],
+    "match": 4873067,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "CyraxxDKAkron": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1191,
+   "created": "2026-07-11",
+   "zip_public": false
+  },
+  "record": {
+   "W": 1,
+   "L": 0,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "CyraxxDKAkron",
+    "opp_race_in_replay": "Terran",
+    "minutes": 15.8,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      25
+     ],
+     [
+      "SupplyDepot",
+      2
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ],
+     [
+      "BeaconDetect",
+      1
+     ],
+     [
+      "BeaconScout",
+      1
+     ],
+     [
+      "BeaconClaim",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Refinery": 0.8
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 24.0,
+      "our_army": 350,
+      "their_army": 0,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 55.0,
+      "their_supply": 24.0,
+      "our_army": 1050,
+      "their_army": 0,
+      "our_workers": 36,
+      "their_workers": 24
+     },
+     {
+      "m": 8,
+      "our_supply": 78.0,
+      "their_supply": 24.0,
+      "our_army": 1975,
+      "their_army": 0,
+      "our_workers": 45,
+      "their_workers": 24
+     },
+     {
+      "m": 10,
+      "our_supply": 104.0,
+      "their_supply": 24.0,
+      "our_army": 3300,
+      "their_army": 0,
+      "our_workers": 53,
+      "their_workers": 24
+     },
+     {
+      "m": 12,
+      "our_supply": 143.0,
+      "their_supply": 24.0,
+      "our_army": 5600,
+      "their_army": 0,
+      "our_workers": 67,
+      "their_workers": 24
+     }
+    ],
+    "match": 4873068,
+    "our_outcome": "W",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Stark234_PR02": {
+  "meta": {
+   "race": "T",
+   "type": "python",
+   "id": 1173,
+   "created": "2026-06-23",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Stark234_PR02",
+    "opp_race_in_replay": "Terran",
+    "minutes": 24.4,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      33
+     ],
+     [
+      "Marine",
+      27
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "Barracks",
+      2
+     ],
+     [
+      "SiegeTank",
+      2
+     ],
+     [
+      "MissileTurret",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.3,
+     "Barracks": 0.9,
+     "Refinery": 1.0,
+     "BarracksReactor": 2.1,
+     "Marine": 3.4,
+     "BarracksTechLab": 3.4,
+     "Factory": 3.5,
+     "EngineeringBay": 3.6,
+     "FactoryTechLab": 4.5,
+     "SiegeTank": 7.1,
+     "MissileTurret": 7.3,
+     "Bunker": 7.6
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 35.0,
+      "our_army": 350,
+      "their_army": 500,
+      "our_workers": 25,
+      "their_workers": 24
+     },
+     {
+      "m": 6,
+      "our_supply": 57.0,
+      "their_supply": 55.0,
+      "our_army": 1050,
+      "their_army": 1000,
+      "our_workers": 36,
+      "their_workers": 28
+     },
+     {
+      "m": 8,
+      "our_supply": 75.0,
+      "their_supply": 48.0,
+      "our_army": 1725,
+      "their_army": 575,
+      "our_workers": 45,
+      "their_workers": 34
+     },
+     {
+      "m": 10,
+      "our_supply": 90.0,
+      "their_supply": 78.0,
+      "our_army": 2500,
+      "their_army": 1700,
+      "our_workers": 54,
+      "their_workers": 44
+     },
+     {
+      "m": 12,
+      "our_supply": 109.0,
+      "their_supply": 113.0,
+      "our_army": 2500,
+      "their_army": 3150,
+      "our_workers": 72,
+      "their_workers": 55
+     },
+     {
+      "m": 16,
+      "our_supply": 115.0,
+      "their_supply": 197.0,
+      "our_army": 2500,
+      "their_army": 8950,
+      "our_workers": 81,
+      "their_workers": 58
+     },
+     {
+      "m": 20,
+      "our_supply": 7.0,
+      "their_supply": 200.0,
+      "our_army": 0,
+      "their_army": 9650,
+      "our_workers": 6,
+      "their_workers": 66
+     }
+    ],
+    "match": 4873069,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "Thssprtssbt": {
+  "meta": {
+   "race": "P",
+   "type": "python",
+   "id": 1178,
+   "created": "2026-06-28",
+   "zip_public": true
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Thssprtssbt",
+    "opp_race_in_replay": "Protoss",
+    "minutes": 16.2,
+    "enemy_build_8min": [
+     [
+      "Probe",
+      54
+     ],
+     [
+      "Pylon",
+      5
+     ],
+     [
+      "Assimilator",
+      5
+     ],
+     [
+      "Nexus",
+      4
+     ],
+     [
+      "Gateway",
+      3
+     ],
+     [
+      "Adept",
+      2
+     ],
+     [
+      "Stalker",
+      2
+     ],
+     [
+      "Oracle",
+      2
+     ],
+     [
+      "ShieldBattery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Nexus": 0.0,
+     "Probe": 0.0,
+     "Pylon": 0.4,
+     "Gateway": 0.8,
+     "Assimilator": 1.1,
+     "CyberneticsCore": 2.6,
+     "Stargate": 3.6,
+     "Adept": 4.3,
+     "Stalker": 5.0,
+     "Oracle": 5.5,
+     "ShieldBattery": 6.2,
+     "FleetBeacon": 6.3
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 38.0,
+      "their_supply": 42.0,
+      "our_army": 350,
+      "their_army": 125,
+      "our_workers": 27,
+      "their_workers": 33
+     },
+     {
+      "m": 6,
+      "our_supply": 59.0,
+      "their_supply": 54.0,
+      "our_army": 850,
+      "their_army": 475,
+      "our_workers": 38,
+      "their_workers": 45
+     },
+     {
+      "m": 8,
+      "our_supply": 64.0,
+      "their_supply": 83.0,
+      "our_army": 1225,
+      "their_army": 1050,
+      "our_workers": 38,
+      "their_workers": 61
+     },
+     {
+      "m": 10,
+      "our_supply": 72.0,
+      "their_supply": 107.0,
+      "our_army": 1825,
+      "their_army": 1700,
+      "our_workers": 36,
+      "their_workers": 80
+     },
+     {
+      "m": 12,
+      "our_supply": 76.0,
+      "their_supply": 133.0,
+      "our_army": 1725,
+      "their_army": 3875,
+      "our_workers": 35,
+      "their_workers": 80
+     },
+     {
+      "m": 16,
+      "our_supply": 0.0,
+      "their_supply": 199.0,
+      "our_army": 0,
+      "their_army": 10100,
+      "our_workers": 0,
+      "their_workers": 80
+     }
+    ],
+    "match": 4875386,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "AxeFighter": {
+  "meta": {
+   "race": "T",
+   "type": "dotnetcore",
+   "id": 1182,
+   "created": "2026-06-30",
+   "zip_public": true
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "AxeFighter",
+    "opp_race_in_replay": "Terran",
+    "minutes": 20.5,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      42
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Barracks",
+      7
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "Marine",
+      3
+     ],
+     [
+      "BarracksReactor",
+      3
+     ],
+     [
+      "CommandCenter",
+      2
+     ],
+     [
+      "EngineeringBay",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "Refinery": 0.2,
+     "SupplyDepot": 0.9,
+     "Barracks": 1.4,
+     "Marine": 2.9,
+     "Factory": 4.0,
+     "EngineeringBay": 4.0,
+     "BarracksTechLab": 4.2,
+     "Starport": 5.1,
+     "Armory": 5.4,
+     "BarracksReactor": 7.6
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 38.0,
+      "their_supply": 28.0,
+      "our_army": 300,
+      "their_army": 100,
+      "our_workers": 27,
+      "their_workers": 25
+     },
+     {
+      "m": 6,
+      "our_supply": 54.0,
+      "their_supply": 38.0,
+      "our_army": 650,
+      "their_army": 100,
+      "our_workers": 39,
+      "their_workers": 34
+     },
+     {
+      "m": 8,
+      "our_supply": 74.0,
+      "their_supply": 57.0,
+      "our_army": 1425,
+      "their_army": 250,
+      "our_workers": 45,
+      "their_workers": 45
+     },
+     {
+      "m": 10,
+      "our_supply": 108.0,
+      "their_supply": 103.0,
+      "our_army": 3975,
+      "their_army": 2150,
+      "our_workers": 45,
+      "their_workers": 47
+     },
+     {
+      "m": 12,
+      "our_supply": 129.0,
+      "their_supply": 156.0,
+      "our_army": 5000,
+      "their_army": 4100,
+      "our_workers": 58,
+      "their_workers": 62
+     },
+     {
+      "m": 16,
+      "our_supply": 142.0,
+      "their_supply": 197.0,
+      "our_army": 3450,
+      "their_army": 5950,
+      "our_workers": 71,
+      "their_workers": 90
+     },
+     {
+      "m": 20,
+      "our_supply": 0.0,
+      "their_supply": 197.0,
+      "our_army": 0,
+      "their_army": 6450,
+      "our_workers": 0,
+      "their_workers": 90
+     }
+    ],
+    "match": 4875413,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "oberon": {
+  "meta": {
+   "race": "T",
+   "type": "cpplinux",
+   "id": 779,
+   "created": "2024-10-27",
+   "zip_public": true
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "oberon",
+    "opp_race_in_replay": "Terran",
+    "minutes": 8.7,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      24
+     ],
+     [
+      "Marauder",
+      23
+     ],
+     [
+      "SupplyDepot",
+      7
+     ],
+     [
+      "Barracks",
+      3
+     ],
+     [
+      "BarracksTechLab",
+      3
+     ],
+     [
+      "Refinery",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.5,
+     "Barracks": 1.1,
+     "Refinery": 1.2,
+     "BarracksTechLab": 2.2,
+     "Marauder": 3.3
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 31.0,
+      "their_supply": 31.0,
+      "our_army": 150,
+      "their_army": 250,
+      "our_workers": 25,
+      "their_workers": 23
+     },
+     {
+      "m": 6,
+      "our_supply": 26.0,
+      "their_supply": 47.0,
+      "our_army": 100,
+      "their_army": 1125,
+      "our_workers": 21,
+      "their_workers": 23
+     },
+     {
+      "m": 8,
+      "our_supply": 0.0,
+      "their_supply": 69.0,
+      "our_army": 0,
+      "their_army": 2500,
+      "our_workers": 0,
+      "their_workers": 23
+     }
+    ],
+    "match": 4873072,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "SiriusBot": {
+  "meta": {
+   "race": "R",
+   "type": "dotnetcore",
+   "id": 930,
+   "created": "2025-08-30",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 2,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "SiriusBot",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 24.8,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      64
+     ],
+     [
+      "Zergling",
+      16
+     ],
+     [
+      "Overlord",
+      12
+     ],
+     [
+      "Hatchery",
+      3
+     ],
+     [
+      "Queen",
+      3
+     ],
+     [
+      "Extractor",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ],
+     [
+      "BeaconAuto",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 1.2,
+     "Extractor": 1.8,
+     "Zergling": 2.7,
+     "RoachWarren": 3.1,
+     "Queen": 3.1,
+     "EvolutionChamber": 6.4,
+     "InfestationPit": 7.9,
+     "Changeling": 7.9,
+     "BanelingNest": 8.0
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 38.0,
+      "their_supply": 36.0,
+      "our_army": 350,
+      "their_army": 550,
+      "our_workers": 26,
+      "their_workers": 25
+     },
+     {
+      "m": 6,
+      "our_supply": 54.0,
+      "their_supply": 62.0,
+      "our_army": 600,
+      "their_army": 825,
+      "our_workers": 40,
+      "their_workers": 45
+     },
+     {
+      "m": 8,
+      "our_supply": 73.0,
+      "their_supply": 89.0,
+      "our_army": 1375,
+      "their_army": 1650,
+      "our_workers": 45,
+      "their_workers": 56
+     },
+     {
+      "m": 10,
+      "our_supply": 102.0,
+      "their_supply": 126.0,
+      "our_army": 3425,
+      "their_army": 2675,
+      "our_workers": 49,
+      "their_workers": 75
+     },
+     {
+      "m": 12,
+      "our_supply": 125.0,
+      "their_supply": 142.0,
+      "our_army": 4900,
+      "their_army": 4250,
+      "our_workers": 50,
+      "their_workers": 77
+     },
+     {
+      "m": 16,
+      "our_supply": 155.0,
+      "their_supply": 198.5,
+      "our_army": 6950,
+      "their_army": 9400,
+      "our_workers": 39,
+      "their_workers": 80
+     },
+     {
+      "m": 20,
+      "our_supply": 99.0,
+      "their_supply": 196.0,
+      "our_army": 4725,
+      "their_army": 8450,
+      "our_workers": 24,
+      "their_workers": 80
+     }
+    ],
+    "match": 4875442,
+    "our_outcome": "L",
+    "type": "Player2Win"
+   }
+  ]
+ },
+ "onlyfans": {
+  "meta": {
+   "race": "T",
+   "type": "cpplinux",
+   "id": 1050,
+   "created": "2026-03-05",
+   "zip_public": true
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 1
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "onlyfans",
+    "opp_race_in_replay": "Terran",
+    "minutes": 18.3,
+    "enemy_build_8min": [
+     [
+      "SCV",
+      39
+     ],
+     [
+      "Marine",
+      14
+     ],
+     [
+      "SupplyDepot",
+      6
+     ],
+     [
+      "Refinery",
+      4
+     ],
+     [
+      "CommandCenter",
+      3
+     ],
+     [
+      "Starport",
+      3
+     ],
+     [
+      "Banshee",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ],
+     [
+      "BeaconHarass",
+      1
+     ],
+     [
+      "BeaconIdle",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "CommandCenter": 0.0,
+     "SCV": 0.0,
+     "SupplyDepot": 0.2,
+     "Refinery": 0.5,
+     "Barracks": 1.1,
+     "Bunker": 2.2,
+     "Factory": 2.2,
+     "BarracksReactor": 2.7,
+     "Starport": 3.4,
+     "Marine": 4.0,
+     "StarportTechLab": 4.3,
+     "Banshee": 6.1
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 36.0,
+      "their_supply": 29.0,
+      "our_army": 400,
+      "their_army": 200,
+      "our_workers": 25,
+      "their_workers": 22
+     },
+     {
+      "m": 6,
+      "our_supply": 56.0,
+      "their_supply": 53.0,
+      "our_army": 1050,
+      "their_army": 850,
+      "our_workers": 37,
+      "their_workers": 33
+     },
+     {
+      "m": 8,
+      "our_supply": 75.0,
+      "their_supply": 67.0,
+      "our_army": 1700,
+      "their_army": 950,
+      "our_workers": 45,
+      "their_workers": 44
+     },
+     {
+      "m": 10,
+      "our_supply": 99.0,
+      "their_supply": 104.0,
+      "our_army": 3375,
+      "their_army": 1700,
+      "our_workers": 46,
+      "their_workers": 65
+     },
+     {
+      "m": 12,
+      "our_supply": 92.0,
+      "their_supply": 127.0,
+      "our_army": 4050,
+      "their_army": 1950,
+      "our_workers": 31,
+      "their_workers": 74
+     },
+     {
+      "m": 16,
+      "our_supply": 6.0,
+      "their_supply": 190.0,
+      "our_army": 600,
+      "their_army": 5950,
+      "our_workers": 0,
+      "their_workers": 89
+     }
+    ],
+    "match": 4874757,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ },
+ "Princess-Mika-Test": {
+  "meta": {
+   "race": "Z",
+   "type": "python",
+   "id": 940,
+   "created": "2025-09-28",
+   "zip_public": false
+  },
+  "record": {
+   "W": 0,
+   "L": 1,
+   "tie": 0,
+   "other": 0
+  },
+  "replays_parsed": [
+   {
+    "opp_name": "Princess-Mika-Test",
+    "opp_race_in_replay": "Zerg",
+    "minutes": 15.7,
+    "enemy_build_8min": [
+     [
+      "Drone",
+      56
+     ],
+     [
+      "Zergling",
+      34
+     ],
+     [
+      "CreepTumor",
+      11
+     ],
+     [
+      "Overlord",
+      6
+     ],
+     [
+      "CreepTumorQueen",
+      6
+     ],
+     [
+      "SpineCrawler",
+      4
+     ],
+     [
+      "Hatchery",
+      2
+     ],
+     [
+      "Extractor",
+      2
+     ],
+     [
+      "Queen",
+      2
+     ],
+     [
+      "BeaconArmy",
+      1
+     ],
+     [
+      "BeaconDefend",
+      1
+     ],
+     [
+      "BeaconAttack",
+      1
+     ]
+    ],
+    "first_seen": {
+     "BeaconArmy": 0.0,
+     "BeaconDefend": 0.0,
+     "BeaconAttack": 0.0,
+     "BeaconHarass": 0.0,
+     "BeaconIdle": 0.0,
+     "BeaconAuto": 0.0,
+     "BeaconDetect": 0.0,
+     "BeaconScout": 0.0,
+     "BeaconClaim": 0.0,
+     "BeaconExpand": 0.0,
+     "BeaconRally": 0.0,
+     "BeaconCustom1": 0.0,
+     "BeaconCustom2": 0.0,
+     "BeaconCustom3": 0.0,
+     "BeaconCustom4": 0.0,
+     "Hatchery": 0.0,
+     "Drone": 0.0,
+     "Overlord": 0.0,
+     "SpawningPool": 0.6,
+     "Extractor": 1.7,
+     "Zergling": 2.1,
+     "Queen": 3.0,
+     "CreepTumorQueen": 4.1,
+     "CreepTumor": 4.7,
+     "SpineCrawler": 6.1,
+     "RoachWarren": 7.3
+    },
+    "trajectory": [
+     {
+      "m": 4,
+      "our_supply": 14.0,
+      "their_supply": 30.0,
+      "our_army": 50,
+      "their_army": 750,
+      "our_workers": 12,
+      "their_workers": 16
+     },
+     {
+      "m": 6,
+      "our_supply": 15.0,
+      "their_supply": 41.0,
+      "our_army": 200,
+      "their_army": 350,
+      "our_workers": 11,
+      "their_workers": 34
+     },
+     {
+      "m": 8,
+      "our_supply": 15.0,
+      "their_supply": 59.0,
+      "our_army": 200,
+      "their_army": 450,
+      "our_workers": 11,
+      "their_workers": 44
+     },
+     {
+      "m": 10,
+      "our_supply": 15.0,
+      "their_supply": 86.0,
+      "our_army": 200,
+      "their_army": 2150,
+      "our_workers": 11,
+      "their_workers": 50
+     },
+     {
+      "m": 12,
+      "our_supply": 5.0,
+      "their_supply": 126.0,
+      "our_army": 200,
+      "their_army": 3650,
+      "our_workers": 1,
+      "their_workers": 61
+     }
+    ],
+    "match": 4874646,
+    "our_outcome": "L",
+    "type": "Player1Win"
+   }
+  ]
+ }
+}
