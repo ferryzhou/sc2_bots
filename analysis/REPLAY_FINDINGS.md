@@ -148,6 +148,38 @@ priorities for a bot competing on AI Arena specifically:
    `rule_build_supply` separate winners from losers among bots far more than among
    pros — bots routinely violate them.
 
+## How Protoss beats a rush (12PoolBot / ZEALOCALYPSE)
+
+Separate study: 12 games where a Protoss bot **beat** 12PoolBot (Zerg 12-pool
+zergling rush) or ZEALOCALYPSE (Protoss 4-gate zealot all-in). The winning recipe
+was strikingly uniform — and it is *static defense*, not army:
+
+| | Winner's opening | Static defense up by |
+|---|---|---|
+| **vs 12PoolBot** | **Forge ~0:45–1:00** → 2–4+ **Photon Cannons** | **~1:31–2:00** |
+| **vs ZEALOCALYPSE** | **Forge ~0:57–1:16** → 2–6 Photon Cannons + **Shield Batteries** | **~1:41–2:20** |
+
+Key points:
+
+1. **Forge-first cannons, not gateway army.** Several winners made *zero* combat
+   units early (just probes + cannons) and still held. Cannons are static,
+   cost-efficient vs. lings/zealots, and need no micro.
+2. **Cannons beat batteries to the punch.** A Forge finishes ~0:50 → cannons
+   ~1:20; a Shield Battery needs a Cybernetics Core (~2:15). Against a 1:30 ling
+   flood, only cannons are up in time. Batteries then *supplement* (great vs.
+   zealots — they heal shields).
+3. **Proactive, not reactive.** The winners committed to the Forge before
+   scouting could confirm the rush — textbook `INFORMATION.md` "insure against the
+   unseen": buy the cheap cannon when you can't yet rule out the rush.
+4. **Survive, then punish.** After holding, they transitioned to a huge economy
+   (88–122 probes) and won off the rusher's dead economy.
+
+This directly informs AthenaBot: the library (`DefensePlan`) now recommends
+proactive static defense and the bot builds Forge-first cannons. It measurably
+improves rush survival, though not yet to a *reliable* hold — the winners had
+tighter timing (Forge ~0:57, 4–6 cannons, precise placement) than the bot
+currently achieves.
+
 ## Reproduce
 
 ```bash
