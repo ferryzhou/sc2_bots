@@ -33,13 +33,24 @@ class Production:
                 near = wall_pos if wall_pos is not None else self._pylon(bot).position.towards(bot.game_info.map_center, 5)
                 await bot.build(U.GATEWAY, near=near)
             return
-        # EMERGENCY: under a rush, rush a 2nd gateway for zealots, then let the
-        # cyber core + shield battery below come up fast (battery holds a zealot
-        # 4-gate). The library told us to prioritize army; we execute both.
-        if advice.defense.prioritize_army and bot.supply_army < 12:
-            if (gates.amount + bot.already_pending(U.GATEWAY) < 2
-                    and bot.can_afford(U.GATEWAY) and bot.minerals > 130):
-                await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
+        # EMERGENCY: the proven anti-rush hold (from analysis/REPLAY_FINDINGS.md:
+        # 12 Protoss wins vs 12PoolBot / ZEALOCALYPSE) is Forge-first static
+        # defense. A Forge (~0:50) yields photon cannons ~1:20 -- they beat a
+        # shield battery (needs cyber ~2:15) to the punch and need no army. Rush
+        # the Forge, then a 2nd gateway for a zealot to plug the wall.
+        if advice.defense.emergency:
+            if (not bot.structures(U.FORGE) and bot.already_pending(U.FORGE) == 0
+                    and bot.can_afford(U.FORGE)):
+                await bot.build(U.FORGE, near=self._pylon(bot))
+                return
+            # Hold the rest of the tech until the cannons are up -- let the minerals
+            # flow to static defense (built in _defense), the way the winners did.
+            cannons = bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON)
+            if bot.structures(U.FORGE).ready and cannons < advice.defense.static_defense:
+                # still get a 2nd gateway down for a wall zealot, then defer
+                if (gates.amount + bot.already_pending(U.GATEWAY) < 2
+                        and bot.can_afford(U.GATEWAY) and bot.minerals > 320):
+                    await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
                 return
         # cybernetics core after the first gateway -- completes the ramp wall
         if gates.ready and not bot.structures(U.CYBERNETICSCORE) and bot.already_pending(U.CYBERNETICSCORE) == 0:
@@ -102,21 +113,25 @@ class Production:
         base = bot.townhalls.closest_to(bot.enemy_start_locations[0]) if bot.townhalls else None
         if base is None:
             return
+        # place toward the ramp/wall (where the attack comes) while covering the base
         near = base.position.towards(bot.game_info.map_center, 4)
-        have = (bot.structures(U.SHIELDBATTERY).amount + bot.already_pending(U.SHIELDBATTERY)
-                + bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON))
-        if have < want:
-            # shield battery (needs cyber) is the fastest early hold; else a cannon
-            if bot.structures(U.CYBERNETICSCORE).ready and bot.can_afford(U.SHIELDBATTERY):
-                await bot.build(U.SHIELDBATTERY, near=near)
-                return
-            if bot.structures(U.FORGE).ready and bot.can_afford(U.PHOTONCANNON):
-                await bot.build(U.PHOTONCANNON, near=near)
-                return
-        # detection: a cannon also detects; observer is trained in _train
-        if plan.need_detection and bot.structures(U.FORGE).ready and bot.can_afford(U.PHOTONCANNON):
-            if bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON) < want + 1:
-                await bot.build(U.PHOTONCANNON, near=near)
+        cannons = bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON)
+        batteries = bot.structures(U.SHIELDBATTERY).amount + bot.already_pending(U.SHIELDBATTERY)
+
+        # Cannons are the primary hold (need only a Forge -> up fast, no micro).
+        if bot.structures(U.FORGE).ready and cannons < want and bot.can_afford(U.PHOTONCANNON):
+            await bot.build(U.PHOTONCANNON, near=near)
+            return
+        # A couple of shield batteries sustain the wall/cannons once cyber is up
+        # (great vs. zealots -- they heal shields).
+        if (plan.emergency and bot.structures(U.CYBERNETICSCORE).ready
+                and batteries < 2 and bot.can_afford(U.SHIELDBATTERY)):
+            await bot.build(U.SHIELDBATTERY, near=near)
+            return
+        # detection: a cannon also detects
+        if (plan.need_detection and bot.structures(U.FORGE).ready
+                and cannons < want + 1 and bot.can_afford(U.PHOTONCANNON)):
+            await bot.build(U.PHOTONCANNON, near=near)
 
     async def _upgrades(self, bot):
         forge = bot.structures(U.FORGE).ready.idle
