@@ -4,22 +4,24 @@ A "sparring partner" you can run your own bot against to reproduce losses to thi
 opening -- no opponent source code needed. The build is taken directly from a
 real replay (see analysis/extract_build_order.py):
 
-    Nexus, Pylon @13, Pylon @15, 4x Gateway (1:35-2:01), NO gas, mass Zealot,
-    warp-in pylons pushed forward, ~18 probes then all-in. First Zealot ~3:18.
+    Nexus, Pylon, Pylon, 4x Gateway (~1:35-2:00), NO gas, NO cyber core,
+    pure gateway-train mass Zealot, ~18 probes then all-in. First Zealot ~3:18.
 
 This reproduces the *build, composition, and timing* of the all-in faithfully.
 It does not reproduce the original bot's exact micro -- for a scripted all-in
 that is ~90% of the behavior, which is plenty to test defenses against.
 
-Run it via sparring/run.py.
+Validated headless (sparring/run.py, real SC2 client): 4 gateways on one base
+(~0:54 / 1:10 / 2:03 / 3:10), no gas, ~30 zealots, stalled at 18 probes, first
+zealot ~2:37, then all-in -- a faithful reproduction of the source 4-gate. (The
+real one massed 4 gates by ~2:00; ours lands the 4th ~1 min later on the same
+18-probe/no-gas economy. Tune TARGET_PROBES / gate timing to taste.)
 """
 
 from sc2.bot_ai import BotAI
 from sc2.data import Result
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId
-from sc2.ids.upgrade_id import UpgradeId
-from sc2.position import Point2
 
 
 class FourGateZealotBot(BotAI):
@@ -39,96 +41,73 @@ class FourGateZealotBot(BotAI):
             return
 
         nexus = self.townhalls.first
-
-        await self.build_economy(nexus)
-        await self.build_gateways(nexus)
-        await self.research_warpgate()
-        await self.make_zealots(nexus)
+        await self.build_supply(nexus)
+        await self.build_gateways(nexus)   # gateways get first claim on minerals
+        await self.build_probes(nexus)
+        await self.make_zealots()
         await self.chrono(nexus)
         await self.attack()
 
-    # --- economy: probes to the cap, pylons ahead of supply -----------------
-    async def build_economy(self, nexus):
-        if self.supply_workers < self.TARGET_PROBES and nexus.is_idle:
-            if self.can_afford(UnitTypeId.PROBE):
-                nexus.train(UnitTypeId.PROBE)
+    @property
+    def _gateways_needed(self) -> bool:
+        started = self.structures(UnitTypeId.GATEWAY).amount + self.already_pending(
+            UnitTypeId.GATEWAY
+        )
+        return started < self.NUM_GATEWAYS
 
-        # Keep supply ahead; pylons double as forward warp-in points later.
+    # --- pylons ahead of supply (also serve as forward positions) -----------
+    async def build_supply(self, nexus):
         if (
             self.supply_left < 3
+            and self.supply_cap < 200
             and self.already_pending(UnitTypeId.PYLON) < 2
             and self.can_afford(UnitTypeId.PYLON)
         ):
-            await self.build(UnitTypeId.PYLON, near=nexus.position.towards(self.game_info.map_center, 6))
+            await self.build(
+                UnitTypeId.PYLON,
+                near=nexus.position.towards(self.game_info.map_center, 6),
+            )
 
-    # --- 4 gateways ASAP ----------------------------------------------------
+    # --- probes to the all-in cap, but never at the cost of a gateway -------
+    async def build_probes(self, nexus):
+        if self.supply_workers >= self.TARGET_PROBES or not nexus.is_idle:
+            return
+        # While we still owe gateways, bank minerals for them instead of probing.
+        if self._gateways_needed and self.minerals < 200:
+            return
+        if self.can_afford(UnitTypeId.PROBE):
+            nexus.train(UnitTypeId.PROBE)
+
+    # --- 4 gateways ASAP (no gas, no cyber -- pure gateway zealot) ----------
     async def build_gateways(self, nexus):
         if not self.structures(UnitTypeId.PYLON).ready:
-            if not self.already_pending(UnitTypeId.PYLON) and self.can_afford(UnitTypeId.PYLON):
-                await self.build(UnitTypeId.PYLON, near=nexus.position.towards(self.game_info.map_center, 6))
             return
-        gates = self.structures.of_type({UnitTypeId.GATEWAY, UnitTypeId.WARPGATE})
-        pending = self.already_pending(UnitTypeId.GATEWAY)
-        if gates.amount + pending < self.NUM_GATEWAYS and self.can_afford(UnitTypeId.GATEWAY):
+        gates = self.structures(UnitTypeId.GATEWAY)
+        if gates.amount + self.already_pending(UnitTypeId.GATEWAY) >= self.NUM_GATEWAYS:
+            return
+        if self.can_afford(UnitTypeId.GATEWAY):
             pylon = self.structures(UnitTypeId.PYLON).ready.random
-            await self.build(UnitTypeId.GATEWAY, near=pylon.position.towards(self.game_info.map_center, 4))
+            await self.build(
+                UnitTypeId.GATEWAY,
+                near=pylon.position.towards(self.game_info.map_center, 4),
+            )
 
-    # --- warpgate (for the reinforcing warp-in surge) -----------------------
-    async def research_warpgate(self):
-        # Needs a cybernetics core; the pure-gate replay warped in off a fast core.
-        if not self.structures(UnitTypeId.CYBERNETICSCORE):
-            if (
-                self.structures(UnitTypeId.PYLON).ready
-                and self.already_pending(UnitTypeId.CYBERNETICSCORE) == 0
-                and self.can_afford(UnitTypeId.CYBERNETICSCORE)
-            ):
-                pylon = self.structures(UnitTypeId.PYLON).ready.random
-                await self.build(UnitTypeId.CYBERNETICSCORE, near=pylon)
-            return
-        core = self.structures(UnitTypeId.CYBERNETICSCORE).ready
-        if core and self.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) == 0:
-            if self.can_afford(UpgradeId.WARPGATERESEARCH):
-                core.first.research(UpgradeId.WARPGATERESEARCH)
-
-    # --- mass zealot: train from gateways, warp in from warpgates -----------
-    async def make_zealots(self, nexus):
-        # Gateways (pre-warpgate): straight train.
+    # --- mass zealot straight from the gateways -----------------------------
+    async def make_zealots(self):
         for gate in self.structures(UnitTypeId.GATEWAY).ready.idle:
             if self.can_afford(UnitTypeId.ZEALOT):
                 gate.train(UnitTypeId.ZEALOT)
 
-        # Warpgates: warp in near the most-forward pylon (toward the enemy).
-        warpgates = self.structures(UnitTypeId.WARPGATE).ready
-        if not warpgates:
-            return
-        pylons = self.structures(UnitTypeId.PYLON).ready
-        if not pylons:
-            return
-        target_pylon = pylons.closest_to(self.enemy_start_locations[0])
-        for wg in warpgates:
-            abilities = await self.get_available_abilities(wg)
-            if AbilityId.WARPGATETRAIN_ZEALOT not in abilities:
-                continue
-            if not self.can_afford(UnitTypeId.ZEALOT):
-                break
-            pos = target_pylon.position.to2.random_on_distance(4)
-            placement = await self.find_placement(AbilityId.WARPGATETRAIN_ZEALOT, pos, placement_step=1)
-            if placement:
-                wg.warp_in(UnitTypeId.ZEALOT, placement)
-
-    # --- chrono: warpgate research first, then a producing gateway ----------
+    # --- chrono: a producing gateway, else early probes for faster income ---
     async def chrono(self, nexus):
         if nexus.energy < 50:
             return
-        # Prioritize warpgate research while it is in progress.
-        core = self.structures(UnitTypeId.CYBERNETICSCORE).ready
-        if core and 0.0 < self.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) < 1.0:
-            nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, core.first)
-            return
-        # Otherwise speed up a gateway that is training.
         busy = [g for g in self.structures(UnitTypeId.GATEWAY).ready if not g.is_idle]
         if busy:
             nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy[0])
+        elif not nexus.is_idle and self.supply_workers < self.TARGET_PROBES:
+            # Early game: boost probe production to bank for the gateways faster.
+            nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus)
 
     # --- all-in: once we have a few zealots, attack and never stop ----------
     async def attack(self):
@@ -136,8 +115,11 @@ class FourGateZealotBot(BotAI):
         if not self.attacking and zealots.amount >= self.ATTACK_AT_ZEALOTS:
             self.attacking = True
         if self.attacking:
-            target = self.enemy_structures.random.position if self.enemy_structures \
+            target = (
+                self.enemy_structures.random.position
+                if self.enemy_structures
                 else self.enemy_start_locations[0]
+            )
             for z in zealots:
                 z.attack(target)
 
