@@ -26,6 +26,10 @@ class Strategy:
     def advise(self, bot):
         mem = dict(getattr(bot, "enemy_memory", {}) or {})
 
+        # enemy race (for proactive rush insurance in the library)
+        er = getattr(bot, "enemy_race", None)
+        mem["enemy_race"] = er.name if er is not None and hasattr(er, "name") else None
+
         # detection on hand?
         mem["have_detection"] = (
             bot.units(U.OBSERVER).amount + bot.structures(U.PHOTONCANNON).ready.amount > 0

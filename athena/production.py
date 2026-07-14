@@ -26,6 +26,15 @@ class Production:
 
     async def _tech(self, bot, advice):
         gates = bot.structures(U.GATEWAY)
+        # Forge-FIRST when the library wants static defense (proactive insurance or
+        # emergency). From analysis/REPLAY_FINDINGS.md: 12 Protoss wins vs
+        # 12PoolBot / ZEALOCALYPSE opened Forge ~0:57 -> photon cannons ~1:30 --
+        # cannons beat a shield battery (needs cyber) to the punch and need no
+        # army. So the Forge goes down before the first gateway here.
+        if (advice.defense.static_defense >= 1 and not bot.structures(U.FORGE)
+                and bot.already_pending(U.FORGE) == 0 and bot.can_afford(U.FORGE)):
+            await bot.build(U.FORGE, near=self._pylon(bot))
+            return
         # first gateway -- on the ramp wall if we can
         if gates.amount + bot.already_pending(U.GATEWAY) == 0:
             if bot.can_afford(U.GATEWAY):
@@ -33,21 +42,13 @@ class Production:
                 near = wall_pos if wall_pos is not None else self._pylon(bot).position.towards(bot.game_info.map_center, 5)
                 await bot.build(U.GATEWAY, near=near)
             return
-        # EMERGENCY: the proven anti-rush hold (from analysis/REPLAY_FINDINGS.md:
-        # 12 Protoss wins vs 12PoolBot / ZEALOCALYPSE) is Forge-first static
-        # defense. A Forge (~0:50) yields photon cannons ~1:20 -- they beat a
-        # shield battery (needs cyber ~2:15) to the punch and need no army. Rush
-        # the Forge, then a 2nd gateway for a zealot to plug the wall.
+        # Under a real EMERGENCY, hold the rest of the tech until the cannons are
+        # up -- let the minerals flow to static defense (built in _defense).
+        # Under a real EMERGENCY, hold the rest of the tech until the cannons are
+        # up -- let the minerals flow to static defense (built in _defense).
         if advice.defense.emergency:
-            if (not bot.structures(U.FORGE) and bot.already_pending(U.FORGE) == 0
-                    and bot.can_afford(U.FORGE)):
-                await bot.build(U.FORGE, near=self._pylon(bot))
-                return
-            # Hold the rest of the tech until the cannons are up -- let the minerals
-            # flow to static defense (built in _defense), the way the winners did.
             cannons = bot.structures(U.PHOTONCANNON).amount + bot.already_pending(U.PHOTONCANNON)
             if bot.structures(U.FORGE).ready and cannons < advice.defense.static_defense:
-                # still get a 2nd gateway down for a wall zealot, then defer
                 if (gates.amount + bot.already_pending(U.GATEWAY) < 2
                         and bot.can_afford(U.GATEWAY) and bot.minerals > 320):
                     await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))

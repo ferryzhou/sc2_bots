@@ -71,6 +71,8 @@ class GameState:
     enemy_static_defense: Optional[int] = None
     enemy_gas_count: Optional[int] = None
 
+    enemy_race: Optional[str] = None    # "Protoss" | "Terran" | "Zerg" | "Random" / None
+
     # scouted qualitative signals
     enemy_proxy: bool = False           # enemy buildings near our base
     enemy_army_moving_out: bool = False  # enemy army advancing early
