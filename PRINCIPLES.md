@@ -38,6 +38,9 @@ For the concrete, checkable rules that drill down from each principle, see
 10. **Upgrades matter.** Attack and armor upgrades compound across every unit
     and every fight. Neglecting them quietly loses engagements.
 
+For the tactical layer — how to win battles, defend, attack, and be efficient in
+combat — see [`COMBAT.md`](COMBAT.md).
+
 ## The meta-principle
 
 11. **Multitask — do everything at once.** The real skill is holding macro
@@ -97,6 +100,16 @@ What makes tech and upgrades distinct:
   tech is a moment you're suddenly stronger (a spike to attack on), while the
   research is in progress you're weaker (a window to be punished). See the timing
   section below.
+- **Tech and upgrades buy combat efficiency — structurally.** Efficiency (winning
+  trades: killing more value than you lose) comes from two sources. One is *in the
+  moment* — micro, positioning, terrain, focus fire. The other is *built in ahead
+  of time* — higher-tier units and attack/armor upgrades raise your trade ratio in
+  every fight, before a single command is issued. A +1 edge or a tech-tier
+  advantage means each of your units does more and dies less, so you trade up even
+  with equal control. This is why the efficiency lens and the tech/upgrade
+  investment are the same coin: **research is efficiency you pay for in advance.**
+  The replay data bears it out — winners were the more-upgraded side in ~49% of
+  pro games and ~72% of bot games ([`analysis/REPLAY_FINDINGS.md`](analysis/REPLAY_FINDINGS.md)).
 
 Key ideas for spending on tech:
 
@@ -190,6 +203,9 @@ exactly the mistake the harasser wants.
   out-predicting raw economy. A bigger economy loses anyway if you can't
   *convert* it — the games where the loser out-produced but still lost were all
   cases of floating resources, staying supply-blocked, and losing the decisive
-  trade. Treat efficiency as first-order, not a footnote.
+  trade. Treat efficiency as first-order, not a footnote. And note efficiency is
+  bought two ways: *in the moment* (micro, positioning, terrain) and *in advance*
+  (tech tier and upgrades, which raise your trade ratio structurally — see the
+  tech/upgrades section).
 - **Tempo / initiative:** being ahead lets you dictate. Use a lead to pressure
   and expand; when behind, defend, stall, and look for a favorable swing.
