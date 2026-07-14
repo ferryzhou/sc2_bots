@@ -69,17 +69,17 @@ def assess_defense(state: GameState) -> DefensePlan:
         static = min(static, 4)
 
     # Proactive insurance (INFORMATION.md: insure against what you can't see).
-    # Early, before we can rule out a rush, one cheap static defense is worth it --
-    # the winning Protoss bots open forge-cannon vs Zerg rather than wait to scout.
-    # Fires vs Zerg (fast ling rushes) or an unscouted / one-base opponent.
-    could_be_rushed = (
-        state.enemy_race == "Zerg"
-        or not state.enemy_known
-        or (state.enemy_base_count or 1) <= 1
-    )
-    if minutes < 2.5 and state.army_supply < 6 and could_be_rushed and not emergency:
-        static = max(static, 1)
-        reasons.append("early insurance vs a possible rush (can't yet rule it out)")
+    # Early, before we can rule out a rush, static defense is cheap relative to
+    # dying. The winning Protoss bots (analysis/REPLAY_FINDINGS.md) had *2-3*
+    # cannons up by ~3:00 vs a ling rush -- a single cannon doesn't stop it.
+    if minutes < 3.0 and state.army_supply < 8 and not emergency:
+        if state.enemy_race == "Zerg":
+            # 2 cannons at the mineral line is the standard ling-rush hold
+            static = max(static, 2)
+            reasons.append("proactive 2-cannon defense vs Zerg (ling-rush insurance)")
+        elif not state.enemy_known or (state.enemy_base_count or 1) <= 1:
+            static = max(static, 1)
+            reasons.append("early insurance vs a possible rush (can't yet rule it out)")
 
     # Base breached and army can't hold it alone -> pull workers.
     breached = state.enemy_army_moving_out and minutes < 7.0
