@@ -31,6 +31,14 @@ class Production:
             if bot.can_afford(U.GATEWAY):
                 await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
             return
+        # EMERGENCY: under a rush, rush a 2nd gateway for zealots, then let the
+        # cyber core + shield battery below come up fast (battery holds a zealot
+        # 4-gate). The library told us to prioritize army; we execute both.
+        if advice.defense.prioritize_army and bot.supply_army < 12:
+            if (gates.amount + bot.already_pending(U.GATEWAY) < 2
+                    and bot.can_afford(U.GATEWAY) and bot.minerals > 130):
+                await bot.build(U.GATEWAY, near=self._pylon(bot).position.towards(bot.game_info.map_center, 5))
+                return
         # cybernetics core after the first gateway
         if gates.ready and not bot.structures(U.CYBERNETICSCORE) and bot.already_pending(U.CYBERNETICSCORE) == 0:
             if bot.can_afford(U.CYBERNETICSCORE):

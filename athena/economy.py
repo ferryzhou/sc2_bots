@@ -22,6 +22,10 @@ class Economy:
         cap = min(75, 22 * max(1, bot.townhalls.amount) + 6)
         if bot.supply_workers >= cap:
             return
+        # Under an emergency with little army, save minerals for gateway units.
+        if (advice.defense.prioritize_army and bot.supply_army < 8
+                and bot.time < 240 and bot.minerals < 200):
+            return
         for nexus in bot.townhalls.ready.idle:
             if bot.can_afford(U.PROBE) and bot.supply_left > 0:
                 nexus.train(U.PROBE)
@@ -32,12 +36,14 @@ class Economy:
         production = max(1, bot.structures(U.GATEWAY).amount + bot.structures(U.WARPGATE).amount)
         threshold = 3 + 2 * production
         pending = bot.already_pending(U.PYLON)
-        floating = bot.minerals > 400
+        # Extra "spend the float" pylons only once we're established -- never in
+        # the opening, where pylon spam delays the first gateway.
+        floating = bot.minerals > 500 and bot.supply_cap >= 32
         if (
             bot.supply_cap < 200
             and bot.townhalls
             and bot.can_afford(U.PYLON)
-            and ((bot.supply_left <= threshold and pending < 3) or (floating and pending < 4))
+            and ((bot.supply_left <= threshold and pending < 2) or (floating and pending < 3))
         ):
             nexus = bot.townhalls.ready.random if bot.townhalls.ready else bot.townhalls.first
             await bot.build(U.PYLON, near=nexus.position.towards(bot.game_info.map_center, 6))
