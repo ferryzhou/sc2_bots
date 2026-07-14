@@ -58,10 +58,14 @@ class Perception:
         # workers / army from what is visible right now (best effort)
         vis_workers = bot.enemy_units.of_type(WORKERS).amount
         mem["enemy_worker_count"] = max(mem.get("enemy_worker_count") or 0, vis_workers) or None
+        # CURRENT visible army, not max-ever: a spent flood must read as spent, or
+        # we stay defensive forever and never punish (12PoolBot is macro, not a
+        # one-shot all-in -- see bot_profiles/12PoolBot). Only overwrite when we
+        # actually see the enemy; otherwise leave it for dead-reckoning to age.
         army = sum(ARMY_SUPPLY.get(u.type_id, 0) for u in bot.enemy_units
                    if u.type_id not in WORKERS)
-        if army:
-            mem["enemy_army_supply"] = max(mem.get("enemy_army_supply") or 0.0, army)
+        if bot.enemy_units:
+            mem["enemy_army_supply"] = army
 
         # qualitative flags
         if enemies:
