@@ -40,3 +40,6 @@ results/versus_logs/
 
 # Ladder replay binaries (regenerable via harness/ladder_replays.py; keep manifest)
 results/ladder_replays/*.SC2Replay
+
+# Local per-session bot match history (transient test runs)
+results/history_athena.jsonl
