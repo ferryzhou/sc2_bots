@@ -15,11 +15,16 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = {}
-for _f in ("topbot_data.json", "topbot_data2.json"):
+for _f in ("topbot_data.json", "topbot_data2.json", "topbot_data3.json"):
     _p = os.path.join(HERE, "data", _f)
     if os.path.exists(_p):
         DATA.update(json.load(open(_p)))
 RACE = {"P": "Protoss", "T": "Terran", "Z": "Zerg", "R": "Random"}
+MIN_GAMES = 6  # below this (recent decided games) a bot is listed but not profiled
+
+
+def games(e):
+    return e["record"]["W"] + e["record"]["L"]
 
 # Hand-written analysis per bot, grounded in the collected build orders, the
 # per-race record, and (for open-source bots) their actual code. Where a build
@@ -1066,6 +1071,286 @@ ANALYSIS.update({
      "Out-macro via cleaner production; take only favorable engagements."]),
 })
 
+# --- Batch 3 (Elo ranks ~65-96). Includes several long-time ladder staples now
+# profiled objectively; low-activity 1600-Elo bots are listed, not profiled. ---
+ANALYSIS.update({
+ "Asteria": dict(
+   summary="A **Stargate skytoss Protoss**: adept/stalker into Stargate air, "
+     "teching to **carriers and tempests**. Air-based macro. Even form (77-65), "
+     "best vs Terran (25-15).",
+   opening="Gateway/adept into Stargate; carriers + tempests as the win condition.",
+   strategy=["Tech to capital air (carriers/tempests) behind a gateway core; win "
+     "the late game on air + range.",
+     "Adept/stalker hold the ground while air masses."],
+   strengths=["Carriers/tempests out-range and out-scale most ground armies; "
+     "strong vs Terran (25-15).",
+     "Air ignores ground positioning and chokes."],
+   weaknesses=["Slow, gas-heavy air tech — thin during the tech window.",
+     "Anti-air (vikings/corruptors, mass queens/mutas) hard-counters it."],
+   beat=["Bring anti-air (vikings/corruptors) and hit a timing before carriers/"
+     "tempests mass.",
+     "Deny expansions so it can't afford the air; pressure the tech window."]),
+ "ArtZerg": dict(
+   summary="An **aggressive ling/roach Zerg**: mass zerglings (60+) with roach "
+     "support off a modest economy. Aggro-leaning macro; losing recent form (62-71).",
+   opening="Fast pool into mass zergling + roach warren; ling pressure into roach.",
+   strategy=["Zergling flood with roach backup; pressure early, macro if held."],
+   strengths=["Dominant in the Zerg mirror (34-12); early ling aggression can "
+     "overwhelm."],
+   weaknesses=["Weak vs Terran (11-32) and Protoss (12-25) — splash (tanks/"
+     "hellions, colossus/storm) shreds ling/roach.",
+     "Melee-heavy, light on tech."],
+   beat=["Wall + splash and hold the ling flood; out-range roaches (tanks/"
+     "colossus).",
+     "Punish its thin economy once the aggression is spent."]),
+ "Terranosaur": dict(
+   summary="A **Terran mass-marine bio** bot (.NET): marines off 5-6 barracks "
+     "with upgrades. Bio-macro that grinds. Solid form (80-50), strong vs Protoss "
+     "(35-18).",
+   opening="Bio expand; heavy barracks marine production with reactors, ebay "
+     "upgrades, some medivacs.",
+   strategy=["Mass marine bio with +attack upgrades; overwhelms with numbers and "
+     "stim.",
+     "Macro-oriented — reinforces from many barracks."],
+   strengths=["Strong vs Protoss (35-18) and in the Terran mirror (18-8); high "
+     "marine count + upgrades.",
+     "Marines with +attack trade well when microed."],
+   weaknesses=["Marine-heavy, light on tanks/splash — banelings, colossus, storm, "
+     "lurkers punish it.",
+     "Even vs Zerg (23-22) where splash is available."],
+   beat=["Bring splash (banelings/lurkers as Z, colossus/storm as P, more tanks "
+     "as T) and don't fight marines in the open.",
+     "Defend drops; keep armor upgrades to blunt marine +attack."]),
+ "kas": dict(
+   summary="A **hyper-economic drone-macro Zerg**: over-drones massively (90+ "
+     "drones) with heavy creep and queens, remaxing a big army late. Greedy "
+     "macro. Strong vs Terran (22-7) but weak vs P/Z.",
+   opening="Very economic Zerg; drone-heavy with creep spread and queens, minimal "
+     "early army.",
+   strategy=["Drone to a huge economy behind creep + queens, then remax roach/"
+     "hydra/ling waves.",
+     "Bets everything on out-economying — a wide thin-army window early."],
+   strengths=["Enormous economy and remax; strong vs Terran (22-7) when it "
+     "survives to macro."],
+   weaknesses=["Over-drones with a thin army — very punishable by early "
+     "aggression (weak vs Protoss 14-31 and Zerg 17-39, which pressure the window).",
+     "Poor early defense; leans on queens/spines."],
+   beat=["Punish the over-drone window with early pressure or a timing before it "
+     "remaxes — aggression beats this greed (its P/Z losses show it).",
+     "Deny creep and expansions."]),
+ "Persephone": dict(
+   summary="A **ling/roach macro Zerg**: equal parts zergling and drone into "
+     "roach, with creep and queens. Even-ish form (64-79).",
+   opening="Pool into ling + drone (balanced) into roach warren; creep + queens.",
+   strategy=["Ling/roach army off a drone economy; pressure with lings, remax "
+     "roach."],
+   strengths=["Competitive vs Protoss (25-23); ling/roach flexibility."],
+   weaknesses=["Weak in the Zerg mirror (22-33); ling/roach lacks splash vs "
+     "colossus/tanks.",
+     "Melee-heavy front-line."],
+   beat=["Out-range roaches and splash the lings (tanks/colossus/storm).",
+     "Hold aggression at a wall, then out-macro."]),
+ "Horizon": dict(
+   summary="A **Terran bio/air macro** bot: marine bio off many bases with a "
+     "Starport (medivacs/liberators/banshees). Macro-oriented. Best vs Protoss "
+     "(28-16).",
+   opening="Bio expand to 3-4 command centers; barracks marine + starport tech.",
+   strategy=["Bio backed by starport units (medivac/liberator/banshee); expands "
+     "hard and teches to air support.",
+     "Macro-first — out-produces from many bases."],
+   strengths=["Strong economy + air support; good vs Protoss (28-16).",
+     "Liberators/banshees add range and harass."],
+   weaknesses=["Bio-heavy — splash punishes it; even vs Zerg (23-24).",
+     "Air tech is thin if rushed before it's online."],
+   beat=["Splash + anti-air (if it goes banshee/liberator); defend the air harass.",
+     "Hit an economic timing before its many-base macro snowballs."]),
+ "muravev": dict(
+   summary="A strong **speedling macro Zerg** (parent of muravevtest): mass "
+     "zerglings off a drone economy with heavy creep and upgrades. Good form "
+     "(78-41), crushing Terran (38-10).",
+   opening="Fast pool/speed into drone + creep macro; ling with queens, +melee "
+     "upgrades.",
+   strategy=["Mass speedling + creep control + upgrades; remax fast and swarm.",
+     "Drones enough to keep lings flowing, then floods."],
+   strengths=["Dominant vs Terran (38-10) and Protoss (22-13); ling numbers + "
+     "upgrades out-trade unprepared armies.",
+     "Creep gives map vision and speed."],
+   weaknesses=["Zerglings are light/melee — splash (tanks/hellions, colossus/"
+     "storm, banelings) is the structural counter; even in the Zerg mirror (13-16)."],
+   beat=["Splash before the flood (tanks+hellions, colossus/storm, banelings); "
+     "wall and hold.",
+     "Keep armor upgrades; deny creep; punish the economy once the flood breaks."]),
+ "ZEALOCALYPSE": dict(
+   summary="A **Protoss zealot-flood** bot: mass zealots (30+) off 4 gateways — a "
+     "zealot all-in/timing. Crushes Zerg (40-13) but is demolished by Terran "
+     "(3-21).",
+   opening="Gateway-heavy zealot mass (little economy); a-move the zealot flood.",
+   strategy=["Pump zealots from many gateways and flood — end the game before "
+     "splash/economy matter.",
+     "Warp-in reinforcements re-flood a broken engagement."],
+   strengths=["Zealot flood overwhelms mass-light Zerg and the unprepared (40-13 "
+     "vs Zerg).",
+     "Overwhelming melee numbers at its timing."],
+   weaknesses=["Hard-countered by Terran splash (3-21) — tanks/hellions/mines "
+     "melt zealots; melee stalls at a wall.",
+     "Thin economy — a held flood loses."],
+   beat=["Wall + splash (tanks/hellions as T, storm/colossus, banelings) and hold "
+     "— never fight zealots in the open.",
+     "Survive the timing, then punish the dead economy."]),
+ "TheLAW": dict(
+   summary="A strong **Terran bio** macro bot: marine/marauder/medivac with "
+     "upgrades. Excellent form (85-39), strong across the board (esp. Protoss 32-13).",
+   opening="Bio expand; marine/marauder with medivacs, reactors/tech-labs, "
+     "ebay upgrades.",
+   strategy=["Clean MMM bio macro with stim + upgrades and medivac drops; trades "
+     "bio efficiently.",
+     "Balanced army/economy — wins on execution."],
+   strengths=["Well-rounded and strong; dominant vs Protoss (32-13) and Zerg "
+     "(27-16).",
+     "Good macro + drop harass."],
+   weaknesses=["Bio-centric — splash (colossus/storm, banelings/lurkers) is the "
+     "answer; lighter on tanks."],
+   beat=["Force splash-favorable fights and defend drops.",
+     "Don't fight stimmed bio in the open; use position and armor upgrades."]),
+ "OneBaseStalkerBot": dict(
+   summary="A **one-base stalker all-in Protoss**: pumps ~20+ stalkers off a "
+     "single base and pushes before the opponent has an army. All-in timing. "
+     "Weak vs Terran (6-19).",
+   opening="One base, 3-4 gateways, mass Stalker — no expansion, all army by ~8 min.",
+   strategy=["Mass stalkers on one base and attack — a ranged all-in that ends "
+     "the game early or loses.",
+     "Blink (if teched) to reinforce and kite."],
+   strengths=["Ranged all-in overwhelms greedy/undefended openings (even vs "
+     "Protoss 22-24, good vs Zerg 28-22).",
+     "Stalkers out-range a bare wall — needs real defense to hold."],
+   weaknesses=["One base, no economy — a held all-in loses; weak vs Terran (6-19) "
+     "where tanks + a wall crush it.",
+     "No splash/tech beyond the timing."],
+   beat=["Treat as an all-in: wall, tanks/bunker + units, hold the timing (don't "
+     "trade in the open).",
+     "Survive → its one base loses to your expand."]),
+ "QueenBot": dict(
+   summary="A **queen/creep macro Zerg**: heavy queen count with mass creep "
+     "spread and a big drone economy, into roach/ling. Defensive macro. Strong vs "
+     "Terran in a large sample (51-41).",
+   opening="Economic Zerg; many queens + spore/spine, mass creep tumors, drone-"
+     "heavy.",
+   strategy=["Queens + static defense + creep to defend, drone hard, remax roach/"
+     "ling late.",
+     "Very defensive early — leans on queens/creep to survive to a macro game."],
+   strengths=["Strong defensive economy; good vs Terran (51-41) and Protoss (15-8)."],
+   weaknesses=["Queen-heavy is slow/immobile early — punishable by fast pressure; "
+     "roach/ling lacks splash.",
+     "Cedes map control while turtling on creep."],
+   beat=["Pressure before its economy snowballs; out-range roaches (tanks/"
+     "colossus).",
+     "Take the map — it turtles; deny creep spread."]),
+ "Hellcannon": dict(
+   summary="A **cannon + gateway Protoss**: photon cannons for defense with a "
+     "zealot/gateway army and forge upgrades. Semi-turtle into gateway aggression. "
+     "Strong vs Zerg (35-17).",
+   opening="Gateway + Forge with photon cannons; zealots behind cannon defense.",
+   strategy=["Cannons secure the base/natural, then push out with an upgraded "
+     "zealot/gateway army.",
+     "Uses static defense to enable aggression or greed."],
+   strengths=["Cannon defense + zealot aggression is hard for mass-light to crack "
+     "(strong vs Zerg 35-17).",
+     "Forge upgrades compound the gateway army."],
+   weaknesses=["Weak vs Terran (12-18) — tanks out-range cannons/zealots; "
+     "cannons cede map mobility.",
+     "Melee zealots stall vs splash + a wall."],
+   beat=["As Terran, tanks out-range the cannon line; don't melee into cannons.",
+     "Out-expand the semi-turtle; splash the zealots."]),
+ "smokinggunbot": dict(
+   summary="A **Terran bio-tank turtle** (Java): marine + siege tank + bunkers. "
+     "Positional, defensive Terran. Strong form (83-43), esp. vs Terran (36-10) "
+     "and Protoss (30-13).",
+   opening="Bunkered bio expand into siege tanks; defensive positioning.",
+   strategy=["Marine/tank behind bunkers — a positional turtle that trades with "
+     "tank splash and defender's advantage.",
+     "Grinds a strong mid-game from a fortified position."],
+   strengths=["Very hard to attack head-on (bunkers + sieged tanks); dominant vs "
+     "Terran (36-10) and Protoss (30-13).",
+     "Tank splash punishes mass-light attacks."],
+   weaknesses=["Weak vs Zerg (12-19) — mass ling/roach + flanks and multi-prong "
+     "stretch the immobile defense.",
+     "Immobile — cedes map; slow to punish greed."],
+   beat=["Don't attack into sieged tanks/bunkers — flank, drop, multi-prong "
+     "(as Zerg, mass + runbys work).",
+     "Out-expand the turtle and take the map; pick off tanks with range/air."]),
+ "zig-reapers": dict(
+   summary="A **mass-reaper all-in Terran**: floods 20+ reapers off many "
+     "barracks, using grenades and kiting to overwhelm early. Crushes Zerg "
+     "(51-18). Aggressive timing.",
+   opening="Barracks-heavy reaper production (few SCVs, no real expansion) — a "
+     "reaper flood by ~8 min.",
+   strategy=["Mass reapers kite and grenade the opponent's army/workers before "
+     "they have an answer.",
+     "A one-base/two-base all-in — ends the game early or transitions if it did "
+     "damage."],
+   strengths=["Reaper flood shreds slow ground armies and worker lines; dominant "
+     "vs Zerg (51-18) where early defense is thin.",
+     "Grenades + kiting = strong early trades."],
+   weaknesses=["Reapers are fragile — a bunker + a couple of units, or tanks/"
+     "colossus, hard-counter the flood; even vs Terran (18-21).",
+     "All-in economy — a held flood leaves it behind."],
+   beat=["Wall + a bunker/units, or fast splash (tanks/colossus) — hold the "
+     "reaper flood, don't chase.",
+     "Survive the timing → its thin economy loses."]),
+ "sharpy_protoss_test1": dict(
+   summary="A **gateway + Stargate Protoss** (sharpy test line): zealot/stalker "
+     "off gateways with a Stargate (void rays), forge upgrades. Strong vs Terran "
+     "(26-5).",
+   opening="Gateway zealot/stalker into Stargate (void ray) with forge upgrades.",
+   strategy=["Gateway army + void ray air; pressure and macro with upgrades.",
+     "Void rays add anti-armor and air flexibility."],
+   strengths=["Strong vs Terran (26-5) — void rays + zealots punish bio/mech.",
+     "Gateway + air flexibility with upgrades."],
+   weaknesses=["Even vs Protoss (23-26); gateway army light on splash.",
+     "Void ray tech is thin if rushed."],
+   beat=["Anti-air for the void rays (as T, vikings/turrets; as Z, queens/"
+     "corruptors); splash the gateway units.",
+     "Match upgrades and force favorable fights."]),
+ "Krillin": dict(
+   summary="A **macro/aggression Zerg** (a long-time small ladder bot). Even-ish "
+     "form (58-67) but very weak vs Terran (3-24). (Closed source, build not "
+     "captured this sample.)",
+   strategy=["Zerg macro/aggression (ling/roach — build not observed; scout it)."],
+   strengths=["Competitive vs Protoss (18-13) and Random (18-15)."],
+   weaknesses=["Badly weak vs Terran (3-24) — tank/mech splash dominates it."],
+   beat=["As Terran, tanks/mech + splash and position — the sample says you're "
+     "heavily favored.",
+     "Otherwise standard anti-Zerg: splash + macro; deny creep."]),
+ "PhantomTest": dict(
+   summary="A **Zerg** dev/test bot currently performing poorly (31-109), "
+     "collapsing vs Protoss (10-74). A work-in-progress, not a current threat. "
+     "(Build not captured.)",
+   strategy=["Zerg macro/aggression that isn't currently converting."],
+   strengths=["Most competitive in the Zerg mirror (16-22)."],
+   weaknesses=["Broadly losing, especially vs Protoss (10-74)."],
+   beat=["Macro straight up; it isn't defending or converting well right now."]),
+ "OmegaZ": dict(
+   summary="A **Zerg ling-flood** bot currently in a broken/losing state (0-22 "
+     "in the sample) — mass zerglings that aren't converting. Not a current "
+     "threat.",
+   opening="Fast pool into mass zergling (40+) with spines — a ling flood that "
+     "is currently failing.",
+   strategy=["Zergling aggression that isn't working in its current form."],
+   strengths=["None reliable — losing every matchup in the sample."],
+   weaknesses=["0-22; the ling flood is being held and punished across the board."],
+   beat=["Wall + splash and hold; it hands over the game once the flood breaks."]),
+ "ur_moms_a_ho": dict(
+   summary="A **Zerg** bot with only a small recent sample (12-7). In the one "
+     "replay captured it barely developed (a very short game), so its full plan "
+     "isn't well characterized yet — scout it directly.",
+   strategy=["Zerg (macro or rush unclear from the small sample — treat as "
+     "unknown until scouted)."],
+   strengths=["Slightly winning overall (12-7), best vs Protoss (6-4)."],
+   weaknesses=["Small, noisy sample — no reliable read yet."],
+   beat=["Scout early and play standard-safe vs Zerg until its build is seen "
+     "(wall vs a possible rush, splash vs mass light)."]),
+})
+
 
 def clean_build(pairs):
     return [(n, c) for n, c in pairs]
@@ -1250,6 +1535,18 @@ STYLE.update({
  "Creepy_duo_canon": "Protoss double cannon rush", "nida": "Protoss gateway stalker/phoenix",
  "clone": "Terran reaper/starport", "PiG_Bot": "Protoss gateway/robo macro",
 })
+STYLE.update({
+ "Asteria": "Stargate skytoss (carrier/tempest)", "ArtZerg": "Ling/roach aggro Zerg",
+ "Terranosaur": "Terran mass-marine bio", "kas": "Over-drone macro Zerg",
+ "Persephone": "Ling/roach macro Zerg", "Horizon": "Terran bio/air macro",
+ "muravev": "Speedling macro Zerg", "ZEALOCALYPSE": "Protoss zealot flood",
+ "TheLAW": "Terran bio macro", "OneBaseStalkerBot": "Protoss one-base stalker",
+ "QueenBot": "Queen/creep macro Zerg", "Hellcannon": "Protoss cannon+zealot",
+ "smokinggunbot": "Terran bio-tank turtle", "zig-reapers": "Terran mass-reaper all-in",
+ "sharpy_protoss_test1": "Protoss gateway/stargate", "PhantomTest": "Zerg (dev, weak form)",
+ "OmegaZ": "Zerg ling (weak form)", "ur_moms_a_ho": "Zerg (small sample)",
+ "Krillin": "Zerg macro/aggro",
+})
 
 
 def _best_worst(byrace):
@@ -1269,8 +1566,10 @@ def _best_worst(byrace):
 
 def readme():
     rows = sorted(DATA.items(), key=lambda kv: -kv[1]["meta"]["elo"])
+    profiled = [(n, e) for n, e in rows if games(e) >= MIN_GAMES]
+    skipped = [(n, e) for n, e in rows if games(e) < MIN_GAMES]
     out = [README_HEAD.rstrip("\n")]
-    for i, (name, e) in enumerate(rows, 1):
+    for i, (name, e) in enumerate(profiled, 1):
         m = e["meta"]
         best, worst = _best_worst(e["record"]["byrace"])
         out.append(f"| {i} | [{name}]({name.replace('/', '_')}/PROFILE.md) | "
@@ -1279,14 +1578,25 @@ def readme():
     out.append("\n*Best/Worst vs = the race this bot has the highest / lowest "
                "win-rate against in the sample. Regenerate with "
                "`python bot_profiles/_generate_objective.py`.*")
+    if skipped:
+        out.append("\n## Ranked but not profiled (insufficient recent activity)\n")
+        out.append("These bots are on the ladder but had fewer than "
+                   f"{MIN_GAMES} decided games in the sample (many sit at the "
+                   "default ~1600 Elo — new, inactive, or rarely scheduled), so "
+                   "there isn't enough data to characterize them yet:\n")
+        out.append(", ".join(f"{n} ({e['meta']['race']}, ~{e['meta']['elo']})"
+                             for n, e in skipped) + ".")
     return "\n".join(out)
 
 
 def main():
-    n = 0
+    n = skipped = 0
     for name, e in DATA.items():
         if name == "12PoolBot":
             continue  # bespoke code-read profile, hand-maintained
+        if games(e) < MIN_GAMES:
+            skipped += 1
+            continue  # not enough data to profile; listed in README instead
         d = os.path.join(HERE, name.replace("/", "_"))
         os.makedirs(d, exist_ok=True)
         with open(os.path.join(d, "PROFILE.md"), "w") as f:
@@ -1294,7 +1604,7 @@ def main():
         n += 1
     with open(os.path.join(HERE, "README.md"), "w") as f:
         f.write(readme())
-    print(f"wrote {n} objective profiles + README.md")
+    print(f"wrote {n} objective profiles + README.md ({skipped} skipped: <{MIN_GAMES} games)")
 
 
 if __name__ == "__main__":
