@@ -64,5 +64,37 @@ weaknesses, and how to beat it.
 | 30 | [JimmyBot](JimmyBot/PROFILE.md) | R | 1860 | Random (Zerg-leaning) | R | T |  |
 | 31 | [JimmyBotT](JimmyBotT/PROFILE.md) | T | 1860 | Terran bio-tank | Z | T |  |
 | 32 | [12PoolBot](12PoolBot/PROFILE.md) | Z | 1858 | 12-pool speedling macro Zerg | Z | P | yes |
+| 33 | [MechaShark](MechaShark/PROFILE.md) | T | 1849 | Terran macro (mech-leaning) | Z | T |  |
+| 34 | [ArgoTest](ArgoTest/PROFILE.md) | P | 1842 | Skytoss cannon+tempest (ArgoBot dev) | Z | R |  |
+| 35 | [Sharkling](Sharkling/PROFILE.md) | Z | 1838 | Zerg | R | P |  |
+| 36 | [LunaxVRRTest](LunaxVRRTest/PROFILE.md) | P | 1836 | Skytoss void/tempest (LunaxVRR dev) | R | P |  |
+| 37 | [JimmyBotZ](JimmyBotZ/PROFILE.md) | Z | 1820 | Roach/drone macro Zerg | P | T |  |
+| 38 | [ZeratulsRevengeTest](ZeratulsRevengeTest/PROFILE.md) | P | 1794 | Protoss zealot (dev, unstable) | Z | T |  |
+| 39 | [Aeolus](Aeolus/PROFILE.md) | P | 1774 | Stalker/blink macro Protoss | T | R | yes |
+| 40 | [zig-spudde](zig-spudde/PROFILE.md) | T | 1757 | Terran bio-tank | R | Z |  |
+| 41 | [Cyne](Cyne/PROFILE.md) | P | 1756 | Protoss gateway/robo (weak form) | R | P |  |
+| 42 | [LordSuperKing](LordSuperKing/PROFILE.md) | P | 1752 | Protoss stalker+tempest | T | R |  |
+| 43 | [AvocaDOS](AvocaDOS/PROFILE.md) | T | 1741 | Terran bio | P | T |  |
+| 44 | [Battler](Battler/PROFILE.md) | T | 1718 | Terran reaper bio/mech | Z | P |  |
+| 45 | [Apidae](Apidae/PROFILE.md) | P | 1718 | Protoss cannon turtle/rush | R | P |  |
+| 46 | [Clicadinha](Clicadinha/PROFILE.md) | Z | 1716 | Roach macro Zerg | P | T | yes |
+| 47 | [Arpy](Arpy/PROFILE.md) | P | 1713 | Protoss gateway zealot/adept | R | T |  |
+| 48 | [muravevtest](muravevtest/PROFILE.md) | Z | 1710 | Speedling macro Zerg (muravev dev) | T | Z |  |
+| 49 | [BigDaddy](BigDaddy/PROFILE.md) | T | 1705 | Terran bio (marine/medivac) | R | T |  |
+| 50 | [norman](norman/PROFILE.md) | P | 1705 | Broken/losing (current) | Z | T | yes |
+| 51 | [AvocaDEV](AvocaDEV/PROFILE.md) | T | 1700 | Terran bio (dev) | Z | P |  |
+| 52 | [Mulebot](Mulebot/PROFILE.md) | T | 1697 | Terran bio-mech | T | R | yes |
+| 53 | [Dovahkiin](Dovahkiin/PROFILE.md) | Z | 1697 | Zerg macro | Z | T |  |
+| 54 | [72Tortoises](72Tortoises/PROFILE.md) | Z | 1691 | Roach/ling macro Zerg | T | P |  |
+| 55 | [FlowerPrincess](FlowerPrincess/PROFILE.md) | Z | 1682 | Ling-flood Zerg | T | R |  |
+| 56 | [Dodo](Dodo/PROFILE.md) | Z | 1678 | Drone macro Zerg (Nydus) | T | R |  |
+| 57 | [CynEX](CynEX/PROFILE.md) | P | 1677 | Skytoss/stalker macro Protoss | T | R |  |
+| 58 | [PerilousProtossBot](PerilousProtossBot/PROFILE.md) | P | 1666 | Protoss zealot/cannon (weak form) | P | R |  |
+| 59 | [Voltron](Voltron/PROFILE.md) | T | 1661 | Terran bio-tank | P | R |  |
+| 60 | [Forgefiend](Forgefiend/PROFILE.md) | P | 1657 | Protoss cannon turtle/rush | T | P |  |
+| 61 | [Creepy_duo_canon](Creepy_duo_canon/PROFILE.md) | P | 1655 | Protoss double cannon rush | P | Z |  |
+| 62 | [nida](nida/PROFILE.md) | P | 1653 | Protoss gateway stalker/phoenix | R | T |  |
+| 63 | [clone](clone/PROFILE.md) | T | 1648 | Terran reaper/starport | T | R | yes |
+| 64 | [PiG_Bot](PiG_Bot/PROFILE.md) | P | 1646 | Protoss gateway/robo macro | T | R |  |
 
 *Best/Worst vs = the race this bot has the highest / lowest win-rate against in the sample. Regenerate with `python bot_profiles/_generate_objective.py`.*

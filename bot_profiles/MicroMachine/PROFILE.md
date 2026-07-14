@@ -15,7 +15,7 @@ A famous **marine-micro specialist** (Terran, C++). Its whole identity is *unit 
 | **AI Arena Elo** | ~2094 (top-tier ladder bot) |
 | **On ladder since** | 2019-06 |
 | **Last source update** | 2022-05-11 |
-| **Source public** | yes (public zip, but compiled/binary — profiled from replays + record) |
+| **Source public** | yes (compiled/binary zip publicly downloadable; this profile is from replays + record) |
 
 ## Strategy
 
