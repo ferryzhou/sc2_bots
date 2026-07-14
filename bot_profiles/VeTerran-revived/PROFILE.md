@@ -15,7 +15,7 @@ A revived version of the well-known **VeTerran** — a solid macro **Terran** (C
 | **AI Arena Elo** | ~1972 (top-tier ladder bot) |
 | **On ladder since** | 2022-10 |
 | **Last source update** | 2022-10-25 |
-| **Source public** | yes (public zip, but compiled/binary — profiled from replays + record) |
+| **Source public** | yes (compiled/binary zip publicly downloadable; this profile is from replays + record) |
 
 ## Strategy
 
