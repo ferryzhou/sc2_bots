@@ -117,6 +117,11 @@ things: **trade up in fights**, and **never let resources sit idle.**
 - **Cost-efficient tools.** Splash, abilities, and upgrades are force multipliers:
   they add damage across your whole army for a fixed cost. An upgraded, well-cast
   smaller army beating a bigger raw one is efficiency in one picture.
+- **Buy efficiency in advance with tech and upgrades.** Trade efficiency has two
+  sources: *in the moment* (the micro and positioning above) and *built in
+  beforehand* — higher-tier units and attack/armor upgrades raise your trade ratio
+  in every fight before a command is issued. Research is efficiency you pay for up
+  front; the more-upgraded side won ~49% of pro and ~72% of bot games in the data.
 - **Efficiency = conversion.** The whole point of economy is to be *spent* into a
   board advantage. A lead you can't convert into dead enemy value isn't a lead
   yet.
