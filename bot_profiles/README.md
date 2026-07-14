@@ -96,5 +96,30 @@ weaknesses, and how to beat it.
 | 62 | [nida](nida/PROFILE.md) | P | 1653 | Protoss gateway stalker/phoenix | R | T |  |
 | 63 | [clone](clone/PROFILE.md) | T | 1648 | Terran reaper/starport | T | R | yes |
 | 64 | [PiG_Bot](PiG_Bot/PROFILE.md) | P | 1646 | Protoss gateway/robo macro | T | R |  |
+| 65 | [Asteria](Asteria/PROFILE.md) | P | 1642 | Stargate skytoss (carrier/tempest) | T | R |  |
+| 66 | [ArtZerg](ArtZerg/PROFILE.md) | Z | 1642 | Ling/roach aggro Zerg | Z | T |  |
+| 67 | [Terranosaur](Terranosaur/PROFILE.md) | T | 1641 | Terran mass-marine bio | T | Z |  |
+| 68 | [kas](kas/PROFILE.md) | Z | 1638 | Over-drone macro Zerg | T | Z |  |
+| 69 | [Persephone](Persephone/PROFILE.md) | Z | 1632 | Ling/roach macro Zerg | P | R |  |
+| 70 | [Horizon](Horizon/PROFILE.md) | T | 1625 | Terran bio/air macro | P | Z |  |
+| 71 | [muravev](muravev/PROFILE.md) | Z | 1624 | Speedling macro Zerg | T | Z |  |
+| 72 | [ZEALOCALYPSE](ZEALOCALYPSE/PROFILE.md) | P | 1623 | Protoss zealot flood | R | T |  |
+| 73 | [TheLAW](TheLAW/PROFILE.md) | T | 1619 | Terran bio macro | R | Z |  |
+| 74 | [OneBaseStalkerBot](OneBaseStalkerBot/PROFILE.md) | P | 1614 | Protoss one-base stalker | R | T |  |
+| 75 | [QueenBot](QueenBot/PROFILE.md) | Z | 1611 | Queen/creep macro Zerg | P | R | yes |
+| 76 | [Hellcannon](Hellcannon/PROFILE.md) | P | 1609 | Protoss cannon+zealot | Z | T |  |
+| 77 | [smokinggunbot](smokinggunbot/PROFILE.md) | T | 1602 | Terran bio-tank turtle | R | Z |  |
+| 78 | [zig-reapers](zig-reapers/PROFILE.md) | T | 1602 | Terran mass-reaper all-in | Z | T | yes |
+| 79 | [sharpy_protoss_test1](sharpy_protoss_test1/PROFILE.md) | P | 1601 | Protoss gateway/stargate | T | P |  |
+| 80 | [OmegaZ](OmegaZ/PROFILE.md) | Z | 1600 | Zerg ling (weak form) | T | T |  |
+| 81 | [PhantomTest](PhantomTest/PROFILE.md) | Z | 1600 | Zerg (dev, weak form) | Z | P |  |
+| 82 | [ur_moms_a_ho](ur_moms_a_ho/PROFILE.md) | Z | 1600 | Zerg (small sample) | T | P |  |
+| 83 | [Krillin](Krillin/PROFILE.md) | Z | 1600 | Zerg macro/aggro | P | T | yes |
 
 *Best/Worst vs = the race this bot has the highest / lowest win-rate against in the sample. Regenerate with `python bot_profiles/_generate_objective.py`.*
+
+## Ranked but not profiled (insufficient recent activity)
+
+These bots are on the ladder but had fewer than 6 decided games in the sample (many sit at the default ~1600 Elo — new, inactive, or rarely scheduled), so there isn't enough data to characterize them yet:
+
+bilisaur (Z, ~1600), Hello_world (Z, ~1600), SunsetOrpheus (R, ~1600), bottinger (Z, ~1600), Kauyon (P, ~1600), IntrusiveThoughts (Z, ~1600), Thssprtssbt_fan (P, ~1600), Hannibal (Z, ~1600), Chomppet (T, ~1600), BobbyBotV10 (R, ~1600), NextProBot (Z, ~1600), RU (Z, ~1600), DownedStar (P, ~1600).
