@@ -7,7 +7,6 @@ an early probe scout so perception has something to feed the classifier.
 """
 
 from sc2.ids.unit_typeid import UnitTypeId as U
-from sc2.data import Race
 from strategy_engine import Engagement
 
 ARMY = {U.ZEALOT, U.STALKER, U.IMMORTAL, U.ARCHON, U.ADEPT, U.SENTRY,
@@ -77,12 +76,10 @@ class Army:
             return False
         if advice.counter.posture == "aggressive" and army.amount >= 10:
             return True
-        # Take the map with a real deathball -- but vs Zerg don't commit into the
-        # ling flood without splash (colossus) unless the army is overwhelming.
-        if bot.supply_army >= 40:
-            if (bot.enemy_race == Race.Zerg and bot.units(U.COLOSSUS).amount == 0
-                    and bot.supply_army < 70):
-                return False
+        # Take the map with a healthy army. Prefer having splash (colossus) vs
+        # Zerg but don't turtle forever waiting for it -- being too passive just
+        # lets the flood out-macro us. Push at 35; the deathball forms in _push.
+        if bot.supply_army >= 35:
             return True
         return False
 
@@ -92,14 +89,16 @@ class Army:
         # staging point until the ball is formed, then a-move the whole ball in.
         staging = self._staging(bot)
         center = army.center
-        concentrated = army.closer_than(11, center).amount >= 0.65 * army.amount
-        if not concentrated:
+        concentrated = army.closer_than(11, center).amount >= 0.6 * army.amount
+        # Gather into a ball first, but commit outright with overwhelming force --
+        # don't stall gathering while the enemy out-macros us.
+        if concentrated or bot.supply_army >= 55:
+            target = self._attack_target(bot)
+            for u in army:
+                u.attack(target)
+        else:
             for u in army:
                 u.move(staging)
-            return
-        target = self._attack_target(bot)
-        for u in army:
-            u.attack(target)
 
     def _staging(self, bot):
         if bot.townhalls:
