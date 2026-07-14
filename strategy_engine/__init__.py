@@ -1,0 +1,69 @@
+"""strategy_engine: the SC2 strategic model as bot behavior.
+
+This package turns the strategy docs at the repo root into runnable behavior,
+one module per layer of the docs:
+
+- ``state``       -- ``GameState``, a framework-agnostic snapshot of the game
+                     (plus a best-effort adapter from a python-sc2 ``BotAI``).
+- ``principles``  -- the economy / army / tech investment tension and timing
+                     (mirrors ``PRINCIPLES.md``).
+- ``strategy``    -- opponent classification and counter stances
+                     (mirrors ``STRATEGY.md``).
+- ``rules``       -- concrete, checkable rules as predicate functions
+                     (mirrors ``RULES.md``).
+- ``harassment``  -- harass and anti-harass decisions
+                     (mirrors the harassment sections of the docs).
+- ``advisor``     -- ties the modules together into a single recommendation a
+                     bot can query each step.
+
+Nothing here imports ``sc2`` at module load, so the package can be imported and
+unit-tested without StarCraft II or python-sc2 installed. The optional
+``GameState.from_bot`` adapter imports ``sc2`` lazily only when called.
+"""
+
+from .state import GameState
+from .principles import (
+    Investment,
+    InvestmentAdvice,
+    PowerTiming,
+    TradeVerdict,
+    Efficiency,
+    recommend_investment,
+    power_timing,
+    assess_efficiency,
+)
+from .strategy import Archetype, Classification, classify_opponent, counter_stance
+from .rules import Rule, RuleHit, evaluate_rules
+from .harassment import HarassAdvice, harass_advice
+from .combat import Engagement, EngagementAdvice, assess_engagement
+from .information import EnemyEstimate, estimate_enemy, project_enemy
+from .advisor import StrategicAdvisor, Advice
+
+__all__ = [
+    "GameState",
+    "Investment",
+    "InvestmentAdvice",
+    "PowerTiming",
+    "TradeVerdict",
+    "Efficiency",
+    "recommend_investment",
+    "power_timing",
+    "assess_efficiency",
+    "Archetype",
+    "Classification",
+    "classify_opponent",
+    "counter_stance",
+    "Rule",
+    "RuleHit",
+    "evaluate_rules",
+    "HarassAdvice",
+    "harass_advice",
+    "Engagement",
+    "EngagementAdvice",
+    "assess_engagement",
+    "EnemyEstimate",
+    "estimate_enemy",
+    "project_enemy",
+    "StrategicAdvisor",
+    "Advice",
+]

@@ -91,14 +91,80 @@ Each section maps to a principle by number.
 - Use spellcasters and abilities proactively (stim, blink, EMP, storm, fungal)
   rather than hoarding energy.
 
-## 10. Upgrades matter
+## 9a. Fight only favorable engagements
 
-- Start attack/armor upgrades as soon as the economy supports it; keep upgrade
-  structures running continuously.
+Encoded in `strategy_engine/combat.py` (`assess_engagement`).
+
+- Estimate effective strength, not raw supply: `army_supply x upgrade_edge x
+  situational`, where situational stacks terrain/surround (+15%), defender's
+  advantage at home (+15%), reinforcements close (+10%), favorable composition
+  (+20%), minus bad position (-20%) and enemy cloak/air without detection (-20%).
+- Engage when the effective ratio is comfortably favorable (>= ~1.1) **and** you
+  are not already trading down.
+- Avoid / disengage when the ratio is unfavorable (<= ~0.9) away from home, or
+  when trades are going against you regardless of size — don't feed a losing
+  fight.
+- Hold (don't retreat) when behind at home if defender's advantage keeps the
+  effective ratio close (>= ~0.7); don't take even coinflips out in the open.
+- An upgrade/tech-tier edge is efficiency bought in advance: let it raise the
+  effective ratio, and start fights that a raw-supply count would call even.
+- Get detection/anti-air in place *before* engaging when the enemy has cloak or
+  air; fighting blind applies the -20% penalty for a reason.
+
+## 9b. Harass to attack the investment
+
+Attacking:
+
+- Commit only a small, mobile detachment to harass — never so much that your main
+  army or defense is exposed.
+- Target the economy first: workers, then tech/production, then supply. Dead
+  workers compound as lost mining for the rest of the game.
+- Retreat harass units the moment the defense arrives; preserve them to strike
+  again rather than trading into a defended line.
+- Judge each harass by return — workers killed, tech delayed, responses forced —
+  versus what you committed and risked. Pull off harass that isn't paying.
+- Harass to cover your own greed: expand or tech behind the pressure while the
+  opponent is distracted.
+
+Defending:
+
+- Pre-place static defense and detection at vulnerable spots (worker lines, tech,
+  expansions) before the raid lands.
+- Keep a small holding force at home instead of pulling the main army back for
+  every poke.
+- Pull threatened workers out of the raid, then return them to mining as soon as
+  it's safe — minimize mining downtime.
+- Don't over-commit: never chase raiders with your main army or let harass stall
+  your macro. Respond at proportionate cost and keep your own plan moving.
+
+## 10. Tech and upgrades matter
+
+Upgrades:
+
+- Start attack/armor upgrades as soon as the economy supports it (typically once
+  your natural is up and mineral income is steady); keep upgrade structures
+  running continuously — never let one sit idle with gas available.
 - Prioritize the upgrade that helps your core army most (attack for aggression,
   armor for durability against many small hits).
 - Don't skip upgrades to over-produce units — an upgraded smaller army often
   beats an unupgraded larger one.
+- Add a second upgrade structure when income can support two research paths at
+  once, so attack and armor progress in parallel.
+
+Tech:
+
+- Tech only as fast as you can defend the window it comes online — if scouting
+  shows aggression, hold army/defense before pushing tech higher.
+- Tech reactively to scouted threats *before* they land: start detection when you
+  see a cloak/burrow enabler, anti-air when you see an air tech building, splash
+  when you see massing light units.
+- Don't go tech-blind: if you have no answer to a scouted tech, prioritize the
+  counter over more of your current units.
+- When a tech switch is the right counter, cover the transition window with your
+  existing army — don't move out or expand greedily while the switch is
+  incomplete.
+- Match gas income to tech ambitions: rushing tech needs early gas; if gas is
+  floating, you likely have unspent tech/upgrade options.
 
 ## 11. Multitask — do everything at once
 
