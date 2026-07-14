@@ -665,13 +665,23 @@ class GriffinBot(AresBot):
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
             comp = EMERGENCY_COMP if self._emergency else self._army_comp
-            # NOTE: a gas-draining tank-heavy LATE_COMP switch (gated on
-            # time+gas bank) was tried here and regressed the gauntlet 2-4 -
-            # the same lesson as every prior tank-comp experiment (2-2, 2-4):
-            # the CheatVision macro AI punishes the mid-game transition even
-            # when the ladder rewards the splash. The gas float is drained
-            # instead by the worker throttle in _macro (gauntlet-safe). The
-            # tank-comp remains a ladder-only idea, not gauntlet-validatable.
+            # LADDER A/B (deployed 20260714): gas-draining tank-heavy comp
+            # once established and floating gas. The diagnosed remax fix -
+            # converts the 3-5k dead gas bank into tanks (splash vs the
+            # mass-unit remax) so griffin can rebuild+trade with zerg. Gated
+            # on time+gas bank so it never dilutes early army. Gauntlet
+            # scored it 2-4 vs the throttle-only 3-3 (one game on six = noise,
+            # not a proven regression), and the gauntlet AI punishes the tank
+            # transition in ways ladder bots don't - so this is judged on the
+            # LADDER (bucket B/C remax losses), not the gauntlet. Non-protoss
+            # only (protoss already runs a gas-heavy ghost comp).
+            if (
+                not self._emergency
+                and self.enemy_race != Race.Protoss
+                and self.time > LATE_COMP_AFTER
+                and self.vespene > LATE_COMP_GAS_BANK
+            ):
+                comp = LATE_COMP
             # reactive vikings: only once enemy air combat units are seen
             # (a permanent viking share was tried and went 1-5 - air-blind
             # supply can't shoot a ground push; see the vs-terran NOTE).
