@@ -23,6 +23,8 @@ For the concrete, checkable rules that drill down from each principle, see
    defending more ground.
 5. **Scout constantly.** You can't react to what you can't see. Track the
    opponent's tech, army size, and timings so nothing catches you unprepared.
+   But you never see everything — for making decisions under the permanent fog of
+   war, see [`INFORMATION.md`](INFORMATION.md).
 6. **Keep production saturated.** Match production buildings to your income so
    resources convert to army continuously. Idle production is wasted potential.
 

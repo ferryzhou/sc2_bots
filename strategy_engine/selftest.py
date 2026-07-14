@@ -20,6 +20,7 @@ from .principles import (
 from .strategy import Archetype, classify_opponent
 from .harassment import harass_advice
 from .combat import Engagement, assess_engagement
+from .information import estimate_enemy, project_enemy
 from .rules import evaluate_rules
 from .advisor import StrategicAdvisor
 
@@ -115,6 +116,40 @@ def test_engagement_trading_down_vetoes() -> None:
     st = GameState(army_supply=26, enemy_army_supply=20, value_killed=400, value_lost=1200)
     _check("favorable size but trading down -> don't engage",
            assess_engagement(st).verdict != Engagement.ENGAGE)
+
+
+def test_estimate_fresh_and_never_seen() -> None:
+    fresh = GameState(game_time=300, last_scouted_time=290,
+                      enemy_base_count=3, enemy_army_supply=20)
+    e = estimate_enemy(fresh)
+    _check("fresh sighting -> is_fresh", e.is_fresh and e.army_supply == 20)
+    never = GameState(game_time=200)
+    _check("never seen -> no data, zero confidence",
+           not estimate_enemy(never).has_data and estimate_enemy(never).confidence == 0.0)
+
+
+def test_estimate_dead_reckons_forward() -> None:
+    st = GameState(game_time=360, last_scouted_time=240,  # 2 min stale
+                   enemy_base_count=3, enemy_army_supply=20,
+                   enemy_production_structures=4, enemy_worker_count=40)
+    e = estimate_enemy(st)
+    _check("stale sighting -> projected (not fresh)", not e.is_fresh)
+    _check("projected army grew above last sighting", e.army_supply > 20)
+    _check("confidence decayed below 1", e.confidence < 1.0)
+
+
+def test_advisor_degrades_gracefully_when_stale() -> None:
+    # A sighting 2 minutes ago: without projection this would classify UNKNOWN.
+    st = GameState(game_time=360, last_scouted_time=240,
+                   army_supply=25, enemy_base_count=3, enemy_army_supply=6,
+                   enemy_worker_count=50, enemy_production_structures=2)
+    advice = StrategicAdvisor().advise(st)
+    _check("stale enemy read is projected, not UNKNOWN",
+           advice.classification.archetype != Archetype.UNKNOWN)
+    _check("advice flags the read as projected", not advice.enemy_estimate.is_fresh)
+    # but we should still be told to re-scout
+    _check("stale state still triggers the scout rule",
+           any(h.rule == "scout" for h in advice.rule_hits))
 
 
 def test_classify_cheese() -> None:

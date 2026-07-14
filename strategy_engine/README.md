@@ -12,6 +12,7 @@ stay in lockstep.
 | `rules.py`      | `RULES.md`         | Concrete, checkable rules as predicate functions. |
 | `harassment.py` | harassment sections| Harass and anti-harass decisions. |
 | `combat.py`     | `COMBAT.md`        | The should-engage decision (`assess_engagement`): army strength x upgrade edge x terrain/home/reinforcements/composition, with a trading-down veto. |
+| `information.py`| `INFORMATION.md`   | Dead-reckoning a stale sighting (`estimate_enemy` / `project_enemy`) so enemy reads degrade gracefully instead of going `UNKNOWN`. |
 | `advisor.py`    | all of the above   | `StrategicAdvisor` ties everything into one `Advice` per step. |
 
 ## Design

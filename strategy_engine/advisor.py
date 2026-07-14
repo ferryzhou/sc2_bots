@@ -29,6 +29,7 @@ from .strategy import (
 from .rules import RuleHit, evaluate_rules
 from .harassment import HarassAdvice, harass_advice
 from .combat import EngagementAdvice, assess_engagement
+from .information import EnemyEstimate, project_enemy
 
 
 @dataclass
@@ -40,6 +41,7 @@ class Advice:
     classification: Classification
     counter: CounterStance
     harass: HarassAdvice
+    enemy_estimate: EnemyEstimate
     rule_hits: List[RuleHit]
 
     def summary(self) -> str:
@@ -57,6 +59,9 @@ class Advice:
             f"({self.classification.confidence:.0%})",
             f"counter:    {self.counter.posture}",
         ]
+        est = self.enemy_estimate
+        if est.has_data and not est.is_fresh:
+            lines.append(f"enemy read:  projected (dead-reckoned, conf {est.confidence:.0%})")
         if self.harass.should_harass:
             lines.append("harass:     yes -- " + "; ".join(self.harass.harass_reasons))
         if self.harass.should_defend:
@@ -74,15 +79,20 @@ class StrategicAdvisor:
     """
 
     def advise(self, state: GameState) -> Advice:
-        classification = classify_opponent(state)
+        # Enemy-facing reads run on a dead-reckoned projection when scouting is
+        # stale, so they degrade gracefully instead of going UNKNOWN. Own-side
+        # rules (including "keep scouting") run on the real state.
+        enemy_view, estimate = project_enemy(state)
+        classification = classify_opponent(enemy_view)
         return Advice(
             efficiency=assess_efficiency(state),
-            engagement=assess_engagement(state),
+            engagement=assess_engagement(enemy_view),
             investment=recommend_investment(state),
-            timing=power_timing(state),
+            timing=power_timing(enemy_view),
             classification=classification,
             counter=counter_stance(classification),
-            harass=harass_advice(state),
+            harass=harass_advice(enemy_view),
+            enemy_estimate=estimate,
             rule_hits=evaluate_rules(state),
         )
 
