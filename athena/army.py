@@ -35,17 +35,20 @@ class Army:
             tpos = target.position if hasattr(target, "position") else target
             for u in army:
                 u.attack(tpos)
-            # library says the base is breached and army is too thin -> pull workers
-            if advice.defense.pull_workers and enemies:
+            # Pull workers to hold when the base is breached and we're thin -- or
+            # when a rush hits before any cannon is ready (buys time on any map;
+            # this is what saved the fastest deaths, e.g. PylonAIE_v4).
+            no_defense = (bot.structures(U.PHOTONCANNON).ready.amount == 0
+                          and bot.supply_army < 6)
+            if enemies and (advice.defense.pull_workers
+                            or (advice.defense.emergency and no_defense)):
                 self._pull_workers(bot, threat_base, tpos)
             self._observer(bot, army)
             return
 
         # 2) attack or hold from the engagement read
         if self._should_attack(bot, advice, army):
-            target = self._attack_target(bot)
-            for u in army:
-                u.attack(target)
+            self._push(bot, army)
         else:
             # plug the ramp wall gap with a zealot while it's still open
             hold = bot.wall.hold_pos(bot)
@@ -73,10 +76,35 @@ class Army:
             return False
         if advice.counter.posture == "aggressive" and army.amount >= 10:
             return True
-        # Otherwise take the map with a healthy army rather than turtling forever.
+        # Take the map with a healthy army. Prefer having splash (colossus) vs
+        # Zerg but don't turtle forever waiting for it -- being too passive just
+        # lets the flood out-macro us. Push at 35; the deathball forms in _push.
         if bot.supply_army >= 35:
             return True
         return False
+
+    def _push(self, bot, army):
+        # Concentrate into a deathball, THEN commit -- feeding units piecemeal
+        # into a ling flood is how the stalemate/loss happens. Gather at a forward
+        # staging point until the ball is formed, then a-move the whole ball in.
+        staging = self._staging(bot)
+        center = army.center
+        concentrated = army.closer_than(11, center).amount >= 0.6 * army.amount
+        # Gather into a ball first, but commit outright with overwhelming force --
+        # don't stall gathering while the enemy out-macros us.
+        if concentrated or bot.supply_army >= 55:
+            target = self._attack_target(bot)
+            for u in army:
+                u.attack(target)
+        else:
+            for u in army:
+                u.move(staging)
+
+    def _staging(self, bot):
+        if bot.townhalls:
+            base = bot.townhalls.closest_to(bot.enemy_start_locations[0])
+            return base.position.towards(bot.enemy_start_locations[0], 14)
+        return bot.start_location
 
     def _attack_target(self, bot):
         if bot.enemy_structures:
@@ -105,7 +133,7 @@ class Army:
         # Pull a portion of the probes at the breached base to fight; leave a few
         # mining so the economy isn't wiped by the pull itself.
         probes = bot.workers.closer_than(20, base)
-        n_fight = max(0, probes.amount - 6)
+        n_fight = max(0, probes.amount - 4)
         for probe in probes[:n_fight]:
             probe.attack(target)
 
