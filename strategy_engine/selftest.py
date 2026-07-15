@@ -23,6 +23,16 @@ from .combat import Engagement, assess_engagement
 from .defense import assess_defense
 from .information import estimate_enemy, project_enemy
 from .rules import evaluate_rules
+from .openings import (
+    OPENINGS,
+    Placement,
+    OpeningExecutor,
+    classify_opening,
+    openings_for_race,
+    best_opening,
+    get_opening,
+    verify_opening,
+)
 from .advisor import StrategicAdvisor
 
 
@@ -267,6 +277,75 @@ def test_rules_fire() -> None:
     _check("low workers -> build_worker rule fires", "build_worker" in ids)
     _check("low supply -> build_supply rule fires", "build_supply" in ids)
     _check("never scouted -> scout rule fires", "scout" in ids)
+
+
+def test_openings_registry_loaded() -> None:
+    _check("openings registry loaded from data", len(OPENINGS) >= 6)
+    for race in ("Protoss", "Terran", "Zerg"):
+        _check(f"{race} has at least one opening", len(openings_for_race(race)) >= 1)
+    _check("best Protoss opening is the standard gate-expand",
+           best_opening("Protoss").name == "protoss_gate_expand")
+
+
+def test_openings_classify() -> None:
+    # greedy Zerg hatch-before-pool
+    fam = classify_opening("Zerg",
+                           [("Hatchery", 95, "natural"), ("SpawningPool", 130, "main")],
+                           first_gas=105, expand_time=95)
+    _check("hatch-before-pool classifies as hatch_first", fam == "zerg_hatch_first")
+    # forward pylon+gateway = proxy
+    fam = classify_opening("Protoss",
+                           [("Pylon", 48, "forward"), ("Gateway", 80, "forward")],
+                           first_gas=None, expand_time=None)
+    _check("forward buildings classify as proxy", fam == "protoss_proxy")
+    # standard rax-expand
+    fam = classify_opening("Terran",
+                           [("Barracks", 75, "ramp_wall"), ("CommandCenter", 180, "natural")],
+                           first_gas=91, expand_time=180)
+    _check("terran natural in window -> rax_expand", fam == "terran_rax_expand")
+
+
+def test_openings_reproduce() -> None:
+    op = best_opening("Protoss")
+    ex = OpeningExecutor(op)
+    have: dict = {}
+    order = []
+    # walk the whole build; first step should be the first modal structure
+    guard = 0
+    while not ex.is_complete(have) and guard < 50:
+        step = ex.next_step(have)
+        order.append(step.structure)
+        have[step.structure] = have.get(step.structure, 0) + 1
+        guard += 1
+    _check("executor reproduces the modal order",
+           order[:3] == [s.structure for s in op.steps[:3]])
+    _check("executor completes the opening", ex.is_complete(have))
+    _check("executor progress is 1.0 when complete", ex.progress(have) == 1.0)
+    # placements are usable zones
+    first = op.steps[0]
+    _check("first step carries a placement zone", isinstance(first.placement, Placement))
+
+
+def test_openings_verify() -> None:
+    op = get_opening("zerg_hatch_first")
+    # a telemetry that follows the opening -> few/no major deviations
+    good = {
+        "buildings": [{"t": s.at_second or 60, "s": s.structure,
+                       "zone": s.placement.value} for s in op.steps],
+        "economy": {m: {k: (b["median"] if (b := op.economy[m].get(k)) else 0)
+                        for k in ("workers", "supply", "mins_rate")}
+                    for m in op.economy},
+        "units": {},
+    }
+    devs = verify_opening(op, good)
+    majors = [d for d in devs if d.severity == "major"]
+    _check("following the opening yields no MAJOR deviations", not majors)
+    # a pool-rush telemetry checked against hatch_first -> flags a missing hatch
+    bad = {"buildings": [{"t": 39, "s": "SpawningPool", "zone": "main"}],
+           "economy": {}, "units": {}}
+    devs = verify_opening(op, bad)
+    _check("wrong opening flags a missing structure",
+           any(d.category == "missing" for d in devs))
 
 
 def test_advisor_end_to_end() -> None:

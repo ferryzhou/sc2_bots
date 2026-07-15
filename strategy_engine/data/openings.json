@@ -1,0 +1,2822 @@
+{
+  "window": 210,
+  "n_replays": 166,
+  "families": {
+    "terran_rax_expand": {
+      "n": 66,
+      "modal_order": [
+        "SupplyDepot",
+        "Barracks",
+        "Refinery",
+        "CommandCenter"
+      ],
+      "structures": {
+        "SupplyDepot": {
+          "pct": 100,
+          "timing": {
+            "n": 66,
+            "median": 39.0,
+            "p25": 38,
+            "p75": 41
+          },
+          "zone": "main"
+        },
+        "Barracks": {
+          "pct": 100,
+          "timing": {
+            "n": 66,
+            "median": 75.0,
+            "p25": 74,
+            "p75": 77
+          },
+          "zone": "main"
+        },
+        "Refinery": {
+          "pct": 94,
+          "timing": {
+            "n": 62,
+            "median": 91.0,
+            "p25": 86,
+            "p75": 92
+          },
+          "zone": "gas"
+        },
+        "EngineeringBay": {
+          "pct": 5,
+          "timing": {
+            "n": 3,
+            "median": 123,
+            "p25": 95,
+            "p75": 126
+          },
+          "zone": "forward"
+        },
+        "Factory": {
+          "pct": 12,
+          "timing": {
+            "n": 8,
+            "median": 164.5,
+            "p25": 143,
+            "p75": 204
+          },
+          "zone": "main"
+        },
+        "CommandCenter": {
+          "pct": 100,
+          "timing": {
+            "n": 66,
+            "median": 182.0,
+            "p25": 178,
+            "p75": 186
+          },
+          "zone": "natural"
+        },
+        "Bunker": {
+          "pct": 2,
+          "timing": {
+            "n": 1,
+            "median": 194,
+            "p25": 194,
+            "p75": 194
+          },
+          "zone": "natural"
+        }
+      },
+      "first_gas": {
+        "n": 62,
+        "median": 91.0,
+        "p25": 86,
+        "p75": 92
+      },
+      "expand": {
+        "n": 66,
+        "median": 182.0,
+        "p25": 178,
+        "p75": 186
+      },
+      "expand_pct": 100,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 66,
+            "median": 9.0,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 66,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 10
+          },
+          "mins_rate": {
+            "n": 66,
+            "median": 503.0,
+            "p25": 503,
+            "p75": 531
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 66,
+            "median": 11.0,
+            "p25": 11,
+            "p75": 11
+          },
+          "supply": {
+            "n": 66,
+            "median": 12.0,
+            "p25": 12,
+            "p75": 12
+          },
+          "mins_rate": {
+            "n": 66,
+            "median": 559.0,
+            "p25": 559,
+            "p75": 615
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 66,
+            "median": 13.0,
+            "p25": 13,
+            "p75": 13
+          },
+          "supply": {
+            "n": 66,
+            "median": 14.0,
+            "p25": 14,
+            "p75": 14
+          },
+          "mins_rate": {
+            "n": 66,
+            "median": 671.0,
+            "p25": 643,
+            "p75": 699
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 66,
+            "median": 15.0,
+            "p25": 14,
+            "p75": 15
+          },
+          "supply": {
+            "n": 66,
+            "median": 16.0,
+            "p25": 15,
+            "p75": 16
+          },
+          "mins_rate": {
+            "n": 66,
+            "median": 699.0,
+            "p25": 671,
+            "p75": 755
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 66,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 16
+          },
+          "supply": {
+            "n": 66,
+            "median": 17.0,
+            "p25": 16,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 66,
+            "median": 699.0,
+            "p25": 671,
+            "p75": 727
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 66,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 17
+          },
+          "supply": {
+            "n": 66,
+            "median": 18.0,
+            "p25": 18,
+            "p75": 18
+          },
+          "mins_rate": {
+            "n": 66,
+            "median": 727.0,
+            "p25": 699,
+            "p75": 783
+          }
+        }
+      },
+      "units": {
+        "Reaper": {
+          "pct": 74,
+          "count": {
+            "n": 66,
+            "median": 1.0,
+            "p25": 0,
+            "p75": 1
+          },
+          "first": {
+            "n": 49,
+            "median": 198,
+            "p25": 193,
+            "p75": 199
+          }
+        }
+      }
+    },
+    "terran_proxy_rax": {
+      "n": 4,
+      "modal_order": [
+        "SupplyDepot",
+        "Barracks",
+        "Refinery"
+      ],
+      "structures": {
+        "SupplyDepot": {
+          "pct": 100,
+          "timing": {
+            "n": 4,
+            "median": 39.0,
+            "p25": 39,
+            "p75": 40
+          },
+          "zone": "main"
+        },
+        "Barracks": {
+          "pct": 100,
+          "timing": {
+            "n": 4,
+            "median": 75.0,
+            "p25": 75,
+            "p75": 77
+          },
+          "zone": "forward"
+        },
+        "Refinery": {
+          "pct": 50,
+          "timing": {
+            "n": 2,
+            "median": 80.0,
+            "p25": 68,
+            "p75": 92
+          },
+          "zone": "gas"
+        },
+        "CommandCenter": {
+          "pct": 25,
+          "timing": {
+            "n": 1,
+            "median": 176,
+            "p25": 176,
+            "p75": 176
+          },
+          "zone": "natural"
+        },
+        "Bunker": {
+          "pct": 25,
+          "timing": {
+            "n": 1,
+            "median": 186,
+            "p25": 186,
+            "p75": 186
+          },
+          "zone": "forward"
+        }
+      },
+      "first_gas": {
+        "n": 2,
+        "median": 80.0,
+        "p25": 68,
+        "p75": 92
+      },
+      "expand": {
+        "n": 1,
+        "median": 176,
+        "p25": 176,
+        "p75": 176
+      },
+      "expand_pct": 25,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 4,
+            "median": 9.0,
+            "p25": 9,
+            "p75": 13
+          },
+          "supply": {
+            "n": 4,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 14
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 531.0,
+            "p25": 531,
+            "p75": 643
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 4,
+            "median": 11.0,
+            "p25": 11,
+            "p75": 15
+          },
+          "supply": {
+            "n": 4,
+            "median": 12.0,
+            "p25": 12,
+            "p75": 15
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 545.0,
+            "p25": 503,
+            "p75": 699
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 4,
+            "median": 12.5,
+            "p25": 12,
+            "p75": 15
+          },
+          "supply": {
+            "n": 4,
+            "median": 13.0,
+            "p25": 12,
+            "p75": 16
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 615.0,
+            "p25": 587,
+            "p75": 727
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 4,
+            "median": 13.5,
+            "p25": 12,
+            "p75": 17
+          },
+          "supply": {
+            "n": 4,
+            "median": 14.5,
+            "p25": 13,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 629.0,
+            "p25": 615,
+            "p75": 699
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 4,
+            "median": 15.0,
+            "p25": 14,
+            "p75": 17
+          },
+          "supply": {
+            "n": 4,
+            "median": 15.5,
+            "p25": 15,
+            "p75": 20
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 573.0,
+            "p25": 559,
+            "p75": 699
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 4,
+            "median": 15.0,
+            "p25": 14,
+            "p75": 18
+          },
+          "supply": {
+            "n": 4,
+            "median": 17.0,
+            "p25": 17,
+            "p75": 22
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 615.0,
+            "p25": 587,
+            "p75": 699
+          }
+        }
+      },
+      "units": {
+        "Reaper": {
+          "pct": 50,
+          "count": {
+            "n": 4,
+            "median": 0.5,
+            "p25": 0,
+            "p75": 2
+          },
+          "first": {
+            "n": 2,
+            "median": 186.0,
+            "p25": 173,
+            "p75": 199
+          }
+        },
+        "Marine": {
+          "pct": 50,
+          "count": {
+            "n": 4,
+            "median": 1.5,
+            "p25": 0,
+            "p75": 3
+          },
+          "first": {
+            "n": 2,
+            "median": 167.0,
+            "p25": 166,
+            "p75": 168
+          }
+        }
+      }
+    },
+    "zerg_hatch_first": {
+      "n": 78,
+      "modal_order": [
+        "Extractor",
+        "Hatchery",
+        "SpawningPool"
+      ],
+      "structures": {
+        "Extractor": {
+          "pct": 100,
+          "timing": {
+            "n": 78,
+            "median": 56.0,
+            "p25": 55,
+            "p75": 134
+          },
+          "zone": "gas"
+        },
+        "Hatchery": {
+          "pct": 100,
+          "timing": {
+            "n": 78,
+            "median": 104.0,
+            "p25": 99,
+            "p75": 105
+          },
+          "zone": "natural"
+        },
+        "SpawningPool": {
+          "pct": 100,
+          "timing": {
+            "n": 78,
+            "median": 137.5,
+            "p25": 134,
+            "p75": 141
+          },
+          "zone": "main"
+        },
+        "RoachWarren": {
+          "pct": 1,
+          "timing": {
+            "n": 1,
+            "median": 205,
+            "p25": 205,
+            "p75": 205
+          },
+          "zone": "main"
+        },
+        "SpineCrawler": {
+          "pct": 1,
+          "timing": {
+            "n": 1,
+            "median": 207,
+            "p25": 207,
+            "p75": 207
+          },
+          "zone": "main"
+        }
+      },
+      "first_gas": {
+        "n": 78,
+        "median": 56.0,
+        "p25": 55,
+        "p75": 134
+      },
+      "expand": {
+        "n": 78,
+        "median": 104.0,
+        "p25": 99,
+        "p75": 105
+      },
+      "expand_pct": 100,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 78,
+            "median": 9.0,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 78,
+            "median": 11.0,
+            "p25": 11,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 78,
+            "median": 503.0,
+            "p25": 503,
+            "p75": 531
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 78,
+            "median": 12.0,
+            "p25": 11,
+            "p75": 12
+          },
+          "supply": {
+            "n": 78,
+            "median": 13.0,
+            "p25": 12,
+            "p75": 13
+          },
+          "mins_rate": {
+            "n": 78,
+            "median": 671.0,
+            "p25": 643,
+            "p75": 671
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 78,
+            "median": 15.0,
+            "p25": 14,
+            "p75": 15
+          },
+          "supply": {
+            "n": 78,
+            "median": 15.0,
+            "p25": 15,
+            "p75": 16
+          },
+          "mins_rate": {
+            "n": 78,
+            "median": 755.0,
+            "p25": 699,
+            "p75": 783
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 78,
+            "median": 15.0,
+            "p25": 14,
+            "p75": 15
+          },
+          "supply": {
+            "n": 78,
+            "median": 17.0,
+            "p25": 17,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 78,
+            "median": 839.0,
+            "p25": 811,
+            "p75": 867
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 78,
+            "median": 16.0,
+            "p25": 15,
+            "p75": 16
+          },
+          "supply": {
+            "n": 78,
+            "median": 17.0,
+            "p25": 17,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 78,
+            "median": 895.0,
+            "p25": 867,
+            "p75": 923
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 78,
+            "median": 18.0,
+            "p25": 18,
+            "p75": 18
+          },
+          "supply": {
+            "n": 78,
+            "median": 19.0,
+            "p25": 19,
+            "p75": 19
+          },
+          "mins_rate": {
+            "n": 78,
+            "median": 909.0,
+            "p25": 839,
+            "p75": 951
+          }
+        }
+      },
+      "units": {}
+    },
+    "zerg_gas_first": {
+      "n": 25,
+      "modal_order": [
+        "Extractor",
+        "SpawningPool",
+        "Hatchery"
+      ],
+      "structures": {
+        "Extractor": {
+          "pct": 100,
+          "timing": {
+            "n": 25,
+            "median": 55,
+            "p25": 55,
+            "p75": 58
+          },
+          "zone": "gas"
+        },
+        "SpawningPool": {
+          "pct": 100,
+          "timing": {
+            "n": 25,
+            "median": 94,
+            "p25": 93,
+            "p75": 96
+          },
+          "zone": "main"
+        },
+        "Hatchery": {
+          "pct": 100,
+          "timing": {
+            "n": 25,
+            "median": 134,
+            "p25": 133,
+            "p75": 141
+          },
+          "zone": "natural"
+        },
+        "RoachWarren": {
+          "pct": 12,
+          "timing": {
+            "n": 3,
+            "median": 177,
+            "p25": 171,
+            "p75": 185
+          },
+          "zone": "main"
+        },
+        "BanelingNest": {
+          "pct": 12,
+          "timing": {
+            "n": 3,
+            "median": 206,
+            "p25": 204,
+            "p75": 206
+          },
+          "zone": "main"
+        }
+      },
+      "first_gas": {
+        "n": 25,
+        "median": 55,
+        "p25": 55,
+        "p75": 58
+      },
+      "expand": {
+        "n": 25,
+        "median": 134,
+        "p25": 133,
+        "p75": 141
+      },
+      "expand_pct": 100,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 25,
+            "median": 9,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 25,
+            "median": 11,
+            "p25": 11,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 25,
+            "median": 503,
+            "p25": 475,
+            "p75": 531
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 25,
+            "median": 12,
+            "p25": 12,
+            "p75": 12
+          },
+          "supply": {
+            "n": 25,
+            "median": 13,
+            "p25": 13,
+            "p75": 13
+          },
+          "mins_rate": {
+            "n": 25,
+            "median": 671,
+            "p25": 643,
+            "p75": 671
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 25,
+            "median": 14,
+            "p25": 13,
+            "p75": 15
+          },
+          "supply": {
+            "n": 25,
+            "median": 16,
+            "p25": 15,
+            "p75": 16
+          },
+          "mins_rate": {
+            "n": 25,
+            "median": 755,
+            "p25": 727,
+            "p75": 811
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 25,
+            "median": 16,
+            "p25": 15,
+            "p75": 16
+          },
+          "supply": {
+            "n": 25,
+            "median": 17,
+            "p25": 16,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 25,
+            "median": 867,
+            "p25": 811,
+            "p75": 867
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 25,
+            "median": 15,
+            "p25": 15,
+            "p75": 16
+          },
+          "supply": {
+            "n": 25,
+            "median": 17,
+            "p25": 16,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 25,
+            "median": 895,
+            "p25": 727,
+            "p75": 923
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 25,
+            "median": 17,
+            "p25": 16,
+            "p75": 17
+          },
+          "supply": {
+            "n": 25,
+            "median": 20,
+            "p25": 18,
+            "p75": 20
+          },
+          "mins_rate": {
+            "n": 25,
+            "median": 895,
+            "p25": 755,
+            "p75": 923
+          }
+        }
+      },
+      "units": {
+        "Zergling": {
+          "pct": 72,
+          "count": {
+            "n": 25,
+            "median": 2,
+            "p25": 0,
+            "p75": 5
+          },
+          "first": {
+            "n": 18,
+            "median": 185.5,
+            "p25": 183,
+            "p75": 190
+          }
+        }
+      }
+    },
+    "zerg_pool_rush": {
+      "n": 6,
+      "modal_order": [
+        "SpawningPool"
+      ],
+      "structures": {
+        "SpawningPool": {
+          "pct": 100,
+          "timing": {
+            "n": 6,
+            "median": 39.0,
+            "p25": 38,
+            "p75": 39
+          },
+          "zone": "main"
+        },
+        "Hatchery": {
+          "pct": 17,
+          "timing": {
+            "n": 1,
+            "median": 156,
+            "p25": 156,
+            "p75": 156
+          },
+          "zone": "natural"
+        }
+      },
+      "first_gas": null,
+      "expand": {
+        "n": 1,
+        "median": 156,
+        "p25": 156,
+        "p75": 156
+      },
+      "expand_pct": 17,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 6,
+            "median": 9.0,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 6,
+            "median": 9.0,
+            "p25": 9,
+            "p75": 9
+          },
+          "mins_rate": {
+            "n": 6,
+            "median": 503.0,
+            "p25": 503,
+            "p75": 531
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 6,
+            "median": 8.0,
+            "p25": 8,
+            "p75": 8
+          },
+          "supply": {
+            "n": 6,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 10
+          },
+          "mins_rate": {
+            "n": 6,
+            "median": 475.0,
+            "p25": 447,
+            "p75": 475
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 6,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 10
+          },
+          "supply": {
+            "n": 6,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 6,
+            "median": 559.0,
+            "p25": 559,
+            "p75": 587
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 6,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 11
+          },
+          "supply": {
+            "n": 6,
+            "median": 14.0,
+            "p25": 13,
+            "p75": 15
+          },
+          "mins_rate": {
+            "n": 6,
+            "median": 587.0,
+            "p25": 531,
+            "p75": 671
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 6,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 11
+          },
+          "supply": {
+            "n": 6,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 16
+          },
+          "mins_rate": {
+            "n": 6,
+            "median": 153.0,
+            "p25": 111,
+            "p75": 615
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 6,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 11
+          },
+          "supply": {
+            "n": 6,
+            "median": 18.0,
+            "p25": 16,
+            "p75": 18
+          },
+          "mins_rate": {
+            "n": 6,
+            "median": 139.0,
+            "p25": 111,
+            "p75": 223
+          }
+        }
+      },
+      "units": {
+        "Zergling": {
+          "pct": 100,
+          "count": {
+            "n": 6,
+            "median": 15.0,
+            "p25": 12,
+            "p75": 16
+          },
+          "first": {
+            "n": 6,
+            "median": 128.0,
+            "p25": 128,
+            "p75": 128
+          }
+        }
+      }
+    },
+    "terran_one_base": {
+      "n": 11,
+      "modal_order": [
+        "SupplyDepot",
+        "Barracks",
+        "Refinery",
+        "Factory"
+      ],
+      "structures": {
+        "SupplyDepot": {
+          "pct": 100,
+          "timing": {
+            "n": 11,
+            "median": 44,
+            "p25": 39,
+            "p75": 55
+          },
+          "zone": "main"
+        },
+        "Barracks": {
+          "pct": 82,
+          "timing": {
+            "n": 9,
+            "median": 76,
+            "p25": 76,
+            "p75": 87
+          },
+          "zone": "ramp_wall"
+        },
+        "Refinery": {
+          "pct": 100,
+          "timing": {
+            "n": 11,
+            "median": 93,
+            "p25": 87,
+            "p75": 97
+          },
+          "zone": "gas"
+        },
+        "EngineeringBay": {
+          "pct": 9,
+          "timing": {
+            "n": 1,
+            "median": 134,
+            "p25": 134,
+            "p75": 134
+          },
+          "zone": "forward"
+        },
+        "Factory": {
+          "pct": 45,
+          "timing": {
+            "n": 5,
+            "median": 177,
+            "p25": 172,
+            "p75": 179
+          },
+          "zone": "main"
+        },
+        "Bunker": {
+          "pct": 18,
+          "timing": {
+            "n": 2,
+            "median": 189.0,
+            "p25": 184,
+            "p75": 194
+          },
+          "zone": "ramp_wall"
+        }
+      },
+      "first_gas": {
+        "n": 11,
+        "median": 93,
+        "p25": 87,
+        "p75": 97
+      },
+      "expand": null,
+      "expand_pct": 0,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 11,
+            "median": 9,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 11,
+            "median": 10,
+            "p25": 10,
+            "p75": 10
+          },
+          "mins_rate": {
+            "n": 11,
+            "median": 531,
+            "p25": 503,
+            "p75": 531
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 11,
+            "median": 11,
+            "p25": 11,
+            "p75": 11
+          },
+          "supply": {
+            "n": 11,
+            "median": 12,
+            "p25": 12,
+            "p75": 12
+          },
+          "mins_rate": {
+            "n": 11,
+            "median": 531,
+            "p25": 531,
+            "p75": 587
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 11,
+            "median": 13,
+            "p25": 13,
+            "p75": 13
+          },
+          "supply": {
+            "n": 11,
+            "median": 14,
+            "p25": 13,
+            "p75": 14
+          },
+          "mins_rate": {
+            "n": 11,
+            "median": 671,
+            "p25": 615,
+            "p75": 699
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 11,
+            "median": 14,
+            "p25": 14,
+            "p75": 15
+          },
+          "supply": {
+            "n": 11,
+            "median": 15,
+            "p25": 15,
+            "p75": 16
+          },
+          "mins_rate": {
+            "n": 11,
+            "median": 671,
+            "p25": 615,
+            "p75": 699
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 11,
+            "median": 16,
+            "p25": 16,
+            "p75": 16
+          },
+          "supply": {
+            "n": 11,
+            "median": 17,
+            "p25": 17,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 11,
+            "median": 671,
+            "p25": 587,
+            "p75": 671
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 11,
+            "median": 17,
+            "p25": 16,
+            "p75": 17
+          },
+          "supply": {
+            "n": 11,
+            "median": 18,
+            "p25": 17,
+            "p75": 18
+          },
+          "mins_rate": {
+            "n": 11,
+            "median": 671,
+            "p25": 615,
+            "p75": 755
+          }
+        }
+      },
+      "units": {
+        "Reaper": {
+          "pct": 64,
+          "count": {
+            "n": 11,
+            "median": 1,
+            "p25": 0,
+            "p75": 1
+          },
+          "first": {
+            "n": 7,
+            "median": 194,
+            "p25": 191,
+            "p75": 203
+          }
+        },
+        "BarracksReactor": {
+          "pct": 27,
+          "count": {
+            "n": 11,
+            "median": 0,
+            "p25": 0,
+            "p75": 1
+          },
+          "first": {
+            "n": 3,
+            "median": 202,
+            "p25": 195,
+            "p75": 204
+          }
+        }
+      }
+    },
+    "protoss_gate_expand": {
+      "n": 64,
+      "modal_order": [
+        "Pylon",
+        "Gateway",
+        "Assimilator",
+        "Nexus",
+        "CyberneticsCore"
+      ],
+      "structures": {
+        "Pylon": {
+          "pct": 100,
+          "timing": {
+            "n": 64,
+            "median": 46.0,
+            "p25": 45,
+            "p75": 47
+          },
+          "zone": "natural"
+        },
+        "Gateway": {
+          "pct": 100,
+          "timing": {
+            "n": 64,
+            "median": 79.0,
+            "p25": 77,
+            "p75": 81
+          },
+          "zone": "natural"
+        },
+        "Assimilator": {
+          "pct": 100,
+          "timing": {
+            "n": 64,
+            "median": 97.0,
+            "p25": 94,
+            "p75": 140
+          },
+          "zone": "gas"
+        },
+        "Nexus": {
+          "pct": 100,
+          "timing": {
+            "n": 64,
+            "median": 154.5,
+            "p25": 144,
+            "p75": 163
+          },
+          "zone": "natural"
+        },
+        "CyberneticsCore": {
+          "pct": 100,
+          "timing": {
+            "n": 64,
+            "median": 164.0,
+            "p25": 154,
+            "p75": 172
+          },
+          "zone": "natural"
+        },
+        "Forge": {
+          "pct": 2,
+          "timing": {
+            "n": 1,
+            "median": 191,
+            "p25": 191,
+            "p75": 191
+          },
+          "zone": "natural"
+        },
+        "ShieldBattery": {
+          "pct": 2,
+          "timing": {
+            "n": 1,
+            "median": 206,
+            "p25": 206,
+            "p75": 206
+          },
+          "zone": "main"
+        }
+      },
+      "first_gas": {
+        "n": 64,
+        "median": 97.0,
+        "p25": 94,
+        "p75": 140
+      },
+      "expand": {
+        "n": 64,
+        "median": 154.5,
+        "p25": 144,
+        "p75": 163
+      },
+      "expand_pct": 100,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 64,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 10
+          },
+          "supply": {
+            "n": 64,
+            "median": 11.0,
+            "p25": 11,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 64,
+            "median": 517.0,
+            "p25": 503,
+            "p75": 531
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 64,
+            "median": 12.0,
+            "p25": 12,
+            "p75": 12
+          },
+          "supply": {
+            "n": 64,
+            "median": 13.0,
+            "p25": 13,
+            "p75": 13
+          },
+          "mins_rate": {
+            "n": 64,
+            "median": 587.0,
+            "p25": 587,
+            "p75": 615
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 64,
+            "median": 14.0,
+            "p25": 14,
+            "p75": 14
+          },
+          "supply": {
+            "n": 64,
+            "median": 15.0,
+            "p25": 15,
+            "p75": 15
+          },
+          "mins_rate": {
+            "n": 64,
+            "median": 699.0,
+            "p25": 671,
+            "p75": 727
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 64,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 16
+          },
+          "supply": {
+            "n": 64,
+            "median": 17.0,
+            "p25": 17,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 64,
+            "median": 839.0,
+            "p25": 811,
+            "p75": 867
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 64,
+            "median": 18.0,
+            "p25": 18,
+            "p75": 18
+          },
+          "supply": {
+            "n": 64,
+            "median": 19.0,
+            "p25": 18,
+            "p75": 19
+          },
+          "mins_rate": {
+            "n": 64,
+            "median": 867.0,
+            "p25": 811,
+            "p75": 895
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 64,
+            "median": 19.0,
+            "p25": 18,
+            "p75": 19
+          },
+          "supply": {
+            "n": 64,
+            "median": 19.0,
+            "p25": 19,
+            "p75": 20
+          },
+          "mins_rate": {
+            "n": 64,
+            "median": 895.0,
+            "p25": 839,
+            "p75": 895
+          }
+        }
+      },
+      "units": {}
+    },
+    "protoss_one_base": {
+      "n": 42,
+      "modal_order": [
+        "Pylon",
+        "Gateway",
+        "Assimilator",
+        "CyberneticsCore"
+      ],
+      "structures": {
+        "Pylon": {
+          "pct": 100,
+          "timing": {
+            "n": 42,
+            "median": 45.0,
+            "p25": 42,
+            "p75": 46
+          },
+          "zone": "main"
+        },
+        "Gateway": {
+          "pct": 100,
+          "timing": {
+            "n": 42,
+            "median": 77.0,
+            "p25": 76,
+            "p75": 78
+          },
+          "zone": "main"
+        },
+        "Assimilator": {
+          "pct": 100,
+          "timing": {
+            "n": 42,
+            "median": 93.0,
+            "p25": 91,
+            "p75": 96
+          },
+          "zone": "gas"
+        },
+        "Forge": {
+          "pct": 5,
+          "timing": {
+            "n": 2,
+            "median": 120.0,
+            "p25": 112,
+            "p75": 128
+          },
+          "zone": "outer"
+        },
+        "CyberneticsCore": {
+          "pct": 100,
+          "timing": {
+            "n": 42,
+            "median": 146.0,
+            "p25": 144,
+            "p75": 149
+          },
+          "zone": "main"
+        },
+        "PhotonCannon": {
+          "pct": 5,
+          "timing": {
+            "n": 2,
+            "median": 167.0,
+            "p25": 159,
+            "p75": 175
+          },
+          "zone": "ramp_wall"
+        },
+        "Stargate": {
+          "pct": 2,
+          "timing": {
+            "n": 1,
+            "median": 195,
+            "p25": 195,
+            "p75": 195
+          },
+          "zone": "main"
+        },
+        "ShieldBattery": {
+          "pct": 17,
+          "timing": {
+            "n": 7,
+            "median": 208,
+            "p25": 204,
+            "p75": 209
+          },
+          "zone": "main"
+        }
+      },
+      "first_gas": {
+        "n": 42,
+        "median": 93.0,
+        "p25": 91,
+        "p75": 96
+      },
+      "expand": null,
+      "expand_pct": 0,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 42,
+            "median": 10.0,
+            "p25": 9,
+            "p75": 10
+          },
+          "supply": {
+            "n": 42,
+            "median": 11.0,
+            "p25": 10,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 42,
+            "median": 503.0,
+            "p25": 503,
+            "p75": 531
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 42,
+            "median": 12.0,
+            "p25": 12,
+            "p75": 12
+          },
+          "supply": {
+            "n": 42,
+            "median": 13.0,
+            "p25": 13,
+            "p75": 13
+          },
+          "mins_rate": {
+            "n": 42,
+            "median": 615.0,
+            "p25": 587,
+            "p75": 643
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 42,
+            "median": 14.0,
+            "p25": 14,
+            "p75": 14
+          },
+          "supply": {
+            "n": 42,
+            "median": 15.0,
+            "p25": 14,
+            "p75": 15
+          },
+          "mins_rate": {
+            "n": 42,
+            "median": 727.0,
+            "p25": 699,
+            "p75": 727
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 42,
+            "median": 16.0,
+            "p25": 15,
+            "p75": 16
+          },
+          "supply": {
+            "n": 42,
+            "median": 17.0,
+            "p25": 16,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 42,
+            "median": 839.0,
+            "p25": 783,
+            "p75": 867
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 42,
+            "median": 18.0,
+            "p25": 18,
+            "p75": 18
+          },
+          "supply": {
+            "n": 42,
+            "median": 19.0,
+            "p25": 19,
+            "p75": 19
+          },
+          "mins_rate": {
+            "n": 42,
+            "median": 839.0,
+            "p25": 783,
+            "p75": 867
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 42,
+            "median": 20.0,
+            "p25": 19,
+            "p75": 20
+          },
+          "supply": {
+            "n": 42,
+            "median": 21.0,
+            "p25": 21,
+            "p75": 21
+          },
+          "mins_rate": {
+            "n": 42,
+            "median": 839.0,
+            "p25": 783,
+            "p75": 867
+          }
+        }
+      },
+      "units": {}
+    },
+    "terran_2rax": {
+      "n": 4,
+      "modal_order": [
+        "SupplyDepot",
+        "Barracks",
+        "Refinery"
+      ],
+      "structures": {
+        "SupplyDepot": {
+          "pct": 100,
+          "timing": {
+            "n": 4,
+            "median": 43.0,
+            "p25": 40,
+            "p75": 55
+          },
+          "zone": "main"
+        },
+        "Barracks": {
+          "pct": 100,
+          "timing": {
+            "n": 4,
+            "median": 77.0,
+            "p25": 76,
+            "p75": 87
+          },
+          "zone": "ramp_wall"
+        },
+        "Refinery": {
+          "pct": 100,
+          "timing": {
+            "n": 4,
+            "median": 92.5,
+            "p25": 91,
+            "p75": 157
+          },
+          "zone": "gas"
+        }
+      },
+      "first_gas": {
+        "n": 4,
+        "median": 92.5,
+        "p25": 91,
+        "p75": 157
+      },
+      "expand": null,
+      "expand_pct": 0,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 4,
+            "median": 9.0,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 4,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 10
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 475.0,
+            "p25": 475,
+            "p75": 503
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 4,
+            "median": 11.0,
+            "p25": 11,
+            "p75": 11
+          },
+          "supply": {
+            "n": 4,
+            "median": 12.0,
+            "p25": 12,
+            "p75": 12
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 545.0,
+            "p25": 531,
+            "p75": 559
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 4,
+            "median": 13.0,
+            "p25": 13,
+            "p75": 13
+          },
+          "supply": {
+            "n": 4,
+            "median": 14.0,
+            "p25": 14,
+            "p75": 14
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 629.0,
+            "p25": 615,
+            "p75": 699
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 4,
+            "median": 14.5,
+            "p25": 14,
+            "p75": 15
+          },
+          "supply": {
+            "n": 4,
+            "median": 15.0,
+            "p25": 15,
+            "p75": 15
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 671.0,
+            "p25": 671,
+            "p75": 671
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 4,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 16
+          },
+          "supply": {
+            "n": 4,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 573.0,
+            "p25": 531,
+            "p75": 643
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 4,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 18
+          },
+          "supply": {
+            "n": 4,
+            "median": 18.0,
+            "p25": 18,
+            "p75": 21
+          },
+          "mins_rate": {
+            "n": 4,
+            "median": 671.0,
+            "p25": 671,
+            "p75": 783
+          }
+        }
+      },
+      "units": {
+        "Reaper": {
+          "pct": 75,
+          "count": {
+            "n": 4,
+            "median": 1.0,
+            "p25": 1,
+            "p75": 1
+          },
+          "first": {
+            "n": 3,
+            "median": 198,
+            "p25": 192,
+            "p75": 201
+          }
+        },
+        "Marine": {
+          "pct": 50,
+          "count": {
+            "n": 4,
+            "median": 0.5,
+            "p25": 0,
+            "p75": 2
+          },
+          "first": {
+            "n": 2,
+            "median": 195.0,
+            "p25": 182,
+            "p75": 208
+          }
+        }
+      }
+    },
+    "protoss_proxy": {
+      "n": 9,
+      "modal_order": [
+        "Pylon",
+        "Gateway",
+        "Assimilator",
+        "CyberneticsCore"
+      ],
+      "structures": {
+        "Pylon": {
+          "pct": 100,
+          "timing": {
+            "n": 9,
+            "median": 47,
+            "p25": 46,
+            "p75": 50
+          },
+          "zone": "forward"
+        },
+        "Gateway": {
+          "pct": 100,
+          "timing": {
+            "n": 9,
+            "median": 79,
+            "p25": 76,
+            "p75": 82
+          },
+          "zone": "forward"
+        },
+        "Assimilator": {
+          "pct": 100,
+          "timing": {
+            "n": 9,
+            "median": 97,
+            "p25": 95,
+            "p75": 111
+          },
+          "zone": "gas"
+        },
+        "Forge": {
+          "pct": 11,
+          "timing": {
+            "n": 1,
+            "median": 140,
+            "p25": 140,
+            "p75": 140
+          },
+          "zone": "ramp_wall"
+        },
+        "CyberneticsCore": {
+          "pct": 89,
+          "timing": {
+            "n": 8,
+            "median": 148.5,
+            "p25": 147,
+            "p75": 161
+          },
+          "zone": "natural"
+        },
+        "Nexus": {
+          "pct": 22,
+          "timing": {
+            "n": 2,
+            "median": 173.0,
+            "p25": 166,
+            "p75": 180
+          },
+          "zone": "natural"
+        },
+        "PhotonCannon": {
+          "pct": 11,
+          "timing": {
+            "n": 1,
+            "median": 186,
+            "p25": 186,
+            "p75": 186
+          },
+          "zone": "ramp_wall"
+        },
+        "TwilightCouncil": {
+          "pct": 11,
+          "timing": {
+            "n": 1,
+            "median": 200,
+            "p25": 200,
+            "p75": 200
+          },
+          "zone": "forward"
+        },
+        "RoboticsFacility": {
+          "pct": 11,
+          "timing": {
+            "n": 1,
+            "median": 203,
+            "p25": 203,
+            "p75": 203
+          },
+          "zone": "forward"
+        }
+      },
+      "first_gas": {
+        "n": 9,
+        "median": 97,
+        "p25": 95,
+        "p75": 111
+      },
+      "expand": {
+        "n": 2,
+        "median": 173.0,
+        "p25": 166,
+        "p75": 180
+      },
+      "expand_pct": 22,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 9,
+            "median": 10,
+            "p25": 10,
+            "p75": 10
+          },
+          "supply": {
+            "n": 9,
+            "median": 11,
+            "p25": 11,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 9,
+            "median": 475,
+            "p25": 475,
+            "p75": 503
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 9,
+            "median": 12,
+            "p25": 12,
+            "p75": 12
+          },
+          "supply": {
+            "n": 9,
+            "median": 13,
+            "p25": 13,
+            "p75": 13
+          },
+          "mins_rate": {
+            "n": 9,
+            "median": 615,
+            "p25": 559,
+            "p75": 615
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 9,
+            "median": 13,
+            "p25": 13,
+            "p75": 14
+          },
+          "supply": {
+            "n": 9,
+            "median": 14,
+            "p25": 13,
+            "p75": 15
+          },
+          "mins_rate": {
+            "n": 9,
+            "median": 699,
+            "p25": 671,
+            "p75": 727
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 9,
+            "median": 16,
+            "p25": 14,
+            "p75": 16
+          },
+          "supply": {
+            "n": 9,
+            "median": 17,
+            "p25": 15,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 9,
+            "median": 783,
+            "p25": 755,
+            "p75": 783
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 9,
+            "median": 18,
+            "p25": 15,
+            "p75": 18
+          },
+          "supply": {
+            "n": 9,
+            "median": 19,
+            "p25": 18,
+            "p75": 19
+          },
+          "mins_rate": {
+            "n": 9,
+            "median": 811,
+            "p25": 755,
+            "p75": 839
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 9,
+            "median": 18,
+            "p25": 17,
+            "p75": 20
+          },
+          "supply": {
+            "n": 9,
+            "median": 21,
+            "p25": 20,
+            "p75": 21
+          },
+          "mins_rate": {
+            "n": 9,
+            "median": 867,
+            "p25": 811,
+            "p75": 867
+          }
+        }
+      },
+      "units": {
+        "Zealot": {
+          "pct": 56,
+          "count": {
+            "n": 9,
+            "median": 1,
+            "p25": 0,
+            "p75": 2
+          },
+          "first": {
+            "n": 5,
+            "median": 179,
+            "p25": 175,
+            "p75": 190
+          }
+        }
+      }
+    },
+    "zerg_standard": {
+      "n": 8,
+      "modal_order": [
+        "SpawningPool",
+        "Hatchery",
+        "Extractor"
+      ],
+      "structures": {
+        "SpawningPool": {
+          "pct": 100,
+          "timing": {
+            "n": 8,
+            "median": 94.0,
+            "p25": 93,
+            "p75": 96
+          },
+          "zone": "main"
+        },
+        "Hatchery": {
+          "pct": 100,
+          "timing": {
+            "n": 8,
+            "median": 133.5,
+            "p25": 133,
+            "p75": 135
+          },
+          "zone": "natural"
+        },
+        "Extractor": {
+          "pct": 100,
+          "timing": {
+            "n": 8,
+            "median": 143.0,
+            "p25": 142,
+            "p75": 156
+          },
+          "zone": "gas"
+        },
+        "SpineCrawler": {
+          "pct": 12,
+          "timing": {
+            "n": 1,
+            "median": 187,
+            "p25": 187,
+            "p75": 187
+          },
+          "zone": "main"
+        }
+      },
+      "first_gas": {
+        "n": 8,
+        "median": 143.0,
+        "p25": 142,
+        "p75": 156
+      },
+      "expand": {
+        "n": 8,
+        "median": 133.5,
+        "p25": 133,
+        "p75": 135
+      },
+      "expand_pct": 100,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 8,
+            "median": 9.0,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 8,
+            "median": 11.0,
+            "p25": 11,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 8,
+            "median": 489.0,
+            "p25": 475,
+            "p75": 531
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 8,
+            "median": 11.0,
+            "p25": 11,
+            "p75": 11
+          },
+          "supply": {
+            "n": 8,
+            "median": 12.0,
+            "p25": 12,
+            "p75": 12
+          },
+          "mins_rate": {
+            "n": 8,
+            "median": 643.0,
+            "p25": 615,
+            "p75": 671
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 8,
+            "median": 15.0,
+            "p25": 15,
+            "p75": 15
+          },
+          "supply": {
+            "n": 8,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 16
+          },
+          "mins_rate": {
+            "n": 8,
+            "median": 755.0,
+            "p25": 699,
+            "p75": 811
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 8,
+            "median": 16.0,
+            "p25": 16,
+            "p75": 16
+          },
+          "supply": {
+            "n": 8,
+            "median": 17.0,
+            "p25": 17,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 8,
+            "median": 895.0,
+            "p25": 839,
+            "p75": 923
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 8,
+            "median": 15.5,
+            "p25": 15,
+            "p75": 16
+          },
+          "supply": {
+            "n": 8,
+            "median": 17.0,
+            "p25": 17,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 8,
+            "median": 923.0,
+            "p25": 923,
+            "p75": 951
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 8,
+            "median": 17.0,
+            "p25": 16,
+            "p75": 17
+          },
+          "supply": {
+            "n": 8,
+            "median": 20.0,
+            "p25": 20,
+            "p75": 20
+          },
+          "mins_rate": {
+            "n": 8,
+            "median": 937.0,
+            "p25": 923,
+            "p75": 979
+          }
+        }
+      },
+      "units": {
+        "Overseer": {
+          "pct": 50,
+          "count": {
+            "n": 8,
+            "median": 0.5,
+            "p25": 0,
+            "p75": 2
+          },
+          "first": {
+            "n": 4,
+            "median": 0.0,
+            "p25": 0,
+            "p75": 196
+          }
+        },
+        "Queen": {
+          "pct": 50,
+          "count": {
+            "n": 8,
+            "median": 0.5,
+            "p25": 0,
+            "p75": 1
+          },
+          "first": {
+            "n": 4,
+            "median": 209.0,
+            "p25": 209,
+            "p75": 210
+          }
+        },
+        "Zergling": {
+          "pct": 50,
+          "count": {
+            "n": 8,
+            "median": 1.0,
+            "p25": 0,
+            "p75": 2
+          },
+          "first": {
+            "n": 4,
+            "median": 187.5,
+            "p25": 184,
+            "p75": 194
+          }
+        }
+      }
+    },
+    "zerg_pool_first": {
+      "n": 13,
+      "modal_order": [
+        "SpawningPool",
+        "Hatchery"
+      ],
+      "structures": {
+        "Extractor": {
+          "pct": 46,
+          "timing": {
+            "n": 6,
+            "median": 36.5,
+            "p25": 34,
+            "p75": 42
+          },
+          "zone": "gas"
+        },
+        "SpawningPool": {
+          "pct": 100,
+          "timing": {
+            "n": 13,
+            "median": 49,
+            "p25": 46,
+            "p75": 65
+          },
+          "zone": "main"
+        },
+        "RoachWarren": {
+          "pct": 15,
+          "timing": {
+            "n": 2,
+            "median": 159.5,
+            "p25": 157,
+            "p75": 162
+          },
+          "zone": "main"
+        },
+        "Hatchery": {
+          "pct": 62,
+          "timing": {
+            "n": 8,
+            "median": 160.5,
+            "p25": 151,
+            "p75": 173
+          },
+          "zone": "natural"
+        },
+        "BanelingNest": {
+          "pct": 8,
+          "timing": {
+            "n": 1,
+            "median": 169,
+            "p25": 169,
+            "p75": 169
+          },
+          "zone": "main"
+        }
+      },
+      "first_gas": {
+        "n": 6,
+        "median": 36.5,
+        "p25": 34,
+        "p75": 42
+      },
+      "expand": {
+        "n": 8,
+        "median": 160.5,
+        "p25": 151,
+        "p75": 173
+      },
+      "expand_pct": 62,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 13,
+            "median": 9,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 13,
+            "median": 10,
+            "p25": 10,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 13,
+            "median": 503,
+            "p25": 475,
+            "p75": 503
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 13,
+            "median": 9,
+            "p25": 9,
+            "p75": 11
+          },
+          "supply": {
+            "n": 13,
+            "median": 10,
+            "p25": 10,
+            "p75": 11
+          },
+          "mins_rate": {
+            "n": 13,
+            "median": 559,
+            "p25": 531,
+            "p75": 615
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 13,
+            "median": 12,
+            "p25": 11,
+            "p75": 12
+          },
+          "supply": {
+            "n": 13,
+            "median": 12,
+            "p25": 12,
+            "p75": 12
+          },
+          "mins_rate": {
+            "n": 13,
+            "median": 559,
+            "p25": 475,
+            "p75": 615
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 13,
+            "median": 12,
+            "p25": 12,
+            "p75": 12
+          },
+          "supply": {
+            "n": 13,
+            "median": 15,
+            "p25": 13,
+            "p75": 15
+          },
+          "mins_rate": {
+            "n": 13,
+            "median": 643,
+            "p25": 559,
+            "p75": 727
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 13,
+            "median": 12,
+            "p25": 12,
+            "p75": 12
+          },
+          "supply": {
+            "n": 13,
+            "median": 17,
+            "p25": 16,
+            "p75": 17
+          },
+          "mins_rate": {
+            "n": 13,
+            "median": 699,
+            "p25": 615,
+            "p75": 727
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 13,
+            "median": 11,
+            "p25": 11,
+            "p75": 12
+          },
+          "supply": {
+            "n": 13,
+            "median": 18,
+            "p25": 17,
+            "p75": 18
+          },
+          "mins_rate": {
+            "n": 13,
+            "median": 643,
+            "p25": 475,
+            "p75": 699
+          }
+        }
+      },
+      "units": {
+        "Zergling": {
+          "pct": 100,
+          "count": {
+            "n": 13,
+            "median": 10,
+            "p25": 6,
+            "p75": 12
+          },
+          "first": {
+            "n": 13,
+            "median": 138,
+            "p25": 136,
+            "p75": 162
+          }
+        }
+      }
+    },
+    "protoss_gate_allin": {
+      "n": 2,
+      "modal_order": [
+        "Pylon",
+        "Forge",
+        "Gateway",
+        "PhotonCannon"
+      ],
+      "structures": {
+        "Pylon": {
+          "pct": 100,
+          "timing": {
+            "n": 2,
+            "median": 40.0,
+            "p25": 33,
+            "p75": 47
+          },
+          "zone": "ramp_wall"
+        },
+        "Assimilator": {
+          "pct": 50,
+          "timing": {
+            "n": 1,
+            "median": 78,
+            "p25": 78,
+            "p75": 78
+          },
+          "zone": "gas"
+        },
+        "Forge": {
+          "pct": 50,
+          "timing": {
+            "n": 1,
+            "median": 89,
+            "p25": 89,
+            "p75": 89
+          },
+          "zone": "outer"
+        },
+        "Gateway": {
+          "pct": 100,
+          "timing": {
+            "n": 2,
+            "median": 90.0,
+            "p25": 61,
+            "p75": 119
+          },
+          "zone": "outer"
+        },
+        "CyberneticsCore": {
+          "pct": 50,
+          "timing": {
+            "n": 1,
+            "median": 128,
+            "p25": 128,
+            "p75": 128
+          },
+          "zone": "main"
+        },
+        "PhotonCannon": {
+          "pct": 50,
+          "timing": {
+            "n": 1,
+            "median": 135,
+            "p25": 135,
+            "p75": 135
+          },
+          "zone": "outer"
+        }
+      },
+      "first_gas": {
+        "n": 1,
+        "median": 78,
+        "p25": 78,
+        "p75": 78
+      },
+      "expand": null,
+      "expand_pct": 0,
+      "economy": {
+        "30": {
+          "workers": {
+            "n": 2,
+            "median": 9.0,
+            "p25": 9,
+            "p75": 9
+          },
+          "supply": {
+            "n": 2,
+            "median": 10.0,
+            "p25": 10,
+            "p75": 10
+          },
+          "mins_rate": {
+            "n": 2,
+            "median": 503.0,
+            "p25": 503,
+            "p75": 503
+          }
+        },
+        "60": {
+          "workers": {
+            "n": 2,
+            "median": 11.0,
+            "p25": 11,
+            "p75": 11
+          },
+          "supply": {
+            "n": 2,
+            "median": 11.5,
+            "p25": 11,
+            "p75": 12
+          },
+          "mins_rate": {
+            "n": 2,
+            "median": 573.0,
+            "p25": 559,
+            "p75": 587
+          }
+        },
+        "90": {
+          "workers": {
+            "n": 2,
+            "median": 12.5,
+            "p25": 12,
+            "p75": 13
+          },
+          "supply": {
+            "n": 2,
+            "median": 13.5,
+            "p25": 13,
+            "p75": 14
+          },
+          "mins_rate": {
+            "n": 2,
+            "median": 601.0,
+            "p25": 587,
+            "p75": 615
+          }
+        },
+        "120": {
+          "workers": {
+            "n": 2,
+            "median": 14.5,
+            "p25": 14,
+            "p75": 15
+          },
+          "supply": {
+            "n": 2,
+            "median": 15.5,
+            "p25": 15,
+            "p75": 16
+          },
+          "mins_rate": {
+            "n": 2,
+            "median": 657.0,
+            "p25": 615,
+            "p75": 699
+          }
+        },
+        "150": {
+          "workers": {
+            "n": 2,
+            "median": 15.5,
+            "p25": 15,
+            "p75": 16
+          },
+          "supply": {
+            "n": 2,
+            "median": 17.5,
+            "p25": 17,
+            "p75": 18
+          },
+          "mins_rate": {
+            "n": 2,
+            "median": 671.0,
+            "p25": 559,
+            "p75": 783
+          }
+        },
+        "180": {
+          "workers": {
+            "n": 2,
+            "median": 17.0,
+            "p25": 17,
+            "p75": 17
+          },
+          "supply": {
+            "n": 2,
+            "median": 19.5,
+            "p25": 18,
+            "p75": 21
+          },
+          "mins_rate": {
+            "n": 2,
+            "median": 755.0,
+            "p25": 699,
+            "p75": 811
+          }
+        }
+      },
+      "units": {}
+    }
+  }
+}

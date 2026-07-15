@@ -26,6 +26,7 @@ class AthenaBot(BotAI):
     def __init__(self):
         super().__init__()
         self.enemy_memory = {}
+        self.enemy_opening = None
         self.wall = Wall()
         self.perception = Perception()
         self.strategy = Strategy()
@@ -56,6 +57,7 @@ class AthenaBot(BotAI):
             self.last_log = self.time
             print(f"[{int(self.time)}s] {advice.summary().splitlines()[0]} | "
                   f"opp={advice.classification.archetype.value} "
+                  f"opening={self.enemy_opening or '?'} "
                   f"counter={advice.counter.posture} "
                   f"workers={self.supply_workers} army={int(self.supply_army)} bases={self.townhalls.amount}")
 
