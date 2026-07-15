@@ -11,12 +11,18 @@ whole cohort run without touching each bot's vendored code.
 
 try:
     import numpy as _np
-    # Only the aliases old python-sc2 actually references. Deliberately NOT
-    # np.object/np.str/np.complex -- touching those trips a NumPy FutureWarning.
+    # (a) Aliases removed in NumPy 1.24 (old python-sc2's distances.py). NOT
+    #     np.object/np.str/np.complex -- touching those trips a FutureWarning.
     for _name, _t in (("float", float), ("int", int), ("bool", bool),
                       ("long", int)):
         if not hasattr(_np, _name):
             setattr(_np, _name, _t)
+    # (b) Trailing-underscore scalar aliases removed in NumPy 2.0.
+    for _name, _alias in (("float_", "float64"), ("complex_", "complex128"),
+                          ("longfloat", "longdouble"), ("unicode_", "str_"),
+                          ("string_", "bytes_"), ("bool8", "bool_")):
+        if not hasattr(_np, _name) and hasattr(_np, _alias):
+            setattr(_np, _name, getattr(_np, _alias))
 except Exception:
     pass
 
