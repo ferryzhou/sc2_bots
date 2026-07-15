@@ -75,6 +75,14 @@ class Perception:
         if bot.enemy_units:
             mem["enemy_army_supply"] = army
 
+        # enemy combat unit types ever seen -- drives the counter-composition
+        # overlay in the planner. Ever-seen (not current) so a scouted threat
+        # still shapes our tech even after it leaves vision.
+        seen_types = mem.setdefault("enemy_unit_types", set())
+        for u in bot.enemy_units:
+            if u.type_id not in WORKERS and ARMY_SUPPLY.get(u.type_id):
+                seen_types.add(u.type_id)
+
         if enemies:
             mem["last_scouted_time"] = bot.time
         if any(e.type_id in CLOAK_HINTS for e in enemies):
