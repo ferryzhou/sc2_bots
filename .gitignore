@@ -45,3 +45,4 @@ results/ladder_replays/*.SC2Replay
 
 # Local per-session bot match history (transient test runs)
 athena/results/history.jsonl
+hydra/results/history.jsonl

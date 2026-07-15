@@ -33,13 +33,15 @@ PY312 = environ.get("LADDER_PYTHON", "/root/venv312/bin/python")
 
 # repo bots with a ladder-capable run.py: dir name -> ladder id
 BOT_REGISTRY = {"phoenix": "PhoenixBot", "griffin": "GriffinBot",
-                "athena": "AthenaBot", "aegis": "AegisBot"}
+                "athena": "AthenaBot", "hydra": "HydraBot",
+                "aegis": "AegisBot"}
 # overridden from --bot in main()
 BOT_KEY = "phoenix"
 BOT_DIR = REPO_ROOT / BOT_KEY
 BOT_NAME = BOT_REGISTRY[BOT_KEY]
 
 from aiohttp import WSMsgType, web
+from s2clientprotocol import sc2api_pb2 as sc_pb
 from sc2 import maps
 from sc2.data import PlayerType, Race
 from sc2.player import AbstractPlayer
@@ -231,6 +233,24 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 opp_log.close()
                 await relay_a.cleanup()
                 await relay_b.cleanup()
+                # Save the replay off the manager's SC2 connection (the relays
+                # are torn down, so its websocket is free). Loss replays feed
+                # analysis/sc2reader_analyzer.py; win replays are worth keeping
+                # too. Best-effort -- never let it break the match record.
+                if record.get("result") in ("Victory", "Defeat", "Tie"):
+                    try:
+                        resp = await ctrl_a._execute(
+                            save_replay=sc_pb.RequestSaveReplay())
+                        data = resp.save_replay.data
+                        if data:
+                            rdir = BOT_DIR / "replays" / "versus"
+                            rdir.mkdir(parents=True, exist_ok=True)
+                            rp = rdir / (f"{BOT_NAME}_vs_{opponent['name']}_"
+                                         f"{map_name}_{record['result']}_{stamp}.SC2Replay")
+                            rp.write_bytes(data)
+                            record["replay"] = str(rp)
+                    except Exception as exc:  # noqa: BLE001
+                        record["replay_error"] = str(exc)
 
     record["wall_seconds"] = round(time.time() - wall_start, 1)
     return record

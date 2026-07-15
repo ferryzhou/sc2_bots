@@ -23,6 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 BOT_REGISTRY = {
     "phoenix": ("PhoenixBot", "Protoss"),
     "griffin": ("GriffinBot", "Terran"),
+    "hydra": ("HydraBot", "Zerg"),
     "aegis": ("AegisBot", "Terran"),
 }
 

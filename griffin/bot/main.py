@@ -120,6 +120,19 @@ LATE_COMP: dict[UnitID, dict] = {
 LATE_COMP_AFTER: float = 600.0  # 10:00
 LATE_COMP_GAS_BANK: int = 800
 
+# Factory-at-float: the diagnosed remax ROOT CAUSE. Loss-replay audit showed
+# griffin banks 3,000-6,700 unspent GAS in every long game because it has
+# only ~2 factories and can't convert the gas into tanks (150m/125g) fast
+# enough - so when its army dies it can't out-rebuild the enemy remax
+# (4876716: 6749 gas floated on 2 factories; GLM_Bot: 5641). Tanks are the
+# gas sink AND the splash that beats the mass-unit remax. When floating gas,
+# add factories up to base count so production actually spends the bank.
+# Targeted to FACTORIES ONLY - the blanket add_production_at_bank=(300,200)
+# over-built barracks and starved the army (1-5 gauntlet); this builds only
+# the gas-consuming tank producers, only when gas is actually floating.
+FACTORY_FLOAT_GAS: int = 500
+MAX_FACTORIES: int = 5
+
 # early-rush window: proximity aggression before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
 # one-base/two-base all-in window: griffin's dominant ladder loss (zig-reapers,
@@ -275,6 +288,7 @@ class GriffinBot(AresBot):
         self._manage_depots()
         self._counter_proxy_structures()
         self._build_turrets_vs_air()
+        self._build_factories_vs_float()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
@@ -509,6 +523,34 @@ class GriffinBot(AresBot):
         }
         blended[UnitID.VIKINGFIGHTER] = {"proportion": 0.2, "priority": 0}
         return blended
+
+    def _build_factories_vs_float(self) -> None:
+        """Add factories when floating gas so tank production can spend the
+        bank - the diagnosed remax root cause. Griffin banks 3-7k gas in long
+        games on ~2 factories; more factories convert that gas into tanks (the
+        splash that beats the mass-unit remax). Factories only, gas-gated, so
+        it can't over-build barracks and starve the army."""
+        if self._emergency or self.time < 300.0:
+            return
+        if self.vespene < FACTORY_FLOAT_GAS:
+            return
+        # need a barracks first (factory tech prereq)
+        if not self.structures(UnitID.BARRACKS).ready:
+            return
+        have = (
+            self.structures(UnitID.FACTORY).ready.amount
+            + self.already_pending(UnitID.FACTORY)
+        )
+        cap = min(MAX_FACTORIES, len(self.townhalls))
+        if have >= cap:
+            return
+        if self.can_afford(UnitID.FACTORY):
+            self.register_behavior(
+                BuildStructure(
+                    base_location=self.start_location,
+                    structure_id=UnitID.FACTORY,
+                )
+            )
 
     def _build_turrets_vs_air(self) -> None:
         """Missile turrets at each mineral line once enemy air combat units
