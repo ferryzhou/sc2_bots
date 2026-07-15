@@ -61,6 +61,33 @@ def norm(n):
     return NORMALIZE.get(n, n)
 
 
+def eligible(r, min_league=4, min_seconds=120):
+    """Keep only clean 1v1 human games of reasonable quality/length.
+
+    spawningtool ids are a grab-bag -- pro tournament games, ladder games,
+    vs-AI practice, and team/custom lobbies. For opening study we want real
+    1v1s: exactly two human (non-AI) players of standard races, at least one
+    Diamond+ (openings are standardized from Diamond up), and past the opening.
+    Returns ``(ok, humans)``.
+    """
+    humans = [p for p in r.players if not p.is_observer] if r.players else []
+    if len(humans) != 2:
+        return False, humans
+    if any(str(p.name).startswith("A.I.") for p in humans):
+        return False, humans
+    if any(p.play_race not in RACE_TH for p in humans):
+        return False, humans
+    try:
+        if r.game_length.seconds < min_seconds:
+            return False, humans
+    except Exception:
+        pass
+    leagues = [getattr(p, "highest_league", 0) or 0 for p in humans]
+    if max(leagues) < min_league:
+        return False, humans
+    return True, humans
+
+
 def mmss(sec):
     return f"{int(sec)//60}:{int(sec) % 60:02d}"
 
@@ -255,8 +282,8 @@ def main():
             r = sc2reader.load_replay(f, load_level=4)
         except Exception:
             continue
-        humans = [p for p in r.players if not p.is_observer] if r.players else []
-        if len(humans) != 2:
+        ok, humans = eligible(r)
+        if not ok:
             continue
         n_ok += 1
         for p in humans:
