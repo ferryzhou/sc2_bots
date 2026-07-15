@@ -23,6 +23,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 BOT_REGISTRY = {
     "phoenix": ("PhoenixBot", "Protoss"),
     "griffin": ("GriffinBot", "Terran"),
+    "aegis": ("AegisBot", "Terran"),
 }
 
 # --bot decides which package to import and which dir to chdir into, so it
