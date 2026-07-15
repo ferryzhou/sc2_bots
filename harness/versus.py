@@ -158,6 +158,22 @@ def opponent_command(bot_dir: Path, bot_name: str) -> tuple[list[str], Path]:
     raise ValueError(f"no launch spec found in {bot_dir}")
 
 
+def _opponent_reached_game(log_path: Path) -> bool:
+    """True if the opponent actually joined the match before exiting.
+
+    Distinguishes a launch failure (import crash before joining) from an
+    opponent that joined and then crashed or resigned in-game -- the latter is
+    a real result we should score, not an error. Markers come from the
+    opponent's own logging: a game Result line, or the SC2 status reaching
+    in_game.
+    """
+    try:
+        text = log_path.read_text(errors="replace")
+    except OSError:
+        return False
+    return bool(re.search(r"Result\b|Status\.in_game|Result for player", text))
+
+
 def _opponent_failure_reason(log_path: Path) -> str:
     """Pull the most informative line out of a crashed opponent's log.
 
@@ -171,9 +187,12 @@ def _opponent_failure_reason(log_path: Path) -> str:
                  log_path.read_text(errors="replace").splitlines() if ln.strip()]
     except OSError:
         return ""
-    for ln in reversed(lines):
-        if re.match(r"^[A-Za-z_.]*(Error|Exception|Warning):", ln):
-            return ln[:200]
+    # Prefer a real exception; only fall back to a Warning line if there is no
+    # Error/Exception (ResourceWarning noise shouldn't mask the true cause).
+    for pattern in (r"^[A-Za-z_.]*(Error|Exception):", r"^[A-Za-z_.]*Warning:"):
+        for ln in reversed(lines):
+            if re.match(pattern, ln):
+                return ln[:200]
     return lines[-1][:200] if lines else ""
 
 
@@ -231,21 +250,25 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 stdout=opp_log, stderr=asyncio.subprocess.STDOUT)
 
             try:
-                # fast-fail: an opponent that dies in the first 25s never
-                # joined - don't burn the full match timeout waiting
+                # fast-fail: an opponent that dies in the first 25s and never
+                # joined the game is a launch failure - don't burn the full
+                # match timeout. But an opponent that DID join and then crashed
+                # or resigned in-game is a real result (we won), so fall through
+                # and read our bot's outcome instead of recording an error.
+                opp_log_path = log_dir / f"{opponent['name']}_{stamp}.log"
                 try:
                     await asyncio.wait_for(theirs.wait(), timeout=25)
-                    record["result"] = "Error"
                     opp_log.flush()
-                    reason = _opponent_failure_reason(
-                        log_dir / f"{opponent['name']}_{stamp}.log")
-                    record["error"] = (f"opponent exited at launch "
-                                       f"(rc={theirs.returncode})"
-                                       + (f": {reason}" if reason else ""))
-                    ours.kill()
-                    await ours.wait()
-                    record["wall_seconds"] = round(time.time() - wall_start, 1)
-                    return record
+                    if not _opponent_reached_game(opp_log_path):
+                        record["result"] = "Error"
+                        reason = _opponent_failure_reason(opp_log_path)
+                        record["error"] = (f"opponent exited at launch "
+                                           f"(rc={theirs.returncode})"
+                                           + (f": {reason}" if reason else ""))
+                        ours.kill()
+                        await ours.wait()
+                        record["wall_seconds"] = round(time.time() - wall_start, 1)
+                        return record
                 except asyncio.TimeoutError:
                     pass
 
