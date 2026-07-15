@@ -1,0 +1,149 @@
+{
+  "window": 120,
+  "n_replays": 66,
+  "summary": {
+    "Protoss": {
+      "n": 47,
+      "timing": {
+        "Pylon": {
+          "pct": 98,
+          "median": "0:46",
+          "range": "0:44-0:47",
+          "median_s": 46.0
+        },
+        "Gateway": {
+          "pct": 98,
+          "median": "1:18",
+          "range": "1:16-1:21",
+          "median_s": 78.0
+        },
+        "Assimilator": {
+          "pct": 85,
+          "median": "1:33",
+          "range": "1:31-1:38",
+          "median_s": 93.5
+        }
+      },
+      "top_orders": [
+        [
+          "Pylon > Gateway > Assimilator",
+          40
+        ],
+        [
+          "Pylon > Gateway",
+          6
+        ],
+        [
+          "",
+          1
+        ]
+      ],
+      "first_gas": "1:33",
+      "first_gas_range": "1:31-1:38",
+      "expand_pct_in_window": 0,
+      "expand_median": null,
+      "workers_born_by_2m": 16,
+      "supply_at_2m": 17
+    },
+    "Terran": {
+      "n": 25,
+      "timing": {
+        "SupplyDepot": {
+          "pct": 100,
+          "median": "0:39",
+          "range": "0:38-0:40",
+          "median_s": 39
+        },
+        "Barracks": {
+          "pct": 96,
+          "median": "1:15",
+          "range": "1:14-1:16",
+          "median_s": 75.0
+        },
+        "Refinery": {
+          "pct": 92,
+          "median": "1:31",
+          "range": "1:26-1:32",
+          "median_s": 91
+        },
+        "CommandCenter": {
+          "pct": 4,
+          "median": "1:56",
+          "range": "1:56-1:56",
+          "median_s": 116
+        }
+      },
+      "top_orders": [
+        [
+          "SupplyDepot > Barracks > Refinery",
+          23
+        ],
+        [
+          "SupplyDepot > Barracks",
+          1
+        ],
+        [
+          "SupplyDepot > CommandCenter",
+          1
+        ]
+      ],
+      "first_gas": "1:31",
+      "first_gas_range": "1:26-1:32",
+      "expand_pct_in_window": 4,
+      "expand_median": "1:56",
+      "workers_born_by_2m": 15,
+      "supply_at_2m": 16
+    },
+    "Zerg": {
+      "n": 60,
+      "timing": {
+        "Extractor": {
+          "pct": 42,
+          "median": "0:55",
+          "range": "0:52-0:55",
+          "median_s": 55
+        },
+        "SpawningPool": {
+          "pct": 38,
+          "median": "1:12",
+          "range": "0:46-1:35",
+          "median_s": 72
+        },
+        "Hatchery": {
+          "pct": 60,
+          "median": "1:42",
+          "range": "1:39-1:45",
+          "median_s": 102.0
+        }
+      },
+      "top_orders": [
+        [
+          "Hatchery",
+          22
+        ],
+        [
+          "Extractor > Hatchery",
+          13
+        ],
+        [
+          "SpawningPool",
+          12
+        ],
+        [
+          "Extractor > SpawningPool",
+          9
+        ],
+        [
+          "SpawningPool > Extractor",
+          1
+        ]
+      ],
+      "first_gas": "0:55",
+      "first_gas_range": "0:52-0:55",
+      "expand_pct_in_window": 60,
+      "expand_median": "1:42",
+      "workers_born_by_2m": 16.0,
+      "supply_at_2m": 17.0
+    }
+  }
+}
