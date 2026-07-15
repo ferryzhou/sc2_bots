@@ -1,0 +1,117 @@
+{
+  "id": 203736,
+  "title": "PiG's 8 Worker start Zerg",
+  "race": "Zerg",
+  "matchup": "ZvX",
+  "source": "https://lotv.spawningtool.com/build/203736/",
+  "steps": [
+    {
+      "i": 0,
+      "supply": 12,
+      "t": 30,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": "Extractor Trick"
+    },
+    {
+      "i": 1,
+      "supply": 13,
+      "t": 55,
+      "action": "build",
+      "name": "Hatchery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 2,
+      "supply": 13,
+      "t": 65,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": "Extractor trick again"
+    },
+    {
+      "i": 3,
+      "supply": 13,
+      "t": 68,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 4,
+      "supply": 13,
+      "t": 85,
+      "action": "build",
+      "name": "Spawning Pool",
+      "count": 1,
+      "note": "Bank minerals on 18 supply for queens"
+    },
+    {
+      "i": 5,
+      "supply": 18,
+      "t": 133,
+      "action": "train",
+      "name": "Queen",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 6,
+      "supply": 23,
+      "t": 135,
+      "action": "train",
+      "name": "Zergling",
+      "count": 1,
+      "note": "Scout or defend with these"
+    },
+    {
+      "i": 7,
+      "supply": 24,
+      "t": 145,
+      "action": "train",
+      "name": "Overlord",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 8,
+      "supply": 30,
+      "t": 178,
+      "action": "train",
+      "name": "Queen",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 9,
+      "supply": 40,
+      "t": 205,
+      "action": "build",
+      "name": "Extractor",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 10,
+      "supply": 42,
+      "t": 210,
+      "action": "build",
+      "name": "Roach Warren",
+      "count": 1,
+      "note": "Build 4-5 safety roaches"
+    },
+    {
+      "i": 11,
+      "supply": 48,
+      "t": 240,
+      "action": "build",
+      "name": "Hatchery",
+      "count": 1,
+      "note": "3rd Base-Tech switch if necessary"
+    }
+  ]
+}

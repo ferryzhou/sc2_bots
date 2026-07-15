@@ -14,6 +14,7 @@ stay in lockstep.
 | `combat.py`     | `COMBAT.md`        | The should-engage decision (`assess_engagement`): army strength x upgrade edge x terrain/home/reinforcements/composition, with a trading-down veto. |
 | `information.py`| `INFORMATION.md`   | Dead-reckoning a stale sighting (`estimate_enemy` / `project_enemy`) so enemy reads degrade gracefully instead of going `UNKNOWN`. |
 | `openings.py`   | `analysis/OPENING_PATTERNS.md` | Classified opening builds mined from pro replays: `classify_opening` (name an opponent's opening family), `OpeningExecutor` (reproduce a build order + placement), `verify_opening` (check a played opening's economy/units/placement vs reference bands). Data in `data/openings.json`. |
+| `build_guides.py`| `analysis/BUILD_GUIDES.md` | Exact, named pro build orders ingested from spawningtool.com: `ScriptedBuild` + `BuildExecutor` reproduce a full step-by-step script (structures, units, upgrades with supply/time triggers). `NAME_TO_UNIT`/`NAME_TO_UPGRADE` map each step to an sc2 id token. Data in `data/build_guides/`. |
 | `advisor.py`    | all of the above   | `StrategicAdvisor` ties everything into one `Advice` per step. |
 
 ## Design

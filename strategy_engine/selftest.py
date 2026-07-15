@@ -33,6 +33,7 @@ from .openings import (
     get_opening,
     verify_opening,
 )
+from .build_guides import BUILD_GUIDES, BuildExecutor, guides_for, get_build
 from .advisor import StrategicAdvisor
 
 
@@ -346,6 +347,44 @@ def test_openings_verify() -> None:
     devs = verify_opening(op, bad)
     _check("wrong opening flags a missing structure",
            any(d.category == "missing" for d in devs))
+
+
+def test_build_guides_loaded_and_reproducible() -> None:
+    _check("build guides loaded from data", len(BUILD_GUIDES) >= 3)
+    # every mapped step must carry a non-empty token; most steps map
+    for b in BUILD_GUIDES.values():
+        cov = b.coverage()
+        _check(f"{b.id} has steps", cov["total"] > 0)
+        _check(f"{b.id} is mostly reproducible", cov["fraction"] >= 0.8)
+        for a in b.actions:
+            if a.reproducible:
+                _check(f"{b.id} step {a.index} has a token", bool(a.token))
+
+
+def test_build_guide_reproduce_in_order() -> None:
+    b = next((g for g in BUILD_GUIDES.values() if g.id == 184161), None)
+    if b is None:
+        b = list(BUILD_GUIDES.values())[0]
+    ex = BuildExecutor(b)
+    have: dict = {}
+    first_tokens = []
+    guard = 0
+    while not ex.is_complete(have) and guard < 200:
+        a = ex.next_action(have)
+        key = a.token or a.name
+        if len(first_tokens) < 3:
+            first_tokens.append(key)
+        have[key] = have.get(key, 0) + 1
+        guard += 1
+    _check("executor completes the scripted build", ex.is_complete(have))
+    _check("executor reproduces steps in order",
+           first_tokens == [(a.token or a.name)
+                            for a in ex.actions[:3]])
+    # is_due gates on supply/time targets
+    a0 = ex.actions[0]
+    _check("action not due before its supply",
+           not BuildExecutor.is_due(a0, supply=(a0.at_supply or 99) - 5, seconds=0)
+           if a0.at_supply else True)
 
 
 def test_advisor_end_to_end() -> None:

@@ -1,0 +1,981 @@
+{
+  "id": 203190,
+  "title": "Heromarine TvZ 8 worker opening",
+  "race": "Terran",
+  "matchup": "TvZ",
+  "source": "https://lotv.spawningtool.com/build/203190/",
+  "steps": [
+    {
+      "i": 0,
+      "supply": 8,
+      "t": 0,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 1,
+      "supply": 11,
+      "t": 37,
+      "action": "build",
+      "name": "Barracks",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 2,
+      "supply": 13,
+      "t": 61,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 3,
+      "supply": 13,
+      "t": 66,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 4,
+      "supply": 16,
+      "t": 104,
+      "action": "train",
+      "name": "Reaper",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 5,
+      "supply": 17,
+      "t": 127,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 6,
+      "supply": 18,
+      "t": 136,
+      "action": "train",
+      "name": "Reaper",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 7,
+      "supply": 18,
+      "t": 139,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 8,
+      "supply": 22,
+      "t": 172,
+      "action": "build",
+      "name": "Factory",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 9,
+      "supply": 22,
+      "t": 180,
+      "action": "build",
+      "name": "Barracks Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 10,
+      "supply": 22,
+      "t": 192,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 11,
+      "supply": 25,
+      "t": 228,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 12,
+      "supply": 26,
+      "t": 235,
+      "action": "build",
+      "name": "Barracks Tech Lab",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 13,
+      "supply": 26,
+      "t": 237,
+      "action": "build",
+      "name": "Barracks",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 14,
+      "supply": 31,
+      "t": 254,
+      "action": "research",
+      "name": "Stimpack",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 15,
+      "supply": 34,
+      "t": 258,
+      "action": "train",
+      "name": "Hellion",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 16,
+      "supply": 38,
+      "t": 266,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 17,
+      "supply": 40,
+      "t": 272,
+      "action": "train",
+      "name": "Marine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 18,
+      "supply": 40,
+      "t": 278,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 19,
+      "supply": 42,
+      "t": 285,
+      "action": "build",
+      "name": "Starport",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 20,
+      "supply": 43,
+      "t": 288,
+      "action": "build",
+      "name": "Factory Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 21,
+      "supply": 43,
+      "t": 290,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 22,
+      "supply": 46,
+      "t": 293,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 23,
+      "supply": 49,
+      "t": 302,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 24,
+      "supply": 52,
+      "t": 310,
+      "action": "train",
+      "name": "Marine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 25,
+      "supply": 55,
+      "t": 319,
+      "action": "train",
+      "name": "Marine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 26,
+      "supply": 58,
+      "t": 324,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 27,
+      "supply": 60,
+      "t": 328,
+      "action": "train",
+      "name": "Marine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 28,
+      "supply": 60,
+      "t": 329,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 29,
+      "supply": 62,
+      "t": 340,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 30,
+      "supply": 64,
+      "t": 351,
+      "action": "build",
+      "name": "Engineering Bay",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 31,
+      "supply": 68,
+      "t": 357,
+      "action": "build",
+      "name": "Engineering Bay",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 32,
+      "supply": 68,
+      "t": 361,
+      "action": "research",
+      "name": "Combat Shield",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 33,
+      "supply": 68,
+      "t": 363,
+      "action": "build",
+      "name": "Barracks",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 34,
+      "supply": 74,
+      "t": 388,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 35,
+      "supply": 74,
+      "t": 395,
+      "action": "research",
+      "name": "Terran Infantry Armor Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 36,
+      "supply": 75,
+      "t": 402,
+      "action": "build",
+      "name": "Starport Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 37,
+      "supply": 75,
+      "t": 403,
+      "action": "build",
+      "name": "Barracks",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 38,
+      "supply": 79,
+      "t": 420,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 39,
+      "supply": 93,
+      "t": 439,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 40,
+      "supply": 93,
+      "t": 440,
+      "action": "build",
+      "name": "Factory",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 41,
+      "supply": 95,
+      "t": 445,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 42,
+      "supply": 95,
+      "t": 449,
+      "action": "build",
+      "name": "Armory",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 43,
+      "supply": 105,
+      "t": 454,
+      "action": "build",
+      "name": "Barracks Reactor",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 44,
+      "supply": 105,
+      "t": 456,
+      "action": "train",
+      "name": "Widow Mine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 45,
+      "supply": 116,
+      "t": 493,
+      "action": "build",
+      "name": "Factory Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 46,
+      "supply": 116,
+      "t": 494,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 47,
+      "supply": 116,
+      "t": 499,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 48,
+      "supply": 132,
+      "t": 514,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 49,
+      "supply": 132,
+      "t": 519,
+      "action": "research",
+      "name": "Terran Infantry Weapons Level 2",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 50,
+      "supply": 135,
+      "t": 522,
+      "action": "research",
+      "name": "Terran Infantry Armor Level 2",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 51,
+      "supply": 135,
+      "t": 523,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 52,
+      "supply": 135,
+      "t": 525,
+      "action": "train",
+      "name": "Marauder",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 53,
+      "supply": 141,
+      "t": 531,
+      "action": "research",
+      "name": "Terran Vehicle Weapons Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 54,
+      "supply": 143,
+      "t": 548,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 55,
+      "supply": 150,
+      "t": 560,
+      "action": "build",
+      "name": "Barracks",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 56,
+      "supply": 157,
+      "t": 566,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 57,
+      "supply": 159,
+      "t": 579,
+      "action": "research",
+      "name": "Drilling Claws",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 58,
+      "supply": 159,
+      "t": 580,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 59,
+      "supply": 174,
+      "t": 595,
+      "action": "build",
+      "name": "Sensor Tower",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 60,
+      "supply": 181,
+      "t": 602,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 61,
+      "supply": 181,
+      "t": 611,
+      "action": "build",
+      "name": "Barracks Tech Lab",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 62,
+      "supply": 181,
+      "t": 613,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 63,
+      "supply": 188,
+      "t": 617,
+      "action": "build",
+      "name": "Missile Turret",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 64,
+      "supply": 188,
+      "t": 618,
+      "action": "build",
+      "name": "Planetary Fortress",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 65,
+      "supply": 188,
+      "t": 622,
+      "action": "build",
+      "name": "Ghost Academy",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 66,
+      "supply": 191,
+      "t": 634,
+      "action": "train",
+      "name": "Widow Mine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 67,
+      "supply": 191,
+      "t": 635,
+      "action": "build",
+      "name": "Factory",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 68,
+      "supply": 195,
+      "t": 640,
+      "action": "build",
+      "name": "Refinery",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 69,
+      "supply": 195,
+      "t": 641,
+      "action": "build",
+      "name": "Sensor Tower",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 70,
+      "supply": 195,
+      "t": 643,
+      "action": "build",
+      "name": "Missile Turret",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 71,
+      "supply": 195,
+      "t": 647,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 72,
+      "supply": 199,
+      "t": 662,
+      "action": "research",
+      "name": "Terran Infantry Weapons Level 3",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 73,
+      "supply": 199,
+      "t": 672,
+      "action": "build",
+      "name": "Command Center",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 74,
+      "supply": 199,
+      "t": 679,
+      "action": "build",
+      "name": "Missile Turret",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 75,
+      "supply": 199,
+      "t": 685,
+      "action": "build",
+      "name": "Missile Turret",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 76,
+      "supply": 199,
+      "t": 687,
+      "action": "research",
+      "name": "Terran Vehicle Weapons Level 2",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 77,
+      "supply": 187,
+      "t": 704,
+      "action": "train",
+      "name": "Marauder",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 78,
+      "supply": 185,
+      "t": 710,
+      "action": "train",
+      "name": "Widow Mine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 79,
+      "supply": 185,
+      "t": 711,
+      "action": "train",
+      "name": "Ghost",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 80,
+      "supply": 188,
+      "t": 727,
+      "action": "train",
+      "name": "Marauder",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 81,
+      "supply": 182,
+      "t": 734,
+      "action": "train",
+      "name": "Ghost",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 82,
+      "supply": 186,
+      "t": 736,
+      "action": "build",
+      "name": "Fusion Core",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 83,
+      "supply": 186,
+      "t": 739,
+      "action": "train",
+      "name": "Ghost",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 84,
+      "supply": 190,
+      "t": 747,
+      "action": "train",
+      "name": "Ghost",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 85,
+      "supply": 190,
+      "t": 749,
+      "action": "build",
+      "name": "Sensor Tower",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 86,
+      "supply": 196,
+      "t": 750,
+      "action": "build",
+      "name": "Missile Turret",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 87,
+      "supply": 188,
+      "t": 757,
+      "action": "train",
+      "name": "Widow Mine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 88,
+      "supply": 188,
+      "t": 759,
+      "action": "build",
+      "name": "Factory Tech Lab",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 89,
+      "supply": 188,
+      "t": 763,
+      "action": "train",
+      "name": "Ghost",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 90,
+      "supply": 195,
+      "t": 768,
+      "action": "train",
+      "name": "Liberator",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 91,
+      "supply": 198,
+      "t": 783,
+      "action": "build",
+      "name": "Missile Turret",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 92,
+      "supply": 198,
+      "t": 784,
+      "action": "build",
+      "name": "Planetary Fortress",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 93,
+      "supply": 198,
+      "t": 785,
+      "action": "build",
+      "name": "Sensor Tower",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 94,
+      "supply": 198,
+      "t": 787,
+      "action": "build",
+      "name": "Refinery",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 95,
+      "supply": 198,
+      "t": 790,
+      "action": "research",
+      "name": "Caduceus Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 96,
+      "supply": 187,
+      "t": 793,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 97,
+      "supply": 187,
+      "t": 794,
+      "action": "train",
+      "name": "Ghost",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 98,
+      "supply": 199,
+      "t": 802,
+      "action": "build",
+      "name": "Starport",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 99,
+      "supply": 188,
+      "t": 811,
+      "action": "train",
+      "name": "Ghost",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 100,
+      "supply": 194,
+      "t": 819,
+      "action": "train",
+      "name": "Ghost",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 101,
+      "supply": 188,
+      "t": 824,
+      "action": "research",
+      "name": "Terran Vehicle And Ship Armor Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 102,
+      "supply": 188,
+      "t": 826,
+      "action": "train",
+      "name": "Widow Mine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 103,
+      "supply": 182,
+      "t": 847,
+      "action": "research",
+      "name": "Advanced Ballistics",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 104,
+      "supply": 189,
+      "t": 853,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 105,
+      "supply": 195,
+      "t": 864,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 106,
+      "supply": 195,
+      "t": 866,
+      "action": "build",
+      "name": "Starport Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 107,
+      "supply": 195,
+      "t": 876,
+      "action": "train",
+      "name": "Liberator",
+      "count": 1,
+      "note": ""
+    }
+  ]
+}
