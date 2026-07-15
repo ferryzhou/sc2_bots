@@ -26,6 +26,8 @@ BOT_REGISTRY = {
                 "[ares-sc2](https://github.com/AresSC2/ares-sc2)."),
     "griffin": ("GriffinBot", "# GriffinBot\n\nTerran bot made with "
                 "[ares-sc2](https://github.com/AresSC2/ares-sc2)."),
+    "aegis": ("AegisBot", "# AegisBot\n\nTerran turtle bot made with "
+              "[ares-sc2](https://github.com/AresSC2/ares-sc2)."),
 }
 
 

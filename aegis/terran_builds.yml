@@ -1,0 +1,72 @@
+# AegisBot opening builds, executed by the ares build runner.
+# After the opening completes, macro controllers in bot/main.py take over.
+# Docs: https://aressc2.github.io/ares-sc2/tutorials/build_runner.html
+
+UseData: True
+BuildSelection: WinrateBased
+MinGamesWinrateBased: 3
+
+BuildChoices:
+    # active when Debug: True in config.yml
+    test_123:
+        BotName: Test
+        Cycle:
+            - SafeExpand
+            - RaxExpand
+
+    Protoss:
+        BotName: ProtossRace
+        Cycle:
+            - SafeExpand
+            - RaxExpand
+
+    Random:
+        BotName: RandomRace
+        Cycle:
+            - SafeExpand
+            - RaxExpand
+
+    Terran:
+        BotName: TerranRace
+        Cycle:
+            - SafeExpand
+            - RaxExpand
+
+    Zerg:
+        BotName: ZergRace
+        Cycle:
+            - SafeExpand
+            - RaxExpand
+
+Builds:
+    # units-first opening for rush-prone opponents: two rax and marines
+    # before the expansion, full depot/rax ramp wall
+    SafeExpand:
+        ConstantWorkerProductionTill: 40
+        OpeningBuildOrder:
+            - 14 supply @ ramp
+            - 16 barracks @ ramp
+            - 16 gas
+            - 19 orbital
+            - 19 marine
+            - 20 supply @ ramp
+            - 20 barracks
+            - 21 marine
+            - 23 marine
+            - 26 expand
+            - 26 gas
+
+    # standard 1-rax fast expand into 3 rax
+    RaxExpand:
+        ConstantWorkerProductionTill: 40
+        OpeningBuildOrder:
+            - 14 supply @ ramp
+            - 16 barracks @ ramp
+            - 16 gas
+            - 19 orbital
+            - 19 marine
+            - 20 expand
+            - 20 supply @ ramp
+            - 21 marine
+            - 22 barracks
+            - 23 barracks
