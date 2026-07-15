@@ -101,9 +101,10 @@ def main():
     used = defaultdict(int)
     rows, hit = [], 0
     for a in build.build_steps():
-        tok = a.token
-        if not tok:
+        if not a.token:
             continue
+        tok = canon(a.token)   # fold morphs the same way as the replay side
+        # (Orbital<->CommandCenter, WarpGate<->Gateway) so they match
         times = actual.get(tok, [])
         idx = used[tok]
         if idx < len(times):
