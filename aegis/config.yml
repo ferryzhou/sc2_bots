@@ -1,0 +1,27 @@
+# AegisBot configuration.
+# Check `ares-sc2/src/ares/config.yml` for all valid options; values here override them.
+
+MyBotName: AegisBot
+MyBotRace: Terran
+
+# AI Arena integration (see ares-sc2-bot-template README before enabling)
+AutoUploadToAiarena: False
+BotZipPubliclyDownloadable: False
+BotDataPubliclyDownloadable: False
+BotDataEnabled: True
+
+UseData: True
+Debug: False
+GameStep: 2
+DebugGameStep: 2
+
+Features:
+    TacticalGroundGrid: False
+
+DebugOptions:
+    ActiveGrid: TacticalGround
+    ChatDebug: False
+    DebugSpawn: False
+    ShowPathingCost: False
+    ResourceDebug: False
+    ShowBuildingFormation: False
