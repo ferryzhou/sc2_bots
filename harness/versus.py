@@ -104,6 +104,23 @@ def find_start_port() -> int:
     raise RuntimeError("no free port range found")
 
 
+COMPAT_DIR = REPO_ROOT / "harness" / "compat"
+
+
+def opponent_env() -> dict:
+    """Env for opponent subprocesses.
+
+    Prepends harness/compat to PYTHONPATH so its ``sitecustomize.py`` loads at
+    interpreter startup and restores the deprecated numpy aliases (``np.float``
+    etc.) that the OLD python-sc2 bundled by many AI Arena bots still uses --
+    otherwise that whole cohort crashes mid-game under our modern numpy.
+    """
+    env = dict(environ)
+    prior = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = f"{COMPAT_DIR}{':' + prior if prior else ''}"
+    return env
+
+
 def opponent_command(bot_dir: Path, bot_name: str) -> tuple[list[str], Path]:
     """Build the launch command from the bot's zip layout.
 
@@ -139,6 +156,25 @@ def opponent_command(bot_dir: Path, bot_name: str) -> tuple[list[str], Path]:
             return [str(binary)], binary.parent
 
     raise ValueError(f"no launch spec found in {bot_dir}")
+
+
+def _opponent_failure_reason(log_path: Path) -> str:
+    """Pull the most informative line out of a crashed opponent's log.
+
+    Prefer the final exception line (``ModuleNotFoundError: ...``,
+    ``ImportError: ...``, ``AttributeError: ...``) so a field sweep records
+    *why* a bot could not launch -- a missing dependency vs a code crash --
+    instead of an opaque return code.
+    """
+    try:
+        lines = [ln.strip() for ln in
+                 log_path.read_text(errors="replace").splitlines() if ln.strip()]
+    except OSError:
+        return ""
+    for ln in reversed(lines):
+        if re.match(r"^[A-Za-z_.]*(Error|Exception|Warning):", ln):
+            return ln[:200]
+    return lines[-1][:200] if lines else ""
 
 
 async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
@@ -191,7 +227,7 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 *our_cmd, cwd=BOT_DIR,
                 stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
             theirs = await asyncio.create_subprocess_exec(
-                *their_cmd, cwd=opp_cwd,
+                *their_cmd, cwd=opp_cwd, env=opponent_env(),
                 stdout=opp_log, stderr=asyncio.subprocess.STDOUT)
 
             try:
@@ -200,8 +236,12 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 try:
                     await asyncio.wait_for(theirs.wait(), timeout=25)
                     record["result"] = "Error"
+                    opp_log.flush()
+                    reason = _opponent_failure_reason(
+                        log_dir / f"{opponent['name']}_{stamp}.log")
                     record["error"] = (f"opponent exited at launch "
-                                       f"(rc={theirs.returncode})")
+                                       f"(rc={theirs.returncode})"
+                                       + (f": {reason}" if reason else ""))
                     ours.kill()
                     await ours.wait()
                     record["wall_seconds"] = round(time.time() - wall_start, 1)
