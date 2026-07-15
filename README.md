@@ -9,6 +9,7 @@ This project is a collection of AI bots for StarCraft II, developed using Python
 *   `lishimin`: Protoss bots employing strategies like cannon rushes (`LiShiMinBot`) and multi-pylon builds (`MultiPylonBot`).
 *   `phoenix`: PhoenixBot, a Protoss bot built on the ares-sc2 framework with data-driven openings (details in `phoenix/README.md`).
 *   `griffin`: GriffinBot, a Terran bio+tank bot built on ares-sc2, the Terran counterpart of PhoenixBot (details in `griffin/README.md`).
+*   `hydra`: HydraBot, an adaptive Zerg bot driven by the `strategy_engine`. It plays five declarative strategies from cheese to turtle (`hydra/zerg_strategies.yml`) and switches between them mid-game as it reads the opponent. A planner compiles the chosen strategy plus the live game state into a fresh execution plan each step, and generic table-driven executors carry it out (details in `hydra/README.md`).
 *   Replay analysis tool (`analysis/sc2reader_analyzer.py`) to extract build orders, unit production, upgrades, and generate performance graphs.
 *   `bot_profiles/`: Objective scouting profiles of the top AI Arena ladder bots — each bot's own race, strategy, build order, per-race record, strengths, and weaknesses, derived from its source (when public), its replays, and its match history. See `OPPONENTS.md` for the framework on playing a field of deterministic bots.
 *   Scripts to run bots locally against the computer or other bots.
@@ -119,6 +120,9 @@ This project is a collection of AI bots for StarCraft II, developed using Python
 *   **GriffinBot (`griffin/`)**
     *   Race: Terran
     *   Strategy: The Terran counterpart of PhoenixBot, sharing its ares-sc2 architecture. Data-driven openings (`griffin/terran_builds.yml`), then marine/marauder/siege tank/medivac with stim and siege micro, orbital/MULE management, and supply depot raise/lower. See `griffin/README.md`.
+*   **HydraBot (`hydra/`)**
+    *   Race: Zerg
+    *   Strategy: A modular, adaptive bot on the shared `strategy_engine`. Five high-level strategies span the cheese→turtle spectrum (`LingFlood`, `RoachTiming`, `MacroRoachHydra`, `GreedyHydraLurker`, `TurtleHive`), declared as data in `hydra/zerg_strategies.yml`. A `StrategySelector` picks one from the engine's opponent read and switches mid-game; a `Planner` compiles the profile plus live reads into a fresh `ExecutionPlan` every step; generic, table-driven executors (macro/tech/army) carry out whatever plan they're given. The design deliberately keeps strategy in data and out of the low-level code. See `hydra/README.md`.
 
 **Replay Analysis (`analysis/sc2reader_analyzer.py`):**
 This project includes a script to analyze StarCraft II replay files (`.SC2Replay`).
