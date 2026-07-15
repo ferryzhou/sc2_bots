@@ -38,6 +38,19 @@ from .harassment import HarassAdvice, harass_advice
 from .combat import Engagement, EngagementAdvice, assess_engagement
 from .defense import DefensePlan, assess_defense
 from .information import EnemyEstimate, estimate_enemy, project_enemy
+from .openings import (
+    Placement,
+    BuildStep,
+    Opening,
+    OpeningExecutor,
+    Deviation,
+    OPENINGS,
+    classify_opening,
+    openings_for_race,
+    get_opening,
+    best_opening,
+    verify_opening,
+)
 from .advisor import StrategicAdvisor, Advice
 
 __all__ = [
@@ -67,6 +80,17 @@ __all__ = [
     "EnemyEstimate",
     "estimate_enemy",
     "project_enemy",
+    "Placement",
+    "BuildStep",
+    "Opening",
+    "OpeningExecutor",
+    "Deviation",
+    "OPENINGS",
+    "classify_opening",
+    "openings_for_race",
+    "get_opening",
+    "best_opening",
+    "verify_opening",
     "StrategicAdvisor",
     "Advice",
 ]

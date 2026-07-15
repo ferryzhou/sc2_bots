@@ -110,6 +110,73 @@ Two conclusions:
    "stronger later," and *later* won more. (Correlational and matchup-confounded
    — pool timing partly reflects the opponent — but directionally clean.)
 
+## Opening families: there is more than one opening
+
+The single-skeleton view above is the *most common* line; classifying every
+player-opening ([`extract_openings.py`](extract_openings.py)) shows each race
+has a small set of distinct families. Counts are from the same 66 replays (132
+player-openings); "expand%" is how often the family took a natural inside the
+~3:30 window.
+
+| Family | n | Defining signal | Expand% |
+|--------|---|-----------------|---------|
+| `protoss_gate_expand` | 22 | natural nexus in window (wall + expand) | 100% |
+| `protoss_one_base`    | 17 | no early nexus — one-base tech/pressure | 0% |
+| `protoss_proxy`       | 7  | pylon/gateway placed *forward* (across map) | 14% |
+| `protoss_gate_allin`  | 1  | 3+ gateways, no expand | 0% |
+| `protoss_forge_fast`  | –  | forge < 1:00 (cannon rush / FFE) | – |
+| `terran_rax_expand`   | 22 | natural CC in window | 100% |
+| `terran_one_base`     | 3  | no early CC | 0% |
+| `terran_proxy_rax`    | –  | barracks placed forward | – |
+| `zerg_hatch_first`    | 36 | hatch before pool (greedy) | 100% |
+| `zerg_pool_first`     | 11 | pool < 1:30, hatch after | 73% |
+| `zerg_gas_first`      | 7  | extractor before pool | 100% |
+| `zerg_pool_rush`      | 1  | pool < 0:45 (all-in) | 0% |
+
+The classifier keys on the same few signals a bot can scout early: **where** the
+first buildings go (main / ramp-wall / natural / forward-proxy), the **order** of
+production vs. gas vs. expansion, and whether a **natural** appears. The families
+map onto the archetypes in [`../STRATEGY.md`](../STRATEGY.md) at opening
+resolution.
+
+**Validation:** verifying every opening against all families of its race
+([`verify_openings.py`](verify_openings.py)), the correct family fits best (fewest
+deviations) for **88%** of openings — the families are genuinely separable, not
+arbitrary labels.
+
+## Reusable library: `strategy_engine.openings`
+
+The mined openings are folded into the strategy library so any bot can reuse
+them (data in [`../strategy_engine/data/openings.json`](../strategy_engine/data/openings.json)):
+
+```python
+from strategy_engine import (
+    classify_opening, best_opening, OpeningExecutor, verify_opening)
+
+# 1) CLASSIFY an opponent from scouted buildings (name, second, zone)
+fam = classify_opening("Zerg", [("Hatchery", 95, "natural"),
+                                ("SpawningPool", 130, "main")],
+                       first_gas=105, expand_time=95)      # -> "zerg_hatch_first"
+
+# 2) REPRODUCE: drive our own build order + placements
+opening = best_opening("Protoss")            # standard gate-expand
+ex = OpeningExecutor(opening)
+step = ex.next_step(have={"Pylon": 1})       # -> BuildStep(Gateway, RAMP_WALL, ...)
+#   the bot maps step.placement (MAIN / RAMP_WALL / NATURAL / GAS / FORWARD)
+#   onto its own placement helpers, builds step.structure, repeats.
+
+# 3) VERIFY a played opening against the reference bands (economy, units,
+#    placement, positions)
+devs = verify_opening(opening, telemetry)    # list[Deviation]
+```
+
+Each `Opening` carries the modal build order (as `BuildStep`s with a `Placement`
+zone and reference timing), the first-gas/expand timing bands, an economy
+reference (worker/supply/mineral-rate bands at 0:30–3:00), and a unit reference.
+`verify_opening` reports where a played opening departs from that reference —
+missing buildings, late timings, wrong placement zone, or off-band economy —
+which is how a bot self-checks that it actually executed the opening it intended.
+
 ## What a bot should take from this
 
 - **Have one standard economic opening per race and execute it on rails.** The
