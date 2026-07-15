@@ -11,6 +11,7 @@ built isn't undone), and once the script completes the normal production manager
 resumes.
 """
 
+from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId as U
 from sc2.ids.upgrade_id import UpgradeId as Up
 
@@ -76,48 +77,90 @@ class BuildScript:
         # a scouted all-in pauses the script; the defense manager takes over
         if advice.defense.emergency:
             return True
-        have = self._have(bot)
-        action = self.executor.next_action(have)
-        if action is None:
+        have = dict(self._have(bot))
+        # Issue EVERY due + issuable step this tick (skipping blocked ones:
+        # unaffordable, prereq/producer missing, no free geyser, can't expand),
+        # tracking a running mineral/gas budget so we don't over-commit. Strict
+        # serialization is the fidelity killer -- a slow step (3rd gas waiting on
+        # the natural) otherwise cascade-delays everything after it, and firing
+        # only one step per tick makes e.g. Warp Gate (on the core) queue behind
+        # Adept production (on the gateway) though they're independent.
+        spent_m = spent_v = 0
+        pending = False
+        issued = set()
+        for action, key, need in self.executor._required:
+            if have.get(key, 0) >= need:
+                continue
+            pending = True
+            if key in issued or not self._due(action, bot):
+                continue
+            cost = self._cost(bot, action)
+            if cost is None:
+                continue
+            if bot.minerals - spent_m < cost[0] or bot.vespene - spent_v < cost[1]:
+                continue
+            if await self._issue(bot, action):
+                spent_m += cost[0]
+                spent_v += cost[1]
+                issued.add(key)
+        if not pending:
             self.active = False
-            return False
-        if not BuildExecutor.is_due(action, bot.supply_used, bot.time):
-            return True
-        await self._issue(bot, action)
         return True
 
+    def _cost(self, bot, action):
+        ent = (self._upgrade(action.token) if action.action == "research"
+               else self._unit(action.token))
+        if ent is None:
+            return None
+        c = bot.calculate_cost(ent)
+        return (c.minerals, c.vespene)
+
+    @staticmethod
+    def _due(action, bot):
+        # fire at the EARLIER of the supply or time benchmark (max timing
+        # fidelity); affordability still gates the actual issue below.
+        s, t = action.at_supply, action.at_second
+        s_ok = s is None or bot.supply_used >= s
+        t_ok = t is None or bot.time >= t
+        return (s_ok or t_ok) if (s is not None and t is not None) else (s_ok and t_ok)
+
     async def _issue(self, bot, action):
+        """Issue one order; return True iff an order was actually placed."""
         if action.action == "research":
             up = self._upgrade(action.token)
-            if up is None or not bot.can_afford(up):
-                return
+            if up is None or not bot.can_afford(up) or bot.already_pending_upgrade(up):
+                return False
             for s in _RESEARCH_FROM.get(action.token, []):
                 st = bot.structures(getattr(U, s)).ready.idle
                 if st:
                     st.first.research(up)
-                    return
-            return
+                    if action.chrono:
+                        self._boost(bot, st.first)
+                    return True
+            return False
         uid = self._unit(action.token)
         if uid is None or not bot.can_afford(uid):
-            return
+            return False
         if action.action == "build":     # structure
-            await self._build_structure(bot, uid, action.token)
-        else:                            # train a unit
-            self._train(bot, uid, action.token)
+            return await self._build_structure(bot, uid, action.token)
+        return self._train(bot, uid, action.token, action.chrono)
 
     async def _build_structure(self, bot, uid, token):
         if token == "NEXUS":             # a townhall step means "expand"
-            if not bot.already_pending(U.NEXUS):
-                await bot.expand_now()
-            return
+            if bot.already_pending(U.NEXUS):
+                return False
+            await bot.expand_now()
+            return True
         if token == "ASSIMILATOR":       # gas goes on a geyser, not "near"
-            self._build_gas(bot)
-            return
+            return self._build_gas(bot)
         if not bot.structures(U.PYLON).ready and token != "PYLON":
-            return
+            return False
+        if token != "PYLON" and bot.tech_requirement_progress(uid) < 1:
+            return False
         near = self._placement(bot, token)
-        if near is not None:
-            await bot.build(uid, near=near)
+        if near is None:
+            return False
+        return bool(await bot.build(uid, near=near))
 
     def _placement(self, bot, token):
         wall = bot.wall
@@ -151,14 +194,14 @@ class BuildScript:
                         return True
         return False
 
-    def _train(self, bot, uid, token):
-        if token == "NEXUS":
-            return  # expansions are issued by _build_structure path below
+    def _train(self, bot, uid, token, chrono=False):
         if token == "PROBE":
             for nx in bot.townhalls.ready.idle:
                 nx.train(U.PROBE)
-                return
-            return
+                return True
+            return False
+        if bot.tech_requirement_progress(uid) < 1:
+            return False
         producers = None
         if token in GATEWAY_UNITS:
             producers = bot.structures(U.GATEWAY).ready.idle
@@ -168,6 +211,16 @@ class BuildScript:
             producers = bot.structures(U.STARGATE).ready.idle
         if producers:
             producers.first.train(uid)
+            if chrono:
+                self._boost(bot, producers.first)
+            return True
+        return False
+
+    def _boost(self, bot, structure):
+        for nx in bot.townhalls.ready:
+            if nx.energy >= 50:
+                nx(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, structure)
+                return
 
 
 _UPGRADE_TOKENS = {"WARPGATERESEARCH", "CHARGE", "BLINKTECH",

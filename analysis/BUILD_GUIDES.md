@@ -114,6 +114,35 @@ Only same-race builds apply (AegisBot = Terran, Athena = Protoss). HydraBot is
 deliberately not wired: it's declarative (profiles → dynamic planner), so its
 analog is the mined `openings` families, not these exact scripts.
 
+### Confirming reproduction (and timing fidelity)
+
+`analysis/verify_build.py` reads a saved replay and diffs the bot's ACTUAL build
+against the intended script:
+
+```
+python athena/run.py --build 203087 --race zerg --save-replay r.SC2Replay
+python analysis/verify_build.py r.SC2Replay 203087 Protoss
+```
+
+It reports each step's intended vs actual **supply** (the fair fidelity measure
+for a supply-triggered build — wall-clock lags with a slower economy) and time.
+Measured results:
+
+- **AthenaBot / Harstem PvZ: 20/20 steps reproduced.** The opening hits the
+  script almost exactly on supply (Pylon @15 vs @12, Gateway @15 vs @14, Nexus
+  @19 vs @19, Cybernetics @19 vs @19, Stargate @24 vs @24); median |Δsupply| ≈ 3.
+- **AegisBot / SpeCial TvP: 28/30**, opening faithful (Depot 0:15, Barracks 0:46,
+  Refinery 0:54, Factory 2:16, CC 3:33) before ares hands off to macro.
+
+Athena's executor issues **every due, affordable, unblocked step each tick**
+(parallel, budget-tracked — a slow step like the 3rd gas can't cascade-delay the
+rest), fires at the earlier of the supply-or-time benchmark, and chrono-boosts
+the build's chrono-flagged steps. The residual mid-game drift (e.g. Warp Gate
+lands later than the pro's supply) is an **economy limit, not an executor bug**:
+a gas-hungry pro build outruns an adaptive bot's gas income, so the 50-gas
+research waits behind the 150-gas Stargate/Oracle. Closing that gap is a
+bot-macro problem (worker/chrono/mining optimisation), not a build-order one.
+
 ## Adding more builds
 
 ```

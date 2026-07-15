@@ -50,6 +50,23 @@ def pick_pid(r, hint):
     return (humans[0].pid, humans[0].name) if humans else (1, "player1")
 
 
+def supply_timeline(r, pid):
+    """(second -> food_used) samples, for looking up supply at an event time."""
+    pts = sorted((e.second, int(e.food_used)) for e in r.tracker_events
+                 if e.name == "PlayerStatsEvent" and e.pid == pid)
+    return pts
+
+
+def supply_at(pts, sec):
+    val = 12
+    for s, food in pts:
+        if s <= sec:
+            val = food
+        else:
+            break
+    return val
+
+
 def actual_build(r, pid):
     """token -> sorted list of event times (structures placed / unit born / upgrade)."""
     events = defaultdict(list)
@@ -93,6 +110,7 @@ def main():
     r = sc2reader.load_replay(replay_path, load_level=3)
     pid, name = pick_pid(r, hint)
     actual = actual_build(r, pid)
+    supply_pts = supply_timeline(r, pid)
 
     print(f"# Reproduction check: {build.title} [{build.matchup}]")
     print(f"# replay: {os.path.basename(replay_path)}  player: {name} (pid {pid})\n")
@@ -100,6 +118,7 @@ def main():
     # walk intended build steps in order; consume actual events greedily
     used = defaultdict(int)
     rows, hit = [], 0
+    supply_devs = []
     for a in build.build_steps():
         if not a.token:
             continue
@@ -111,21 +130,33 @@ def main():
             t = times[idx]
             used[tok] += 1
             hit += 1
-            rows.append((a.at_supply, a.action, a.name, t, "OK"))
+            asup = supply_at(supply_pts, t)
+            if a.at_supply is not None:
+                supply_devs.append(abs(asup - a.at_supply))
+            rows.append((a.at_supply, a.name, t, asup, "OK"))
         else:
-            rows.append((a.at_supply, a.action, a.name, None, "MISS"))
+            rows.append((a.at_supply, a.name, None, None, "MISS"))
 
     total = sum(1 for a in build.build_steps() if a.token)
-    print(f"{'supply':>6} {'step':<26} {'intended':>8} {'actual':>8}  status")
-    for sup, act, nm, t, status in rows:
-        print(f"{sup or '?':>6} {nm[:26]:<26} {'@'+str(sup) if sup else '':>8} "
+    # "actual @sup" is the bot's supply WHEN it made the step -- the fidelity
+    # measure for a supply-triggered build (wall-clock lags with a slower
+    # economy, but hitting the step at the right supply means the build itself
+    # was followed).
+    print(f"{'step':<26} {'intended':>9} {'actual':>7} {'actual':>8}  status")
+    print(f"{'':<26} {'@supply':>9} {'@supply':>7} {'time':>8}")
+    for sup, nm, t, asup, status in rows:
+        isup = f"@{sup}" if sup else ""
+        print(f"{nm[:26]:<26} {isup:>9} {('@'+str(asup)) if asup is not None else '':>7} "
               f"{mmss(t):>8}  {status}")
     print(f"\nreproduced {hit}/{total} steps ({round(100*hit/max(1,total))}%)")
-
-    # order fidelity: are the reproduced steps in the intended order by time?
+    if supply_devs:
+        med = sorted(supply_devs)[len(supply_devs) // 2]
+        within = sum(1 for d in supply_devs if d <= 4)
+        print(f"supply fidelity: median |Δsupply| = {med}, "
+              f"{within}/{len(supply_devs)} steps within 4 supply of the benchmark")
     seq = [t for *_, t, s in rows if s == "OK"]
     inversions = sum(1 for i in range(1, len(seq)) if seq[i] < seq[i - 1] - 5)
-    print(f"order: {len(seq)} reproduced steps, {inversions} out-of-order (>5s)")
+    print(f"order: {len(seq)} reproduced steps, {inversions} out-of-order by time (>5s)")
 
 
 if __name__ == "__main__":
