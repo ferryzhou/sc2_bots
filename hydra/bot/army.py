@@ -28,6 +28,9 @@ class Army:
         self.scout_sent = False
         self.scout_tag = None
         self._committed = False   # attack-commit latch (deathball discipline)
+        self._last_rescout = 0.0
+        self._scout_targets = None
+        self._scout_idx = 0
 
     def step(self, bot, plan, advice) -> None:
         self._scout(bot)
@@ -187,3 +190,29 @@ class Army:
         if bot.time > 75 and bot.workers.amount > 14 and not getattr(self, "_drone_scouted", False):
             self._drone_scouted = True
             bot.workers.random.move(bot.enemy_start_locations[0])
+
+        # continuous scouting: keep re-checking the enemy so classification and
+        # the counter-comp read stay fresh instead of decaying to a stale guess
+        # ("scout constantly"). Cycle the enemy main + its nearest expansions,
+        # sending a spare fast unit (a zergling if we can spare one, else a
+        # worker) so it never costs the main army.
+        if bot.time - self._last_rescout > 45 and bot.time > 120:
+            self._last_rescout = bot.time
+            target = self._next_scout_target(bot)
+            lings = bot.units(U.ZERGLING)
+            scout = None
+            if lings.amount > 6:
+                scout = lings.closest_to(target)
+            elif bot.workers.amount > 18:
+                scout = bot.workers.random
+            if scout is not None:
+                scout.move(target)
+
+    def _next_scout_target(self, bot):
+        if self._scout_targets is None:
+            enemy = bot.enemy_start_locations[0]
+            exps = sorted(bot.expansion_locations_list, key=lambda p: p.distance_to(enemy))
+            # enemy main + its two nearest expansions
+            self._scout_targets = [enemy] + exps[1:3]
+        self._scout_idx = (self._scout_idx + 1) % len(self._scout_targets)
+        return self._scout_targets[self._scout_idx]

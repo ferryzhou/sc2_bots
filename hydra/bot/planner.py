@@ -37,6 +37,30 @@ DEFEND = "defend"
 HARASS = "harass"
 HOLD = "hold"
 
+# Counter-composition table: a scouted enemy unit (by type) -> a Zerg unit that
+# answers it, and how much weight to fold into our composition. Declarative on
+# purpose -- to change how the bot counters, edit this table, not the executors.
+# The tech resolver auto-builds each counter unit's prerequisites, so adding an
+# entry here is all that's needed. Grouped by what the enemy unit *is*:
+_COUNTERS: Dict[U, tuple] = {
+    # armored / mechanical / tanky ground -> ravagers (corrosive bile) + hydras
+    U.SIEGETANK: (U.RAVAGER, 0.3), U.SIEGETANKSIEGED: (U.RAVAGER, 0.3),
+    U.THOR: (U.RAVAGER, 0.3), U.IMMORTAL: (U.RAVAGER, 0.3),
+    U.ROACH: (U.RAVAGER, 0.2), U.ULTRALISK: (U.RAVAGER, 0.2),
+    U.STALKER: (U.RAVAGER, 0.15),
+    # massed light ground (bio / lings / zealots) -> banelings (splash)
+    U.MARINE: (U.BANELING, 0.3), U.ZERGLING: (U.BANELING, 0.2),
+    U.ZEALOT: (U.BANELING, 0.25), U.HELLION: (U.BANELING, 0.25),
+    # air / capital ships -> corruptors, or hydras for light air
+    U.COLOSSUS: (U.CORRUPTOR, 0.3), U.CARRIER: (U.CORRUPTOR, 0.4),
+    U.TEMPEST: (U.CORRUPTOR, 0.4), U.VOIDRAY: (U.CORRUPTOR, 0.3),
+    U.BROODLORD: (U.CORRUPTOR, 0.4), U.BATTLECRUISER: (U.CORRUPTOR, 0.4),
+    U.MUTALISK: (U.HYDRALISK, 0.3), U.BANSHEE: (U.HYDRALISK, 0.3),
+    U.LIBERATOR: (U.HYDRALISK, 0.3), U.PHOENIX: (U.HYDRALISK, 0.3),
+}
+# how much of the composition counters may add in total (keep our core intact)
+_COUNTER_BUDGET = 0.6
+
 
 @dataclass
 class ExecutionPlan:
@@ -75,6 +99,12 @@ class ExecutionPlan:
 
 
 class Planner:
+    def __init__(self):
+        # power-spike tracking: an upgrade finishing makes us briefly stronger,
+        # which is a moment to press an attack (PRINCIPLES.md "power spikes").
+        self._prev_upgrades: int = 0
+        self._spike_until: float = 0.0
+
     def plan(self, bot, profile: StrategyProfile, advice: Advice) -> ExecutionPlan:
         bases = max(1, bot.townhalls.amount)
         reasons: List[str] = []
@@ -136,6 +166,11 @@ class Planner:
                     tech.append(U.HYDRALISK)
                 reasons.append("enemy air: add hydralisks for anti-air")
 
+        # Counter-composition: fold in units that answer what the enemy actually
+        # fields (table-driven, "composition beats numbers"). Additions are
+        # capped so our chosen strategy's core stays intact.
+        self._apply_counters(bot, comp, tech, reasons)
+
         plan.army_composition = _normalise(comp)
         plan.tech_targets = tech
         plan.prerequisite_structures = zerg_data.all_prerequisite_structures(tech)
@@ -189,8 +224,45 @@ class Planner:
                                      profile.attack_supply * 0.7)
             reasons.append("ahead now: press the timing")
 
+        # Power-spike nudge: an upgrade just finished -> we're momentarily
+        # stronger; press the attack while the spike lasts.
+        if self._on_power_spike(bot) and not profile.all_in:
+            plan.attack_supply = min(plan.attack_supply,
+                                     max(profile.regroup_supply + 6,
+                                         profile.attack_supply * 0.75))
+            reasons.append("power spike (upgrade finished): press")
+
         plan.reasons = reasons
         return plan
+
+    def _on_power_spike(self, bot) -> bool:
+        """True for a short window after an upgrade completes."""
+        ups = getattr(bot.state, "upgrades", None)
+        n = len(ups) if ups else 0
+        if n > self._prev_upgrades:
+            self._spike_until = bot.time + 40.0
+        self._prev_upgrades = n
+        return bot.time < self._spike_until
+
+    def _apply_counters(self, bot, comp, tech, reasons) -> None:
+        """Fold table-driven counters for scouted enemy units into the comp."""
+        seen = bot.enemy_memory.get("enemy_unit_types")
+        if not seen:
+            return
+        added = 0.0
+        for enemy_type in seen:
+            entry = _COUNTERS.get(enemy_type)
+            if not entry:
+                continue
+            counter_unit, weight = entry
+            if added + weight > _COUNTER_BUDGET:
+                continue
+            comp[counter_unit] = comp.get(counter_unit, 0.0) + weight
+            added += weight
+            if counter_unit not in tech:
+                tech.append(counter_unit)
+        if added > 0:
+            reasons.append(f"counter-comp: +{added:.1f} vs scouted units")
 
     def _econ_share(self, bot, profile, plan, emergency, thin) -> float:
         workers = bot.supply_workers
