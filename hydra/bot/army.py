@@ -14,7 +14,10 @@ from __future__ import annotations
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId as U
 
+from . import micro
 from .planner import ATTACK, DEFEND, HARASS, HOLD
+
+LURKERS = {U.LURKERMP, U.LURKERMPBURROWED}
 
 ARMY = {U.ZERGLING, U.BANELING, U.ROACH, U.RAVAGER, U.HYDRALISK, U.LURKERMP,
         U.LURKERMPBURROWED, U.MUTALISK, U.CORRUPTOR, U.BROODLORD, U.ULTRALISK,
@@ -68,11 +71,13 @@ class Army:
         enemies = bot.enemy_units.closer_than(30, base)
         target = enemies.closest_to(base) if enemies else base
         tpos = target.position if hasattr(target, "position") else target
-        for u in army:
-            if u.type_id in (U.LURKERMP, U.LURKERMPBURROWED):
-                self._lurker(bot, u, tpos, hold=True)
-            else:
-                u.attack(tpos)
+        lurkers = army.of_type(LURKERS)
+        for u in lurkers:
+            self._lurker(bot, u, tpos, hold=True)
+        others = army - lurkers
+        if others:
+            # hold ground on defence (no kiting -- don't walk them into the base)
+            micro.command_army(bot, others, tpos, kite=False)
         # Queens hold the base too rather than idling on inject duty while it
         # burns -- they have a strong ground/air attack at close range.
         for q in bot.units(U.QUEEN).closer_than(20, base):
@@ -86,15 +91,19 @@ class Army:
         target = self._attack_target(bot)
         concentrated = army.closer_than(12, center).amount >= 0.6 * army.amount
         staging = self._staging(bot)
-        for u in army:
-            if u.type_id in (U.LURKERMP, U.LURKERMPBURROWED):
-                self._lurker(bot, u, target, hold=False)
-            elif concentrated or bot.supply_army >= 60:
-                u.attack(target)
-            elif u.distance_to(staging) > 8:
-                u.move(staging)
-            else:
-                u.attack(target)
+        lurkers = army.of_type(LURKERS)
+        for u in lurkers:
+            self._lurker(bot, u, target, hold=False)
+        others = army - lurkers
+        if concentrated or bot.supply_army >= 60:
+            if others:
+                micro.command_army(bot, others, target)   # focus-fire + kite
+        else:
+            for u in others:
+                if u.distance_to(staging) > 8:
+                    u.move(staging)
+                else:
+                    u.attack(target)
 
     def _harass(self, bot, army) -> None:
         raiders = army.of_type(RAIDERS)
