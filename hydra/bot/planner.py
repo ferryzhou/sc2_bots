@@ -98,6 +98,18 @@ class Planner:
             plan.expand_now_ok = False
             reasons.append("emergency+thin: freeze economy, larva -> army")
 
+        # Opening safety: a pure-drone opening dies to early aggression, so until
+        # we can rule a rush out, keep some defenders in the mix. Computed here so
+        # the larva split and composition below both see it.
+        self._opening_safe = (
+            not profile.all_in and bot.time < 240.0
+            and (bot.enemy_race is None
+                 or getattr(bot.enemy_race, "name", "") in ("Zerg", "Random")
+                 or advice.classification.archetype.value
+                 in ("unknown", "cheese_allin", "timing_attack")
+                 or advice.defense.static_defense > 0)
+        )
+
         # Larva split: how much of each step's larva goes to drones vs army.
         # Rushing the *initial* economy pays off, so drone hard until a baseline
         # is up; after that, split by stance so army grows alongside the economy
@@ -130,6 +142,17 @@ class Planner:
         plan.tier_target = zerg_data.tier_required(tech)
         plan.upgrade_targets = list(profile.upgrades)
 
+        # Opening safety: keep a floor of cheap defenders (lings) in the mix
+        # while a rush can't be ruled out -- insurance against what we can't see.
+        if self._opening_safe:
+            comp = dict(plan.army_composition)
+            comp[U.ZERGLING] = max(comp.get(U.ZERGLING, 0.0), 0.35)
+            plan.army_composition = _normalise(comp)
+            if U.ZERGLING not in plan.tech_targets:
+                plan.tech_targets.append(U.ZERGLING)
+                plan.prerequisite_structures = zerg_data.all_prerequisite_structures(
+                    plan.tech_targets)
+
         # ---- static defense ------------------------------------------------
         # Start from the profile's per-base intent, then take the max with the
         # library's emergency recommendation so a detected all-in always gets
@@ -140,6 +163,8 @@ class Planner:
         if lib_static > 0:
             plan.spines = max(plan.spines, lib_static)
             reasons.append(f"library wants {lib_static} static defense")
+        if getattr(self, "_opening_safe", False):
+            plan.spines = max(plan.spines, 1)   # one spine up early, always
         if plan.need_detection:
             plan.spores = max(plan.spores, 1)
 
@@ -178,7 +203,9 @@ class Planner:
         # cap (which starves the army in long games). Greedier stances taper
         # more slowly, but every stance ends up army-heavy near saturation.
         if workers < 20:
-            return 1.0
+            # rush the opening economy, but leave a sliver of larva for early
+            # defenders when a rush can't be ruled out (opening-safe)
+            return 0.8 if getattr(self, "_opening_safe", False) else 1.0
         early = {
             Stance.CHEESE: 0.15, Stance.TIMING: 0.45, Stance.STANDARD: 0.55,
             Stance.GREEDY: 0.7, Stance.TURTLE: 0.6,
