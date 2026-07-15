@@ -37,7 +37,7 @@ CheatVision gauntlet (which rewards aggression the ladder punishes).
   ground targets; ghosts EMP the protoss deathball before engagements;
   medivacs hug the bio ball and rely on autocast heal.
   Composition results are documented in `bot/main.py` comments and
-  `results/history_griffin.jsonl` — headline: pure bio went 0-6 vs
+  `griffin/results/history.jsonl` — headline: pure bio went 0-6 vs
   terran+protoss CheatVision, adding tanks fixed TvT/TvZ, and adding
   EMP ghosts took TvP from 1-5 to 5-1.
 

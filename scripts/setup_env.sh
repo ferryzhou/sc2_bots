@@ -97,9 +97,28 @@ if ! ls "$SC2PATH/Maps"/*.SC2Map >/dev/null 2>&1; then
 fi
 echo "    $(ls "$SC2PATH/Maps" | wc -l) maps installed"
 
+echo "==> Replay analysis toolchain (sc2reader)"
+# analysis/*.py parse replays with sc2reader, which needs mpyq. mpyq's setup.py
+# fails to build on recent setuptools, but it is a single pure-Python module, so
+# vendor it directly then install sc2reader without deps (see
+# analysis/principle_analyzer.py).
+if ! "$VENV/bin/python" -c "import sc2reader, mpyq" 2>/dev/null; then
+    SP="$("$VENV/bin/python" -c 'import site; print(site.getsitepackages()[0])')"
+    if ! "$VENV/bin/python" -c "import mpyq" 2>/dev/null; then
+        tmp="$(mktemp -d)"
+        "$VENV/bin/pip" download mpyq --no-deps --no-binary :all: -d "$tmp" >/dev/null
+        tar xzf "$tmp"/mpyq-*.tar.gz -C "$tmp"
+        cp "$tmp"/mpyq-*/mpyq.py "$SP/"
+        rm -rf "$tmp"
+    fi
+    "$VENV/bin/pip" install --quiet sc2reader --no-deps
+fi
+"$VENV/bin/python" -c "import sc2reader; print('    sc2reader', sc2reader.__version__, 'OK')"
+
 echo "Done."
 echo "  Local game:        $VENV/bin/python phoenix/run.py"
 echo "  Gauntlet:          $VENV/bin/python harness/gauntlet.py --games 6"
 echo "  Download opponents: AIARENA_API_TOKEN=... $VENV/bin/python harness/download_bots.py"
 echo "  Versus opponents:  $VENV312/bin/python harness/versus.py --opponent <name>"
 echo "  Ladder zip:        $VENV312/bin/python scripts/create_ladder_zip.py"
+echo "  Analyze replays:   $VENV/bin/python analysis/analyze_aegis_replays.py <run_id>"
