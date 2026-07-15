@@ -32,6 +32,7 @@ from sc2.ids.unit_typeid import UnitTypeId as U
 
 from strategy_engine import StrategicAdvisor, GameState
 
+from bot.compat import patch_creation_abilities
 from bot.perception import Perception
 from bot.strategies import load_library
 from bot.selector import StrategySelector
@@ -67,6 +68,9 @@ class HydraBot(BotAI):
 
     async def on_start(self) -> None:
         self.client.game_step = 4  # responsive without being wasteful
+        # 4.10 client: register creation abilities for dummy/rich unit ids so
+        # already_pending() can't crash the bot mid-game.
+        patch_creation_abilities(self)
 
     async def on_step(self, iteration: int) -> None:
         if not self.townhalls:
