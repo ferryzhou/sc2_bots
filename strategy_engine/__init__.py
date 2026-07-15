@@ -51,6 +51,14 @@ from .openings import (
     best_opening,
     verify_opening,
 )
+from .build_guides import (
+    ScriptedBuild,
+    BuildAction,
+    BuildExecutor,
+    BUILD_GUIDES,
+    guides_for,
+    get_build,
+)
 from .advisor import StrategicAdvisor, Advice
 
 __all__ = [
@@ -91,6 +99,12 @@ __all__ = [
     "get_opening",
     "best_opening",
     "verify_opening",
+    "ScriptedBuild",
+    "BuildAction",
+    "BuildExecutor",
+    "BUILD_GUIDES",
+    "guides_for",
+    "get_build",
     "StrategicAdvisor",
     "Advice",
 ]

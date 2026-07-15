@@ -1,0 +1,225 @@
+{
+  "id": 203110,
+  "title": "SortOf ZvT 8 worker opening",
+  "race": "Zerg",
+  "matchup": "ZvT",
+  "source": "https://lotv.spawningtool.com/build/203110/",
+  "steps": [
+    {
+      "i": 0,
+      "supply": 8,
+      "t": 0,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 1,
+      "supply": 12,
+      "t": 42,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 2,
+      "supply": 13,
+      "t": 52,
+      "action": "build",
+      "name": "Spawning Pool",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 3,
+      "supply": 16,
+      "t": 80,
+      "action": "build",
+      "name": "Hatchery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 4,
+      "supply": 17,
+      "t": 103,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 5,
+      "supply": 17,
+      "t": 112,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 6,
+      "supply": 17,
+      "t": 121,
+      "action": "train",
+      "name": "Queen",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 7,
+      "supply": 20,
+      "t": 130,
+      "action": "train",
+      "name": "Zergling",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 8,
+      "supply": 23,
+      "t": 157,
+      "action": "train",
+      "name": "Queen",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 9,
+      "supply": 23,
+      "t": 162,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 10,
+      "supply": 27,
+      "t": 174,
+      "action": "research",
+      "name": "Metabolic Boost",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 11,
+      "supply": 31,
+      "t": 194,
+      "action": "build",
+      "name": "Evolution Chamber",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 12,
+      "supply": 30,
+      "t": 201,
+      "action": "train",
+      "name": "Zergling",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 13,
+      "supply": 30,
+      "t": 203,
+      "action": "build",
+      "name": "Hatchery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 14,
+      "supply": 33,
+      "t": 207,
+      "action": "train",
+      "name": "Zergling",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 15,
+      "supply": 33,
+      "t": 213,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 16,
+      "supply": 36,
+      "t": 224,
+      "action": "train",
+      "name": "Queen",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 17,
+      "supply": 38,
+      "t": 229,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 18,
+      "supply": 38,
+      "t": 231,
+      "action": "train",
+      "name": "Zergling",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 19,
+      "supply": 43,
+      "t": 245,
+      "action": "train",
+      "name": "Queen",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 20,
+      "supply": 47,
+      "t": 260,
+      "action": "train",
+      "name": "Zergling",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 21,
+      "supply": 56,
+      "t": 275,
+      "action": "build",
+      "name": "Lair",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 22,
+      "supply": 55,
+      "t": 279,
+      "action": "train",
+      "name": "Zergling",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 23,
+      "supply": 57,
+      "t": 289,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": ""
+    }
+  ]
+}

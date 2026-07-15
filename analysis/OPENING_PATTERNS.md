@@ -187,6 +187,11 @@ step = ex.next_step(have={"Pylon": 1})       # -> BuildStep(Gateway, RAMP_WALL, 
 devs = verify_opening(opening, telemetry)    # list[Deviation]
 ```
 
+For *exact, named* pro builds (full step-by-step scripts ingested from
+spawningtool.com — structures, units, and upgrades with supply/time triggers)
+rather than these statistical averages, see
+[`BUILD_GUIDES.md`](BUILD_GUIDES.md) and `strategy_engine.build_guides`.
+
 Each `Opening` carries the modal build order (as `BuildStep`s with a `Placement`
 zone and reference timing), the first-gas/expand timing bands, an economy
 reference (worker/supply/mineral-rate bands at 0:30–3:00), and a unit reference.
