@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sc2.ids.unit_typeid import UnitTypeId as U
 from sc2.data import Race
 
-from strategy_engine import StrategicAdvisor, GameState
+from strategy_engine import StrategicAdvisor, GameState, classify_opening
 
 DETECTORS = {U.OBSERVER, U.PHOTONCANNON}
 
@@ -56,4 +56,18 @@ class Strategy:
         state.upgrade_structures = bot.structures(U.FORGE).ready.amount
         state.upgrades_done = bot.state.upgrades and len(bot.state.upgrades) or 0
         state.has_harass_units = bot.units.of_type({U.ORACLE, U.PHOENIX, U.DARKTEMPLAR}).amount > 0
+
+        # name the opponent's opening from what we've scouted (reuses the
+        # openings library). Read-only for now: surfaced for awareness/logging.
+        bot.enemy_opening = self._classify_enemy_opening(bot, mem)
         return self.advisor.advise(state)
+
+    def _classify_enemy_opening(self, bot, mem):
+        er = getattr(bot, "enemy_race", None)
+        race = er.name if er is not None and hasattr(er, "name") else None
+        seen = mem.get("enemy_opening_seen") or {}
+        if race not in ("Protoss", "Terran", "Zerg") or not seen:
+            return None
+        signals = [(name, d["t"], d["zone"]) for name, d in seen.items()]
+        return classify_opening(race, signals,
+                                mem.get("enemy_first_gas"), mem.get("enemy_expand_t"))

@@ -13,6 +13,7 @@ stay in lockstep.
 | `harassment.py` | harassment sections| Harass and anti-harass decisions. |
 | `combat.py`     | `COMBAT.md`        | The should-engage decision (`assess_engagement`): army strength x upgrade edge x terrain/home/reinforcements/composition, with a trading-down veto. |
 | `information.py`| `INFORMATION.md`   | Dead-reckoning a stale sighting (`estimate_enemy` / `project_enemy`) so enemy reads degrade gracefully instead of going `UNKNOWN`. |
+| `openings.py`   | `analysis/OPENING_PATTERNS.md` | Classified opening builds mined from pro replays: `classify_opening` (name an opponent's opening family), `OpeningExecutor` (reproduce a build order + placement), `verify_opening` (check a played opening's economy/units/placement vs reference bands). Data in `data/openings.json`. |
 | `advisor.py`    | all of the above   | `StrategicAdvisor` ties everything into one `Advice` per step. |
 
 ## Design
