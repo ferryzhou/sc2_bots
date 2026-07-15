@@ -1,146 +1,198 @@
 {
   "window": 120,
-  "n_replays": 66,
+  "n_replays": 273,
   "summary": {
     "Protoss": {
-      "n": 47,
+      "n": 205,
       "timing": {
         "Pylon": {
-          "pct": 98,
-          "median": "0:46",
-          "range": "0:44-0:47",
-          "median_s": 46.0
+          "pct": 100,
+          "median": "0:44",
+          "range": "0:28-0:46",
+          "median_s": 44
         },
         "Gateway": {
-          "pct": 98,
-          "median": "1:18",
-          "range": "1:16-1:21",
-          "median_s": 78.0
+          "pct": 96,
+          "median": "1:16",
+          "range": "1:00-1:20",
+          "median_s": 76
+        },
+        "Forge": {
+          "pct": 10,
+          "median": "1:27",
+          "range": "1:01-1:37",
+          "median_s": 87.5
         },
         "Assimilator": {
-          "pct": 85,
-          "median": "1:33",
-          "range": "1:31-1:38",
-          "median_s": 93.5
+          "pct": 83,
+          "median": "1:31",
+          "range": "1:11-1:36",
+          "median_s": 91.0
+        },
+        "PhotonCannon": {
+          "pct": 3,
+          "median": "1:47",
+          "range": "1:46-1:51",
+          "median_s": 107.5
+        },
+        "Nexus": {
+          "pct": 4,
+          "median": "1:55",
+          "range": "1:53-2:00",
+          "median_s": 115.5
+        },
+        "CyberneticsCore": {
+          "pct": 1,
+          "median": "2:00",
+          "range": "1:55-2:00",
+          "median_s": 120
         }
       },
       "top_orders": [
         [
           "Pylon > Gateway > Assimilator",
-          40
+          150
         ],
         [
           "Pylon > Gateway",
-          6
+          23
         ],
         [
-          "",
-          1
+          "Pylon > Gateway > Assimilator > Forge",
+          9
+        ],
+        [
+          "Pylon > Gateway > Assimilator > Nexus",
+          5
+        ],
+        [
+          "Pylon > Gateway > Assimilator > CyberneticsCore",
+          3
         ]
       ],
-      "first_gas": "1:33",
-      "first_gas_range": "1:31-1:38",
-      "expand_pct_in_window": 0,
-      "expand_median": null,
+      "first_gas": "1:31",
+      "first_gas_range": "1:11-1:36",
+      "expand_pct_in_window": 4,
+      "expand_median": "1:55",
       "workers_born_by_2m": 16,
       "supply_at_2m": 17
     },
     "Terran": {
-      "n": 25,
+      "n": 129,
       "timing": {
         "SupplyDepot": {
           "pct": 100,
           "median": "0:39",
-          "range": "0:38-0:40",
+          "range": "0:34-0:42",
           "median_s": 39
         },
         "Barracks": {
-          "pct": 96,
+          "pct": 94,
           "median": "1:15",
-          "range": "1:14-1:16",
-          "median_s": 75.0
+          "range": "1:09-1:17",
+          "median_s": 75
         },
         "Refinery": {
-          "pct": 92,
-          "median": "1:31",
-          "range": "1:26-1:32",
-          "median_s": 91
+          "pct": 87,
+          "median": "1:27",
+          "range": "1:06-1:32",
+          "median_s": 87.5
+        },
+        "EngineeringBay": {
+          "pct": 1,
+          "median": "1:35",
+          "range": "1:35-1:35",
+          "median_s": 95
         },
         "CommandCenter": {
-          "pct": 4,
-          "median": "1:56",
-          "range": "1:56-1:56",
-          "median_s": 116
+          "pct": 5,
+          "median": "1:49",
+          "range": "1:27-1:56",
+          "median_s": 109.5
         }
       },
       "top_orders": [
         [
           "SupplyDepot > Barracks > Refinery",
-          23
+          94
+        ],
+        [
+          "SupplyDepot > Refinery > Barracks",
+          12
         ],
         [
           "SupplyDepot > Barracks",
-          1
+          12
+        ],
+        [
+          "SupplyDepot > Refinery",
+          4
         ],
         [
           "SupplyDepot > CommandCenter",
-          1
+          3
         ]
       ],
-      "first_gas": "1:31",
-      "first_gas_range": "1:26-1:32",
-      "expand_pct_in_window": 4,
-      "expand_median": "1:56",
+      "first_gas": "1:27",
+      "first_gas_range": "1:06-1:32",
+      "expand_pct_in_window": 5,
+      "expand_median": "1:49",
       "workers_born_by_2m": 15,
       "supply_at_2m": 16
     },
     "Zerg": {
-      "n": 60,
+      "n": 212,
       "timing": {
         "Extractor": {
-          "pct": 42,
+          "pct": 62,
           "median": "0:55",
-          "range": "0:52-0:55",
+          "range": "0:46-0:57",
           "median_s": 55
         },
         "SpawningPool": {
-          "pct": 38,
-          "median": "1:12",
-          "range": "0:46-1:35",
-          "median_s": 72
+          "pct": 50,
+          "median": "1:33",
+          "range": "0:49-1:37",
+          "median_s": 93
+        },
+        "RoachWarren": {
+          "pct": 0,
+          "median": "1:38",
+          "range": "1:38-1:38",
+          "median_s": 98
         },
         "Hatchery": {
-          "pct": 60,
+          "pct": 62,
           "median": "1:42",
-          "range": "1:39-1:45",
-          "median_s": 102.0
+          "range": "1:38-1:45",
+          "median_s": 102
         }
       },
       "top_orders": [
         [
-          "Hatchery",
-          22
+          "Extractor > Hatchery",
+          60
         ],
         [
-          "Extractor > Hatchery",
-          13
+          "Hatchery",
+          40
         ],
         [
           "SpawningPool",
-          12
+          38
         ],
         [
           "Extractor > SpawningPool",
-          9
+          34
         ],
         [
-          "SpawningPool > Extractor",
-          1
+          "Extractor > Hatchery > SpawningPool",
+          12
         ]
       ],
       "first_gas": "0:55",
-      "first_gas_range": "0:52-0:55",
-      "expand_pct_in_window": 60,
+      "first_gas_range": "0:46-0:57",
+      "expand_pct_in_window": 62,
       "expand_median": "1:42",
       "workers_born_by_2m": 16.0,
       "supply_at_2m": 17.0

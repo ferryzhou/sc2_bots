@@ -22,6 +22,7 @@ from statistics import median
 
 import principle_analyzer as pa  # applies the sc2reader arena shim on import
 import sc2reader
+from extract_openings import eligible  # clean-1v1 quality gate (shared)
 
 WINDOW = 120  # seconds of game time to consider "the opening"
 
@@ -138,8 +139,8 @@ def analyze(replay_dir, window):
             r = sc2reader.load_replay(f, load_level=4)
         except Exception:
             continue
-        humans = [p for p in r.players if not p.is_observer] if r.players else []
-        if len(humans) != 2:
+        ok, humans = eligible(r)
+        if not ok:
             continue
         n_ok += 1
         for p in humans:

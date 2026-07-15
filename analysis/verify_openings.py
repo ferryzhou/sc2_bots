@@ -25,9 +25,14 @@ import extract_openings as ex
 import strategy_engine as se
 
 
-def dev_weight(devs):
+def dev_weight(devs, structural_only=False):
+    # Early economy is near-identical across families (~16 workers at 2:00), so
+    # it can't tell openings apart -- for SEPARATION score only the structural
+    # signals (which buildings, when, where). Full weight is used for FIT.
     w = {"major": 3, "warn": 1, "info": 0.3}
-    return sum(w[d.severity] for d in devs)
+    cats = {"missing", "timing", "placement"}
+    return sum(w[d.severity] for d in devs
+               if not structural_only or d.category in cats)
 
 
 def main():
@@ -41,8 +46,8 @@ def main():
             r = sc2reader.load_replay(f, load_level=4)
         except Exception:
             continue
-        humans = [p for p in r.players if not p.is_observer] if r.players else []
-        if len(humans) != 2:
+        ok, humans = ex.eligible(r)
+        if not ok:
             continue
         for p in humans:
             if p.play_race not in ex.RACE_TH:
@@ -58,14 +63,16 @@ def main():
             telem = {"buildings": op["buildings"], "economy": op["economy"],
                      "units": op["units"]}
             own_w = dev_weight(se.verify_opening(own, telem))
-            # separation: compare to the other openings of this race
+            # separation: structural fit vs the other openings of this race
+            own_s = dev_weight(se.verify_opening(own, telem), structural_only=True)
             others = [o for o in se.openings_for_race(p.play_race) if o.name != fam]
-            other_ws = [dev_weight(se.verify_opening(o, telem)) for o in others]
+            other_s = [dev_weight(se.verify_opening(o, telem), structural_only=True)
+                       for o in others]
             total += 1
             st = per_family[fam]
             st["n"] += 1
             st["own"] += own_w
-            if not other_ws or own_w <= min(other_ws):
+            if not other_s or own_s <= min(other_s):
                 st["sep_ok"] += 1
 
     print(f"# Library validation over {total} player-openings\n")
