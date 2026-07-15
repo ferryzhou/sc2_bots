@@ -77,6 +77,43 @@ The mined openings answer "what does the field do, and which family is my
 opponent on"; the scripted guides answer "execute *this exact* pro build." A bot
 can open on a mined family for robustness, or follow a named guide step-for-step.
 
+## Running these builds in a bot (`--build`)
+
+Two bots can reproduce these builds with a single flag; the paths differ because
+the frameworks differ.
+
+**AegisBot (ares-sc2, Terran)** already runs step-by-step openings from
+`aegis/terran_builds.yml` in the ares build-runner DSL. `spawningtool_to_ares.py`
+converts a build_guides JSON into that DSL (each of my sc2 tokens is exactly what
+ares resolves; placement/morph steps use the ares keywords SUPPLY/GAS/EXPAND/
+ORBITAL). The 8 Terran guides are already written into `terran_builds.yml`, so:
+
+```
+python aegis/run.py --build st_t_SpeCial_TvP_8_worker_standard_opening --race protoss
+```
+
+forces that opening via ares `switch_opening`; once the script completes the ares
+macro controllers take over. Regenerate/add builds with:
+
+```
+python analysis/spawningtool_to_ares.py --write aegis/terran_builds.yml 203108 203133 ...
+```
+
+**AthenaBot (python-sc2, Protoss)** has no build runner, so `athena/buildscript.py`
+wraps `BuildExecutor`: while active it issues each scripted structure / unit /
+upgrade at its supply benchmark (mapping tokens to `UnitTypeId`/`UpgradeId` and
+placements to Athena's wall / expansion / gas helpers), then hands off to the
+adaptive managers. The defense advisor overrides it — a scouted all-in pauses the
+script so the anti-rush behaviour isn't undone.
+
+```
+python athena/run.py --build 203087 --race zerg      # Harstem PvZ
+```
+
+Only same-race builds apply (AegisBot = Terran, Athena = Protoss). HydraBot is
+deliberately not wired: it's declarative (profiles → dynamic planner), so its
+analog is the mined `openings` families, not these exact scripts.
+
 ## Adding more builds
 
 ```
