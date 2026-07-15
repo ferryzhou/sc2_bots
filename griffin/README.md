@@ -1,9 +1,15 @@
 # GriffinBot
 
-Terran bot built on [ares-sc2](https://github.com/AresSC2/ares-sc2) — the
-Terran counterpart of `phoenix/` (PhoenixBot), sharing its architecture.
+Terran bot built on [ares-sc2](https://github.com/AresSC2/ares-sc2).
 
-## Architecture (v0)
+**Strategy: turtle → timing-push.** After ~10 rounds of ladder-driven loss
+analysis, GriffinBot was re-architected around a defensive core — defend the
+natural behind sieged tanks, out-macro, then push once with an overwhelming
+maxed army. The design contract and the evidence behind it are in
+[`STRATEGY.md`](STRATEGY.md); this is a deliberate bet on the ladder over the
+CheatVision gauntlet (which rewards aggression the ladder punishes).
+
+## Architecture (v0 — pre-turtle, retained below for history)
 
 - **Opening**: declared as data in `terran_builds.yml`, executed by the ares
   build runner. Multiple builds per opponent race are supported, with
