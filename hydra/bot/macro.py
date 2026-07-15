@@ -87,11 +87,24 @@ class Macro:
             used.add(queen.tag)
 
     # -------------------------------------------------------------------- gas
+    def _desired_gas(self, bot, plan) -> int:
+        """How many extractors we want *now*: ramp gas with the mineral economy
+        instead of maxing it out immediately. Each extractor pulls 3 drones off
+        minerals, so taking 2 gas at 1:30 on 15 drones cripples early income and
+        floats gas we can't yet spend. ~1 extractor per 16 drones, capped by the
+        profile's gas_target, keeps minerals saturated first."""
+        ramp = 1 + bot.supply_workers // 16
+        # ease off gas entirely when it's already piling up (mineral income is
+        # the real constraint for a mineral-heavy Zerg army)
+        if bot.vespene > 400:
+            ramp = min(ramp, bot.gas_buildings.amount)
+        return min(plan.gas_target, ramp)
+
     async def _gas(self, bot, plan) -> None:
-        if not bot.structures(U.SPAWNINGPOOL) and bot.time < 120:
-            return  # no point on gas before any tech building wants it
+        if not bot.structures(U.SPAWNINGPOOL).ready:
+            return  # no point on gas before the pool (nothing needs it yet)
         have = bot.gas_buildings.amount + bot.already_pending(U.EXTRACTOR)
-        if have >= plan.gas_target or not bot.can_afford(U.EXTRACTOR):
+        if have >= self._desired_gas(bot, plan) or not bot.can_afford(U.EXTRACTOR):
             return
         for hatch in bot.townhalls.ready:
             for geyser in bot.vespene_geyser.closer_than(10, hatch):
@@ -106,17 +119,38 @@ class Macro:
     async def _expand(self, bot, plan) -> None:
         if not plan.expand_now_ok:
             return
-        if bot.townhalls.amount + bot.already_pending(U.HATCHERY) >= plan.base_target:
-            return
         if not bot.can_afford(U.HATCHERY) or bot.already_pending(U.HATCHERY):
             return
-        # Take the natural as soon as we have a small worker base; take later
-        # bases when near saturation or floating minerals.
+        bases = bot.townhalls.amount + bot.already_pending(U.HATCHERY)
         saturated = bot.supply_workers >= 0.80 * 16 * bot.townhalls.amount
         take_natural = bot.townhalls.amount < 2 and bot.supply_workers >= 13
-        floating = bot.minerals > 400
-        if take_natural or saturated or floating:
+
+        if bases < plan.base_target:
+            # up to the plan's base count: take the natural early, later bases
+            # when near saturation or floating minerals
+            if take_natural or saturated or bot.minerals > 400:
+                await self._build_hatch(bot)
+            return
+
+        # Beyond the plan: a maxed economy floating minerals is larva-limited,
+        # not resource-limited. A *macro hatchery at home* turns the banked
+        # minerals into larva (injected like any base) without contesting a new
+        # expansion the army has to defend -- the reliable Zerg answer to a float.
+        # a float of *either* resource on a maxed economy means we're
+        # larva-limited (can't convert income to army fast enough)
+        floating_hard = (bot.minerals > 450 or bot.vespene > 500) and saturated
+        total_hatch = bot.structures.of_type(
+            {U.HATCHERY, U.LAIR, U.HIVE}).amount + bot.already_pending(U.HATCHERY)
+        if floating_hard and total_hatch < plan.base_target + 3:
+            base = bot.townhalls.ready.random if bot.townhalls.ready else bot.townhalls.first
             try:
-                await bot.expand_now()
-            except Exception:  # noqa: BLE001 - placement can transiently fail
+                await bot.build(
+                    U.HATCHERY, near=base.position.towards(bot.game_info.map_center, 7))
+            except Exception:  # noqa: BLE001
                 pass
+
+    async def _build_hatch(self, bot) -> None:
+        try:
+            await bot.expand_now()
+        except Exception:  # noqa: BLE001 - placement can transiently fail
+            pass

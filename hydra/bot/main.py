@@ -96,12 +96,16 @@ class HydraBot(BotAI):
 
         if self.time - self._last_log > 45:
             self._last_log = self.time
+            sc = self.state.score
+            gas_workers = sum(g.assigned_harvesters for g in self.gas_buildings.ready)
             logger.info(
                 f"[{int(self.time)}s] strat={profile.name}({profile.stance.value}) "
                 f"stance={plan.combat_stance} drones={self.supply_workers} "
                 f"army={int(self.supply_army)} bases={self.townhalls.amount} "
-                f"| opp={advice.classification.archetype.value} "
-                f"counter={advice.counter.posture}"
+                f"| minc={int(sc.collection_rate_minerals)} gasc={int(sc.collection_rate_vespene)} "
+                f"gasW={gas_workers} idleW={self.workers.idle.amount} "
+                f"bank={self.minerals}/{self.vespene} gasBld={self.gas_buildings.amount} "
+                f"| opp={advice.classification.archetype.value}"
             )
 
     async def on_end(self, result: Result) -> None:
