@@ -44,7 +44,7 @@ from ares.behaviors.macro.macro_plan import MacroPlan
 from ares.consts import (
     ALL_STRUCTURES,
     LOSS_CLOSE_OR_WORSE,
-    VICTORY_DECISIVE_OR_BETTER,
+    TIE_OR_BETTER,
     WORKER_TYPES,
     UnitRole,
     UnitTreeQueryType,
@@ -186,20 +186,15 @@ STIM_BUFFS: set[BuffId] = {BuffId.STIMPACK, BuffId.STIMPACKMARAUDER}
 #   streamed reinforcements in piecemeal until eliminated)
 # - 50 supply + 2 medivacs + 10:00 fallback + cohesion micro: 0-6 vs all
 #   races - too passive, the cheater economy snowballs while bio waits
-# TURTLE re-architecture (see STRATEGY.md): the default stance is defend +
-# macro; griffin only leaves home to PUSH with an OVERWHELMING army, a
-# DECISIVELY-winning sim, or the stalemate timer. This inverts the old
-# attack-at-40 default that fed the army into remax/siege lines piecemeal
-# (buckets B/C). The per-race attack thresholds and stim/medivac gates below
-# are superseded by this single turtle gate and kept only as history.
-PUSH_ARMY_SUPPLY: float = 100.0  # overwhelming deathball (~170 total supply)
-REGROUP_BELOW_SUPPLY: float = 15.0
-# --- superseded by the turtle gate; retained for the documented lessons ---
+# Current: standard stim-timing push - 40 supply once stim + a medivac
+# are in, with a 8:00 fallback so the army never sits home forever.
 ATTACK_AT_SUPPLY: float = 40.0
+REGROUP_BELOW_SUPPLY: float = 15.0
 MEDIVACS_FOR_ATTACK: int = 1
 ATTACK_ANYWAY_AFTER: float = 480.0
-# COMMIT_AT_SUPPLY still used: the strength floor for an opportunistic
-# decisive-sim push, and the stalemate-breaker's minimum army
+# with an overwhelming army, commit unconditionally: real-opponent games
+# stalled to the 40-min wall timeout with a massed army cycling
+# attack/regroup outside a defended base instead of finishing
 COMMIT_AT_SUPPLY: float = 70.0
 # hysteresis on attack/regroup flips: the combat sim swings wildly as
 # enemy units enter/leave vision (TvT logs showed regroup->attack->regroup
@@ -368,34 +363,18 @@ class GriffinBot(AresBot):
                 f"enemy=[{comp_str}]"
             )
 
-        # --- TURTLE stance machine (STRATEGY.md) ---
-        # Default is TURTLE (defend + macro). We commit to a PUSH only when:
-        #   - OVERWHELMING: army supply >= PUSH_ARMY_SUPPLY (a maxed deathball
-        #     that ends the game before a remax can matter), OR
-        #   - FREE WIN: at real strength the sim predicts a DECISIVE win (not a
-        #     coin-flip - the discipline that stops feeding into remax/siege), OR
-        #   - STALEMATE: past the timer with a commit-strength army (close, do
-        #     not tie).
-        army_supply: float = self.supply_used - self.supply_workers
         decision_ready: bool = (
             self.time - self._last_attack_decision >= ATTACK_DECISION_COOLDOWN
         )
-        overwhelming: bool = army_supply >= PUSH_ARMY_SUPPLY
         stalemate: bool = (
             self.time > STALEMATE_AFTER and forces_supply >= COMMIT_AT_SUPPLY
         )
-        free_win: bool = (
-            forces_supply >= COMMIT_AT_SUPPLY
-            and fight is not None
-            and fight in VICTORY_DECISIVE_OR_BETTER
-        )
         if self._commenced_attack:
-            # supply crash always aborts; otherwise sim-regroup on a real loss -
-            # but an overwhelming/stalemate push commits to ending the game and
-            # only breaks off on a supply crash (do not thrash a maxed army)
+            # supply crash aborts immediately; sim-based regroup respects
+            # the cooldown so vision flicker can't thrash the state, and is
+            # disabled entirely in stalemate mode - resolve the game
             if forces_supply < REGROUP_BELOW_SUPPLY or (
-                not overwhelming
-                and not stalemate
+                not stalemate
                 and decision_ready
                 and fight is not None
                 and fight in LOSS_CLOSE_OR_WORSE
@@ -403,20 +382,28 @@ class GriffinBot(AresBot):
                 self._commenced_attack = False
                 self._last_attack_decision = self.time
                 logger.info(
-                    f"{self.time_formatted} REGROUP->TURTLE at "
+                    f"{self.time_formatted} REGROUP at "
                     f"army={forces_supply:.0f} fight={fight}"
                 )
-        elif decision_ready and (overwhelming or stalemate or free_win):
+        elif stalemate or decision_ready and (
+            forces_supply >= COMMIT_AT_SUPPLY
+            or (
+                forces_supply >= self._attack_at_supply
+                and (fight is None or fight in TIE_OR_BETTER)
+                and (
+                    (
+                        self.units(UnitID.MEDIVAC).amount >= MEDIVACS_FOR_ATTACK
+                        and UpgradeId.STIMPACK in self.state.upgrades
+                    )
+                    or self.time > ATTACK_ANYWAY_AFTER
+                )
+            )
+        ):
             self._commenced_attack = True
             self._last_attack_decision = self.time
-            reason = (
-                "overwhelming" if overwhelming
-                else "stalemate" if stalemate
-                else "free-win"
-            )
             logger.info(
-                f"{self.time_formatted} PUSH ({reason}) at "
-                f"army={army_supply:.0f} forces={forces_supply:.0f} fight={fight}"
+                f"{self.time_formatted} ATTACK at "
+                f"army={forces_supply:.0f} fight={fight}"
             )
 
         if self._commenced_attack:
@@ -475,6 +462,14 @@ class GriffinBot(AresBot):
         if self.enemy_race == Race.Protoss:
             return ARMY_COMP_VS_PROTOSS
         return ARMY_COMP
+
+    @property
+    def _attack_at_supply(self) -> float:
+        if self.enemy_race == Race.Protoss:
+            return ATTACK_AT_SUPPLY_VS_PROTOSS
+        if self.enemy_race == Race.Terran:
+            return ATTACK_AT_SUPPLY_VS_TERRAN
+        return ATTACK_AT_SUPPLY
 
     def _counter_proxy_structures(self) -> None:
         """Cannon-rush / proxy response: pull SCVs onto proxy structures
