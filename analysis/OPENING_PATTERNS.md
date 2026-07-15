@@ -5,10 +5,11 @@ an empirical companion to [`../STRATEGY.md`](../STRATEGY.md) (which covers
 archetypes and how to read/counter them) focused narrowly on the **opening
 building process** — the placement order and timing of the first structures.
 
-**Data:** 273 pro/high-ladder 1v1 replays (546 player-openings) — 205 Protoss,
-129 Terran, 212 Zerg — grown from an initial 67 via
+**Data:** 166 **Grandmaster** 1v1 replays (332 player-openings) — 117 Protoss,
+85 Terran, 130 Zerg — grown from an initial 67 via
 [`spawningtool_download.py`](spawningtool_download.py) and gated to clean 1v1s
-(two human non-AI players, Diamond+, past 2:00). Regenerate with:
+with at least one GM player (`extract_openings.eligible`, `min_league=7`; lower
+it to 4 for a wider Diamond+ pool). Regenerate with:
 
 ```
 python analysis/opening_analysis.py <replay_dir>          # writes opening_summary.json
@@ -18,52 +19,50 @@ Times are game-time `m:ss`. "Built %" is the share of players who placed that
 structure inside the first 120s; the range is the interquartile (p25–p75)
 placement time — a proxy for how *standardized* the timing is.
 
-## The headline: the opening order is deterministic
+## The headline: the opening is nearly deterministic
 
-Across every race the opening is one **standard economic build**, and the
-*order* is near-universal — a single dominant skeleton per race that the large
-majority are on:
+Across every race the opening is one **standard economic build executed with
+very low variance** — a single dominant skeleton per race, on tight timings:
 
 | Race    | First supply     | First production      | First gas        | Modal order (share) |
 |---------|------------------|-----------------------|------------------|---------------------|
-| Protoss | Pylon **0:44** | Gateway **1:16** | Assimilator **1:31** | Pylon > Gateway > Gas (73%) |
-| Terran  | Depot **0:39** | Barracks **1:15** | Refinery **1:27** | Depot > Rax > Refinery (73%) |
-| Zerg    | (Overlord/larva) | Spawning Pool **1:33** | Extractor **0:55** | branches (see below) |
+| Protoss | Pylon **0:46** (0:44–0:47) | Gateway **1:18** (1:16–1:21) | Assimilator **1:34** (1:31–1:37) | Pylon > Gateway > Gas (79%) |
+| Terran  | Depot **0:39** (0:38–0:44) | Barracks **1:15** (1:14–1:17) | Refinery **1:31** (1:26–1:32) | Depot > Rax > Refinery (79%) |
+| Zerg    | (Overlord/larva) | Spawning Pool **1:33** | Extractor **0:55** (0:53–0:56) | branches (see below) |
 
-The *timing* is tightest for the pure-pro subset and spreads a little wider once
-Diamond/Master ladder games are included (e.g. Protoss Gateway IQR 1:00–1:20),
-but the sequence itself barely varies. The first ~90 seconds are essentially
-memorized: one skeleton per race, and nearly everyone on it.
+The interquartile spreads are only a few seconds: at GM the first ~90 seconds
+are essentially memorized. (In a wider Diamond+ pool the same medians hold but
+the spread roughly doubles — the tight execution is specifically a top-level
+trait.)
 
 ## Per-race opening skeletons
 
-### Protoss — Pylon → Gateway → Gas (73% of openings)
+### Protoss — Pylon → Gateway → Gas (79% of openings)
 
 ```
-0:44  Pylon          (100%)
-1:16  Gateway        (96%)
-1:31  Assimilator    (83%)
+0:46  Pylon          (100%)
+1:18  Gateway        (98%)
+1:34  Assimilator    (79%)
 ```
 
-- Modal order **Pylon > Gateway > Assimilator** — 150 of 205 openings. The rest
-  are the same minus gas (23×, a slightly greedier/all-in line) or with a Forge
-  spliced in (9×, forge-fast / cannon).
-- **Almost no expansion inside 2:00** (4%). Protoss holds one base through the
+- Modal order **Pylon > Gateway > Assimilator** — 93 of 117 openings. Nearly all
+  the rest are the same minus gas (20×, a slightly greedier/all-in line).
+- **Almost no expansion inside 2:00** (2%). Protoss holds one base through the
   opening; the natural comes later (~2:30+), behind the gateway/cyber wall.
 - ~16 workers, 17 supply at 2:00.
 
-### Terran — Depot → Barracks → Refinery (73% of openings)
+### Terran — Depot → Barracks → Refinery (79% of openings)
 
 ```
 0:39  SupplyDepot    (100%)
 1:15  Barracks       (94%)
-1:27  Refinery       (87%)
+1:31  Refinery       (86%)
 ```
 
-- Modal order **SupplyDepot > Barracks > Refinery** — 94 of 129 openings; another
-  12× swap Barracks/Refinery. The most uniform race by order.
+- Modal order **SupplyDepot > Barracks > Refinery** — 67 of 85 openings; another
+  9× stop at Depot > Barracks. The most uniform race by order.
 - The start Command Center becomes an Orbital in place (not a new building);
-  a true expansion inside 2:00 is rare (5%).
+  a true expansion inside 2:00 is rare (4%).
 - ~15 workers, 16 supply at 2:00.
 
 ### Zerg — the branching race (economy vs. safety, live)
@@ -73,13 +72,14 @@ opening a genuine fork, and the data shows all the branches (see the family
 table below for the full split):
 
 ```
-0:55  Extractor      (62%)      the fork:
-1:33  SpawningPool   (50%)        hatch-first (greedy, expand @ ~1:42) — most common
-1:42  Hatchery(exp)  (62%)        pool-first (safer) / gas-first (extractor first)
-                                  pool-rush (pool < 0:45, thin economy)
+0:55  Extractor      (65%)      the fork (modal orders):
+1:33  SpawningPool   (42%)        46x  Extractor > Hatchery
+1:44  Hatchery(exp)  (59%)        29x  Extractor > SpawningPool
+                                  25x  Hatchery (hatch-first)
+                                  20x  SpawningPool (pool-first / safer)
 ```
 
-- **62% take a second base inside 2:00** (median 1:42) — Zerg is the only race
+- **59% take a second base inside 2:00** (median 1:44) — Zerg is the only race
   that routinely expands in the opening, because a hatchery *is* the economy
   (more larva), not just more mining.
 - **First gas is much earlier than P/T** (0:55 vs ~1:30) — the extractor is
@@ -89,55 +89,60 @@ table below for the full split):
 
 ## The opening does not decide the game
 
-Splitting winners from losers (273 games), the openings are **statistically
-identical**:
+Splitting winners from losers (166 GM games):
 
 | Race    | Winner first-production | Loser first-production | Winner expand% | Loser expand% |
 |---------|-------------------------|------------------------|----------------|---------------|
-| Protoss | Gateway 1:16            | Gateway 1:16           | 2%             | 5%            |
-| Terran  | Barracks 1:15           | Barracks 1:15          | 8%             | 0%            |
-| Zerg    | Pool 1:33               | Pool 1:30              | 62%            | 61%           |
+| Protoss | Gateway 1:18            | Gateway 1:18           | 0%             | 3%            |
+| Terran  | Barracks 1:15           | Barracks 1:15          | 6%             | 0%            |
+| Zerg    | Pool **1:34**           | Pool **1:12**          | 66%            | 52%           |
 
-**The opening does not predict the result.** Winners and losers execute the
-same build at the same times — for Protoss and Terran the first-production
-timing is *identical to the second*, and for Zerg it is within three seconds
-with equal expansion rates. The game is decided *after* the opening, by
-execution and trades, not by which standard opener you pick — consistent with
-the main finding in [`REPLAY_FINDINGS.md`](REPLAY_FINDINGS.md) that trade
-**efficiency**, not the opening, is the dominant predictor of the winner.
+Two conclusions:
 
-> An earlier, smaller sample (67 games) showed a "greedy Zerg wins" signal —
-> winning Zerg opening pool at 1:33 vs losers at 1:07. On 273 games that gap
-> collapses to 1:33 vs 1:30 with equal expand rates: it was small-sample noise.
-> Growing the study set corrected the conclusion — which is the point of
-> studying more games.
+1. **For Protoss and Terran the opening is result-independent.** Winners and
+   losers execute the same build with *identical* first-production timing — the
+   game is decided *after* the opening, by execution and trades, not by which
+   standard opener you pick. Consistent with the main finding in
+   [`REPLAY_FINDINGS.md`](REPLAY_FINDINGS.md): trade **efficiency**, not the
+   opening, is the dominant predictor of the winner.
+2. **At GM, greedy Zerg wins.** Winning Zerg opened their spawning pool much
+   later (1:34 vs 1:12) and expanded more (66% vs 52%): the more economic
+   opening won more often. This is the economy-vs-army tension from
+   [`../PRINCIPLES.md`](../PRINCIPLES.md) in the raw timings — earlier pool =
+   "safer/stronger now," later pool + expand = "stronger later," and *later* won.
+
+> This Zerg signal is **level-dependent**, which is why sample choice matters. In
+> a broader Diamond+ pool (273 games) it washes out (pool 1:33 vs 1:30, equal
+> expand) — greed is only reliably rewarded at the very top, where opponents are
+> less likely to punish it with an early all-in. Treat it as a GM tendency, not a
+> universal law; on a modest sample (n=70/60) it is also matchup-confounded.
 
 ## Opening families: there is more than one opening
 
 The single-skeleton view above is the *most common* line; classifying every
 player-opening ([`extract_openings.py`](extract_openings.py)) shows each race
-has a small set of distinct families. Counts below are from **273 pro/high-ladder
-1v1 games (546 player-openings)** — grown from the initial 67 via
-[`spawningtool_download.py`](spawningtool_download.py) and gated to clean 1v1s by
-`extract_openings.eligible` (two human non-AI players, Diamond+, past 2:00).
-"Expand%" is how often the family took a natural inside the ~3:30 window.
+has a small set of distinct families. Counts below are from the **166 GM
+1v1 games (332 player-openings)**. "Expand%" is how often the family took a
+natural inside the ~3:30 window.
 
 | Family | n | Defining signal | Expand% |
 |--------|---|-----------------|---------|
-| `protoss_gate_expand` | 105 | natural nexus in window (wall + expand) | 100% |
-| `protoss_one_base`    | 65  | no early nexus — one-base tech/pressure | 0% |
-| `protoss_proxy`       | 27  | pylon/gateway placed *forward* (across map) | 11% |
-| `protoss_forge_fast`  | 5   | forge < 1:00 (cannon rush / FFE) | 0% |
-| `protoss_gate_allin`  | 3   | 3+ gateways, no expand | 0% |
-| `terran_rax_expand`   | 88  | natural CC in window | 100% |
-| `terran_one_base`     | 24  | no early CC | 0% |
-| `terran_2rax`         | 9   | 2+ barracks, no expand | 0% |
-| `terran_proxy_rax`    | 8   | barracks placed forward | 12% |
-| `zerg_hatch_first`    | 127 | hatch before pool (greedy) | 100% |
-| `zerg_pool_first`     | 29  | pool < 1:30, hatch after | 72% |
-| `zerg_gas_first`      | 28  | extractor before pool | 100% |
-| `zerg_standard`       | 16  | pool ~1:35 then hatch | 94% |
-| `zerg_pool_rush`      | 12  | pool < 0:45 (all-in, thin economy) | 42% |
+| `protoss_gate_expand` | 64 | natural nexus in window (wall + expand) | 100% |
+| `protoss_one_base`    | 42 | no early nexus — one-base tech/pressure | 0% |
+| `protoss_proxy`       | 9  | pylon/gateway placed *forward* (across map) | 22% |
+| `protoss_gate_allin`  | 2  | 3+ gateways, no expand | 0% |
+| `terran_rax_expand`   | 66 | natural CC in window | 100% |
+| `terran_one_base`     | 11 | no early CC | 0% |
+| `terran_2rax`         | 4  | 2+ barracks, no expand | 0% |
+| `terran_proxy_rax`    | 4  | barracks placed forward | 25% |
+| `zerg_hatch_first`    | 78 | hatch before pool (greedy) | 100% |
+| `zerg_gas_first`      | 25 | extractor before pool | 100% |
+| `zerg_pool_first`     | 13 | pool < 1:30, hatch after | 62% |
+| `zerg_standard`       | 8  | pool ~1:35 then hatch | 100% |
+| `zerg_pool_rush`      | 6  | pool < 0:45 (all-in, thin economy) | 17% |
+
+(`protoss_forge_fast` — forge < 1:00, cannon rush / FFE — appears in the wider
+Diamond+ pool but not among these GM games; the classifier still recognizes it.)
 
 The classifier keys on the same few signals a bot can scout early: **where** the
 first buildings go (main / ramp-wall / natural / forward-proxy), the **order** of
@@ -148,11 +153,13 @@ resolution.
 **Validation:** verifying every opening against all families of its race by
 *structural* fit — build order, timing, placement, since early economy is nearly
 identical across families ([`verify_openings.py`](verify_openings.py)) — the
-correct family fits best for **70%** of 546 openings. Distinct builds separate
-cleanly (`zerg_pool_rush`, `terran_2rax`, `protoss_forge_fast` all 100%); the
-misses are between adjacent families that differ by a *single* decision — e.g.
-`rax_expand` vs `one_base` is just whether the natural Command Center appears —
-which is exactly the branch a bot resolves with one more moment of scouting.
+correct family fits best for **69%** of 332 openings, and GM players fit their
+family's reference bands *tighter* than Diamond+ (lower avg deviation) — they
+execute the standard builds more precisely. Distinct builds separate cleanly
+(`zerg_pool_rush`, `zerg_standard`, `terran_proxy_rax` all 100%); the misses are
+between adjacent families that differ by a *single* decision — e.g. `rax_expand`
+vs `one_base` is just whether the natural Command Center appears — which is
+exactly the branch a bot resolves with one more moment of scouting.
 
 ## Reusable library: `strategy_engine.openings`
 
@@ -199,11 +206,12 @@ which is how a bot self-checks that it actually executed the opening it intended
   the 2-minute mark; the branch point is *after* the opening. Spend the opening
   on clean macro, not on premature reactions (see
   [`../INFORMATION.md`](../INFORMATION.md)).
-- **The opener you pick won't win or lose the game — executing it will.** Since
-  winners and losers open identically, there is no "winning opening" to chase;
-  the payoff is in hitting the timings and then out-trading afterward. Don't
-  agonize over opening selection; invest the effort in clean execution and the
-  post-opening game (efficiency, see [`REPLAY_FINDINGS.md`](REPLAY_FINDINGS.md)).
+- **Execution beats opening choice — but as Zerg, lean greedy.** For Protoss and
+  Terran winners and losers open identically, so there is no "winning opening" to
+  chase; the payoff is hitting the timings and out-trading afterward. The one
+  exception is Zerg at GM, where the more economic opening (later pool, take the
+  base) won more — so absent a scouted threat, prefer hatch-first and convert the
+  lead with efficiency (see [`REPLAY_FINDINGS.md`](REPLAY_FINDINGS.md)).
 - **Classify the opponent's opening, then react to a *scouted* threat only.** Use
   the families to recognize a proxy / pool-rush / all-in from placement and
   timing (`classify_opening`) and shift off the standard line when you actually

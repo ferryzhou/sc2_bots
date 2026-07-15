@@ -61,14 +61,15 @@ def norm(n):
     return NORMALIZE.get(n, n)
 
 
-def eligible(r, min_league=4, min_seconds=120):
+def eligible(r, min_league=7, min_seconds=120):
     """Keep only clean 1v1 human games of reasonable quality/length.
 
     spawningtool ids are a grab-bag -- pro tournament games, ladder games,
     vs-AI practice, and team/custom lobbies. For opening study we want real
     1v1s: exactly two human (non-AI) players of standard races, at least one
-    Diamond+ (openings are standardized from Diamond up), and past the opening.
-    Returns ``(ok, humans)``.
+    Grandmaster (``min_league=7``; SC2 leagues 0-7 = Bronze..GM), and past the
+    opening. Returns ``(ok, humans)``. Lower ``min_league`` to widen the net
+    (e.g. 4 = Diamond+).
     """
     humans = [p for p in r.players if not p.is_observer] if r.players else []
     if len(humans) != 2:
