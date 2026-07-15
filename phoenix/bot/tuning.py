@@ -38,7 +38,7 @@ class Param:
 # constants so learning starts from the validated build.
 #
 # pressure_valve_supply lower bound raised 30 -> 50 after a controlled A/B
-# (results/LADDER_ANALYSIS.md): the tuner had driven it to 34.7, which
+# (phoenix/results/LADDER_ANALYSIS.md): the tuner had driven it to 34.7, which
 # force-attacks ~17 units into combat-sim-predicted losses. That
 # reproduced the ladder's dominant "army wipe" loss (vs Bot_Stardust,
 # same map: valve=34 lost with 0 enemy structures killed + 1015s idle

@@ -1,9 +1,9 @@
 """Run a gauntlet of headless games and maintain a persistent scoreboard.
 
 Each game runs in its own subprocess (one SC2 instance per game) via
-play_one.py. Results append to results/history_<bot>.jsonl (one file per
-bot, so concurrent runs for different bots never contend) and a
-per-matchup summary prints at the end.
+play_one.py. Results append to <bot>/results/history.jsonl (one file per
+bot, colocated with the bot, so concurrent runs for different bots never
+contend) and a per-matchup summary prints at the end.
 
 Examples:
     python harness/gauntlet.py --games 6 --concurrency 2
@@ -26,7 +26,6 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PLAY_ONE = REPO_ROOT / "harness" / "play_one.py"
-RESULTS_DIR = REPO_ROOT / "results"
 # maps verified compatible with ares + the 4.10 linux client (see README)
 MAP_POOL_FILE = REPO_ROOT / "harness" / "map_pool.txt"
 
@@ -34,13 +33,14 @@ WIN, LOSS, TIE = "Victory", "Defeat", "Tie"
 
 
 def history_path(bot: str) -> Path:
-    return RESULTS_DIR / f"history_{bot}.jsonl"
+    """Per-bot results live under the bot's own folder: <bot>/results/history.jsonl."""
+    return REPO_ROOT / bot / "results" / "history.jsonl"
 
 
 def load_all_history() -> list[dict]:
-    """All records across every bot's history file."""
+    """All records across every bot's history file (<bot>/results/history.jsonl)."""
     records: list[dict] = []
-    for path in sorted(RESULTS_DIR.glob("history_*.jsonl")):
+    for path in sorted(REPO_ROOT.glob("*/results/history.jsonl")):
         records += [json.loads(line) for line in path.read_text().splitlines()]
     return records
 
@@ -167,14 +167,14 @@ def main() -> None:
                         help="max wall-clock seconds per game")
     parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--summary-only", action="store_true",
-                        help="print scoreboard from results/history_*.jsonl and exit")
+                        help="print scoreboard from <bot>/results/history.jsonl and exit")
     args = parser.parse_args()
 
     if args.summary_only:
         records = load_all_history()
         if not records:
-            sys.exit(f"No history_*.jsonl files in {RESULTS_DIR}")
-        print_summary(records, f"All-time scoreboard ({RESULTS_DIR}/history_*.jsonl)")
+            sys.exit(f"No */results/history.jsonl files under {REPO_ROOT}")
+        print_summary(records, "All-time scoreboard (*/results/history.jsonl)")
         return
 
     matchups = build_matchups(args)
@@ -183,7 +183,7 @@ def main() -> None:
     print(f"Gauntlet {run_id} @ {sha}: {len(matchups)} games, "
           f"concurrency {args.concurrency}")
 
-    RESULTS_DIR.mkdir(exist_ok=True)
+    history_path(args.bot).parent.mkdir(parents=True, exist_ok=True)
     records: list[dict] = []
     from concurrent.futures import ThreadPoolExecutor, as_completed
 

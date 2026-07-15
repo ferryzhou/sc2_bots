@@ -6,7 +6,7 @@ adapting opponent. On the AI Arena ladder that model is missing one structural
 fact that dominates results: **our opponents are computer programs, and most of
 them play very close to the same build every single game.** This document adds
 the principles that follow from that fact. It is grounded in GriffinBot's 92
-ladder games ([`results/LADDER_ANALYSIS.md`](results/LADDER_ANALYSIS.md) and
+ladder games ([`phoenix/results/LADDER_ANALYSIS.md`](phoenix/results/LADDER_ANALYSIS.md) and
 [`bot_profiles/data/griffin_matches.json`](bot_profiles/data/griffin_matches.json))
 and the opponent build orders behind them. For objective, standalone profiles of
 the ladder's top bots, see [`bot_profiles/`](bot_profiles/).
@@ -21,7 +21,7 @@ every time or lost to it every time:
 | 27turtles 2–0, GenesisLotus 2–0, Visenya 2–0, JackBot2.0 2–0 | Princess‑Mika 0–3, WorkingAsIntended 0–3, KoB 0–2, Hestia 0–2, DasyBot 0–2, StarK234 0–2, oberon 0–2, AxeFighter 0–2, SiriusBot 0–2, Thssprtssbt 0–2 |
 
 This is exactly the pattern the earlier
-[`results/LADDER_ANALYSIS.md`](results/LADDER_ANALYSIS.md) found for PhoenixBot,
+[`phoenix/results/LADDER_ANALYSIS.md`](phoenix/results/LADDER_ANALYSIS.md) found for PhoenixBot,
 now reconfirmed for GriffinBot on a fresh 92‑game sample. The reason is simple:
 a deterministic bot runs the same build into the same fixed opening, so the same
 thing happens every time. **We do not have a "play slightly better" problem —
@@ -93,7 +93,7 @@ should flex to the prior**:
 ## Principle C — Hold, don't trade, against aggression
 
 Every one of our all‑in losses shares one mechanism, already named in
-[`results/LADDER_ANALYSIS.md`](results/LADDER_ANALYSIS.md) as **the army wipe**:
+[`phoenix/results/LADDER_ANALYSIS.md`](phoenix/results/LADDER_ANALYSIS.md) as **the army wipe**:
 our supply crashes to ~0 mid‑game and never recovers, because we commit the
 whole army into a bigger one instead of holding. The fix is a direct application
 of *defender's advantage* (RULES 7 / 9a) plus the efficiency lens:

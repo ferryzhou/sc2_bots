@@ -44,4 +44,4 @@ results/versus_logs/
 results/ladder_replays/*.SC2Replay
 
 # Local per-session bot match history (transient test runs)
-results/history_athena.jsonl
+athena/results/history.jsonl

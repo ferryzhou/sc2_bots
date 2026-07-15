@@ -1,6 +1,6 @@
 """Analyze AegisBot harness replays against aegis/STRATEGY.md.
 
-Joins ``results/history_aegis.jsonl`` (result, difficulty, opponent race, replay
+Joins ``aegis/results/history.jsonl`` (result, difficulty, opponent race, replay
 path) with each replay's tracker events. AegisBot is always player 1 (Terran);
 the built-in AI is player 2. Replays are loaded at ``load_level=3`` to avoid the
 game-event parse crash on headless replays (same approach as ``aa_analyze.py``).
@@ -31,7 +31,7 @@ import principle_analyzer as pa  # applies sc2reader arena patch on import
 import sc2reader
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HIST = os.path.join(REPO, "results", "history_aegis.jsonl")
+HIST = os.path.join(REPO, "aegis", "results", "history.jsonl")
 
 ARMY_UNITS = {
     "Marine", "Marauder", "SiegeTank", "Medivac", "Ghost", "VikingFighter",

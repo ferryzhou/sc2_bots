@@ -295,8 +295,10 @@ def main() -> None:
         sys.exit(f"Unknown opponent {args.opponent!r} - use --list")
     opponent = by_name[args.opponent]
 
-    # one history file per bot so concurrent runs never contend
-    history = REPO_ROOT / "results" / f"history_{BOT_KEY}.jsonl"
+    # one history file per bot, colocated with the bot, so concurrent runs
+    # never contend
+    history = REPO_ROOT / BOT_KEY / "results" / "history.jsonl"
+    history.parent.mkdir(parents=True, exist_ok=True)
     map_pool = (MAP_POOL_FILE.read_text().split()
                 if MAP_POOL_FILE.is_file() else [])
     for i in range(args.games):
