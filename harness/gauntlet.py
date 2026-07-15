@@ -155,7 +155,8 @@ def print_summary(records: list[dict], title: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--bot", default="phoenix", choices=["phoenix", "griffin"],
+    parser.add_argument("--bot", default="phoenix",
+                        choices=["phoenix", "griffin", "hydra"],
                         help="which repo bot to evaluate")
     parser.add_argument("--games", type=int, default=6)
     parser.add_argument("--concurrency", type=int, default=2)

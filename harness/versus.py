@@ -32,7 +32,8 @@ MAP_POOL_FILE = REPO_ROOT / "harness" / "map_pool.txt"
 PY312 = environ.get("LADDER_PYTHON", "/root/venv312/bin/python")
 
 # repo bots with a ladder-capable run.py: dir name -> ladder id
-BOT_REGISTRY = {"phoenix": "PhoenixBot", "griffin": "GriffinBot", "athena": "AthenaBot"}
+BOT_REGISTRY = {"phoenix": "PhoenixBot", "griffin": "GriffinBot",
+                "athena": "AthenaBot", "hydra": "HydraBot"}
 # overridden from --bot in main()
 BOT_KEY = "phoenix"
 BOT_DIR = REPO_ROOT / BOT_KEY

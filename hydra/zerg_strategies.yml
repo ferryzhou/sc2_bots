@@ -1,0 +1,135 @@
+# HydraBot strategy library: five high-level Zerg strategies, cheese -> turtle.
+#
+# Each entry is a declarative StrategyProfile (see bot/strategies.py). The bot's
+# planner turns the chosen profile plus the live game state into a concrete,
+# dynamic execution plan; the selector picks a profile from the strategy_engine's
+# opponent read and switches between them mid-game. Editing this file re-tunes or
+# extends the bot's playbook without touching any code.
+#
+# stance ties the profile to the strategy_engine spectrum so the selector can map
+# the recommended counter to one of these with no ad-hoc table:
+#   cheese < timing < standard < greedy < turtle
+#
+# army: desired composition weights (the planner normalises them). tech: extra
+# units to unlock even if not in the composition yet (prerequisites auto-resolve).
+
+strategies:
+
+  # 1. CHEESE -- zergling/baneling all-in. Almost no economy, pool first, flood
+  #    lings (bane bust follow-up), attack the instant we have a critical mass.
+  #    An opening commitment: you cannot decide to cheese at 8 minutes.
+  LingFlood:
+    stance: cheese
+    drones_per_base: 14
+    max_drones: 16
+    queens_per_base: 1
+    gas_per_base: 1
+    expand_to: 1
+    army:
+      ZERGLING: 0.8
+      BANELING: 0.2
+    tech: [BANELING]
+    upgrades: [ZERGLINGMOVEMENTSPEED]
+    attack_supply: 6
+    regroup_supply: 0
+    all_in: true
+    opening_only: true
+
+  # 2. TIMING -- roach/ravager pressure off two bases. A real economy, but tech
+  #    and army come before the third; hit a mid-game timing, then transition.
+  RoachTiming:
+    stance: timing
+    drones_per_base: 20
+    max_drones: 44
+    queens_per_base: 1
+    gas_per_base: 2
+    expand_to: 2
+    army:
+      ZERGLING: 0.25
+      ROACH: 0.55
+      RAVAGER: 0.2
+    tech: [ROACH, RAVAGER]
+    upgrades: [ZERGLINGMOVEMENTSPEED, ZERGMISSILEWEAPONSLEVEL1, ZERGGROUNDARMORSLEVEL1]
+    spines_per_base: 0.5
+    attack_supply: 26
+    regroup_supply: 10
+    harass: true
+
+  # 3. STANDARD -- balanced roach/hydra macro off three bases. The safe default
+  #    the bot falls back to when the opponent is unread or also playing macro.
+  MacroRoachHydra:
+    stance: standard
+    drones_per_base: 22
+    max_drones: 66
+    queens_per_base: 1
+    gas_per_base: 2
+    expand_to: 3
+    army:
+      ZERGLING: 0.2
+      ROACH: 0.4
+      HYDRALISK: 0.4
+    tech: [ROACH, HYDRALISK]
+    upgrades:
+      - ZERGMISSILEWEAPONSLEVEL1
+      - ZERGGROUNDARMORSLEVEL1
+      - ZERGMISSILEWEAPONSLEVEL2
+      - ZERGGROUNDARMORSLEVEL2
+    spines_per_base: 0.5
+    spores_per_base: 0.5
+    attack_supply: 40
+    regroup_supply: 12
+    harass: true
+
+  # 4. GREEDY -- fast-expanding drone-heavy macro into hydra/lurker. Out-mine the
+  #    map, defend thinly, and punish with a bigger army later. The answer to a
+  #    turtling opponent.
+  GreedyHydraLurker:
+    stance: greedy
+    drones_per_base: 23
+    max_drones: 70
+    queens_per_base: 1
+    gas_per_base: 2
+    expand_to: 5
+    army:
+      ZERGLING: 0.25
+      HYDRALISK: 0.5
+      LURKERMP: 0.25
+    tech: [ROACH, HYDRALISK, LURKERMP]
+    upgrades:
+      - ZERGMISSILEWEAPONSLEVEL1
+      - ZERGGROUNDARMORSLEVEL1
+      - ZERGMISSILEWEAPONSLEVEL2
+      - ZERGGROUNDARMORSLEVEL2
+    spines_per_base: 1.0
+    spores_per_base: 0.5
+    attack_supply: 50
+    regroup_supply: 16
+    harass: true
+
+  # 5. TURTLE -- spine/spore up, tech straight to a Hive-tech late game
+  #    (lurkers + ultralisks, broodlords via the tech line). Survive everything,
+  #    then roll out with the strongest army. The answer to early aggression.
+  TurtleHive:
+    stance: turtle
+    drones_per_base: 22
+    max_drones: 68
+    queens_per_base: 2
+    gas_per_base: 2
+    expand_to: 3
+    army:
+      ROACH: 0.2
+      HYDRALISK: 0.35
+      LURKERMP: 0.25
+      ULTRALISK: 0.2
+    tech: [ROACH, HYDRALISK, LURKERMP, ULTRALISK]
+    upgrades:
+      - ZERGGROUNDARMORSLEVEL1
+      - ZERGMISSILEWEAPONSLEVEL1
+      - ZERGGROUNDARMORSLEVEL2
+      - ZERGMISSILEWEAPONSLEVEL2
+      - ZERGGROUNDARMORSLEVEL3
+      - ZERGMISSILEWEAPONSLEVEL3
+    spines_per_base: 2.0
+    spores_per_base: 1.0
+    attack_supply: 60
+    regroup_supply: 20
