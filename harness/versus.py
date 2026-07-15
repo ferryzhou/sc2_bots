@@ -249,31 +249,69 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 *their_cmd, cwd=opp_cwd, env=opponent_env(),
                 stdout=opp_log, stderr=asyncio.subprocess.STDOUT)
 
+            opp_log_path = log_dir / f"{opponent['name']}_{stamp}.log"
+
+            def opponent_failed():
+                # Build an Error record for an opponent that died. A dead
+                # opponent leaves its units on the map, so SC2 never declares
+                # us the winner -- our bot would grind to the full timeout.
+                # Classify: launch failure (never joined - bad deps) vs in-game
+                # crash (broken bundled sc2, unknown unit/ability id). Neither
+                # counts toward our win/loss record.
+                opp_log.flush()
+                reason = _opponent_failure_reason(opp_log_path)
+                stage = ("crashed in-game"
+                         if _opponent_reached_game(opp_log_path)
+                         else "exited at launch")
+                record["result"] = "Error"
+                record["error"] = (f"opponent {stage} "
+                                   f"(rc={theirs.returncode})"
+                                   + (f": {reason}" if reason else ""))
+
             try:
-                # fast-fail: an opponent that dies in the first 25s and never
-                # joined the game is a launch failure - don't burn the full
-                # match timeout. But an opponent that DID join and then crashed
-                # or resigned in-game is a real result (we won), so fall through
-                # and read our bot's outcome instead of recording an error.
-                opp_log_path = log_dir / f"{opponent['name']}_{stamp}.log"
-                try:
-                    await asyncio.wait_for(theirs.wait(), timeout=25)
+                # Watch our bot AND the opponent for the whole match. Take our
+                # bot's result when the game ends normally; if the opponent
+                # dies first, abort promptly instead of draining the timeout --
+                # immediately for a launch failure (no game to finish), after a
+                # short grace for an in-game crash (the game may be ending for
+                # us anyway).
+                GRACE = 30
+                game_task = asyncio.ensure_future(ours.communicate())
+                opp_task = asyncio.ensure_future(theirs.wait())
+                deadline = time.time() + timeout
+                text = None
+                while text is None:
+                    remaining = deadline - time.time()
+                    if remaining <= 0:
+                        raise asyncio.TimeoutError
+                    done, _ = await asyncio.wait(
+                        {game_task, opp_task}, timeout=remaining,
+                        return_when=asyncio.FIRST_COMPLETED)
+                    if game_task in done:
+                        out, _ = game_task.result()
+                        text = out.decode(errors="replace")
+                        break
+                    # opponent exited while our bot is still running
                     opp_log.flush()
                     if not _opponent_reached_game(opp_log_path):
-                        record["result"] = "Error"
-                        reason = _opponent_failure_reason(opp_log_path)
-                        record["error"] = (f"opponent exited at launch "
-                                           f"(rc={theirs.returncode})"
-                                           + (f": {reason}" if reason else ""))
+                        opponent_failed()          # launch failure -- abort now
+                        game_task.cancel()
                         ours.kill()
                         await ours.wait()
                         record["wall_seconds"] = round(time.time() - wall_start, 1)
                         return record
-                except asyncio.TimeoutError:
-                    pass
+                    try:                            # in-game crash -- brief grace
+                        out, _ = await asyncio.wait_for(
+                            asyncio.shield(game_task), timeout=GRACE)
+                        text = out.decode(errors="replace")
+                    except asyncio.TimeoutError:
+                        opponent_failed()
+                        game_task.cancel()
+                        ours.kill()
+                        await ours.wait()
+                        record["wall_seconds"] = round(time.time() - wall_start, 1)
+                        return record
 
-                out, _ = await asyncio.wait_for(ours.communicate(), timeout=timeout)
-                text = out.decode(errors="replace")
                 (log_dir / f"{BOT_NAME}_{stamp}.log").write_text(text)
                 # anchor to real game results - the bot's own logging can
                 # contain e.g. "EngagementResult.VICTORY_EMPHATIC"
