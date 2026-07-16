@@ -7,16 +7,22 @@ spectrum (``Stance``). Because our profiles are tagged with the same spectrum th
 engine uses to classify opponents, the mapping is a single, principled step:
 play the counter to what the opponent has committed to.
 
-Switching is guarded so the bot doesn't flip-flop:
+Switching is guarded so the bot doesn't flip-flop -- thrashing between strategies
+costs more than it gains, because each switch abandons in-progress tech:
 
 * an all-in / opening-only strategy, once chosen, is committed to (you cannot
   "switch out of" a ling flood halfway -- the drones aren't there);
 * you cannot switch *into* an opening-only strategy after the opening;
-* a minimum dwell time between switches prevents thrashing on noisy scouting;
-* a detected emergency overrides everything toward survival.
+* a new read must **persist** (confirmation window) before it's trusted, and a
+  minimum **dwell** must pass since the last switch -- together these reject the
+  frame-to-frame flicker in the opponent classifier;
+* an immediate all-in defence does NOT force a whole-strategy switch: the planner
+  already defends an emergency (freeze economy, static defence, hold) under any
+  strategy, so a brief emergency blip can't yank us into turtle and back out.
 
 The result: the bot can start on any of the five strategies and re-choose from
-the same five at any point in the game as its read of the opponent firms up.
+the same five as its read of the opponent *firms up* -- but only on a read that
+actually holds, not on noise.
 """
 
 from __future__ import annotations
@@ -25,7 +31,7 @@ from typing import Dict, Optional
 
 from loguru import logger
 
-from strategy_engine import Advice, TradeVerdict
+from strategy_engine import Advice
 
 from .strategies import StrategyProfile, Stance, by_stance
 
@@ -41,10 +47,10 @@ _POSTURE_TO_STANCE = {
 }
 
 # minimum seconds a strategy runs before we allow a switch (anti-thrash)
-_DWELL_SECONDS = 35.0
-# a new read must persist this long before we act on it (kills flip-flopping on
-# noisy frame-to-frame opponent classification)
-_CONFIRM_SECONDS = 12.0
+_DWELL_SECONDS = 50.0
+# a new read must persist *continuously* this long before we act on it -- the
+# main defence against flip-flopping on a noisy opponent classification
+_CONFIRM_SECONDS = 20.0
 # after this we never *start* a fresh all-in (the economy is already committed)
 _OPENING_SECONDS = 100.0
 
@@ -76,22 +82,19 @@ class StrategySelector:
             self._candidate = None
             return self.current
 
-        # A live emergency toward defence is acted on immediately -- survival
-        # can't wait out the confirmation window.
-        emergency_turtle = advice.defense.emergency and desired == Stance.TURTLE
-
-        # Confirmation: a new read must persist before we trust it, so noisy
-        # frame-to-frame opponent classification can't make us flip-flop.
+        # Confirmation: the new read must be desired *continuously* -- any change
+        # (including a flip back to where we are) resets the timer, so a flicker
+        # never accumulates enough to fire. The planner defends an emergency
+        # under any strategy, so we never bypass this for a defensive blip.
         if self._candidate != desired:
             self._candidate = desired
             self._candidate_since = bot.time
         confirmed = bot.time - self._candidate_since >= _CONFIRM_SECONDS
 
-        if not emergency_turtle:
-            if bot.time - self._last_switch_time < _DWELL_SECONDS:
-                return self.current
-            if not confirmed:
-                return self.current
+        if bot.time - self._last_switch_time < _DWELL_SECONDS:
+            return self.current
+        if not confirmed:
+            return self.current
         if target.opening_only and bot.time > _OPENING_SECONDS:
             return self.current
 
@@ -101,20 +104,14 @@ class StrategySelector:
 
     # ------------------------------------------------------------------ #
     def _desired_stance(self, bot, advice: Advice) -> Stance:
-        # Survival first: a live emergency pins us defensive no matter the plan.
-        if advice.defense.emergency:
-            return Stance.TURTLE
-
-        stance = _POSTURE_TO_STANCE.get(advice.counter.posture, Stance.STANDARD)
-
-        # Efficiency overlay: if we are clearly losing trades, step one notch
-        # toward safety; if we are clearly winning them, step toward pressure.
-        verdict = advice.efficiency.verdict
-        if verdict == TradeVerdict.TRADING_DOWN:
-            stance = _shift(stance, +1)   # toward turtle
-        elif verdict == TradeVerdict.TRADING_UP:
-            stance = _shift(stance, -1)   # toward aggression
-        return stance
+        # The stable signal is the engine's counter posture for the scouted
+        # opponent archetype. We deliberately do NOT fold in the emergency flag
+        # or the per-fight trade verdict here: both toggle frame-to-frame and
+        # would reset the confirmation timer forever. Emergency defence and
+        # efficiency-based aggression are the planner's job (every step, under
+        # whatever strategy is active); the selector only picks the strategy from
+        # a *sustained* read of what the opponent has committed to.
+        return _POSTURE_TO_STANCE.get(advice.counter.posture, Stance.STANDARD)
 
     def _resolve(self, stance: Stance) -> Optional[StrategyProfile]:
         """Nearest available profile to the desired stance."""
@@ -138,9 +135,3 @@ class StrategySelector:
         self._last_switch_time = bot.time
         if target.all_in:
             self._committed_all_in = True
-
-
-def _shift(stance: Stance, delta: int) -> Stance:
-    order = [Stance.CHEESE, Stance.TIMING, Stance.STANDARD, Stance.GREEDY, Stance.TURTLE]
-    idx = max(0, min(len(order) - 1, stance.rank + delta))
-    return order[idx]
