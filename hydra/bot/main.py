@@ -58,6 +58,8 @@ class HydraBot(BotAI):
         initial = strategy or os.environ.get("HYDRA_STRATEGY") or "MacroRoachHydra"
         if initial not in self.library:
             initial = "MacroRoachHydra"
+        # Did a human force the opening? If so, opponent-intel must not override it.
+        self._forced_initial = bool(strategy) or bool(os.environ.get("HYDRA_STRATEGY"))
         locked = lock or bool(os.environ.get("HYDRA_LOCK"))
         self.selector = StrategySelector(self.library, initial, locked=locked)
         self.planner = Planner()
@@ -71,6 +73,40 @@ class HydraBot(BotAI):
         # 4.10 client: register creation abilities for dummy/rich unit ids so
         # already_pending() can't crash the bot mid-game.
         patch_creation_abilities(self)
+        await self._apply_opponent_intel()
+
+    async def _apply_opponent_intel(self) -> None:
+        """Pick the *starting* strategy from a pre-game prior on the opponent.
+
+        On the AI Arena ladder the opponent is identified only by a stable
+        ``game_display_id`` UUID passed as ``--OpponentId`` (our ladder wrapper
+        stores it on ``self.opponent_id``); locally the harness passes the bot
+        name. ``opponent_intel`` resolves either form to a known profile and
+        recommends one of our five strategies. The mid-game ``StrategySelector``
+        still refines this by live scouting -- the prior just sets a better
+        opening than a blind default (see OPPONENTS.md, "load the prior first").
+
+        Fully guarded: any failure leaves the default opening untouched (a crash
+        here would forfeit the game).
+        """
+        if self._forced_initial:
+            return
+        opp_id = getattr(self, "opponent_id", None)
+        try:
+            from opponent_intel import recommend_for
+            rec = recommend_for(opp_id)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning(f"[opponent_intel] unavailable ({exc}); using default opening")
+            return
+        if rec.hydra_strategy != self.selector.current.name:
+            self.selector.set_initial(rec.hydra_strategy)
+        logger.info(f"[opponent_intel] {rec.summary()}")
+        try:
+            tag = rec.name if rec.known else "unknown opponent"
+            await self.chat_send(
+                f"(scouting) vs {tag}: opening {rec.hydra_strategy} [{rec.opp_style}]")
+        except Exception:  # pragma: no cover - chat is best-effort
+            pass
 
     async def on_step(self, iteration: int) -> None:
         if not self.townhalls:
