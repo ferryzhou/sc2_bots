@@ -120,6 +120,18 @@ LATE_COMP: dict[UnitID, dict] = {
 LATE_COMP_AFTER: float = 600.0  # 10:00
 LATE_COMP_GAS_BANK: int = 800
 
+# Factory-at-float: the diagnosed loss ROOT CAUSE for aegis too (ported from the
+# griffin fix). aegis/results/STRENGTH_ANALYSIS.md: the 3-9 gauntlet losses built
+# 9-13 barracks on only ~2 factories (often 0 factory tech-labs), so the 20%-tank
+# comp was physically unbuildable and degraded to a marine flood -- 0-1 tanks in
+# the losses vs 7-11 in the 3 wins -- while gas floated (avg 1-3k, peaks to 15k).
+# Tanks are the gas sink AND the splash that beats the mass-unit remax the turtle
+# loses to. When floating gas, add factories up to base count so production can
+# actually spend the bank into tanks. Factories ONLY, gas-gated -- a blanket
+# add_production_at_bank over-built barracks and starved the army (1-5 gauntlet).
+FACTORY_FLOAT_GAS: int = 500
+MAX_FACTORIES: int = 5
+
 # early-rush window: proximity aggression before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
 # one-base/two-base all-in window: griffin's dominant ladder loss (zig-reapers,
@@ -280,6 +292,7 @@ class AegisBot(AresBot):
         self._manage_depots()
         self._counter_proxy_structures()
         self._build_turrets_vs_air()
+        self._build_factories_vs_float()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
@@ -514,6 +527,35 @@ class AegisBot(AresBot):
         }
         blended[UnitID.VIKINGFIGHTER] = {"proportion": 0.2, "priority": 0}
         return blended
+
+    def _build_factories_vs_float(self) -> None:
+        """Add factories when floating gas so tank production can spend the bank
+        - the diagnosed loss root cause (aegis/results/STRENGTH_ANALYSIS.md). The
+        gauntlet losses ran ~2 factories on 9-13 barracks, so the tank comp
+        degraded to a marine flood and gas floated to 15k. More factories convert
+        that gas into tanks (the splash + siege anchor the turtle needs). Factories
+        only, gas-gated, so it can't over-build barracks and starve the army."""
+        if self._emergency or self.time < 300.0:
+            return
+        if self.vespene < FACTORY_FLOAT_GAS:
+            return
+        # need a barracks first (factory tech prereq)
+        if not self.structures(UnitID.BARRACKS).ready:
+            return
+        have = (
+            self.structures(UnitID.FACTORY).ready.amount
+            + self.already_pending(UnitID.FACTORY)
+        )
+        cap = min(MAX_FACTORIES, len(self.townhalls))
+        if have >= cap:
+            return
+        if self.can_afford(UnitID.FACTORY):
+            self.register_behavior(
+                BuildStructure(
+                    base_location=self.start_location,
+                    structure_id=UnitID.FACTORY,
+                )
+            )
 
     def _build_turrets_vs_air(self) -> None:
         """Missile turrets at each mineral line once enemy air combat units
