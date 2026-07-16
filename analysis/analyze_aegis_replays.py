@@ -118,11 +118,90 @@ def analyze(rec):
     )
 
 
+def _army_supply(e):
+    """food_used minus workers ~= army+structure supply (army-strength proxy)."""
+    return e.food_used - e.workers_active_count
+
+
+def _at_time(series, t):
+    best = None
+    for e in series:
+        if e.second <= t:
+            best = e
+        else:
+            break
+    return best
+
+
+def timeline(rec):
+    """Per-loss trajectory: army-supply vs opponent at checkpoints, the decisive
+    single-fight army-value drop, and whether the army rebuilt -- to place the
+    loss in the aegis/STRATEGY.md buckets (A early all-in / B mid remax / C late
+    grind)."""
+    if not os.path.exists(rec["replay"]):
+        return None
+    r = sc2reader.load_replay(rec["replay"], load_level=3)
+    stats = defaultdict(list)
+    ups = defaultdict(list)
+    for e in r.tracker_events:
+        if e.name == "PlayerStatsEvent":
+            stats[e.pid].append(e)
+        elif e.name == "UpgradeCompleteEvent" and not e.upgrade_type_name.lower().startswith("spray"):
+            ups[e.pid].append(e.second)
+    bot, opp = stats.get(1), stats.get(2)
+    if not bot or not opp:
+        return None
+    glen = r.game_length.seconds
+    traj = []
+    for t in (t for t in (360, 480, 600, 720, 840, 960) if t < glen):
+        b, o = _at_time(bot, t), _at_time(opp, t)
+        if b and o:
+            traj.append((t // 60, _army_supply(b), _army_supply(o)))
+    val = [(e.second, e.minerals_used_current_army + e.vespene_used_current_army) for e in bot]
+    worst_t = worst_drop = before = after = 0
+    for (ta, a), (tb, b) in zip(val, val[1:]):
+        if a - b > worst_drop:
+            worst_drop, worst_t, before, after = a - b, tb, a, b
+    peak_after = max((v for (t, v) in val if t >= worst_t), default=after)
+    return dict(
+        opp_race=rec["opponent_race"], difficulty=rec["difficulty"], map=r.map_name,
+        glen=glen, traj=traj, worst_t=worst_t, worst_drop=worst_drop, before=before,
+        after=after, rebuilt=peak_after > after * 1.5, end_val=val[-1][1],
+        bot_ups=len(ups[1]), opp_ups=len(ups[2]),
+        last_bot_up=(ups[1][-1] if ups[1] else 0),
+    )
+
+
 def main():
-    run_id = sys.argv[1] if len(sys.argv) > 1 else None
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    do_timeline = "--timeline" in sys.argv
+    run_id = args[0] if args else None
     recs = [json.loads(l) for l in open(HIST)]
     if run_id:
         recs = [r for r in recs if r.get("run_id") == run_id]
+
+    if do_timeline:
+        print("Per-loss timelines (army-supply bot vs opp; decisive drop; rebuild?)\n")
+        for rec in recs:
+            if rec.get("result") != "Defeat":
+                continue
+            try:
+                t = timeline(rec)
+            except Exception as ex:  # noqa: BLE001
+                print(f"skip: {ex}", file=sys.stderr)
+                continue
+            if not t:
+                continue
+            traj = "  ".join(f"{m}'={b:.0f}v{o:.0f}" for (m, b, o) in t["traj"])
+            print(f"### {t['opp_race']} {t['difficulty']} on {t['map']} "
+                  f"(game {t['glen']//60}:{t['glen']%60:02d})")
+            print(f"  army-supply/min: {traj}")
+            print(f"  decisive drop: {t['before']}->{t['after']} (-{t['worst_drop']}) "
+                  f"at {t['worst_t']//60}:{t['worst_t']%60:02d}; "
+                  f"{'REBUILT' if t['rebuilt'] else 'did NOT recover'} (end {t['end_val']})")
+            print(f"  upgrades: bot {t['bot_ups']} (last @ {t['last_bot_up']//60}m) "
+                  f"vs opp {t['opp_ups']}\n")
+        return
     games = []
     for rec in recs:
         try:

@@ -92,6 +92,77 @@ FactoryTechLab 0–2 (often 0)   EngineeringBay 1   Bunker 0   MissileTurret 0
 - **Expansions** trail (4 bases vs the AI's 6–8, `expand MATCH 12/12`) — a
   symptom of the same infrastructure-lag, not a separate problem.
 
+## Why the losses happen — root cause through the principles
+
+The symptoms above are downstream of one mechanism. Reading the per-loss
+timelines (`analyze_aegis_replays.py <run_id> --timeline`) against the loss
+buckets in `aegis/STRATEGY.md` and the fundamentals in `PRINCIPLES.md` /
+`COMBAT.md`:
+
+**1. The turtle succeeds at what it was built for, and fails at the next step.**
+None of the 9 losses is a **bucket-A early all-in death** — every game lasts
+13–20+ minutes. The bot survives to the mid/late game, which is exactly what
+turtling is supposed to buy. The losses are all **bucket B/C** (mid-game remax /
+late grind): the bot is *even or ahead on army-supply at 10–12 min* (e.g. TvT
+`10'=51 v 38`; TvP `12'=73 v 58`, `14'=101 v 81`), then loses one engagement
+(army value −1100 to −2400 in a single window) and — in 8 of 9 — **never
+rebuilds** (end army value ≈ 0). This is the precise failure `STRATEGY.md`
+names: "even/ahead at 8min, army evaporates by 12min, can't rebuild before the
+enemy re-attacks."
+
+**2. It wins the economy sub-game but loses the *conversion*.** By
+`PRINCIPLES.md` the economy exists to be *spent into a board advantage*; by
+`COMBAT.md` the #1 predictor of a won game is winning trades. AegisBot out-works
+the AI and reaches midgame ahead on raw supply, but its trade ratio in losses is
+**0.2–0.68** (it kills a fifth to two-thirds of the value it loses). A supply
+lead in the wrong currency is not a lead — it is un-converted economy.
+
+**3. All three combat levers that turn supply into trade value are missing.**
+`COMBAT.md` "How to win battles" lists them in order of impact, and the bot
+fails each:
+   - **Composition (the fight is decided before it starts).** Near-pure bio,
+     ~0 tanks — no splash, no siege anchor. Supply-for-supply the countered army
+     loses, and bio *is* the countered side vs the AI's tank/colossus/roach
+     comps. (`STRATEGY.md`: "pure bio went 0-6".)
+   - **Upgrades = "efficiency bought in advance."** Bot **5–8** vs the AI's
+     **9–17**, and it *stops upgrading around 12–15 min* while the opponent keeps
+     going. Per `PRINCIPLES.md` §tech, a +N-behind army is structurally
+     out-traded before a single command — which is why the bot loses fights it
+     is *ahead on supply* for (101 v 81 supply, still wiped).
+   - **Position.** The whole turtle thesis is to fight from a sieged tank line at
+     a choke (`COMBAT.md` "defend": walls/chokes/static defense). With no tanks
+     and **zero bunkers/turrets**, there is no line — the bio ball fights in the
+     open and is caught, violating "only fight favorable engagements."
+
+**4. The deeper cause is the three-way investment split (`PRINCIPLES.md`
+central tension).** Every resource is a claim on **economy**, **army**, or
+**tech/upgrades**. AegisBot pours minerals into the two *cheap* claims — workers
+and marines from 10–13 barracks (a mineral-only army) — and starves the
+*gas/tech* claim: **2 factories, often 0 factory tech-labs, 1 engineering bay**.
+So gas piles up unspent (late mineral/gas float 500–1100+, peaks to 15k), the
+army is quantity without quality, and upgrades stall. The turtle's stated win
+condition is "out-macro, then push with an overwhelming, **fully-upgraded** maxed
+army" — that is precisely the leg (tanks + upgrades) the build never funds.
+
+**5. Why "ahead now" still loses (`PRINCIPLES.md` §timing).** Strength is
+relative and swings over time. The bot's 10–12 min supply lead is a power
+window, but it sits in TURTLE and never pushes it; meanwhile the AI converts its
+gas into upgrades and a better comp and swings the relative strength. The bot's
+own doctrine ("Don't tie; close — push once maxed & upgraded") never fires
+because it is never actually upgraded/maxed on the right comp — so the paper lead
+expires and the eventual fight is unfavorable.
+
+**6. A parallel bleed on the economy leg.** `COMBAT.md` "defend" and the
+harassment principle both call for static defense covering worker lines; with no
+bunkers/turrets the bot loses **46–97 workers per loss** to harass, continuously
+sawing the one leg it does win.
+
+**In one sentence:** AegisBot loses because it never converts its economic lead
+into combat value — it funds workers and mineral bio but not the tanks, tech
+labs, and upgrades its own turtle win-condition depends on, so its supply lead is
+out-traded and wiped in a single open-field fight it cannot rebuild from
+(textbook bucket-B/C), while harassment saws the economy leg in parallel.
+
 ## Bottom line
 
 AegisBot's macro *economy* aligns with the strategy, but its **production
@@ -115,4 +186,5 @@ out. The highest-leverage fix is production-side, in priority order:
 Method note: `VeryHard` is non-cheating and is the cleaner signal for macro
 attribution; `CheatVision` inflates the opponent's economy/float numbers and is
 best read only as the catastrophe-guard `STRATEGY.md` intends. Reproduce with
-`python analysis/analyze_aegis_replays.py 20260715_080232`.
+`python analysis/analyze_aegis_replays.py 20260715_080232` (add `--timeline`
+for the per-loss army-supply trajectories and decisive-drop timing).
