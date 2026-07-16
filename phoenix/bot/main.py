@@ -134,6 +134,16 @@ ATTACK_AT_SUPPLY: float = 26.0
 REGROUP_BELOW_SUPPLY: float = 10.0
 DEFEND_RADIUS: float = 25.0
 
+# remax: keep production ahead of income so a post-fight bank converts to
+# army fast (the Lissy/sharpy losses led on army, lost one fight, then got
+# out-remaxed while our minerals piled up). ares' ProductionController only
+# adds a gateway when BOTH minerals and gas banks clear (400, 400); our army
+# is mineral-heavy (stalker 125m/50g), so a post-fight *mineral* surplus never
+# triggered more production. Gate the add on minerals alone (gas 0) so a
+# mineral bank always buys more warp-in throughput - straight Principle 3
+# (spend, don't float) + Principle 6 (keep production saturated).
+REMAX_MINERAL_BANK: int = 400
+
 
 class PhoenixBot(AresBot):
     expansions_generator: cycle
@@ -295,10 +305,17 @@ class PhoenixBot(AresBot):
         if self._commenced_attack:
             self._micro(forces, target=self.attack_target)
         else:
-            # stage the army between our bases and the map center
-            rally: Point2 = self.main_base_ramp.top_center.towards(
-                self.game_info.map_center, 4.0
-            )
+            # hold-don't-throw: when an all-in is inbound (or we're already
+            # in emergency defense) stage ON the ramp top - high-ground choke
+            # inside shield-battery cover - so the flood breaks on defender's
+            # advantage (RULES 9a) instead of catching our army in the open.
+            # Otherwise stage slightly forward to contest the map.
+            if self._all_in_read or self._emergency:
+                rally: Point2 = self.main_base_ramp.top_center
+            else:
+                rally = self.main_base_ramp.top_center.towards(
+                    self.game_info.map_center, 4.0
+                )
             grid: np.ndarray = self.mediator.get_ground_grid
             for unit in forces:
                 if unit.distance_to(rally) > 8.0:
@@ -468,8 +485,15 @@ class PhoenixBot(AresBot):
                             base_location=self.start_location,
                         )
                     )
+                # remax throughput: add gateways whenever minerals bank (gas
+                # gate dropped to 0), so a post-fight mineral surplus rebuilds
+                # army fast instead of floating
                 macro_plan.add(
-                    ProductionController(comp, base_location=self.start_location)
+                    ProductionController(
+                        comp,
+                        base_location=self.start_location,
+                        add_production_at_bank=(REMAX_MINERAL_BANK, 0),
+                    )
                 )
                 # shield battery at each base (auto-techs its prerequisites);
                 # cannons skipped to avoid an early forge detour
