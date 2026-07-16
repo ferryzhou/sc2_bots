@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sc2.bot_ai import BotAI
 from sc2.data import Result
 
+from strategy_engine import Archetype
 from perception import Perception
 from strategy import Strategy
 from economy import Economy
@@ -57,15 +58,19 @@ class AthenaBot(BotAI):
         advice = self.strategy.advise(self)
 
         # scripted opening (--build): the script drives tech/army structure while
-        # active. A scouted all-in makes the bot CHANGE PATH -- it abandons the
-        # planned build for good and hands the game to the adaptive/defensive
-        # managers (following a greedy pro build into a rush is how you die). With
-        # no emergency, it proceeds on the planned build.
-        if (self.build_script is not None and self.build_script.active
-                and advice.defense.emergency):
-            self.build_script.active = False
-            print(f"[{int(self.time)}s] EMERGENCY -> abandoning scripted build "
-                  f"'{self.build_script.build.title}', going adaptive")
+        # active. The bot CHANGES PATH reactively -- as soon as SCOUTING says the
+        # opponent is doing something the greedy build isn't safe against (a rush
+        # opening, an all-in/timing read from the advisor, or a live emergency) it
+        # abandons the planned build and hands the game to the adaptive/defensive
+        # managers. This fires on scouted *intent* (earlier than the army arriving
+        # at the door), which is the whole point of scouting. With no threat, it
+        # proceeds on the planned build.
+        if self.build_script is not None and self.build_script.active:
+            reason = self._threat_scouted(advice)
+            if reason is not None:
+                self.build_script.active = False
+                print(f"[{int(self.time)}s] threat scouted ({reason}) -> abandoning "
+                      f"scripted build '{self.build_script.build.title}', going adaptive")
         scripted = self.build_script is not None and self.build_script.active
         if scripted:
             await self.build_script.step(self, advice)
@@ -82,6 +87,28 @@ class AthenaBot(BotAI):
                   f"opening={self.enemy_opening or '?'} "
                   f"counter={advice.counter.posture} "
                   f"workers={self.supply_workers} army={int(self.supply_army)} bases={self.townhalls.amount}")
+
+    # scouted opponent openings that a greedy macro build must react to
+    REACTIVE_OPENINGS = {
+        "zerg_pool_rush", "protoss_proxy", "protoss_gate_allin",
+        "protoss_forge_fast", "terran_proxy_rax", "terran_2rax",
+    }
+
+    def _threat_scouted(self, advice):
+        """Why to abandon the scripted build now (perception-driven), or None.
+
+        Ordered from earliest scouting signal to latest: the opponent's opening
+        family (from classify_opening), the advisor's archetype read (all-in /
+        timing from the scouted economy/army split), then the live emergency.
+        """
+        if self.enemy_opening in self.REACTIVE_OPENINGS:
+            return self.enemy_opening
+        arch = advice.classification.archetype
+        if arch in (Archetype.CHEESE_ALLIN, Archetype.TIMING_ATTACK):
+            return arch.value
+        if advice.defense.emergency:
+            return "emergency"
+        return None
 
     async def on_end(self, result: Result):
         print(f"AthenaBot game ended: {result}")

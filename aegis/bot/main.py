@@ -649,19 +649,43 @@ class AegisBot(AresBot):
             or bool(self.mediator.get_enemy_went_marine_rush)
         )
 
+    def _enemy_aggression_scouted(self) -> bool:
+        """Perception-based rush/all-in reads from the scout -- these fire on
+        scouted *intent* (a proxy, a committed rush build) earlier than the enemy
+        army physically arriving at our ramp, so we change path sooner."""
+        m = self.mediator
+
+        def read(name: str) -> bool:
+            try:
+                return bool(getattr(m, name))
+            except Exception:
+                return False
+
+        return (read("get_enemy_proxies")            # proxy structures = react now
+                or read("get_enemy_went_four_gate")
+                or read("get_enemy_went_marine_rush")
+                or read("get_enemy_went_marauder_rush")
+                or read("get_enemy_ling_rushed")
+                or read("get_enemy_roach_rushed")
+                or read("get_enemy_ravager_rush")
+                or read("get_enemy_worker_rushed"))
+
     def _update_emergency(self) -> None:
         """Rush defense mode: abort the opening, stop spending on greed.
 
-        Two triggers: close-proximity aggression in the first 5min, and the
-        economy-based all-in read through ~11min (the timing-attack window)."""
-        if self._early_aggression_seen() or self._enemy_all_in:
+        Three triggers, earliest first: a perception read from the scout (a proxy
+        or a committed rush build -- reactive, before the army arrives), close-
+        proximity aggression in the first 5min, and the economy-based all-in read
+        through ~11min (the timing-attack window)."""
+        if (self._enemy_aggression_scouted() or self._early_aggression_seen()
+                or self._enemy_all_in):
             self._last_threat_time = self.time
             if not self._emergency:
                 self._emergency = True
+                trigger = ("scouted rush" if self._enemy_aggression_scouted()
+                           else "all-in" if self._enemy_all_in else "early rush")
                 logger.warning(
-                    f"{self.time_formatted} EMERGENCY: "
-                    f"{'all-in' if self._enemy_all_in else 'early rush'} detected"
-                )
+                    f"{self.time_formatted} EMERGENCY: {trigger} detected")
                 if not self.build_order_runner.build_completed:
                     # CHANGE PATH: abort the opening (incl. a forced --build) and
                     # hand control to the reactive macro plan immediately.
