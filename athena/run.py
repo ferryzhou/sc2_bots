@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT.parent))  # repo root for strategy_engine
 
 from sc2 import maps
-from sc2.data import Difficulty, Race
+from sc2.data import AIBuild, Difficulty, Race
 from sc2.main import run_game
 from sc2.player import Bot, Computer
 
@@ -38,6 +38,8 @@ def main():
     p.add_argument("--build", default=None,
                    help="reproduce a spawningtool build id for the opening "
                         "(a Protoss build ingested into build_guides, e.g. 203087)")
+    p.add_argument("--ai-build", default="Macro",
+                   help="built-in opponent AIBuild: Macro, Rush, Timing, Air, ...")
     args, _ = p.parse_known_args()
 
     ai = AthenaBot()
@@ -55,7 +57,8 @@ def main():
     map_name = args.map or random.choice(map_pool)
     run_game(
         maps.get(map_name),
-        [bot, Computer(RACES[args.race], DIFFS[args.difficulty])],
+        [bot, Computer(RACES[args.race], DIFFS[args.difficulty],
+                       ai_build=AIBuild[args.ai_build.title()])],
         realtime=False,
         save_replay_as=args.save_replay,
     )
