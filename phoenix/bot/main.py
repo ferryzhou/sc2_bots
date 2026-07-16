@@ -95,6 +95,17 @@ EMERGENCY_COMP: dict[UnitID, dict] = {
     UnitID.ZEALOT: {"proportion": 0.5, "priority": 1},
 }
 
+# build-order watchdog: the ares build runner can stall forever if an
+# opening step is denied (early pressure blocking the expansion step is the
+# usual cause). While stalled, build_completed stays False and the macro
+# fallback runs almost nothing - two ladder losses (StarK234, Princess-Mika)
+# froze at ~45 supply / 2 gateways and floated 9-12k minerals, never handing
+# off to the macro controllers. Force the handoff once the opening has
+# clearly overrun (past this time, or past this supply - both well beyond a
+# healthy opening's ~27-supply endpoint) so full macro always resumes.
+BUILD_ORDER_DEADLINE: float = 200.0
+BUILD_ORDER_SUPPLY_CAP: float = 36.0
+
 # early-rush window: aggression detected before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
 # don't spend on forge/twilight upgrades before this (a 2:32 forge+twilight
@@ -375,6 +386,24 @@ class PhoenixBot(AresBot):
             self._emergency = False
 
     def _macro(self) -> None:
+        # build-order watchdog: if the ares build runner has stalled (an
+        # opening step denied, build_completed stuck False past a healthy
+        # opening), force the handoff so the full macro stack - AutoSupply,
+        # BuildWorkers, ProductionController, ExpansionController - resumes
+        # instead of the near-empty fallback branch. Fires once; guards the
+        # macro-freeze losses where we floated 9-12k minerals stuck at ~45
+        # supply. Emergency already force-completes on rushes; this covers
+        # the non-rush stalls (macro opponents that contest our expansion).
+        if not self.build_order_runner.build_completed and (
+            self.time > BUILD_ORDER_DEADLINE
+            or self.supply_used >= BUILD_ORDER_SUPPLY_CAP
+        ):
+            logger.warning(
+                f"{self.time_formatted} build-order watchdog: forcing "
+                f"handoff to macro (t={self.time:.0f} supply={self.supply_used})"
+            )
+            self.build_order_runner.set_build_completed()
+
         # dynamic gas throttle: our army is mineral-heavy, so when gas is
         # flooding (the Hestia loss floated 5k+) ease workers off gas onto
         # minerals - cuts the waste AND speeds us toward max supply, which
