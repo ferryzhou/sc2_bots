@@ -117,16 +117,25 @@ class Planner:
         plan.gas_target = min(profile.gas_per_base * bases, 8)
         plan.base_target = profile.expand_to
 
-        # Under a defensive emergency with too little army, freeze drone/base
-        # growth and pour larva into units instead (the library's call, not ours).
+        # Under a defensive emergency with too little army, lean larva into units
+        # instead of greed. But a *one-base* economy loses on its own, so the
+        # natural is never frozen -- and once we have some static defence up, we
+        # keep taking the map *behind* it (a turtle takes ground, it doesn't sit
+        # on one base and strangle). Only extra bases beyond that are held back.
         emergency = advice.defense.emergency or advice.defense.prioritize_army
         thin = bot.supply_army < max(8.0, (advice.enemy_estimate.army_supply or 0) * 0.8)
+        have_static = (bot.structures.of_type(
+            {U.SPINECRAWLER, U.SPORECRAWLER}).ready.amount >= 1)
         if profile.all_in:
             plan.expand_now_ok = False
         elif emergency and thin:
-            plan.drone_target = min(plan.drone_target, bot.supply_workers + 2)
-            plan.expand_now_ok = False
-            reasons.append("emergency+thin: freeze economy, larva -> army")
+            plan.drone_target = min(plan.drone_target,
+                                    max(bot.supply_workers + 2, 16 * 2))
+            # freeze only when we're already on 2+ bases without defence up;
+            # always allow the natural, and allow expanding behind static defence
+            if bot.townhalls.amount >= 2 and not (have_static and bot.supply_army >= 16):
+                plan.expand_now_ok = False
+                reasons.append("emergency+thin: hold expansion, larva -> army")
 
         # Opening safety: a pure-drone opening dies to early aggression, so until
         # we can rule a rush out, keep some defenders in the mix. Computed here so

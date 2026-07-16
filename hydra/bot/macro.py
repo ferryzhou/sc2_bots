@@ -127,8 +127,10 @@ class Macro:
 
         if bases < plan.base_target:
             # up to the plan's base count: take the natural early, later bases
-            # when near saturation or floating minerals
-            if take_natural or saturated or bot.minerals > 400:
+            # when near saturation, floating minerals, or once we have an army to
+            # cover the expansion (take the map behind the army -- a turtle that
+            # never expands strangles itself on one base)
+            if take_natural or saturated or bot.minerals > 400 or bot.supply_army >= 18:
                 await self._build_hatch(bot)
             return
 
