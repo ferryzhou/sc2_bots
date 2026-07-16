@@ -70,6 +70,8 @@ def main():
         help="python-sc2 Difficulty name, e.g. VeryHard, CheatVision, CheatInsane",
     )
     parser.add_argument("--realtime", action="store_true")
+    parser.add_argument("--ai-build", default="Macro",
+                        help="built-in opponent AIBuild: Macro, Rush, Timing, Air, ...")
     parser.add_argument(
         "--build", default=None,
         help="force a named opening from terran_builds.yml (e.g. a pro build "
@@ -101,7 +103,7 @@ def main():
             Computer(
                 Race[args.race.title()],
                 Difficulty[args.difficulty],
-                ai_build=AIBuild.Macro,
+                ai_build=AIBuild[args.ai_build.title()],
             ),
         ],
         realtime=args.realtime,

@@ -663,7 +663,12 @@ class AegisBot(AresBot):
                     f"{'all-in' if self._enemy_all_in else 'early rush'} detected"
                 )
                 if not self.build_order_runner.build_completed:
-                    # hand control to the reactive macro plan immediately
+                    # CHANGE PATH: abort the opening (incl. a forced --build) and
+                    # hand control to the reactive macro plan immediately.
+                    if self.forced_opening:
+                        logger.warning(
+                            f"emergency -> abandoning forced build "
+                            f"{self.forced_opening}")
                     self.build_order_runner.set_build_completed()
         elif self._emergency and self.time - self._last_threat_time > 45.0:
             self._emergency = False

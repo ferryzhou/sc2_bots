@@ -57,10 +57,16 @@ class AthenaBot(BotAI):
         advice = self.strategy.advise(self)
 
         # scripted opening (--build): the script drives tech/army structure while
-        # active; economy still makes probes/supply, and a scouted all-in pauses
-        # the script (defense takes over). Once done, normal production resumes.
-        scripted = (self.build_script is not None and self.build_script.active
-                    and not advice.defense.emergency)
+        # active. A scouted all-in makes the bot CHANGE PATH -- it abandons the
+        # planned build for good and hands the game to the adaptive/defensive
+        # managers (following a greedy pro build into a rush is how you die). With
+        # no emergency, it proceeds on the planned build.
+        if (self.build_script is not None and self.build_script.active
+                and advice.defense.emergency):
+            self.build_script.active = False
+            print(f"[{int(self.time)}s] EMERGENCY -> abandoning scripted build "
+                  f"'{self.build_script.build.title}', going adaptive")
+        scripted = self.build_script is not None and self.build_script.active
         if scripted:
             await self.build_script.step(self, advice)
             await self.economy.step(self, advice, scripted=True)
