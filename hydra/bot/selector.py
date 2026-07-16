@@ -65,6 +65,18 @@ class StrategySelector:
         self._candidate: Optional[Stance] = None
         self._candidate_since: float = 0.0
 
+    def set_initial(self, name: str) -> None:
+        """Override the starting strategy before the game begins (e.g. from a
+        pre-game opponent prior). Resets switch/commit bookkeeping so the new
+        choice is treated as the genuine opening, not a mid-game switch."""
+        if name not in self.library:
+            return
+        self.current = self.library[name]
+        self._committed_all_in = self.current.all_in
+        self._last_switch_time = 0.0
+        self._candidate = None
+        self._candidate_since = 0.0
+
     def select(self, bot, advice: Advice) -> StrategyProfile:
         """Return the profile to run this step, switching if warranted."""
         if self.locked or self._committed_all_in:

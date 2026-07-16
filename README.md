@@ -12,6 +12,7 @@ This project is a collection of AI bots for StarCraft II, developed using Python
 *   `hydra`: HydraBot, an adaptive Zerg bot driven by the `strategy_engine`. It plays five declarative strategies from cheese to turtle (`hydra/zerg_strategies.yml`) and switches between them mid-game as it reads the opponent. A planner compiles the chosen strategy plus the live game state into a fresh execution plan each step, and generic table-driven executors carry it out (details in `hydra/README.md`).
 *   Replay analysis tool (`analysis/sc2reader_analyzer.py`) to extract build orders, unit production, upgrades, and generate performance graphs.
 *   `bot_profiles/`: Objective scouting profiles of the top AI Arena ladder bots — each bot's own race, strategy, build order, per-race record, strengths, and weaknesses, derived from its source (when public), its replays, and its match history. See `OPPONENTS.md` for the framework on playing a field of deterministic bots.
+*   `opponent_intel/`: Turns the in-game opponent id (AI Arena passes only the opponent's stable `game_display_id` UUID via `--OpponentId`, never the name) into a known profile and a counter-strategy. HydraBot uses it to pick its *starting* strategy from a pre-game prior on the opponent; any bot can read the race-agnostic stance. Includes a UUID/name→strategy map (`opponent_map.json`) and a `verify.py` to prove resolution.
 *   Scripts to run bots locally against the computer or other bots.
 
 **Directory Structure:**
