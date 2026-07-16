@@ -27,6 +27,8 @@ class AthenaBot(BotAI):
         super().__init__()
         self.enemy_memory = {}
         self.enemy_opening = None
+        self.force_build_id = None   # set by run.py --build; a spawningtool id
+        self.build_script = None
         self.wall = Wall()
         self.perception = Perception()
         self.strategy = Strategy()
@@ -37,6 +39,11 @@ class AthenaBot(BotAI):
 
     async def on_start(self):
         self.client.game_step = 4  # responsive without being wasteful
+        if self.force_build_id is not None:
+            from buildscript import BuildScript
+            self.build_script = BuildScript(self.force_build_id)
+            if self.build_script.active:
+                print(f"reproducing build: {self.build_script.build.title}")
 
     async def on_step(self, iteration):
         if not self.townhalls:
@@ -49,8 +56,17 @@ class AthenaBot(BotAI):
         self.perception.update(self)
         advice = self.strategy.advise(self)
 
-        await self.economy.step(self, advice)
-        await self.production.step(self, advice)
+        # scripted opening (--build): the script drives tech/army structure while
+        # active; economy still makes probes/supply, and a scouted all-in pauses
+        # the script (defense takes over). Once done, normal production resumes.
+        scripted = (self.build_script is not None and self.build_script.active
+                    and not advice.defense.emergency)
+        if scripted:
+            await self.build_script.step(self, advice)
+            await self.economy.step(self, advice, scripted=True)
+        else:
+            await self.economy.step(self, advice)
+            await self.production.step(self, advice)
         self.army.step(self, advice)
 
         if self.time - self.last_log > 60:

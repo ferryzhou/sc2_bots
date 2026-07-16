@@ -77,6 +77,72 @@ The mined openings answer "what does the field do, and which family is my
 opponent on"; the scripted guides answer "execute *this exact* pro build." A bot
 can open on a mined family for robustness, or follow a named guide step-for-step.
 
+## Running these builds in a bot (`--build`)
+
+Two bots can reproduce these builds with a single flag; the paths differ because
+the frameworks differ.
+
+**AegisBot (ares-sc2, Terran)** already runs step-by-step openings from
+`aegis/terran_builds.yml` in the ares build-runner DSL. `spawningtool_to_ares.py`
+converts a build_guides JSON into that DSL (each of my sc2 tokens is exactly what
+ares resolves; placement/morph steps use the ares keywords SUPPLY/GAS/EXPAND/
+ORBITAL). The 8 Terran guides are already written into `terran_builds.yml`, so:
+
+```
+python aegis/run.py --build st_t_SpeCial_TvP_8_worker_standard_opening --race protoss
+```
+
+forces that opening via ares `switch_opening`; once the script completes the ares
+macro controllers take over. Regenerate/add builds with:
+
+```
+python analysis/spawningtool_to_ares.py --write aegis/terran_builds.yml 203108 203133 ...
+```
+
+**AthenaBot (python-sc2, Protoss)** has no build runner, so `athena/buildscript.py`
+wraps `BuildExecutor`: while active it issues each scripted structure / unit /
+upgrade at its supply benchmark (mapping tokens to `UnitTypeId`/`UpgradeId` and
+placements to Athena's wall / expansion / gas helpers), then hands off to the
+adaptive managers. The defense advisor overrides it — a scouted all-in pauses the
+script so the anti-rush behaviour isn't undone.
+
+```
+python athena/run.py --build 203087 --race zerg      # Harstem PvZ
+```
+
+Only same-race builds apply (AegisBot = Terran, Athena = Protoss). HydraBot is
+deliberately not wired: it's declarative (profiles → dynamic planner), so its
+analog is the mined `openings` families, not these exact scripts.
+
+### Confirming reproduction (and timing fidelity)
+
+`analysis/verify_build.py` reads a saved replay and diffs the bot's ACTUAL build
+against the intended script:
+
+```
+python athena/run.py --build 203087 --race zerg --save-replay r.SC2Replay
+python analysis/verify_build.py r.SC2Replay 203087 Protoss
+```
+
+It reports each step's intended vs actual **supply** (the fair fidelity measure
+for a supply-triggered build — wall-clock lags with a slower economy) and time.
+Measured results:
+
+- **AthenaBot / Harstem PvZ: 20/20 steps reproduced.** The opening hits the
+  script almost exactly on supply (Pylon @15 vs @12, Gateway @15 vs @14, Nexus
+  @19 vs @19, Cybernetics @19 vs @19, Stargate @24 vs @24); median |Δsupply| ≈ 3.
+- **AegisBot / SpeCial TvP: 28/30**, opening faithful (Depot 0:15, Barracks 0:46,
+  Refinery 0:54, Factory 2:16, CC 3:33) before ares hands off to macro.
+
+Athena's executor issues **every due, affordable, unblocked step each tick**
+(parallel, budget-tracked — a slow step like the 3rd gas can't cascade-delay the
+rest), fires at the earlier of the supply-or-time benchmark, and chrono-boosts
+the build's chrono-flagged steps. The residual mid-game drift (e.g. Warp Gate
+lands later than the pro's supply) is an **economy limit, not an executor bug**:
+a gas-hungry pro build outruns an adaptive bot's gas income, so the 50-gas
+research waits behind the 150-gas Stargate/Oracle. Closing that gap is a
+bot-macro problem (worker/chrono/mining optimisation), not a build-order one.
+
 ## Adding more builds
 
 ```
