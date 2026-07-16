@@ -188,3 +188,35 @@ attribution; `CheatVision` inflates the opponent's economy/float numbers and is
 best read only as the catastrophe-guard `STRATEGY.md` intends. Reproduce with
 `python analysis/analyze_aegis_replays.py 20260715_080232` (add `--timeline`
 for the per-loss army-supply trajectories and decisive-drop timing).
+
+## Attempted fix #1 — factory-at-float (REVERTED)
+
+Ported griffin's `_build_factories_vs_float` (add a factory when floating
+≥500 gas, up to base count) to convert the gas bank into the missing tanks.
+Re-ran the **same seed 7** gauntlet (run `20260716_122726`) as a controlled A/B:
+
+| | vs Zerg | vs Protoss | vs Terran | total |
+|---|---|---|---|---|
+| baseline `2e75722` | 2–2 | 1–3 | 0–4 | **3–9 (25%)** |
+| +factory-at-float | 1–3 | 0–4 | 0–4 | **1–11 (8%)** |
+
+**It regressed, and the composition data shows why it never did what it
+intended.** Factories did rise (2 → 4–5), but **`FactoryTechLab` stayed 0–1 in
+almost every game** — and siege tanks require a factory tech-lab, so the extra
+factories sat idle (or made nothing) and **tanks did not rise** (still 0–3;
+only the one game that happened to get 3 factory tech-labs built 12 tanks). Net
+effect: ~600–750 minerals diverted into bare factories, a thinner marine army
+(the thing actually carrying the bot), gas *still* floating, and longer games
+lost anyway.
+
+Two lessons for the next attempt:
+1. **Adding factories ≠ adding tanks.** A real fix must guarantee the *factory
+   tech-lab* (and enough gas income), not just the factory shell — otherwise
+   `ProductionController` keeps spending the minerals on marines.
+2. **The gauntlet is the wrong judge for this** (`STRATEGY.md` principle 7): it
+   rewards aggression and punishes tank/turtle transitions, so a tank-oriented
+   change should be validated on the **ladder**. But the naked-factory waste
+   above is a genuine defect independent of that caveat, so the port was
+   reverted rather than shipped for ladder judging.
+
+Reverted in the commit following `20260716_122726`; baseline behavior restored.
