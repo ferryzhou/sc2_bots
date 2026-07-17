@@ -176,13 +176,6 @@ CAPITAL_AIR_TYPES: set[UnitID] = {
     UnitID.BROODLORD,
 }
 
-# Static defense: a garrisoned bunker at the natural choke. The loss audit
-# (aegis/results/STRENGTH_ANALYSIS.md) found 0 bunkers/turrets in every game and
-# 46-72 workers bled to harass -- the Terran defensive line the turtle rests on
-# was never built. One bunker covering the natural approach stops runbys.
-BUNKER_AFTER: float = 180.0  # 3:00 - after the opening establishes
-DESIRED_BUNKERS: int = 1
-
 TANK_TYPES: set[UnitID] = {UnitID.SIEGETANK, UnitID.SIEGETANKSIEGED}
 # siege when ground targets are inside this; unsiege when none remain
 # within a comfortably larger radius (hysteresis avoids mode-flapping)
@@ -293,7 +286,6 @@ class AegisBot(AresBot):
         self._counter_proxy_structures()
         self._build_turrets_vs_air()
         self._ensure_tank_production()
-        await self._manage_bunkers()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
@@ -546,9 +538,9 @@ class AegisBot(AresBot):
 
     def _tanks_wanted(self) -> bool:
         """Gate direct tank production on the siege-tank supply share of the
-        current comp so we never over-build them (tank = 3 supply). Tanks are
-        wanted even during an all-in read -- sieged tanks are the premier
-        defender at the choke -- so this is NOT gated on _emergency."""
+        current comp so we never over-build them (tank = 3 supply)."""
+        if self._emergency:
+            return False
         share = self._army_comp.get(UnitID.SIEGETANK, {}).get("proportion", 0.0)
         if share <= 0:
             return False
@@ -568,14 +560,8 @@ class AegisBot(AresBot):
            priority-0 unit the SpawnController never had 150 spare minerals for a
            tank behind the 10-barracks marine flood, so ~0 tanks got built while
            gas floated to 15k. Direct training converts that gas bank into the
-           splash + siege anchor the turtle needs.
-
-        Runs even during an all-in read (not gated on _emergency): the
-        Persephone loss was AHEAD at 14min then wiped because the emergency gate
-        suppressed the tech-lab all game (0 tanks). Tanks defend all-ins; the
-        4:00 floor + can_afford + tank-share cap keep it from starving the
-        emergency marine mass."""
-        if self.time < 240.0:
+           splash + siege anchor the turtle needs."""
+        if self._emergency or self.time < 240.0:
             return
         # 1. ensure a factory tech-lab exists
         have_techlab = (
@@ -607,46 +593,6 @@ class AegisBot(AresBot):
                 if factory.add_on_tag in techlab_tags:
                     factory.train(UnitID.SIEGETANK)
                     break
-
-    async def _manage_bunkers(self) -> None:
-        """Static defense at the natural choke - the missing Terran defensive
-        line (aegis/results/STRENGTH_ANALYSIS.md: 0 bunkers/turrets every game,
-        46-72 workers bled to harass). A garrisoned bunker covers the natural
-        approach so runbys/harass can't saw the economy leg; marines fire from
-        inside with +1 range and are protected."""
-        if self.time < BUNKER_AFTER or not self.townhalls:
-            return
-        try:
-            nat: Point2 = self.mediator.get_own_nat
-        except Exception:  # noqa: BLE001 - map analysis may lack a natural
-            return
-        choke: Point2 = nat.towards(self.game_info.map_center, 5.0)
-        have = (
-            self.structures(UnitID.BUNKER).amount
-            + self.already_pending(UnitID.BUNKER)
-        )
-        if (
-            have < DESIRED_BUNKERS
-            and self.can_afford(UnitID.BUNKER)
-            and not self.already_pending(UnitID.BUNKER)
-        ):
-            pos = await self.find_placement(
-                UnitID.BUNKER, near=choke, placement_step=2
-            )
-            if pos:
-                worker = self.mediator.select_worker(target_position=pos)
-                if worker:
-                    worker.build(UnitID.BUNKER, pos)
-        # garrison: load nearby marines up to capacity (loaded units auto-defend)
-        for bunker in self.structures(UnitID.BUNKER).ready:
-            space = bunker.cargo_left
-            if space <= 0:
-                continue
-            nearby = self.units(UnitID.MARINE).filter(
-                lambda m: m.distance_to(bunker) < 15.0
-            )
-            for marine in nearby[:space]:
-                marine(AbilityId.SMART, bunker)
 
     def _build_turrets_vs_air(self) -> None:
         """Missile turrets at each mineral line once enemy air combat units
