@@ -227,11 +227,28 @@ class PhoenixBot(AresBot):
         """One-base all-in read: past the rush window but the enemy still
         hasn't expanded and shows a real army. The 4 midgame ladder losses
         (Klakinn/Montka/OneBaseStalkerBot/PiG_Bot) all died to this at
-        8-11min: their army value was 2-6x ours while we teched/expanded."""
-        if not (210.0 < self.time < 660.0):
+        8-11min: their army value was 2-6x ours while we teched/expanded.
+
+        Two tells: an EARLY structure read (a one-base production commitment -
+        3+ gateways with no expansion - scouted before the army is even
+        visible) and the later army-sighting read. The structure tell is what
+        lets us defer our upgrades/expansion IN TIME: the sparring repro showed
+        the army-only read didn't fire until 5:40 (we don't see their army till
+        it moves out), by which point we'd already teched at 5:00 and lost the
+        6:00 fight behind. Seeing their 3rd/4th gateway at ~4:00 fires it
+        first."""
+        if not (150.0 < self.time < 660.0):
             return False
         if self.mediator.get_enemy_expanded:
             return False
+        # EARLY: one-base gateway/robo commitment (no expansion) = all-in coming
+        enemy_gates = (
+            self.enemy_structures(UnitID.GATEWAY).amount
+            + self.enemy_structures(UnitID.WARPGATE).amount
+        )
+        if self.time > 240.0 and enemy_gates >= 3:
+            return True
+        # LATER: a real army massed on one base
         enemy_army_supply = self.get_total_supply(
             self.enemy_units.filter(
                 lambda u: u.type_id not in WORKER_TYPES
@@ -355,10 +372,17 @@ class PhoenixBot(AresBot):
         if self._commenced_attack:
             self._micro(forces, target=self.attack_target)
         else:
-            # stage the army between our bases and the map center
-            rally: Point2 = self.main_base_ramp.top_center.towards(
-                self.game_info.map_center, 4.0
-            )
+            # hold the ramp choke (high-ground defender's advantage, inside
+            # shield-battery cover) when an all-in is inbound or we're in
+            # emergency defense - the sparring repro showed our army got caught
+            # in the open and traded down; the choke lets the all-in break on
+            # us. Otherwise stage slightly forward to contest the map.
+            if self._all_in_read or self._emergency:
+                rally: Point2 = self.main_base_ramp.top_center
+            else:
+                rally = self.main_base_ramp.top_center.towards(
+                    self.game_info.map_center, 4.0
+                )
             grid: np.ndarray = self.mediator.get_ground_grid
             for unit in forces:
                 if unit.distance_to(rally) > 8.0:
