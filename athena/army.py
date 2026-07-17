@@ -65,6 +65,13 @@ class Army:
 
     def _should_attack(self, bot, advice, army):
         eng = advice.engagement.verdict
+        # A (near-)maxed army must NEVER idle at home floating resources -- move
+        # out and trade so production can re-max. This overrides hold_position:
+        # the game_report diagnosis showed Athena pinned at 199/220 for 7+ min
+        # banking 9k min / 5.8k gas because hold_position kept a full deathball
+        # sitting. A 200-supply army is the time to use it, not turtle.
+        if bot.supply_used >= 190:
+            return True
         # Library says hold at home (defending an all-in) -> never move out.
         if advice.defense.hold_position:
             return False
