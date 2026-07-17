@@ -25,7 +25,7 @@ from sc2.ids.unit_typeid import UnitTypeId
 class OneBaseStalkerBot(BotAI):
     TARGET_PROBES = 22          # stalls ~22 workers on one base -- all-in
     NUM_GATEWAYS = 4
-    ATTACK_AT_STALKERS = 6      # push once this many, then never stop
+    ATTACK_AT_STALKERS = 16     # mass before committing (real bot: ~18-20)
 
     async def on_start(self):
         self.attacking = False
@@ -35,6 +35,10 @@ class OneBaseStalkerBot(BotAI):
             for u in self.units.of_type({UnitTypeId.STALKER, UnitTypeId.PROBE}):
                 u.attack(self.enemy_start_locations[0])
             return
+
+        # keep gas mined (stalkers are gas-heavy) - the four-gate zealot mimic
+        # needs no gas so it skips this; the stalker all-in lives or dies on it
+        await self.distribute_workers()
 
         nexus = self.townhalls.first
         await self.build_supply(nexus)

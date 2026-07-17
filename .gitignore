@@ -49,3 +49,4 @@ hydra/results/history.jsonl
 
 # Local build-reproduction test replays
 results/build_replays/
+sparring_*.SC2Replay
