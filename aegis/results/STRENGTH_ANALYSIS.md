@@ -260,3 +260,27 @@ early pressure (some CheatVision losses stay marine-floods because the emergency
 gate suppresses tanks), the first tank is late (~10 min), and the static-defense
 line (bunkers/turrets) and upgrade cadence from the root-cause section are not
 yet addressed.
+
+## Fix #3 — tanks-under-pressure + garrisoned bunker (REVERTED)
+
+Addressed the two gaps above: (a) dropped the `_emergency` short-circuit so the
+factory tech-lab + tanks build even during an all-in read; (b) `_manage_bunkers`
+built and garrisoned a bunker at the natural choke. Single-game check flipped the
+Persephone CheatVision TvP loss to a win (9 tanks, 2 bunkers). But the same-seed-7
+gauntlet A/B (run `20260717_044342`) moved the wrong way:
+
+| | vs VeryHard (ladder proxy) | vs CheatVision | total |
+|---|---|---|---|
+| tank fix `104b45f` | **3–3** | 0–6 | 3–9 (25%) |
+| +pressure+bunkers `521be27` | **1–5** | 2–4 | 3–9 (25%) |
+
+Flat overall, but it **regressed the ladder-relevant VeryHard metric (3–3 → 1–5)**
+while gaining vs the cheating gauntlet AI — i.e. it traded ladder wins for cheese
+wins, the wrong direction. Composition data also exposed a **bunker over-build
+bug** (one game built **8 bunkers** — `already_pending` has a race so builds
+re-issue before the first registers) and the garrisoned 4 marines + bunker cost
+thinned the army in the close VeryHard macro games. Reverted to the tank-fix
+state. If revisited: fix the over-build race, gate the bunker on actual harass
+detection (not always-on), don't drain the main army for the garrison, and
+validate on the ladder — where the turtle's static defense should matter more
+than in the aggression-rewarding gauntlet.
