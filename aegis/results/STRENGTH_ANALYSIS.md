@@ -220,3 +220,43 @@ Two lessons for the next attempt:
    reverted rather than shipped for ladder judging.
 
 Reverted in the commit following `20260716_122726`; baseline behavior restored.
+
+## Fix #2 — tank-build fix (KEPT)
+
+Applying lesson 1 above, `_ensure_tank_production` fixes the two compounding
+causes directly:
+- **Guarantee the factory tech-lab** — attach a `FACTORYTECHLAB` explicitly,
+  lifting/re-landing where there is add-on room (HanBot's pattern). ares' own
+  `TechUp` silently failed when the factory had no add-on room, which is why
+  5/9 losses never built one.
+- **Make tanks actually train** — `SIEGETANK` becomes the *sole* priority-0 unit
+  (marine → priority 1), and tanks are trained *directly* from idle tech-lab
+  factories (gas-funded), gated on the tank supply share. The SpawnController on
+  its own never had 150 spare minerals for a tank behind the 10-barracks marine
+  flood.
+
+Single-game check on a baseline 0-tank loss (terran CheatVision, IncorporealAIE_v4):
+13:12 loss / 0 tanks → **26:46 Victory / 9 tanks**. Same-seed-7 gauntlet A/B
+(run `20260716_235924`):
+
+| | vs VeryHard (non-cheating) | vs CheatVision (resource-cheat) | total |
+|---|---|---|---|
+| baseline `2e75722` | **1–5** | 2–4 | 3–9 (25%) |
+| +tank-build fix `c41f9a3` | **3–3** | 0–6 | 3–9 (25%) |
+
+**Tanks now build** — and every win had a real tank count (6 / 8 / 14) vs the
+baseline's 0–1. The headline winrate is flat, but the split moved exactly as
+`STRATEGY.md` principle 7 predicts: the tank-macro turtle is **better vs the
+non-cheating VeryHard AI (1–5 → 3–3)** — the closest proxy to a fair ladder
+opponent — and **worse vs CheatVision (2–4 → 0–6)**, which rewards the faster
+marine aggression the baseline accidentally supplied and lets its economy cheat
+snowball against a slower macro game. Since the strategy is explicitly
+ladder-judged (principle 7: the gauntlet is a catastrophe-guard, not the metric)
+and this is not a wipeout, the fix is **kept**; final validation belongs on the
+ladder.
+
+Known remaining gaps (future work): tank production is still inconsistent under
+early pressure (some CheatVision losses stay marine-floods because the emergency
+gate suppresses tanks), the first tank is late (~10 min), and the static-defense
+line (bunkers/turrets) and upgrade cadence from the root-cause section are not
+yet addressed.
