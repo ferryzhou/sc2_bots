@@ -63,10 +63,15 @@ from sc2.units import Units
 # Siege tanks are load-bearing vs the built-in cheater AIs: pure bio went
 # 0-6 vs terran+protoss CheatVision across two timing sweeps, and HanBot
 # (this repo's older Terran bot that beats cheater AIs) is bio+tank.
+# Siege tank is the SOLE priority-0 unit: the loss-replay audit
+# (aegis/results/STRENGTH_ANALYSIS.md) found that when MARINE shared priority 0
+# the SpawnController funded ~10 barracks of (mineral-only) marines every cycle
+# and rarely had 150 minerals left for a tank, so the 20%-tank comp produced ~0
+# tanks while gas floated. Tanks first, marines with the leftover minerals.
 ARMY_COMP: dict[UnitID, dict] = {
-    UnitID.MARINE: {"proportion": 0.5, "priority": 0},
-    UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
     UnitID.SIEGETANK: {"proportion": 0.2, "priority": 0},
+    UnitID.MARINE: {"proportion": 0.5, "priority": 1},
+    UnitID.MARAUDER: {"proportion": 0.2, "priority": 1},
     UnitID.MEDIVAC: {"proportion": 0.1, "priority": 2},
 }
 
@@ -280,6 +285,7 @@ class AegisBot(AresBot):
         self._manage_depots()
         self._counter_proxy_structures()
         self._build_turrets_vs_air()
+        self._ensure_tank_production()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
@@ -514,6 +520,79 @@ class AegisBot(AresBot):
         }
         blended[UnitID.VIKINGFIGHTER] = {"proportion": 0.2, "priority": 0}
         return blended
+
+    def _addon_points(self, pos: Point2) -> list[Point2]:
+        """The 2x2 footprint an add-on would occupy for a building at pos."""
+        base = pos + Point2((2.5, -0.5))
+        return [
+            (base + Point2((x - 0.5, y - 0.5))).rounded
+            for x in range(0, 2)
+            for y in range(0, 2)
+        ]
+
+    def _has_addon_room(self, pos: Point2) -> bool:
+        return all(
+            self.in_map_bounds(p) and self.in_placement_grid(p) and self.in_pathing_grid(p)
+            for p in self._addon_points(pos)
+        )
+
+    def _tanks_wanted(self) -> bool:
+        """Gate direct tank production on the siege-tank supply share of the
+        current comp so we never over-build them (tank = 3 supply)."""
+        if self._emergency:
+            return False
+        share = self._army_comp.get(UnitID.SIEGETANK, {}).get("proportion", 0.0)
+        if share <= 0:
+            return False
+        tank_supply = self.units(TANK_TYPES).amount * 3
+        army_supply = max(1.0, self.supply_used - self.supply_workers)
+        return tank_supply / army_supply < share
+
+    def _ensure_tank_production(self) -> None:
+        """Guarantee tanks actually get built - the diagnosed tank-build failure
+        (aegis/results/STRENGTH_ANALYSIS.md). Two fixes in one:
+
+        1. Attach a factory tech-lab explicitly (the factory arrives ~3:50 but
+           the tech-lab was often never built -- ares TechUp can't attach when
+           the factory was placed with no add-on room), lifting/re-landing where
+           there is room, HanBot's proven pattern.
+        2. Train tanks directly from idle tech-lab factories. Even as the sole
+           priority-0 unit the SpawnController never had 150 spare minerals for a
+           tank behind the 10-barracks marine flood, so ~0 tanks got built while
+           gas floated to 15k. Direct training converts that gas bank into the
+           splash + siege anchor the turtle needs."""
+        if self._emergency or self.time < 240.0:
+            return
+        # 1. ensure a factory tech-lab exists
+        have_techlab = (
+            self.structures(UnitID.FACTORYTECHLAB).amount
+            + self.already_pending(UnitID.FACTORYTECHLAB)
+        )
+        if have_techlab < 1 and self.can_afford(UnitID.FACTORYTECHLAB):
+            for factory in self.structures(UnitID.FACTORY).ready.idle:
+                if factory.has_add_on:
+                    continue
+                if self._has_addon_room(factory.position):
+                    factory.build(UnitID.FACTORYTECHLAB)
+                else:
+                    factory(AbilityId.LIFT)
+                break
+            else:
+                # re-land a lifted factory somewhere with add-on room
+                for flyer in self.structures(UnitID.FACTORYFLYING).idle:
+                    for dx in range(-6, 7, 2):
+                        for dy in range(-6, 7, 2):
+                            spot = (self.start_location + Point2((dx, dy))).rounded
+                            if self.in_placement_grid(spot) and self._has_addon_room(spot):
+                                flyer(AbilityId.LAND, spot)
+                                break
+        # 2. train tanks directly from idle tech-lab factories (one per step)
+        techlab_tags = self.structures(UnitID.FACTORYTECHLAB).tags
+        if self._tanks_wanted() and self.can_afford(UnitID.SIEGETANK):
+            for factory in self.structures(UnitID.FACTORY).ready.idle:
+                if factory.add_on_tag in techlab_tags:
+                    factory.train(UnitID.SIEGETANK)
+                    break
 
     def _build_turrets_vs_air(self) -> None:
         """Missile turrets at each mineral line once enemy air combat units
