@@ -127,6 +127,31 @@ def deaths_in(units, pid, t0, t1):
     return v, comp
 
 
+def collected_by(stats, pid, t):
+    """(minerals, gas) accumulated by pid up to time t, integrating income rate.
+
+    PlayerStatsEvent fires periodically; collection_rate is per-minute, so each
+    interval contributes rate * dt / 60. Approximates total resources mined.
+    """
+    tot_m = tot_g = 0.0
+    prev = None
+    for e in stats[pid]:
+        if e.second > t:
+            break
+        if prev is not None:
+            dt = e.second - prev.second
+            tot_m += getattr(prev, "minerals_collection_rate", 0) * dt / 60.0
+            tot_g += getattr(prev, "vespene_collection_rate", 0) * dt / 60.0
+        prev = e
+    return tot_m, tot_g
+
+
+def army_value_made(units, pid, t):
+    """Cumulative army value pid ever produced up to time t (alive + dead)."""
+    return sum(val(name) for owner, name, born, died in units.values()
+               if owner == pid and is_army(name) and born <= t)
+
+
 def main():
     path = sys.argv[1]
     ours = int(sys.argv[2]) if len(sys.argv) > 2 else 1
@@ -167,6 +192,29 @@ def main():
     pw2 = max((int(stat_at(stats, theirs, t, "workers_active_count")) for t in marks_all), default=0)
     print(f"  peak workers: us {pw1} vs enemy {pw2} | "
           f"economy first fell behind ~ {mmss(eco_behind) if eco_behind else 'never'}\n")
+
+    # 0b) accumulated resources mined + army value produced (cumulative, over time)
+    print("--- accumulated: total mined vs army value produced ---")
+    print("time  |   resources mined (min+gas=tot)      | army value made | share to army")
+    print("      |   us (m/g/tot)     enemy (m/g/tot)    |   us  v enemy    |  us    enemy")
+    for t in marks_all:
+        m1, g1 = collected_by(stats, ours, t)
+        m2, g2 = collected_by(stats, theirs, t)
+        a1, a2 = army_value_made(units, ours, t), army_value_made(units, theirs, t)
+        tot1, tot2 = m1 + g1, m2 + g2
+        sh1 = a1 / tot1 if tot1 else 0
+        sh2 = a2 / tot2 if tot2 else 0
+        print(f"{mmss(t):>5} | {int(m1):>5}/{int(g1):<4}/{int(tot1):<5} "
+              f"{int(m2):>5}/{int(g2):<4}/{int(tot2):<5} | "
+              f"{a1:>5} v {a2:<5} | {sh1:>4.0%}  {sh2:>4.0%}")
+    fm1, fg1 = collected_by(stats, ours, length)
+    fm2, fg2 = collected_by(stats, theirs, length)
+    fa1, fa2 = army_value_made(units, ours, length), army_value_made(units, theirs, length)
+    ft1, ft2 = fm1 + fg1, fm2 + fg2
+    print(f"  TOTAL mined:  us {int(ft1)} ({int(fm1)}m/{int(fg1)}g)  "
+          f"vs enemy {int(ft2)} ({int(fm2)}m/{int(fg2)}g)  ratio {ft1/ft2 if ft2 else 0:.2f}")
+    print(f"  TOTAL army value produced: us {fa1} vs enemy {fa2}  ratio {fa1/fa2 if fa2 else 0:.2f}"
+          f"  |  invested in army: us {fa1/ft1 if ft1 else 0:.0%} vs enemy {fa2/ft2 if ft2 else 0:.0%}\n")
 
     # 1) army value / supply timeline
     print("time  | our army (val/sup)  enemy army (val/sup) | ratio | our upg  enemy upg")
