@@ -46,6 +46,7 @@ class ArchetypeSparringBot(BotAI):
                 u.attack(self.enemy_start_locations[0])
             return
         th, zerg = self.townhalls.first, spec.worker == U.DRONE
+        await self.distribute_workers()  # keep gas geysers actually worked
         state = GameState(
             game_time=self.time, worker_count=int(self.supply_workers),
             base_count=self.townhalls.amount, minerals=self.minerals,
@@ -72,18 +73,26 @@ class ArchetypeSparringBot(BotAI):
         if step and self.can_afford(U[step.structure.upper()]):
             if step.structure in ("Hatchery", "Nexus", "CommandCenter"):
                 await self.expand_now()
+            elif step.structure in ("Assimilator", "Extractor", "Refinery"):
+                free = self.vespene_geyser.closer_than(12, th).filter(
+                    lambda g: not self.gas_buildings.closer_than(1.0, g))
+                if free and self.workers:
+                    self.workers.random.build_gas(free.first)
             else:
                 await self.build(U[step.structure.upper()],
                                  near=th.position.towards(self.game_info.map_center, 5))
-        # 3. workers while the library ranks economy top AND the spec allows it
-        elif inv.top == Investment.ECONOMY and self.supply_workers < spec.max_workers:
+        # 3. workers up to the spec's cap -- the archetype's own economy plan
+        # governs here (the library's 85%-saturation rule would stop short of
+        # e.g. the stalker bot's exact 22 probes); the library keeps the
+        # supply gate and the opening.
+        elif self.supply_workers < spec.max_workers:
             if zerg and self.larva and self.can_afford(spec.worker):
                 self.larva.first.train(spec.worker)
             elif not zerg and th.is_idle and self.can_afford(spec.worker):
                 th.train(spec.worker)
-        # 4. macro archetypes: expand behind it (one expansion in flight at a time)
-        elif (self.townhalls.amount < spec.max_bases and self.can_afford(U.HATCHERY)
-                and not self.already_pending(U.HATCHERY)):
+        # 4. macro archetypes (zerg only so far): expand, one in flight at a time
+        elif (zerg and self.townhalls.amount < spec.max_bases
+                and self.can_afford(U.HATCHERY) and not self.already_pending(U.HATCHERY)):
             await self.expand_now()
         # 5. zerg macro: queens + injects
         if spec.queens and self.structures(U.SPAWNINGPOOL).ready:
@@ -99,10 +108,15 @@ class ArchetypeSparringBot(BotAI):
             for larva in self.larva:
                 if self.can_afford(spec.army) and self.supply_left > 0:
                     larva.train(spec.army)
-        elif not zerg:
+        elif not zerg and self.tech_requirement_progress(spec.army) == 1:
             for g in self.structures(U.GATEWAY).ready.idle:
                 if self.can_afford(spec.army) and self.supply_left > 1:
                     g.train(spec.army)
+            busy = self.structures(U.GATEWAY).ready.filter(lambda g: not g.is_idle)
+            for n in self.townhalls.filter(lambda n: n.energy >= 50):
+                if busy:
+                    n(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy.first)
+                    break
         if army.amount >= spec.attack_at:
             target = (self.enemy_structures.random.position if self.enemy_structures
                       else self.enemy_start_locations[0])
@@ -129,3 +143,14 @@ class MassLing2(ArchetypeSparringBot):
     SPEC = Spec(OPENINGS["zerg_pool_first"],
                 U.DRONE, U.OVERLORD, U.ZERGLING, max_workers=70, max_bases=4,
                 attack_at=60, queens=4)
+
+
+class OneBaseStalker2(ArchetypeSparringBot):
+    """OneBaseStalkerBot (aiarena ~1614 Elo): one-base 4-gate mass stalker.
+
+    Fingerprint from bot_profiles/OneBaseStalkerBot: 22 probes, 4 gateways,
+    2 assimilators, 1 cybernetics core, no expansion, ~22 stalkers, push ~5-6min.
+    """
+    SPEC = Spec(custom("Protoss", "Pylon", "Gateway", "Assimilator", "CyberneticsCore",
+                       "Assimilator", "Gateway", "Pylon", "Gateway", "Gateway"),
+                U.PROBE, U.PYLON, U.STALKER, max_workers=22, max_bases=1, attack_at=8)
