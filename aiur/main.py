@@ -28,7 +28,6 @@ from sc2.ids.upgrade_id import UpgradeId as Up
 from strategy_engine import (
     StrategicAdvisor,
     GameState,
-    Investment,
     Engagement,
     classify_opening,
 )
@@ -284,19 +283,13 @@ class AiurBot(BotAI):
                     return
 
     async def _expand(self, advice):
-        # Principle 4: expand -- but the library decides when we're too threatened.
-        if advice.defense.prioritize_army:
-            cannons_up = (self.structures(U.PHOTONCANNON).ready.amount
-                          >= advice.defense.static_defense)
-            if not (cannons_up and self.townhalls.amount < 3 and self.supply_army >= 8):
-                return
-        if (self.townhalls.amount >= 4 or self.already_pending(U.NEXUS)
-                or not self.can_afford(U.NEXUS)):
-            return
-        take_natural = self.townhalls.amount < 2 and self.supply_workers >= 14
-        saturated = self.supply_workers >= 0.85 * 22 * self.townhalls.amount
-        eco_priority = Investment.ECONOMY in advice.investment.priority[:2]
-        if take_natural or saturated or eco_priority or self.minerals > 500:
+        # Principle 4: execute the library's base target. It grows the target through
+        # the mid-late game and caps our production so minerals are left for the Nexus,
+        # so here we just take the base when we're below target and can afford it.
+        if advice.defense.emergency:
+            return  # under an active all-in -- army first
+        if (self.townhalls.amount + self.already_pending(U.NEXUS) < advice.macro.base_target
+                and self.can_afford(U.NEXUS)):
             await self.expand_now()
 
     async def _tech(self, advice):
@@ -346,11 +339,23 @@ class AiurBot(BotAI):
                 and not self.structures(U.TWILIGHTCOUNCIL) and self.already_pending(U.TWILIGHTCOUNCIL) == 0
                 and self.can_afford(U.TWILIGHTCOUNCIL)):
             await self.build(U.TWILIGHTCOUNCIL, near=pylon)
-        # robotics bay -> colossus: splash is the hard counter to a ling flood
-        if (self.enemy_race == Race.Zerg and self.structures(U.ROBOTICSFACILITY).ready
+        # robotics bay -> colossus: splash counters a ling/hydra flood AND is a
+        # heavy gas sink (Colossus = 200 gas). Build it vs Zerg, or for any race
+        # once gas is floating (principle 3: spend gas, don't float).
+        if ((self.enemy_race == Race.Zerg or self.vespene >= 400)
+                and self.structures(U.ROBOTICSFACILITY).ready
                 and not self.structures(U.ROBOTICSBAY) and self.already_pending(U.ROBOTICSBAY) == 0
                 and self.townhalls.amount >= 2 and self.can_afford(U.ROBOTICSBAY)):
             await self.build(U.ROBOTICSBAY, near=pylon)
+        # scale robotics production with floating gas: each robo trains Immortal
+        # (100 gas) / Colossus (200 gas), the gas sink a gateway army lacks. This
+        # is what actually stops the gas pile a Zealot/Stalker mix leaves behind.
+        robos = self.structures(U.ROBOTICSFACILITY).amount + self.already_pending(U.ROBOTICSFACILITY)
+        if (self.vespene >= 400 and self.structures(U.ROBOTICSFACILITY).ready
+                and robos < min(3, self.townhalls.amount)
+                and self.already_pending(U.ROBOTICSFACILITY) == 0
+                and self.can_afford(U.ROBOTICSFACILITY)):
+            await self.build(U.ROBOTICSFACILITY, near=pylon)
         # scale gateways with economy -- the macro plan owns the target count and
         # parallel-build limit, so we convert economy into army rather than float.
         target_gates = advice.macro.target_production
@@ -411,6 +416,15 @@ class AiurBot(BotAI):
                 return
 
     def _train(self, advice):
+        # Reserve minerals for a mandated expansion (Principle 4): when the library
+        # says we owe a base (base_target), hold the final stretch of minerals for
+        # the 400-cost Nexus instead of spending it on gateway units. Bounded to
+        # 250..400 so army/gas production barely pauses; robo (gas) runs regardless.
+        owe_base = (self.townhalls.amount + self.already_pending(U.NEXUS)
+                    < advice.macro.base_target and not advice.defense.emergency)
+        if owe_base and self.minerals < 400:
+            return  # bank the whole Nexus cost -- pause army (incl. mineral-heavy
+            #         robo units) for the ~15s it takes, then _expand takes the base
         # robo: one observer for detection, then colossus (splash) or immortals
         robo = self.structures(U.ROBOTICSFACILITY).ready.idle
         if robo:
@@ -421,15 +435,28 @@ class AiurBot(BotAI):
                 robo.first.train(U.COLOSSUS)
             elif self.can_afford(U.IMMORTAL):
                 robo.first.train(U.IMMORTAL)
-        # gateway: zealot-heavy vs Zerg (charging zealots tank the ling surround
-        # while colossus splash does the killing), balanced otherwise.
-        zealot_heavy = self.enemy_race == Race.Zerg
+        # gateway composition. Principle 3 (don't float): a Zealot costs 0 gas, so
+        # an all-Zealot army hoards gas -- the bank climbs while army value stays
+        # low. Read the bank: when gas is piling up, make the gas unit (Stalker)
+        # and HOLD minerals for it rather than burning them on a Zealot. Keep a
+        # charging-Zealot front line vs Zerg (1:1), but never as the bulk.
+        floating_gas = self.vespene >= 300
         for gate in self.structures(U.GATEWAY).ready.idle:
             stalkers = self.units(U.STALKER).amount
             zealots = self.units(U.ZEALOT).amount
-            want_zealot = (zealots < 2 * stalkers if zealot_heavy
-                           else zealots * 2 <= stalkers)
             can_stalk = self.structures(U.CYBERNETICSCORE).ready and self.can_afford(U.STALKER)
+            if floating_gas:
+                # spend the gas: take a Stalker if affordable; otherwise hold
+                # minerals for one, only making a Zealot if minerals ALSO pile up
+                # (so gateways don't idle when both banks are full).
+                if can_stalk:
+                    gate.train(U.STALKER)
+                elif self.minerals >= 300 and self.can_afford(U.ZEALOT):
+                    gate.train(U.ZEALOT)
+                continue
+            # gas healthy: a Zealot front line vs Zerg (1:1), Stalker-heavy else.
+            want_zealot = (zealots <= stalkers if self.enemy_race == Race.Zerg
+                           else zealots * 2 <= stalkers)
             if want_zealot and self.can_afford(U.ZEALOT):
                 gate.train(U.ZEALOT)
             elif can_stalk:

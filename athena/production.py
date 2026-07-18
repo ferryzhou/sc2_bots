@@ -99,12 +99,36 @@ class Production:
             up = UpgradeId.CHARGE if bot.enemy_race == Race.Zerg else UpgradeId.BLINKTECH
             if bot.already_pending_upgrade(up) == 0 and bot.can_afford(up):
                 twi.first.research(up)
-        # scale gateways with economy -- spend the money, don't float
-        target_gates = min(10, 2 * bot.townhalls.ready.amount + 1)
+        # GAS SINK: robotics (immortal/colossus) are a gateway army's main gas
+        # spend. The game_report diagnosis showed Athena banking ~5-6k gas at max
+        # because it had too few gas-hungry production -- scale it with floating
+        # gas so the gas actually converts to army (splash + anti-armor).
+        floating_gas = bot.vespene > 400
+        want_robos = min(5, bot.townhalls.ready.amount) if floating_gas \
+            else min(2, max(1, bot.townhalls.ready.amount - 1))
+        robos = bot.structures(U.ROBOTICSFACILITY).amount + bot.already_pending(U.ROBOTICSFACILITY)
+        if (bot.structures(U.ROBOTICSFACILITY).ready and robos < want_robos
+                and bot.already_pending(U.ROBOTICSFACILITY) == 0
+                and bot.can_afford(U.ROBOTICSFACILITY)):
+            await bot.build(U.ROBOTICSFACILITY, near=self._pylon(bot))
+        # colossus (6 supply / 200 gas) is the biggest single gas sink -- build
+        # the bay for ANY race once we're floating gas on 3 bases, not just Zerg.
+        if (
+            floating_gas and bot.structures(U.ROBOTICSFACILITY).ready
+            and not bot.structures(U.ROBOTICSBAY) and bot.already_pending(U.ROBOTICSBAY) == 0
+            and bot.townhalls.amount >= 3 and bot.can_afford(U.ROBOTICSBAY)
+        ):
+            await bot.build(U.ROBOTICSBAY, near=self._pylon(bot))
+        # scale gateways with economy -- spend the money, don't float. Raise the
+        # cap and add extra production when minerals pile up (Athena floated 9k
+        # minerals at max because gateways were capped at 10).
+        target_gates = min(12, 2 * bot.townhalls.ready.amount + 1)
         if advice.defense.prioritize_army:
-            target_gates = min(10, target_gates + 2)   # library says defend -> more army production
-        # allow two in flight, and build extra whenever minerals are piling up
-        max_pending = 2 if bot.minerals > 350 else 1
+            target_gates = min(14, target_gates + 2)   # defend -> more army production
+        if bot.minerals > 600:                          # floating -> more gateways
+            target_gates = min(16, target_gates + 3)
+        # allow more in flight when minerals are piling up so we spend it down
+        max_pending = 3 if bot.minerals > 600 else (2 if bot.minerals > 350 else 1)
         if (
             gates.amount + bot.already_pending(U.GATEWAY) < target_gates
             and bot.already_pending(U.GATEWAY) < max_pending
