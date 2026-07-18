@@ -1,0 +1,703 @@
+"""AiurBot -- a concise Protoss bot driven by the ``strategy_engine`` library.
+
+One file, one loop each step::
+
+    perceive (scout -> enemy_memory) -> advise (StrategicAdvisor) -> act (macro + army)
+
+Every strategic decision -- opponent archetype, engagement odds, defense plan,
+investment priority, power timing, efficiency, harassment, rules -- comes from
+the library (which mirrors ``PRINCIPLES.md`` / ``STRATEGY.md`` / ``COMBAT.md``).
+This file only translates an ``Advice`` into Protoss build/train/move orders, so
+the principles (never stop probes, don't get supply blocked, spend your money,
+expand, scout, fight only favorable engagements, keep upgrades working) are
+*executed* here but *decided* in the library.
+"""
+
+import os
+import sys
+
+# make the repo-root strategy_engine importable
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from sc2.bot_ai import BotAI
+from sc2.data import Race, Result
+from sc2.ids.ability_id import AbilityId
+from sc2.ids.unit_typeid import UnitTypeId as U
+from sc2.ids.upgrade_id import UpgradeId as Up
+
+from strategy_engine import (
+    StrategicAdvisor,
+    GameState,
+    Investment,
+    Engagement,
+    classify_opening,
+)
+
+# --------------------------------------------------------------------------- #
+# Scouting tables: enemy structure -> normalized name (for classify_opening)   #
+# and the type sets / supply estimates the perception layer folds into memory. #
+# --------------------------------------------------------------------------- #
+OPENING_STRUCT = {
+    U.NEXUS: "Nexus", U.GATEWAY: "Gateway", U.WARPGATE: "Gateway",
+    U.CYBERNETICSCORE: "CyberneticsCore", U.FORGE: "Forge",
+    U.PHOTONCANNON: "PhotonCannon", U.ASSIMILATOR: "Assimilator",
+    U.ROBOTICSFACILITY: "RoboticsFacility", U.STARGATE: "Stargate",
+    U.TWILIGHTCOUNCIL: "TwilightCouncil",
+    U.COMMANDCENTER: "CommandCenter", U.ORBITALCOMMAND: "CommandCenter",
+    U.PLANETARYFORTRESS: "CommandCenter", U.SUPPLYDEPOT: "SupplyDepot",
+    U.BARRACKS: "Barracks", U.REFINERY: "Refinery", U.FACTORY: "Factory",
+    U.STARPORT: "Starport", U.ENGINEERINGBAY: "EngineeringBay", U.BUNKER: "Bunker",
+    U.HATCHERY: "Hatchery", U.LAIR: "Hatchery", U.HIVE: "Hatchery",
+    U.SPAWNINGPOOL: "SpawningPool", U.EXTRACTOR: "Extractor",
+    U.ROACHWARREN: "RoachWarren", U.BANELINGNEST: "BanelingNest",
+    U.EVOLUTIONCHAMBER: "EvolutionChamber", U.SPINECRAWLER: "SpineCrawler",
+    U.HYDRALISKDEN: "HydraliskDen",
+}
+OPENING_GAS = {"Assimilator", "Refinery", "Extractor"}
+OPENING_TH = {"Nexus", "CommandCenter", "Hatchery"}
+TOWNHALLS = {U.NEXUS, U.HATCHERY, U.LAIR, U.HIVE, U.COMMANDCENTER,
+             U.ORBITALCOMMAND, U.PLANETARYFORTRESS}
+PRODUCTION = {U.GATEWAY, U.WARPGATE, U.ROBOTICSFACILITY, U.STARGATE,
+              U.BARRACKS, U.FACTORY, U.STARPORT,
+              U.ROACHWARREN, U.HYDRALISKDEN, U.SPAWNINGPOOL}
+GAS = {U.ASSIMILATOR, U.REFINERY, U.EXTRACTOR}
+STATIC_DEF = {U.PHOTONCANNON, U.SPINECRAWLER, U.BUNKER, U.MISSILETURRET, U.SPORECRAWLER}
+WORKERS = {U.PROBE, U.SCV, U.DRONE}
+CLOAK_HINTS = {U.DARKTEMPLAR, U.BANSHEE, U.DARKSHRINE, U.GHOST,
+               U.ROACHWARREN, U.LURKERDENMP}
+AIR_HINTS = {U.STARGATE, U.STARPORT, U.SPIRE, U.VOIDRAY, U.PHOENIX, U.ORACLE,
+             U.MUTALISK, U.BANSHEE, U.LIBERATOR, U.CARRIER, U.TEMPEST}
+ARMY_SUPPLY = {
+    U.ZERGLING: 0.5, U.BANELING: 0.5, U.ROACH: 2, U.HYDRALISK: 2, U.QUEEN: 2,
+    U.MUTALISK: 2, U.ULTRALISK: 6, U.LURKERMP: 3, U.RAVAGER: 3,
+    U.ZEALOT: 2, U.STALKER: 2, U.ADEPT: 2, U.SENTRY: 2, U.IMMORTAL: 4,
+    U.COLOSSUS: 6, U.ARCHON: 4, U.HIGHTEMPLAR: 2, U.DARKTEMPLAR: 2,
+    U.VOIDRAY: 4, U.PHOENIX: 2, U.CARRIER: 6, U.TEMPEST: 5,
+    U.MARINE: 1, U.MARAUDER: 2, U.HELLION: 2, U.SIEGETANK: 3, U.THOR: 6,
+    U.CYCLONE: 3, U.MEDIVAC: 2, U.VIKINGFIGHTER: 2, U.BANSHEE: 3,
+}
+ARMY = {U.ZEALOT, U.STALKER, U.IMMORTAL, U.ARCHON, U.ADEPT, U.SENTRY,
+        U.HIGHTEMPLAR, U.DARKTEMPLAR, U.COLOSSUS}
+# enemy air units to prioritize for anti-air focus-fire
+AIR_ENEMY_UNITS = {U.MUTALISK, U.BANSHEE, U.VOIDRAY, U.PHOENIX, U.ORACLE,
+                   U.CARRIER, U.TEMPEST, U.LIBERATOR, U.VIKINGFIGHTER,
+                   U.MEDIVAC, U.BATTLECRUISER, U.BROODLORD}
+
+
+class AiurBot(BotAI):
+    """Protoss bot: perceive -> advise (library) -> act."""
+
+    def __init__(self):
+        super().__init__()
+        self.enemy_memory = {}          # scouting -> belief, fed to the engine
+        self.advisor = StrategicAdvisor()
+        self.scout_tag = None
+        self.scout_sent = False
+        self.last_log = 0.0
+        self.enemy_opening = None
+        self._wall = None               # cached ramp wall layout
+
+    async def on_start(self):
+        self.client.game_step = 4       # responsive without being wasteful
+
+    async def on_step(self, iteration):
+        if not self.townhalls:
+            for w in self.workers:       # last-ditch: everyone attacks
+                w.attack(self.enemy_start_locations[0])
+            return
+        await self.distribute_workers()
+        self._perceive()
+        advice = self._advise()
+        await self._macro(advice)
+        self._army(advice)
+        self._log(advice)
+
+    async def on_end(self, result: Result):
+        print(f"AiurBot game ended: {result}")
+
+    # -------------------------------------------------------------- perceive ---
+    def _perceive(self):
+        """Fold visible enemy units/structures into enemy_memory for the engine.
+
+        Structure counts are max-ever-seen (they persist through fog); the army
+        read is current-visible so a spent flood reads as spent.
+        """
+        mem = self.enemy_memory
+        enemies = self.enemy_units | self.enemy_structures
+        home = self.start_location
+
+        def seen(types):
+            return self.enemy_structures.of_type(types).amount
+
+        mem["enemy_base_count"] = max(mem.get("enemy_base_count") or 0, seen(TOWNHALLS)) or None
+        mem["enemy_production_structures"] = max(mem.get("enemy_production_structures") or 0, seen(PRODUCTION))
+        mem["enemy_gas_count"] = max(mem.get("enemy_gas_count") or 0, seen(GAS))
+        mem["enemy_static_defense"] = max(mem.get("enemy_static_defense") or 0, seen(STATIC_DEF))
+        vis_workers = self.enemy_units.of_type(WORKERS).amount
+        mem["enemy_worker_count"] = max(mem.get("enemy_worker_count") or 0, vis_workers) or None
+        if self.enemy_units:
+            mem["enemy_army_supply"] = sum(
+                ARMY_SUPPLY.get(u.type_id, 0) for u in self.enemy_units
+                if u.type_id not in WORKERS)
+
+        if enemies:
+            mem["last_scouted_time"] = self.time
+        if any(e.type_id in CLOAK_HINTS for e in enemies):
+            mem["enemy_has_cloak"] = True
+        if any(e.type_id in AIR_HINTS for e in enemies):
+            mem["enemy_has_air"] = True
+        if self.enemy_structures and self.enemy_structures.closest_distance_to(home) < 45:
+            mem["enemy_proxy"] = True
+        near = self.enemy_units.filter(
+            lambda u: u.type_id not in WORKERS and u.distance_to(home) < 55)
+        mem["enemy_army_moving_out"] = near.amount >= 3
+        self._track_opening(mem)
+
+    def _track_opening(self, mem):
+        """Record first-seen time + placement zone of each enemy structure, so
+        ``classify_opening`` can name the opponent's opening family."""
+        seen = mem.setdefault("enemy_opening_seen", {})
+        enemy_main = self.enemy_start_locations[0]
+        home = self.start_location
+        for s in self.enemy_structures:
+            name = OPENING_STRUCT.get(s.type_id)
+            if name is None or name in seen:
+                continue
+            d_enemy = s.distance_to(enemy_main)
+            d_home = s.distance_to(home)
+            zone = ("forward" if (d_home < d_enemy and d_home < 60)
+                    else "main" if d_enemy <= 14
+                    else "ramp_wall" if d_enemy <= 30
+                    else "natural")
+            seen[name] = {"t": self.time, "zone": zone}
+        gas_ts = [d["t"] for n, d in seen.items() if n in OPENING_GAS]
+        mem["enemy_first_gas"] = min(gas_ts) if gas_ts else None
+        exp_ts = [d["t"] for n, d in seen.items()
+                  if n in OPENING_TH and d["zone"] in ("natural", "ramp_wall")]
+        mem["enemy_expand_t"] = min(exp_ts) if exp_ts else None
+
+    # --------------------------------------------------------------- advise ----
+    def _advise(self):
+        """Build a GameState (+ Protoss-specific reads), hand it to the library."""
+        mem = dict(self.enemy_memory)
+        er = getattr(self, "enemy_race", None)
+        mem["enemy_race"] = er.name if er is not None and hasattr(er, "name") else None
+        mem["have_detection"] = (
+            self.units(U.OBSERVER).amount + self.structures(U.PHOTONCANNON).ready.amount > 0)
+        # composition read: mass-light Zerg wants splash; flag unfavorable if we
+        # are stalker-heavy with no splash vs Zerg.
+        if self.enemy_race == Race.Zerg:
+            splash = (self.units(U.COLOSSUS).amount + self.units(U.HIGHTEMPLAR).amount
+                      + self.units(U.ARCHON).amount)
+            zealots = self.units(U.ZEALOT).amount
+            stalkers = self.units(U.STALKER).amount
+            mem["composition_favorable"] = (splash > 0 or zealots >= stalkers)
+
+        state = GameState.from_bot(self, mem)
+        # production / upgrade context the adapter can't see
+        state.production_structures = (
+            self.structures(U.GATEWAY).amount + self.structures(U.WARPGATE).amount
+            + self.structures(U.ROBOTICSFACILITY).amount + self.structures(U.STARGATE).amount)
+        state.idle_production = sum(
+            1 for g in (self.structures(U.GATEWAY).ready
+                        | self.structures(U.ROBOTICSFACILITY).ready) if g.is_idle)
+        state.upgrade_structures = self.structures(U.FORGE).ready.amount
+        state.upgrades_done = len(self.state.upgrades) if self.state.upgrades else 0
+        state.has_harass_units = self.units.of_type({U.ORACLE, U.PHOENIX, U.DARKTEMPLAR}).amount > 0
+
+        advice = self.advisor.advise(state)
+        # name the enemy's opening from what we've scouted (reuses the openings
+        # library); surfaced for awareness/logging.
+        race = mem.get("enemy_race")
+        seen = mem.get("enemy_opening_seen") or {}
+        if race in ("Protoss", "Terran", "Zerg") and seen:
+            signals = [(n, d["t"], d["zone"]) for n, d in seen.items()]
+            self.enemy_opening = classify_opening(
+                race, signals, mem.get("enemy_first_gas"), mem.get("enemy_expand_t"))
+        else:
+            self.enemy_opening = None
+        return advice
+
+    # ---------------------------------------------------------------- macro ----
+    async def _macro(self, advice):
+        await self._supply(advice)
+        self._probes(advice)
+        self._chrono()
+        await self._gas()
+        await self._expand(advice)
+        if not self.structures(U.PYLON).ready:
+            return
+        await self._tech(advice)
+        await self._defense(advice)
+        await self._upgrades()
+        self._train(advice)
+
+    def _probes(self, advice):
+        # Principle 1: never stop producing workers (while safe) -- but the macro
+        # plan owns the cap and can pause probes to force units when floating.
+        cap = advice.macro.worker_cap
+        if self.supply_workers >= cap:
+            return
+        # while thin and rushed, bank for gateway units
+        if (advice.defense.prioritize_army and self.supply_army < 8
+                and self.time < 240 and self.minerals < 200):
+            return
+        # force-train: cut probes for a tick so army production gets the supply/money
+        if advice.macro.force_train and self.supply_left <= 3:
+            return
+        for nexus in self.townhalls.ready.idle:
+            if self.can_afford(U.PROBE) and self.supply_left > 0:
+                nexus.train(U.PROBE)
+
+    async def _supply(self, advice):
+        # Principle 2: don't get supply blocked -- build well ahead of the block.
+        # The macro plan raises parallel-pylon limits when we're floating.
+        production = max(1, self.structures(U.GATEWAY).amount + self.structures(U.WARPGATE).amount)
+        threshold = 3 + 2 * production
+        pending = self.already_pending(U.PYLON)
+        parallel = advice.macro.allow_parallel_build
+        floating = self.minerals > 500 and self.supply_cap >= 32
+        if (self.supply_cap < 200 and self.townhalls and self.can_afford(U.PYLON)
+                and ((self.supply_left <= threshold and pending < 1 + parallel)
+                     or (floating and pending < 2 + parallel))):
+            wp = self._wall_pylon()
+            if wp is not None and not self.structures(U.PYLON):
+                await self.build(U.PYLON, near=wp)
+            else:
+                nexus = self.townhalls.ready.random if self.townhalls.ready else self.townhalls.first
+                await self.build(U.PYLON, near=nexus.position.towards(self.game_info.map_center, 6))
+
+    async def _gas(self):
+        # two gas per base, but only once we have a gateway (no point pre-tech)
+        if not self.structures(U.GATEWAY):
+            return
+        want = min(2 * self.townhalls.ready.amount, 6)
+        have = self.gas_buildings.amount + self.already_pending(U.ASSIMILATOR)
+        if have >= want or not self.can_afford(U.ASSIMILATOR):
+            return
+        for nexus in self.townhalls.ready:
+            for g in self.vespene_geyser.closer_than(10, nexus):
+                if not self.gas_buildings.closer_than(1, g):
+                    w = self.select_build_worker(g.position)
+                    if w:
+                        w.build_gas(g)
+                    return
+
+    async def _expand(self, advice):
+        # Principle 4: expand -- but the library decides when we're too threatened.
+        if advice.defense.prioritize_army:
+            cannons_up = (self.structures(U.PHOTONCANNON).ready.amount
+                          >= advice.defense.static_defense)
+            if not (cannons_up and self.townhalls.amount < 3 and self.supply_army >= 8):
+                return
+        if (self.townhalls.amount >= 4 or self.already_pending(U.NEXUS)
+                or not self.can_afford(U.NEXUS)):
+            return
+        take_natural = self.townhalls.amount < 2 and self.supply_workers >= 14
+        saturated = self.supply_workers >= 0.85 * 22 * self.townhalls.amount
+        eco_priority = Investment.ECONOMY in advice.investment.priority[:2]
+        if take_natural or saturated or eco_priority or self.minerals > 500:
+            await self.expand_now()
+
+    async def _tech(self, advice):
+        gates = self.structures(U.GATEWAY)
+        pylon = self.structures(U.PYLON).ready.random
+
+        # Forge-FIRST when the library wants static defense (proactive insurance
+        # or emergency): cannons beat a shield battery to the punch.
+        if (advice.defense.static_defense >= 1 and not self.structures(U.FORGE)
+                and self.already_pending(U.FORGE) == 0 and self.can_afford(U.FORGE)):
+            await self.build(U.FORGE, near=pylon)
+            return
+        # first gateway -- on the ramp wall if we can
+        if gates.amount + self.already_pending(U.GATEWAY) == 0:
+            if self.can_afford(U.GATEWAY):
+                wp = self._wall_building(0)
+                near = wp if wp is not None else pylon.position.towards(self.game_info.map_center, 5)
+                await self.build(U.GATEWAY, near=near)
+            return
+        # under a real EMERGENCY, hold the rest of the tech until cannons are up
+        if advice.defense.emergency:
+            cannons = self.structures(U.PHOTONCANNON).amount + self.already_pending(U.PHOTONCANNON)
+            if self.structures(U.FORGE).ready and cannons < advice.defense.static_defense:
+                if (gates.amount + self.already_pending(U.GATEWAY) < 2
+                        and self.can_afford(U.GATEWAY) and self.minerals > 320):
+                    await self.build(U.GATEWAY, near=pylon.position.towards(self.game_info.map_center, 5))
+                return
+        # cybernetics core after the first gateway -- completes the ramp wall
+        if gates.ready and not self.structures(U.CYBERNETICSCORE) and self.already_pending(U.CYBERNETICSCORE) == 0:
+            if self.can_afford(U.CYBERNETICSCORE):
+                wp = self._wall_building(1)
+                near = wp if wp is not None else pylon
+                await self.build(U.CYBERNETICSCORE, near=near)
+            return
+        if not self.structures(U.CYBERNETICSCORE).ready:
+            return
+        # robotics for immortals + observer (detection, anti-armor)
+        if not self.structures(U.ROBOTICSFACILITY) and self.already_pending(U.ROBOTICSFACILITY) == 0:
+            if self.can_afford(U.ROBOTICSFACILITY):
+                await self.build(U.ROBOTICSFACILITY, near=pylon)
+        # forge for upgrades (if not already up for defense)
+        if not self.structures(U.FORGE) and self.already_pending(U.FORGE) == 0:
+            if self.can_afford(U.FORGE) and self.townhalls.amount >= 2:
+                await self.build(U.FORGE, near=pylon)
+        # twilight council -> charge (huge vs Zerg) / blink
+        if (self.structures(U.CYBERNETICSCORE).ready and self.townhalls.amount >= 2
+                and not self.structures(U.TWILIGHTCOUNCIL) and self.already_pending(U.TWILIGHTCOUNCIL) == 0
+                and self.can_afford(U.TWILIGHTCOUNCIL)):
+            await self.build(U.TWILIGHTCOUNCIL, near=pylon)
+        # robotics bay -> colossus: splash is the hard counter to a ling flood
+        if (self.enemy_race == Race.Zerg and self.structures(U.ROBOTICSFACILITY).ready
+                and not self.structures(U.ROBOTICSBAY) and self.already_pending(U.ROBOTICSBAY) == 0
+                and self.townhalls.amount >= 2 and self.can_afford(U.ROBOTICSBAY)):
+            await self.build(U.ROBOTICSBAY, near=pylon)
+        # scale gateways with economy -- the macro plan owns the target count and
+        # parallel-build limit, so we convert economy into army rather than float.
+        target_gates = advice.macro.target_production
+        max_pending = advice.macro.allow_parallel_build
+        if (gates.amount + self.already_pending(U.GATEWAY) < target_gates
+                and self.already_pending(U.GATEWAY) < max_pending
+                and self.can_afford(U.GATEWAY) and self.minerals > 150):
+            await self.build(U.GATEWAY, near=pylon.position.towards(self.game_info.map_center, 5))
+
+    async def _defense(self, advice):
+        # The library decides how much to defend; we translate it into Protoss
+        # structures. No hard-coded archetype logic here.
+        plan = advice.defense
+        want = plan.static_defense
+        if want <= 0 and not plan.need_detection:
+            return
+        base = self.townhalls.closest_to(self.enemy_start_locations[0]) if self.townhalls else None
+        if base is None:
+            return
+        cannons = self.structures(U.PHOTONCANNON).amount + self.already_pending(U.PHOTONCANNON)
+        batteries = self.structures(U.SHIELDBATTERY).amount + self.already_pending(U.SHIELDBATTERY)
+        # Cannons are the primary hold (Forge -> up fast, no micro). Split them
+        # between the mineral line (runby cover) and the ramp choke (frontal push).
+        if self.structures(U.FORGE).ready and cannons < want and self.can_afford(U.PHOTONCANNON):
+            pos = self._mineral_line(base) if cannons % 2 == 0 else self._choke(base)
+            await self.build(U.PHOTONCANNON, near=pos)
+            return
+        # A couple of shield batteries sustain the wall/cannons once cyber is up.
+        if (plan.emergency and self.structures(U.CYBERNETICSCORE).ready
+                and batteries < 2 and self.can_afford(U.SHIELDBATTERY)):
+            await self.build(U.SHIELDBATTERY, near=self._choke(base))
+            return
+        # detection: a cannon also detects -- cover the mineral line
+        if (plan.need_detection and self.structures(U.FORGE).ready
+                and cannons < want + 1 and self.can_afford(U.PHOTONCANNON)):
+            await self.build(U.PHOTONCANNON, near=self._mineral_line(base))
+
+    async def _upgrades(self):
+        # Principle 10: upgrades compound -- keep upgrade structures working.
+        twi = self.structures(U.TWILIGHTCOUNCIL).ready.idle
+        if twi:
+            up = Up.CHARGE if self.enemy_race == Race.Zerg else Up.BLINKTECH
+            if self.already_pending_upgrade(up) == 0 and self.can_afford(up):
+                twi.first.research(up)
+        forge = self.structures(U.FORGE).ready.idle
+        if not forge:
+            return
+        # vs Zerg (mass lings) armor first -- +1 armor turns a 5-dmg ling into 4;
+        # otherwise weapons first.
+        W1, A1 = Up.PROTOSSGROUNDWEAPONSLEVEL1, Up.PROTOSSGROUNDARMORSLEVEL1
+        W2, A2 = Up.PROTOSSGROUNDWEAPONSLEVEL2, Up.PROTOSSGROUNDARMORSLEVEL2
+        W3, A3 = Up.PROTOSSGROUNDWEAPONSLEVEL3, Up.PROTOSSGROUNDARMORSLEVEL3
+        order = ((A1, W1, A2, W2, A3, W3) if self.enemy_race == Race.Zerg
+                 else (W1, A1, W2, A2, W3, A3))
+        for up in order:
+            if self.already_pending_upgrade(up) == 0 and self.can_afford(up):
+                forge.first.research(up)
+                return
+
+    def _train(self, advice):
+        # robo: one observer for detection, then colossus (splash) or immortals
+        robo = self.structures(U.ROBOTICSFACILITY).ready.idle
+        if robo:
+            have_obs = self.units(U.OBSERVER).amount + self.already_pending(U.OBSERVER)
+            if have_obs == 0 and self.can_afford(U.OBSERVER):
+                robo.first.train(U.OBSERVER)
+            elif self.structures(U.ROBOTICSBAY).ready and self.can_afford(U.COLOSSUS):
+                robo.first.train(U.COLOSSUS)
+            elif self.can_afford(U.IMMORTAL):
+                robo.first.train(U.IMMORTAL)
+        # gateway: zealot-heavy vs Zerg (charging zealots tank the ling surround
+        # while colossus splash does the killing), balanced otherwise.
+        zealot_heavy = self.enemy_race == Race.Zerg
+        for gate in self.structures(U.GATEWAY).ready.idle:
+            stalkers = self.units(U.STALKER).amount
+            zealots = self.units(U.ZEALOT).amount
+            want_zealot = (zealots < 2 * stalkers if zealot_heavy
+                           else zealots * 2 <= stalkers)
+            can_stalk = self.structures(U.CYBERNETICSCORE).ready and self.can_afford(U.STALKER)
+            if want_zealot and self.can_afford(U.ZEALOT):
+                gate.train(U.ZEALOT)
+            elif can_stalk:
+                gate.train(U.STALKER)
+            elif self.can_afford(U.ZEALOT):
+                gate.train(U.ZEALOT)
+
+    def _chrono(self):
+        for nexus in self.townhalls.ready:
+            if nexus.energy < 50:
+                continue
+            # priority: forge upgrade, then warpgate/robo/gateway production, then probes
+            forge = self.structures(U.FORGE).ready
+            if forge and not forge.first.is_idle:
+                nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, forge.first)
+                return
+            producers = [s for s in (self.structures(U.GATEWAY).ready
+                                     | self.structures(U.ROBOTICSFACILITY).ready
+                                     | self.structures(U.CYBERNETICSCORE).ready)
+                         if not s.is_idle]
+            if producers:
+                nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, producers[0])
+                return
+            if not nexus.is_idle and self.supply_workers < 44:
+                nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus)
+
+    # ---------------------------------------------------------------- army -----
+    def _army(self, advice):
+        self._scout()
+        army = self.units.of_type(ARMY)
+        if not army:
+            return
+        tac = advice.tactics
+        rally = self._rally()
+
+        # 1) defend: enemy units in/near any base -- always respond, with micro
+        threat_base = self._threatened_base()
+        if threat_base is not None:
+            self._defend(threat_base, army, tac, advice)
+            return
+
+        # 2) preserve: library says hold -- don't move out, rally and plug the wall
+        if tac.preserve_units and not self._should_attack(advice, army):
+            self._hold(army, rally)
+            return
+
+        # 3) attack or hold from the engagement read
+        if self._should_attack(advice, army):
+            self._push(army, tac)
+        else:
+            self._hold(army, rally)
+
+    def _defend(self, threat_base, army, tac, advice):
+        """Defend a base with focus-fire and kite-back micro (not pure a-move)."""
+        enemies = self.enemy_units.closer_than(30, threat_base)
+        for u in army:
+            # kite badly damaged units back to the base to preserve them
+            if tac.kite_low_hp and self._low_hp(u, tac.retreat_threshold):
+                u.move(threat_base.position)
+                continue
+            if tac.focus_fire and enemies:
+                tgt = self._select_target(u, enemies, tac.target_priority)
+                if tgt is not None:
+                    u.attack(tgt)
+                    continue
+            # fall back to attacking the closest threat position
+            tpos = (enemies.closest_to(threat_base).position if enemies
+                    else threat_base.position)
+            u.attack(tpos)
+        # pull workers to hold when the base is breached and we're thin
+        no_defense = (self.structures(U.PHOTONCANNON).ready.amount == 0
+                      and self.supply_army < 6)
+        if enemies and (advice.defense.pull_workers
+                        or (advice.defense.emergency and no_defense)):
+            tpos = enemies.closest_to(threat_base).position if enemies else threat_base.position
+            self._pull_workers(threat_base, tpos)
+
+    def _push(self, army, tac):
+        """Concentrate into a ball, then commit with focus-fire micro.
+
+        Feeding units piecemeal into the enemy is how even-favorable fights get
+        lost -- the library's tactics plan says gather first, then commit. Once
+        committed, focus-fire on specific targets to drop enemy DPS fast, and kite
+        back damaged units to preserve value.
+        """
+        staging = self._staging()
+        center = army.center
+        concentrated = army.closer_than(11, center).amount >= tac.commit_ratio * army.amount
+        # Gather into a ball first, but commit outright with overwhelming force.
+        if concentrated or self.supply_army >= 55:
+            target = self._attack_target(army)
+            nearby = self.enemy_units.closer_than(18, center) if self.enemy_units else None
+            for u in army:
+                # kite low-hp units back toward staging to preserve them
+                if tac.kite_low_hp and self._low_hp(u, tac.retreat_threshold):
+                    u.move(staging)
+                    continue
+                # focus fire on a specific target when enemies are visible
+                if tac.focus_fire and nearby:
+                    tgt = self._select_target(u, nearby, tac.target_priority)
+                    if tgt is not None:
+                        u.attack(tgt)
+                        continue
+                u.attack(target)
+        else:
+            for u in army:
+                u.move(staging)
+
+    def _hold(self, army, rally):
+        """Hold at the rally: plug the ramp wall gap, gather the rest at rally."""
+        hold = self._wall_hold()
+        plug = None
+        if hold is not None and self._wall_gap_open() and army:
+            plug = army.closest_to(hold)
+            plug.attack(hold)
+        for u in army:
+            if plug is not None and u.tag == plug.tag:
+                continue
+            if u.distance_to(rally) > 8:
+                u.move(rally)
+
+    def _select_target(self, unit, enemies, priority):
+        """Pick a target for focus-fire based on the library's target_priority."""
+        if priority == "expensive":
+            # target the highest-supply enemy (proxy for cost/value)
+            return max(enemies, key=lambda e: ARMY_SUPPLY.get(e.type_id, 1))
+        if priority == "air":
+            air = enemies.of_type(AIR_ENEMY_UNITS)
+            if air:
+                return air.closest_to(unit)
+            return enemies.closest_to(unit)
+        # "closest" (default) -- kill the nearest unit to reduce surround DPS
+        return enemies.closest_to(unit)
+
+    def _low_hp(self, u, threshold):
+        """Effective health fraction: (shield + hp) / (shield_max + hp_max)."""
+        total = getattr(u, "shield", 0) + getattr(u, "health", 0)
+        total_max = getattr(u, "shield_max", 0) + getattr(u, "health_max", 0)
+        if total_max <= 0:
+            return False
+        return (total / total_max) < threshold
+
+    def _staging(self):
+        """Forward staging point: gather here before committing the attack."""
+        if self.townhalls:
+            base = self.townhalls.closest_to(self.enemy_start_locations[0])
+            return base.position.towards(self.enemy_start_locations[0], 14)
+        return self.start_location
+
+    def _should_attack(self, advice, army):
+        eng = advice.engagement.verdict
+        if advice.defense.hold_position:               # library says hold at home
+            return False
+        if self.supply_used >= 175:                    # near max -- move out before we cap
+            return True
+        if eng == Engagement.ENGAGE:                   # favorable fight
+            return True
+        if eng == Engagement.AVOID and self.supply_army < 30:
+            return False
+        if advice.counter.posture == "aggressive" and army.amount >= 10:
+            return True                                # punish a greedy opponent
+        if self.supply_army >= 35:                     # take the map with a healthy army
+            return True
+        return False
+
+    def _attack_target(self, army):
+        if self.enemy_structures:
+            return self.enemy_structures.closest_to(army.center).position
+        if self.enemy_units:
+            return self.enemy_units.closest_to(self.start_location).position
+        return self.enemy_start_locations[0]
+
+    def _rally(self):
+        hold = self._wall_hold()
+        if hold is not None and self.townhalls.amount <= 1:
+            return hold
+        if self.townhalls:
+            base = self.townhalls.closest_to(self.enemy_start_locations[0])
+            return base.position.towards(self.game_info.map_center, 8)
+        return self.start_location
+
+    def _threatened_base(self):
+        for th in self.townhalls:
+            if self.enemy_units.filter(lambda u: u.can_attack and u.distance_to(th) < 30):
+                return th
+        return None
+
+    def _pull_workers(self, base, target):
+        # pull a portion of probes at the breached base; leave a few mining
+        probes = self.workers.closer_than(20, base)
+        n_fight = max(0, probes.amount - 4)
+        for probe in probes[:n_fight]:
+            probe.attack(target)
+
+    def _scout(self):
+        # Principle 5: scout constantly -- one early probe reveals the opening
+        if not self.scout_sent and self.time > 20 and self.workers.amount > 12:
+            probe = self.workers.random
+            probe.move(self.enemy_start_locations[0])
+            self.scout_tag = probe.tag
+            self.scout_sent = True
+        if self.scout_tag is not None:
+            scout = self.workers.find_by_tag(self.scout_tag)
+            if scout and scout.is_idle:
+                scout.move(self.enemy_start_locations[0])
+
+    # --------------------------------------------------------- wall + placement
+    def _wall_layout(self):
+        if self._wall is not None:
+            return self._wall
+        try:
+            ramp = self.main_base_ramp
+            pylon = ramp.protoss_wall_pylon
+            builds = sorted(ramp.protoss_wall_buildings, key=lambda p: (round(p.x), round(p.y)))
+            hold = ramp.protoss_wall_warpin
+            self._wall = (pylon, builds, hold) if (pylon is not None and len(builds) >= 2) else (None, [], None)
+        except Exception:
+            self._wall = (None, [], None)
+        return self._wall
+
+    def _wall_pylon(self):
+        return self._wall_layout()[0]
+
+    def _wall_building(self, i):
+        builds = self._wall_layout()[1]
+        return builds[i] if len(builds) > i else None
+
+    def _wall_hold(self):
+        return self._wall_layout()[2]
+
+    def _wall_gap_open(self):
+        pylon, builds, _ = self._wall_layout()
+        if pylon is None:
+            return False
+        placed = sum(
+            1 for p in builds
+            if self.structures.of_type({U.GATEWAY, U.CYBERNETICSCORE, U.FORGE})
+            .closer_than(1.5, p))
+        return placed < len(builds)
+
+    def _mineral_line(self, base):
+        mins = self.mineral_field.closer_than(10, base)
+        if mins:
+            return base.position.towards(mins.center, 4)
+        return base.position.towards(self.game_info.map_center, -3)
+
+    def _choke(self, base):
+        try:
+            return self.main_base_ramp.top_center.towards(base.position, 3)
+        except Exception:
+            return base.position.towards(self.game_info.map_center, 6)
+
+    # ------------------------------------------------------------------ log ----
+    def _log(self, advice):
+        if self.time - self.last_log < 60:
+            return
+        self.last_log = self.time
+        m = advice.macro
+        t = advice.tactics
+        print(f"[{int(self.time)}s] {advice.summary().splitlines()[0]} | "
+              f"opp={advice.classification.archetype.value} "
+              f"opening={self.enemy_opening or '?'} "
+              f"counter={advice.counter.posture} "
+              f"workers={self.supply_workers} army={int(self.supply_army)} "
+              f"bases={self.townhalls.amount} "
+              f"prod={m.target_production}(urg={m.spend_urgency:.1f}"
+              f"{'!' if m.force_train else ''}) "
+              f"tac={'ff' if t.focus_fire else '--'}"
+              f"/{'kite' if t.kite_low_hp else '--'}"
+              f"/{t.target_priority}"
+              f"{'/preserve' if t.preserve_units else ''}")

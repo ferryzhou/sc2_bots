@@ -88,12 +88,49 @@ LATE_COMP: dict[UnitID, dict] = {
 LATE_COMP_AFTER: float = 420.0  # 7:00
 LATE_COMP_GAS_BANK: int = 300
 
+# Reactive robo composition (Plan A). Pure stalkers have no answer to the
+# ladder's most common counters - every recent macro loss traced to it:
+# immortals (Chance), siege tanks (Stockfish), roaches (Persephone) all beat
+# stalkers cost-for-cost, and zealot/ling floods (Klakinn, ZEALOCALYPSE)
+# overrun them. The fix is composition (Principle 8) teched REACTIVELY to
+# scouting (Principle 10), NOT always-on: an always-on 35% immortal comp
+# REGRESSED (cycle 8, PvP 0-4) by diluting army at attack timings. So we only
+# add robo units once we actually see the enemy army they counter.
+#
+# vs an armored enemy army (roach / immortal / stalker / marauder / tank /
+# thor) -> immortals (bonus vs armored, and gas-heavy so they drain float).
+IMMORTAL_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.65, "priority": 0},
+    UnitID.IMMORTAL: {"proportion": 0.35, "priority": 1},
+}
+# vs a massed-light enemy army (zealot / zergling / marine / hydra flood)
+# -> colossus (AoE splash shreds clumped light).
+COLOSSUS_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.75, "priority": 0},
+    UnitID.COLOSSUS: {"proportion": 0.25, "priority": 1},
+}
+# supply of scouted enemy armored / light army value that triggers the switch
+# (a real presence, not one stray unit) - keeps the opening on pure stalkers
+ARMORED_TRIGGER: float = 8.0
+LIGHT_TRIGGER: float = 14.0
+
 # used while defending early aggression - zealots are the only gateway unit
 # available before cybercore tech and hold rushes far better than nothing
 EMERGENCY_COMP: dict[UnitID, dict] = {
     UnitID.STALKER: {"proportion": 0.5, "priority": 0},
     UnitID.ZEALOT: {"proportion": 0.5, "priority": 1},
 }
+
+# build-order watchdog: the ares build runner can stall forever if an
+# opening step is denied (early pressure blocking the expansion step is the
+# usual cause). While stalled, build_completed stays False and the macro
+# fallback runs almost nothing - two ladder losses (StarK234, Princess-Mika)
+# froze at ~45 supply / 2 gateways and floated 9-12k minerals, never handing
+# off to the macro controllers. Force the handoff once the opening has
+# clearly overrun (past this time, or past this supply - both well beyond a
+# healthy opening's ~27-supply endpoint) so full macro always resumes.
+BUILD_ORDER_DEADLINE: float = 200.0
+BUILD_ORDER_SUPPLY_CAP: float = 36.0
 
 # early-rush window: aggression detected before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
@@ -206,6 +243,40 @@ class PhoenixBot(AresBot):
             or self.mediator.get_enemy_went_four_gate
             or self.mediator.get_enemy_went_marine_rush
         )
+
+    def _enemy_armored_light_supply(self) -> tuple[float, float]:
+        """Scouted enemy army supply split into armored vs light. Uses ares'
+        cached enemy army dict (includes remembered units), so a unit seen
+        once still counts even after it leaves vision."""
+        armored = light = 0.0
+        for units in self.mediator.get_enemy_army_dict.values():
+            for u in units:
+                if u.type_id in WORKER_TYPES:
+                    continue
+                sup = self.calculate_supply_cost(u.type_id)
+                if u.is_armored:
+                    armored += sup
+                elif u.is_light:
+                    light += sup
+        return armored, light
+
+    def _choose_army_comp(self) -> dict[UnitID, dict]:
+        """Reactive composition: answer the scouted enemy army. Robo units are
+        added only once we actually see the army they counter, never during
+        the opening/all-in window - that reactivity is what separates this
+        from the always-on immortal comp that regressed."""
+        armored, light = self._enemy_armored_light_supply()
+        # armored takes precedence (immortals also beat the light-vs-colossus
+        # case acceptably, and armored is the deadlier miss for stalkers)
+        if armored >= ARMORED_TRIGGER and armored >= light:
+            return IMMORTAL_COMP
+        if light >= LIGHT_TRIGGER and light > armored:
+            return COLOSSUS_COMP
+        # no clear read yet: drain floating gas mid-game (old LATE_COMP), else
+        # the mineral-cheap stalker default
+        if self.time > LATE_COMP_AFTER and self.vespene > LATE_COMP_GAS_BANK:
+            return LATE_COMP
+        return ARMY_COMP
 
     def _counter_proxy_structures(self) -> None:
         """Cannon-rush response: pull nearby probes onto proxy structures
@@ -375,6 +446,24 @@ class PhoenixBot(AresBot):
             self._emergency = False
 
     def _macro(self) -> None:
+        # build-order watchdog: if the ares build runner has stalled (an
+        # opening step denied, build_completed stuck False past a healthy
+        # opening), force the handoff so the full macro stack - AutoSupply,
+        # BuildWorkers, ProductionController, ExpansionController - resumes
+        # instead of the near-empty fallback branch. Fires once; guards the
+        # macro-freeze losses where we floated 9-12k minerals stuck at ~45
+        # supply. Emergency already force-completes on rushes; this covers
+        # the non-rush stalls (macro opponents that contest our expansion).
+        if not self.build_order_runner.build_completed and (
+            self.time > BUILD_ORDER_DEADLINE
+            or self.supply_used >= BUILD_ORDER_SUPPLY_CAP
+        ):
+            logger.warning(
+                f"{self.time_formatted} build-order watchdog: forcing "
+                f"handoff to macro (t={self.time:.0f} supply={self.supply_used})"
+            )
+            self.build_order_runner.set_build_completed()
+
         # dynamic gas throttle: our army is mineral-heavy, so when gas is
         # flooding (the Hestia loss floated 5k+) ease workers off gas onto
         # minerals - cuts the waste AND speeds us toward max supply, which
@@ -386,13 +475,15 @@ class PhoenixBot(AresBot):
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
             if self._emergency:
+                # rush defense: gateway units + batteries, no robo detour
                 comp = self._emergency_comp
-            elif (self.time > LATE_COMP_AFTER
-                  and self.vespene > LATE_COMP_GAS_BANK):
-                # floating gas: spend it on gas-heavy tech units
-                comp = LATE_COMP
-            else:
+            elif self._all_in_read:
+                # one-base all-in inbound: robo tech is too slow to matter,
+                # pump gateway army now
                 comp = ARMY_COMP
+            else:
+                # reactive robo composition vs the scouted enemy army
+                comp = self._choose_army_comp()
             macro_plan.add(AutoSupply(base_location=self.start_location))
             if self._emergency:
                 # units and production only - no expansions, no upgrades,

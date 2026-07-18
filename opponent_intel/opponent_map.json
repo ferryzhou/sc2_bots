@@ -1,0 +1,779 @@
+{
+ "bots": {
+  "00080adf-b0f4-40f6-83b7-e70016d6da8d": {
+   "elo": 1600,
+   "name": "Kauyon",
+   "opp_style": "unknown",
+   "race": "P",
+   "style": ""
+  },
+  "017e5191-2501-49c0-8b0c-b2352e1a5f76": {
+   "elo": 1600,
+   "name": "Thssprtssbt_fan",
+   "opp_style": "unknown",
+   "race": "P",
+   "style": ""
+  },
+  "0c2751e6-834e-459c-be7b-bd96de3ed9ae": {
+   "elo": 2036,
+   "name": "tito",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Macro Zerg"
+  },
+  "0e5be8db-ecb8-4ae8-9189-21f69e74f5e7": {
+   "elo": 1691,
+   "name": "72Tortoises",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Roach/ling macro Zerg"
+  },
+  "0e882191-e6ec-44f9-a6ac-83fde616b31d": {
+   "elo": 1718,
+   "name": "Battler",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran reaper bio/mech"
+  },
+  "0f184729-b618-47b7-976b-964da08f53ed": {
+   "elo": 1624,
+   "name": "muravev",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Speedling macro Zerg"
+  },
+  "109b56c8-fa6e-4aa1-b58d-071fc2271c19": {
+   "elo": 1600,
+   "name": "OmegaZ",
+   "opp_style": "broken",
+   "race": "Z",
+   "style": "Zerg ling (weak form)"
+  },
+  "152c8779-29fc-42f9-8972-43dfae27c6dd": {
+   "elo": 2150,
+   "name": "Phobos",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio (MMM)"
+  },
+  "1807a35e-52ee-4a37-b427-0d9743096773": {
+   "elo": 1600,
+   "name": "Hannibal",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": ""
+  },
+  "1d3bb697-b044-47ee-b050-773fe1411791": {
+   "elo": 1860,
+   "name": "JimmyBot",
+   "opp_style": "unknown",
+   "race": "R",
+   "style": "Random (Zerg-leaning)"
+  },
+  "2540c0f3-238f-40a7-9c39-2e4f3dca2e2f": {
+   "elo": 1903,
+   "name": "sharkbot",
+   "opp_style": "macro_standard",
+   "race": "P",
+   "style": "Protoss macro"
+  },
+  "2557ad1d-ee42-4aaa-aa1b-1b46d31153d2": {
+   "elo": 2143,
+   "name": "BenBotBC",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio, marine micro"
+  },
+  "273591ef-79eb-413b-8535-b1861b02311b": {
+   "elo": 1600,
+   "name": "NextProBot",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": ""
+  },
+  "28a2fada-a646-4ba7-80b2-9c3dee593512": {
+   "elo": 1716,
+   "name": "Clicadinha",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Roach macro Zerg"
+  },
+  "28dd7593-85be-4205-94e3-bb83961f9bf1": {
+   "elo": 1661,
+   "name": "Voltron",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio-tank"
+  },
+  "2c516e8a-311c-479c-b556-ccead334c672": {
+   "elo": 1601,
+   "name": "sharpy_protoss_test1",
+   "opp_style": "air_tech",
+   "race": "P",
+   "style": "Protoss gateway/stargate"
+  },
+  "2fa0d156-1ae6-4914-9f83-dd6f70302c09": {
+   "elo": 1705,
+   "name": "BigDaddy",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio (marine/medivac)"
+  },
+  "3006428d-206f-46b9-a732-b6f6fe6743e4": {
+   "elo": 1600,
+   "name": "RU",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": ""
+  },
+  "30d24da1-c681-4e1e-94dd-57fc1b085180": {
+   "elo": 2033,
+   "name": "who",
+   "opp_style": "allin",
+   "race": "R",
+   "style": "Random cheese/proxy specialist"
+  },
+  "335e7765-298d-492f-9169-71fdac13563a": {
+   "elo": 1977,
+   "name": "chito",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Speedling macro Zerg"
+  },
+  "337ae0e1-7553-44be-ad04-8cd455d77e21": {
+   "elo": 1794,
+   "name": "ZeratulsRevengeTest",
+   "opp_style": "broken",
+   "race": "P",
+   "style": "Protoss zealot (dev, unstable)"
+  },
+  "3504fcd4-4858-464e-9c69-820979af5da5": {
+   "elo": 1600,
+   "name": "BobbyBotV10",
+   "opp_style": "unknown",
+   "race": "R",
+   "style": ""
+  },
+  "356f2646-2a9f-4141-984f-5d35c0a8c97e": {
+   "elo": 1600,
+   "name": "Chomppet",
+   "opp_style": "unknown",
+   "race": "T",
+   "style": ""
+  },
+  "360550d0-4659-417e-b0c0-184f74e6385e": {
+   "elo": 1922,
+   "name": "Roro",
+   "opp_style": "unknown",
+   "race": "T",
+   "style": "Terran"
+  },
+  "3634913c-46bb-4e01-9816-64ca0ba7a1db": {
+   "elo": 1700,
+   "name": "AvocaDEV",
+   "opp_style": "broken",
+   "race": "T",
+   "style": "Terran bio (dev)"
+  },
+  "39200814-3e2c-4dc1-a53c-ba872a138688": {
+   "elo": 1600,
+   "name": "PhantomTest",
+   "opp_style": "broken",
+   "race": "Z",
+   "style": "Zerg (dev, weak form)"
+  },
+  "3e393172-b926-4946-b57e-f1c3ffd24353": {
+   "elo": 1609,
+   "name": "Hellcannon",
+   "opp_style": "turtle",
+   "race": "P",
+   "style": "Protoss cannon+zealot"
+  },
+  "4730ecca-ea78-4bcf-b571-22b46d9fd4ec": {
+   "elo": 1921,
+   "name": "PhantomBot",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": "Zerg"
+  },
+  "487bff6a-ea78-4c92-a499-ee40b5ce98b1": {
+   "elo": 1842,
+   "name": "ArgoTest",
+   "opp_style": "broken",
+   "race": "P",
+   "style": "Skytoss cannon+tempest (ArgoBot dev)"
+  },
+  "48b23f2e-87ae-44be-bfce-d86386edadf7": {
+   "elo": 1705,
+   "name": "norman",
+   "opp_style": "broken",
+   "race": "P",
+   "style": "Broken/losing (current)"
+  },
+  "4a491758-76ff-40de-996c-018d49b6237f": {
+   "elo": 1858,
+   "name": "12PoolBot",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "12-pool speedling macro Zerg"
+  },
+  "4b6a9648-363f-4806-99d0-a9429777ac54": {
+   "elo": 1996,
+   "name": "smallBly",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": "Zerg"
+  },
+  "4b6b7f6f-a80f-422e-b486-1a77ceceb71b": {
+   "elo": 2065,
+   "name": "ArgoBot",
+   "opp_style": "air_tech",
+   "race": "P",
+   "style": "Skytoss (cannon+tempest)"
+  },
+  "4bb75d73-280f-4706-9d68-7935b8ab0fd6": {
+   "elo": 1909,
+   "name": "BotTato",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran mech/reaper"
+  },
+  "526e6d51-7eff-4752-82a8-ba673771cd19": {
+   "elo": 1682,
+   "name": "FlowerPrincess",
+   "opp_style": "allin",
+   "race": "Z",
+   "style": "Ling-flood Zerg"
+  },
+  "56e2e4cd-4d7f-447b-abdb-40fb2a6c13f7": {
+   "elo": 1602,
+   "name": "smokinggunbot",
+   "opp_style": "turtle",
+   "race": "T",
+   "style": "Terran bio-tank turtle"
+  },
+  "56ed60c5-835e-4f67-9c66-8de10a5bafba": {
+   "elo": 1887,
+   "name": "JimmyBotP",
+   "opp_style": "robo_timing",
+   "race": "P",
+   "style": "Protoss (stalker/immortal/oracle)"
+  },
+  "5802c7e1-b9cc-45a9-830f-326aae08850e": {
+   "elo": 1600,
+   "name": "ur_moms_a_ho",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": "Zerg (small sample)"
+  },
+  "59b6cb6d-1b1f-47b1-84b5-ac2a96f71bf7": {
+   "elo": 1940,
+   "name": "WickedBot",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio"
+  },
+  "5e14c537-b8e7-4cd8-8aa4-1d6fcdb376cd": {
+   "elo": 1697,
+   "name": "Dovahkiin",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Zerg macro"
+  },
+  "60337090-fa15-485d-9497-d9b1c28a86b5": {
+   "elo": 2025,
+   "name": "Caninana",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Micro macro Zerg"
+  },
+  "626d31f7-8dfb-4af9-af81-546c611f9907": {
+   "elo": 1657,
+   "name": "Forgefiend",
+   "opp_style": "allin",
+   "race": "P",
+   "style": "Protoss cannon turtle/rush"
+  },
+  "639a757c-8901-40b6-a49f-9e804949109b": {
+   "elo": 1849,
+   "name": "MechaShark",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran macro (mech-leaning)"
+  },
+  "69c0bb31-2c9b-4f39-aebd-914a7da1511d": {
+   "elo": 1710,
+   "name": "muravevtest",
+   "opp_style": "broken",
+   "race": "Z",
+   "style": "Speedling macro Zerg (muravev dev)"
+  },
+  "6b075187-e187-40d0-8721-1dc362805db5": {
+   "elo": 1653,
+   "name": "nida",
+   "opp_style": "air_tech",
+   "race": "P",
+   "style": "Protoss gateway stalker/phoenix"
+  },
+  "6bcce16a-8139-4dc0-8e72-b7ee8b3da1d8": {
+   "elo": 2283,
+   "name": "Eris",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Macro Zerg (roach/ling)"
+  },
+  "6e570722-ceff-41a9-b07c-14041069a3d9": {
+   "elo": 1678,
+   "name": "Dodo",
+   "opp_style": "macro_greedy",
+   "race": "Z",
+   "style": "Drone macro Zerg (Nydus)"
+  },
+  "706be45e-c38c-4a38-b1f5-d4e17fac2e76": {
+   "elo": 1642,
+   "name": "ArtZerg",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Ling/roach aggro Zerg"
+  },
+  "74f93bef-2db4-46fb-a8b7-a40aeb3ef7d8": {
+   "elo": 1600,
+   "name": "IntrusiveThoughts",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": ""
+  },
+  "75b6aa71-944c-4e59-84a5-4d85b3ad916b": {
+   "elo": 1600,
+   "name": "DownedStar",
+   "opp_style": "unknown",
+   "race": "P",
+   "style": ""
+  },
+  "773aa535-3aeb-486f-a3df-8a62f21750c5": {
+   "elo": 1641,
+   "name": "Terranosaur",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran mass-marine bio"
+  },
+  "7e234d60-12cf-46e0-ac7a-72e87f6edc53": {
+   "elo": 2109,
+   "name": "Zozo",
+   "opp_style": "macro_standard",
+   "race": "P",
+   "style": "Macro Protoss"
+  },
+  "81fa0acc-93ea-479c-9ba5-08ae63b9e3f5": {
+   "elo": 2094,
+   "name": "MicroMachine",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran marine-micro specialist"
+  },
+  "88e40155-4383-479f-9c2a-0f68a99c9cb6": {
+   "elo": 1860,
+   "name": "JimmyBotT",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio-tank"
+  },
+  "8c0d7c96-ac1b-4991-b4d0-19e64f426bd6": {
+   "elo": 1619,
+   "name": "TheLAW",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio macro"
+  },
+  "8cad7b11-d554-43b3-a774-2b6f32596f30": {
+   "elo": 1666,
+   "name": "PerilousProtossBot",
+   "opp_style": "broken",
+   "race": "P",
+   "style": "Protoss zealot/cannon (weak form)"
+  },
+  "8ce24c62-319f-424f-89dd-d435a7bd731c": {
+   "elo": 1741,
+   "name": "AvocaDOS",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio"
+  },
+  "8cfca4f8-2d6c-40b7-a317-c5ea1dce9fad": {
+   "elo": 1713,
+   "name": "Arpy",
+   "opp_style": "macro_standard",
+   "race": "P",
+   "style": "Protoss gateway zealot/adept"
+  },
+  "8f0925c7-e1eb-4fba-9bc2-8df2134743d5": {
+   "elo": 1655,
+   "name": "Creepy_duo_canon",
+   "opp_style": "allin",
+   "race": "P",
+   "style": "Protoss double cannon rush"
+  },
+  "8f94d1fd-e5ee-4563-96d1-619c9d81290e": {
+   "elo": 1987,
+   "name": "DominionDog",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio"
+  },
+  "944bcdff-a18f-4ed0-a5fc-35764399ef05": {
+   "elo": 1838,
+   "name": "Sharkling",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": "Zerg"
+  },
+  "984f127a-5e1d-4b54-a1ac-42044cf4c52e": {
+   "elo": 2295,
+   "name": "Deimos",
+   "opp_style": "air_tech",
+   "race": "P",
+   "style": "Macro Protoss, adept/phoenix harass"
+  },
+  "99806709-9b28-487b-83bf-5bb45c241209": {
+   "elo": 1600,
+   "name": "bilisaur",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": ""
+  },
+  "9c388878-6009-4bea-85e6-40de4d94f79a": {
+   "elo": 1646,
+   "name": "PiG_Bot",
+   "opp_style": "robo_timing",
+   "race": "P",
+   "style": "Protoss gateway/robo macro"
+  },
+  "9c83b32e-2e35-48c0-b051-ec134795b817": {
+   "elo": 1600,
+   "name": "SunsetOrpheus",
+   "opp_style": "unknown",
+   "race": "R",
+   "style": ""
+  },
+  "9eaa34d2-3ee2-45b6-8c04-64a31b95ae25": {
+   "elo": 1623,
+   "name": "ZEALOCALYPSE",
+   "opp_style": "allin",
+   "race": "P",
+   "style": "Protoss zealot flood"
+  },
+  "a20e769c-fecf-46c7-b1d0-226b9774986d": {
+   "elo": 1600,
+   "name": "Hello_world",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": ""
+  },
+  "a378fd89-7693-4445-a04c-ddb67e7bea8a": {
+   "elo": 1632,
+   "name": "Persephone",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Ling/roach macro Zerg"
+  },
+  "a51d7f01-0f4a-4b91-ada8-7bd1eeec2cda": {
+   "elo": 1600,
+   "name": "Krillin",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Zerg macro/aggro"
+  },
+  "aad42273-84e0-4ae8-8c68-366951ac5c5e": {
+   "elo": 1884,
+   "name": "TyrT",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran macro"
+  },
+  "ae65989d-159d-4cc6-882a-c6a581396ea3": {
+   "elo": 1600,
+   "name": "bottinger",
+   "opp_style": "unknown",
+   "race": "Z",
+   "style": ""
+  },
+  "aea70272-1c83-46a1-92a5-cdd5a25236af": {
+   "elo": 1756,
+   "name": "Cyne",
+   "opp_style": "broken",
+   "race": "P",
+   "style": "Protoss gateway/robo (weak form)"
+  },
+  "aebdab28-905d-4313-8183-eae212947860": {
+   "elo": 1648,
+   "name": "clone",
+   "opp_style": "unknown",
+   "race": "T",
+   "style": "Terran reaper/starport"
+  },
+  "af09f69e-a162-45a8-98e8-e36c80899144": {
+   "elo": 2103,
+   "name": "Xena",
+   "opp_style": "macro_standard",
+   "race": "R",
+   "style": "Random, adaptive macro"
+  },
+  "af9f3708-42b5-46fc-a071-f729f8355bcd": {
+   "elo": 1638,
+   "name": "kas",
+   "opp_style": "macro_greedy",
+   "race": "Z",
+   "style": "Over-drone macro Zerg"
+  },
+  "b0c3dbb7-a2f1-4185-8c06-db015162043f": {
+   "elo": 1757,
+   "name": "zig-spudde",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio-tank"
+  },
+  "bd344d56-0874-4e6f-b229-ffde6269eff2": {
+   "elo": 1677,
+   "name": "CynEX",
+   "opp_style": "air_tech",
+   "race": "P",
+   "style": "Skytoss/stalker macro Protoss"
+  },
+  "bd9154be-e00f-4600-88ce-a0d2650ea716": {
+   "elo": 1883,
+   "name": "LunaxVRR",
+   "opp_style": "air_tech",
+   "race": "P",
+   "style": "Skytoss (cannon+tempest)"
+  },
+  "be47253f-5e5f-4c08-af24-a705d235f021": {
+   "elo": 1896,
+   "name": "whalemean",
+   "opp_style": "unknown",
+   "race": "R",
+   "style": "Random"
+  },
+  "c033a97a-667d-42e3-91e8-13528ac191ed": {
+   "elo": 1718,
+   "name": "Apidae",
+   "opp_style": "allin",
+   "race": "P",
+   "style": "Protoss cannon turtle/rush"
+  },
+  "c11fe18a-7ce5-4a0f-8900-17fc6dcc2243": {
+   "elo": 1697,
+   "name": "Mulebot",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio-mech"
+  },
+  "c27b8734-4d5b-4475-9204-bf245c78226d": {
+   "elo": 1642,
+   "name": "Asteria",
+   "opp_style": "air_tech",
+   "race": "P",
+   "style": "Stargate skytoss (carrier/tempest)"
+  },
+  "c4256f70-963b-461a-8c0e-bdf83d4ff266": {
+   "elo": 2056,
+   "name": "GPT",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio-tank"
+  },
+  "c5e0e203-bfa8-4f8f-a96d-5235a9a481af": {
+   "elo": 2042,
+   "name": "SharpenedEdge",
+   "opp_style": "macro_standard",
+   "race": "P",
+   "style": "Macro Protoss"
+  },
+  "c6a3b8c6-27c2-4e4c-b31f-c26d61195fff": {
+   "elo": 1932,
+   "name": "WoundMaker",
+   "opp_style": "air_tech",
+   "race": "Z",
+   "style": "Mutalisk Zerg"
+  },
+  "c6d0b3ef-6edc-4882-bc45-5dc4bd5be502": {
+   "elo": 1836,
+   "name": "LunaxVRRTest",
+   "opp_style": "broken",
+   "race": "P",
+   "style": "Skytoss void/tempest (LunaxVRR dev)"
+  },
+  "c8ed3d8b-3607-40e3-b7fe-075d9c08a5fd": {
+   "elo": 1611,
+   "name": "QueenBot",
+   "opp_style": "turtle",
+   "race": "Z",
+   "style": "Queen/creep macro Zerg"
+  },
+  "cd45a48d-3de9-48b0-b7c3-2daf20af8c04": {
+   "elo": 1774,
+   "name": "Aeolus",
+   "opp_style": "macro_standard",
+   "race": "P",
+   "style": "Stalker/blink macro Protoss"
+  },
+  "d0c3a668-1fa2-4e3d-ad02-7ba7f17a67ea": {
+   "elo": 1752,
+   "name": "LordSuperKing",
+   "opp_style": "air_tech",
+   "race": "P",
+   "style": "Protoss stalker+tempest"
+  },
+  "d6d98d5e-1ed9-42de-9831-f5ff6a4496a8": {
+   "elo": 1625,
+   "name": "Horizon",
+   "opp_style": "air_tech",
+   "race": "T",
+   "style": "Terran bio/air macro"
+  },
+  "d9767f0e-b2dc-48e7-ad8b-58dacaaeab98": {
+   "elo": 1876,
+   "name": "WaterLeak",
+   "opp_style": "macro_standard",
+   "race": "Z",
+   "style": "Roach/ling Zerg"
+  },
+  "d976d19d-89b8-4340-937c-4b16d72f9ff2": {
+   "elo": 1602,
+   "name": "zig-reapers",
+   "opp_style": "allin",
+   "race": "T",
+   "style": "Terran mass-reaper all-in"
+  },
+  "e3ea0dca-6dc0-40e0-ba05-4b7beb697d4f": {
+   "elo": 1614,
+   "name": "OneBaseStalkerBot",
+   "opp_style": "allin",
+   "race": "P",
+   "style": "Protoss one-base stalker"
+  },
+  "e7120c68-f3ee-4772-b20e-c877c8363b8c": {
+   "elo": 1933,
+   "name": "TyrP",
+   "opp_style": "macro_standard",
+   "race": "P",
+   "style": "Protoss macro"
+  },
+  "eaf8a4ce-8bde-42d6-82b3-2861c8a47930": {
+   "elo": 1972,
+   "name": "VeTerran-revived",
+   "opp_style": "macro_standard",
+   "race": "T",
+   "style": "Terran bio/mech macro"
+  },
+  "f3eb9d84-22e2-4dd9-bf6d-4a691f03e1b9": {
+   "elo": 1820,
+   "name": "JimmyBotZ",
+   "opp_style": "macro_greedy",
+   "race": "Z",
+   "style": "Roach/drone macro Zerg"
+  }
+ },
+ "meta": {
+  "count": 96,
+  "note": "In-game --OpponentId is the opponent's game_display_id (UUID), stable per bot. Indexed by UUID and by lowercased name.",
+  "source": "aiarena.net API game_display_id + bot_profiles classification"
+ },
+ "names": {
+  "12poolbot": "4a491758-76ff-40de-996c-018d49b6237f",
+  "72tortoises": "0e5be8db-ecb8-4ae8-9189-21f69e74f5e7",
+  "aeolus": "cd45a48d-3de9-48b0-b7c3-2daf20af8c04",
+  "apidae": "c033a97a-667d-42e3-91e8-13528ac191ed",
+  "argobot": "4b6b7f6f-a80f-422e-b486-1a77ceceb71b",
+  "argotest": "487bff6a-ea78-4c92-a499-ee40b5ce98b1",
+  "arpy": "8cfca4f8-2d6c-40b7-a317-c5ea1dce9fad",
+  "artzerg": "706be45e-c38c-4a38-b1f5-d4e17fac2e76",
+  "asteria": "c27b8734-4d5b-4475-9204-bf245c78226d",
+  "avocadev": "3634913c-46bb-4e01-9816-64ca0ba7a1db",
+  "avocados": "8ce24c62-319f-424f-89dd-d435a7bd731c",
+  "battler": "0e882191-e6ec-44f9-a6ac-83fde616b31d",
+  "benbotbc": "2557ad1d-ee42-4aaa-aa1b-1b46d31153d2",
+  "bigdaddy": "2fa0d156-1ae6-4914-9f83-dd6f70302c09",
+  "bilisaur": "99806709-9b28-487b-83bf-5bb45c241209",
+  "bobbybotv10": "3504fcd4-4858-464e-9c69-820979af5da5",
+  "bottato": "4bb75d73-280f-4706-9d68-7935b8ab0fd6",
+  "bottinger": "ae65989d-159d-4cc6-882a-c6a581396ea3",
+  "caninana": "60337090-fa15-485d-9497-d9b1c28a86b5",
+  "chito": "335e7765-298d-492f-9169-71fdac13563a",
+  "chomppet": "356f2646-2a9f-4141-984f-5d35c0a8c97e",
+  "clicadinha": "28a2fada-a646-4ba7-80b2-9c3dee593512",
+  "clone": "aebdab28-905d-4313-8183-eae212947860",
+  "creepy_duo_canon": "8f0925c7-e1eb-4fba-9bc2-8df2134743d5",
+  "cyne": "aea70272-1c83-46a1-92a5-cdd5a25236af",
+  "cynex": "bd344d56-0874-4e6f-b229-ffde6269eff2",
+  "deimos": "984f127a-5e1d-4b54-a1ac-42044cf4c52e",
+  "dodo": "6e570722-ceff-41a9-b07c-14041069a3d9",
+  "dominiondog": "8f94d1fd-e5ee-4563-96d1-619c9d81290e",
+  "dovahkiin": "5e14c537-b8e7-4cd8-8aa4-1d6fcdb376cd",
+  "downedstar": "75b6aa71-944c-4e59-84a5-4d85b3ad916b",
+  "eris": "6bcce16a-8139-4dc0-8e72-b7ee8b3da1d8",
+  "flowerprincess": "526e6d51-7eff-4752-82a8-ba673771cd19",
+  "forgefiend": "626d31f7-8dfb-4af9-af81-546c611f9907",
+  "gpt": "c4256f70-963b-461a-8c0e-bdf83d4ff266",
+  "hannibal": "1807a35e-52ee-4a37-b427-0d9743096773",
+  "hellcannon": "3e393172-b926-4946-b57e-f1c3ffd24353",
+  "hello_world": "a20e769c-fecf-46c7-b1d0-226b9774986d",
+  "horizon": "d6d98d5e-1ed9-42de-9831-f5ff6a4496a8",
+  "intrusivethoughts": "74f93bef-2db4-46fb-a8b7-a40aeb3ef7d8",
+  "jimmybot": "1d3bb697-b044-47ee-b050-773fe1411791",
+  "jimmybotp": "56ed60c5-835e-4f67-9c66-8de10a5bafba",
+  "jimmybott": "88e40155-4383-479f-9c2a-0f68a99c9cb6",
+  "jimmybotz": "f3eb9d84-22e2-4dd9-bf6d-4a691f03e1b9",
+  "kas": "af9f3708-42b5-46fc-a071-f729f8355bcd",
+  "kauyon": "00080adf-b0f4-40f6-83b7-e70016d6da8d",
+  "krillin": "a51d7f01-0f4a-4b91-ada8-7bd1eeec2cda",
+  "lordsuperking": "d0c3a668-1fa2-4e3d-ad02-7ba7f17a67ea",
+  "lunaxvrr": "bd9154be-e00f-4600-88ce-a0d2650ea716",
+  "lunaxvrrtest": "c6d0b3ef-6edc-4882-bc45-5dc4bd5be502",
+  "mechashark": "639a757c-8901-40b6-a49f-9e804949109b",
+  "micromachine": "81fa0acc-93ea-479c-9ba5-08ae63b9e3f5",
+  "mulebot": "c11fe18a-7ce5-4a0f-8900-17fc6dcc2243",
+  "muravev": "0f184729-b618-47b7-976b-964da08f53ed",
+  "muravevtest": "69c0bb31-2c9b-4f39-aebd-914a7da1511d",
+  "nextprobot": "273591ef-79eb-413b-8535-b1861b02311b",
+  "nida": "6b075187-e187-40d0-8721-1dc362805db5",
+  "norman": "48b23f2e-87ae-44be-bfce-d86386edadf7",
+  "omegaz": "109b56c8-fa6e-4aa1-b58d-071fc2271c19",
+  "onebasestalkerbot": "e3ea0dca-6dc0-40e0-ba05-4b7beb697d4f",
+  "perilousprotossbot": "8cad7b11-d554-43b3-a774-2b6f32596f30",
+  "persephone": "a378fd89-7693-4445-a04c-ddb67e7bea8a",
+  "phantombot": "4730ecca-ea78-4bcf-b571-22b46d9fd4ec",
+  "phantomtest": "39200814-3e2c-4dc1-a53c-ba872a138688",
+  "phobos": "152c8779-29fc-42f9-8972-43dfae27c6dd",
+  "pig_bot": "9c388878-6009-4bea-85e6-40de4d94f79a",
+  "queenbot": "c8ed3d8b-3607-40e3-b7fe-075d9c08a5fd",
+  "roro": "360550d0-4659-417e-b0c0-184f74e6385e",
+  "ru": "3006428d-206f-46b9-a732-b6f6fe6743e4",
+  "sharkbot": "2540c0f3-238f-40a7-9c39-2e4f3dca2e2f",
+  "sharkling": "944bcdff-a18f-4ed0-a5fc-35764399ef05",
+  "sharpenededge": "c5e0e203-bfa8-4f8f-a96d-5235a9a481af",
+  "sharpy_protoss_test1": "2c516e8a-311c-479c-b556-ccead334c672",
+  "smallbly": "4b6a9648-363f-4806-99d0-a9429777ac54",
+  "smokinggunbot": "56e2e4cd-4d7f-447b-abdb-40fb2a6c13f7",
+  "sunsetorpheus": "9c83b32e-2e35-48c0-b051-ec134795b817",
+  "terranosaur": "773aa535-3aeb-486f-a3df-8a62f21750c5",
+  "thelaw": "8c0d7c96-ac1b-4991-b4d0-19e64f426bd6",
+  "thssprtssbt_fan": "017e5191-2501-49c0-8b0c-b2352e1a5f76",
+  "tito": "0c2751e6-834e-459c-be7b-bd96de3ed9ae",
+  "tyrp": "e7120c68-f3ee-4772-b20e-c877c8363b8c",
+  "tyrt": "aad42273-84e0-4ae8-8c68-366951ac5c5e",
+  "ur_moms_a_ho": "5802c7e1-b9cc-45a9-830f-326aae08850e",
+  "veterran-revived": "eaf8a4ce-8bde-42d6-82b3-2861c8a47930",
+  "voltron": "28dd7593-85be-4205-94e3-bb83961f9bf1",
+  "waterleak": "d9767f0e-b2dc-48e7-ad8b-58dacaaeab98",
+  "whalemean": "be47253f-5e5f-4c08-af24-a705d235f021",
+  "who": "30d24da1-c681-4e1e-94dd-57fc1b085180",
+  "wickedbot": "59b6cb6d-1b1f-47b1-84b5-ac2a96f71bf7",
+  "woundmaker": "c6a3b8c6-27c2-4e4c-b31f-c26d61195fff",
+  "xena": "af09f69e-a162-45a8-98e8-e36c80899144",
+  "zealocalypse": "9eaa34d2-3ee2-45b6-8c04-64a31b95ae25",
+  "zeratulsrevengetest": "337ae0e1-7553-44be-ad04-8cd455d77e21",
+  "zig-reapers": "d976d19d-89b8-4340-937c-4b16d72f9ff2",
+  "zig-spudde": "b0c3dbb7-a2f1-4185-8c06-db015162043f",
+  "zozo": "7e234d60-12cf-46e0-ac7a-72e87f6edc53"
+ }
+}
