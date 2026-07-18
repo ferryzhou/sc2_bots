@@ -1,7 +1,11 @@
 """TwelvePoolBot: a fast 12-pool zergling rush (mimics 12PoolBot's timing).
 
 Sparring partner to test anti-rush defense. ~12 drones -> Spawning Pool ->
-mass Zerglings -> all-in. First lings ~1:15, attack ~1:30.
+mass Zerglings -> all-in.
+
+Validated headless vs the VeryHard built-in AI: pool starts 0:39 on 14 drones,
+first lings 2:08 (pool morph alone is ~46s, so earlier isn't physically
+possible), 44 lings by 5:00 attacking in waves.
 """
 from sc2.bot_ai import BotAI
 from sc2.data import Result
