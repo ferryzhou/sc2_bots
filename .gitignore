@@ -49,3 +49,6 @@ hydra/results/history.jsonl
 
 # Local build-reproduction test replays
 results/build_replays/
+
+# generated investigation reports (analysis/investigate.py output)
+analysis/reports/
