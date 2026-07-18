@@ -444,15 +444,19 @@ class AiurBot(BotAI):
         if owe_base and self.minerals < 400:
             return  # bank the whole Nexus cost -- pause army (incl. mineral-heavy
             #         robo units) for the ~15s it takes, then _expand takes the base
-        # robo: one observer for detection, then colossus (splash) or immortals --
-        # both gas sinks. Prefer Colossus when the library wants splash.
+        comp = advice.composition
+        # robo: observer, then colossus (splash) or immortals. When the library wants
+        # splash, hold for a Colossus rather than defaulting to an Immortal.
         robo = self.structures(U.ROBOTICSFACILITY).ready.idle
         if robo:
             have_obs = self.units(U.OBSERVER).amount + self.already_pending(U.OBSERVER)
+            bay = self.structures(U.ROBOTICSBAY).ready
             if have_obs == 0 and self.can_afford(U.OBSERVER):
                 robo.first.train(U.OBSERVER)
-            elif self.structures(U.ROBOTICSBAY).ready and self.can_afford(U.COLOSSUS):
+            elif bay and self.can_afford(U.COLOSSUS):
                 robo.first.train(U.COLOSSUS)
+            elif bay and comp.need_splash and self.minerals < 300:
+                pass  # hold for a Colossus (splash) instead of an Immortal
             elif self.can_afford(U.IMMORTAL):
                 robo.first.train(U.IMMORTAL)
         # stargate: Void Rays for anti-air (BroodLords / Mutas) -- the tech a
@@ -460,11 +464,20 @@ class AiurBot(BotAI):
         for sg in self.structures(U.STARGATE).ready.idle:
             if self.can_afford(U.VOIDRAY):
                 sg.train(U.VOIDRAY)
+        # Escalating: the mineral-heavy tech units (Void Ray 250, Colossus 300) get
+        # starved by cheap gateway Stalkers, leaving the tech buildings idle. If a
+        # Stargate or Robo(+Bay) is waiting and we can't afford its unit yet, hold
+        # the gateway so the minerals bank for it instead of leaking into Stalkers.
+        if comp.escalate_tech and self.minerals < 300:
+            sg_idle = self.structures(U.STARGATE).ready.idle.exists
+            robo_waiting = (self.structures(U.ROBOTICSBAY).ready
+                            and self.structures(U.ROBOTICSFACILITY).ready.idle.exists)
+            if sg_idle or robo_waiting:
+                return  # bank minerals for the Void Ray / Colossus
         # gateway composition. Principle 3 (don't float): a Zealot costs 0 gas, so
         # an all-Zealot army hoards gas -- read the bank and make Stalkers when gas
         # piles up. Diversification comes from the robo (Colossus/Immortal) and
-        # stargate (Void Ray) running in parallel ABOVE, which claim gas first each
-        # step; the gateway fills out the ground line with what's left.
+        # stargate (Void Ray) running in parallel ABOVE, which claim gas first.
         floating_gas = self.vespene >= 300
         for gate in self.structures(U.GATEWAY).ready.idle:
             stalkers = self.units(U.STALKER).amount
