@@ -25,15 +25,22 @@ minerals bank for a ~2:00 expansion.
 
 ## Benchmarks to hit
 
-| Metric | Pro macro Protoss | Aiur (before) |
-|--------|-------------------|---------------|
-| Natural (2nd base) | **~1:50–2:20** | ~5:00–6:00 ❌ (3–4 min late) |
-| 3rd base | ~4:30–5:30 | ~9:00–13:00 ❌ |
-| Warp Gate research | ASAP (~3:00) | **never** ❌ |
-| Workers | 22/base; ~44 @2 base, ~66 @3 base; finish 66–80 | ok late, slow to develop |
-| Total supply @10:00 | ~120–140 | ~78 ❌ |
-| **Total supply @12:00** | **~150–175** | ~102 ❌ |
-| Max (200 supply) | ~13–15:00 in a pure macro game | never reaches |
+| Metric | Pro macro Protoss | Aiur (before) | Aiur (after eco fixes) |
+|--------|-------------------|---------------|------------------------|
+| Natural (2nd base) | **~1:50–2:20** | ~5:00–6:00 ❌ | **~3:10** ⬆ |
+| 3rd base | ~4:30–5:30 | ~9:00–13:00 ❌ | ~8:00 ⬆ (gated by army) |
+| Warp Gate research | ASAP (~3:00) | **never** ❌ | **still never** ❌ |
+| Workers | 22/base; ~44 @2, ~66 @3; finish 66–80 | slow | ~62 @10:00 ⬆ |
+| Total supply @10:00 | ~120–140 | ~78 | ~98 ⬆ |
+| **Total supply @12:00** | **~150–175** | ~102 ❌ | ~113 ⬆ (surviving games) |
+| Max (200 supply) | ~13–15:00 | never | not yet |
+
+**After the eco fixes**: the natural came ~1.5 min earlier and supply rose ~10–20,
+but it plateaus around ~100–113 because the **3rd base is gated behind having a
+covering army (14 supply), which Aiur can't field until ~8:00 without Warp Gate.**
+Warp Gate is the keystone: faster army production → the 3rd base comes sooner →
+supply compounds → *and* there's an army to defend the greedier economy (a fast
+natural with no Warp Gate got punished at ~10:00 in testing).
 
 The single-number target the user set — **150+ supply at 12:00** — is the right
 bar. Aiur was at ~102 because the natural is 3–4 minutes late and Warp Gate is
