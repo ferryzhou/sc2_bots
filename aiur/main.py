@@ -333,6 +333,13 @@ class AiurBot(BotAI):
             return
         if not self.structures(U.CYBERNETICSCORE).ready:
             return
+        # Greedy opening (pro macro standard): once Gateway + Cyber are up, HOLD all
+        # further tech until the natural is down, so minerals bank for a fast Nexus
+        # (~2:30 instead of ~5:00). A real rush flips defense.emergency, which both
+        # skips this hold and stops the expand -- so greed only happens when safe.
+        if (advice.macro.base_target >= 2 and self.townhalls.amount < 2
+                and not advice.defense.emergency):
+            return
         # robotics for immortals + observer (detection, anti-armor)
         if not self.structures(U.ROBOTICSFACILITY) and self.already_pending(U.ROBOTICSFACILITY) == 0:
             if self.can_afford(U.ROBOTICSFACILITY):
@@ -502,19 +509,31 @@ class AiurBot(BotAI):
                 gate.train(U.ZEALOT)
 
     def _chrono(self):
+        # Chrono technique: in the OPENING, pump probes -- accelerating the worker
+        # ramp is the single biggest economic lever and is how pros hit ~150 supply
+        # by 12:00. Once the economy is developed (~40 workers), shift chrono to
+        # upgrades, then production. Also chrono the Cyber Core while it researches
+        # (Warp Gate) -- the fastest way to online army tempo.
+        early_eco = self.supply_workers < 40 and self.time < 360
         for nexus in self.townhalls.ready:
             if nexus.energy < 50:
                 continue
-            # priority: forge upgrade, then warpgate/robo/gateway production, then probes
+            cyber = self.structures(U.CYBERNETICSCORE).ready
+            if cyber and not cyber.first.is_idle:      # researching (warp gate) -> speed it
+                nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, cyber.first)
+                return
+            if early_eco and not nexus.is_idle:        # opening: ramp probes
+                nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus)
+                return
             forge = self.structures(U.FORGE).ready
-            if forge and not forge.first.is_idle:
+            if forge and not forge.first.is_idle:      # then upgrades (compound)
                 nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, forge.first)
                 return
             producers = [s for s in (self.structures(U.GATEWAY).ready
                                      | self.structures(U.ROBOTICSFACILITY).ready
-                                     | self.structures(U.CYBERNETICSCORE).ready)
+                                     | self.structures(U.STARGATE).ready)
                          if not s.is_idle]
-            if producers:
+            if producers:                              # then production
                 nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, producers[0])
                 return
             if not nexus.is_idle and self.supply_workers < 44:
