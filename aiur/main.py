@@ -28,7 +28,6 @@ from sc2.ids.upgrade_id import UpgradeId as Up
 from strategy_engine import (
     StrategicAdvisor,
     GameState,
-    Investment,
     Engagement,
     classify_opening,
 )
@@ -284,29 +283,14 @@ class AiurBot(BotAI):
                     return
 
     async def _expand(self, advice):
-        # Principle 4: expand. A winning army on too few bases still loses the long
-        # game (2 bases vs the enemy's 4). Don't let army-priority permanently block
-        # the 3rd base -- if we have a standing army to cover it, take it behind them.
-        self._want_expand = False
-        if advice.defense.prioritize_army:
-            cannons_up = (self.structures(U.PHOTONCANNON).ready.amount
-                          >= advice.defense.static_defense)
-            army_cover = self.supply_army >= 18  # enough army to defend an expo
-            if not ((cannons_up or army_cover) and self.townhalls.amount < 3):
-                return
-        if self.townhalls.amount >= 4 or self.already_pending(U.NEXUS):
-            return
-        take_natural = self.townhalls.amount < 2 and self.supply_workers >= 14
-        saturated = self.supply_workers >= 0.85 * 22 * self.townhalls.amount
-        eco_priority = Investment.ECONOMY in advice.investment.priority[:2]
-        if not (take_natural or saturated or eco_priority or self.minerals > 500):
-            return
-        # Want to expand. If army spending has drained minerals below the 400 a
-        # Nexus costs, reserve for it (see _train) rather than never affording it.
-        if self.can_afford(U.NEXUS):
+        # Principle 4: execute the library's base target. It grows the target through
+        # the mid-late game and caps our production so minerals are left for the Nexus,
+        # so here we just take the base when we're below target and can afford it.
+        if advice.defense.emergency:
+            return  # under an active all-in -- army first
+        if (self.townhalls.amount + self.already_pending(U.NEXUS) < advice.macro.base_target
+                and self.can_afford(U.NEXUS)):
             await self.expand_now()
-        else:
-            self._want_expand = True
 
     async def _tech(self, advice):
         gates = self.structures(U.GATEWAY)
@@ -432,11 +416,13 @@ class AiurBot(BotAI):
                 return
 
     def _train(self, advice):
-        # Hold minerals for a pending expansion (Principle 4): if _expand wants a
-        # Nexus but army spending has kept us under its 400 cost, stop draining
-        # minerals into gateway units for a few seconds so the base actually goes
-        # down. Robo (gas-heavy) still runs so gas doesn't re-pile while we save.
-        saving_for_expo = getattr(self, "_want_expand", False) and self.minerals < 450
+        # Reserve minerals for a mandated expansion (Principle 4): when the library
+        # says we owe a base (base_target), hold the final stretch of minerals for
+        # the 400-cost Nexus instead of spending it on gateway units. Bounded to
+        # 250..400 so army/gas production barely pauses; robo (gas) runs regardless.
+        owe_base = (self.townhalls.amount + self.already_pending(U.NEXUS)
+                    < advice.macro.base_target and not advice.defense.emergency)
+        saving_for_expo = owe_base and 250 <= self.minerals < 400
         # robo: one observer for detection, then colossus (splash) or immortals
         robo = self.structures(U.ROBOTICSFACILITY).ready.idle
         if robo:

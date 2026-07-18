@@ -449,6 +449,39 @@ def test_macro_threat_adds_production() -> None:
            m_threat.target_production > m_safe.target_production)
 
 
+def test_macro_base_target_grows_through_the_game() -> None:
+    # army_supply set so the "don't out-expand the army" safety gate is satisfied.
+    early = GameState(game_time=180, worker_count=20, base_count=1, minerals=100)
+    mid = GameState(game_time=600, worker_count=44, base_count=2, minerals=100,
+                    army_supply=30)
+    late = GameState(game_time=1000, worker_count=60, base_count=3, minerals=100,
+                     army_supply=40)
+    m_early = recommend_macro(early, recommend_investment(early))
+    m_mid = recommend_macro(mid, recommend_investment(mid))
+    m_late = recommend_macro(late, recommend_investment(late))
+    _check("base target grows into mid game", m_mid.base_target >= 3)
+    _check("base target keeps growing late", m_late.base_target > m_mid.base_target)
+    _check("base target never below current bases",
+           m_early.base_target >= 1 and m_late.base_target >= 3)
+    # behind the base target -> production is capped so minerals are left to expand
+    m_behind = recommend_macro(mid, recommend_investment(mid))
+    _check("behind base target caps production to save for the expo",
+           m_behind.target_production <= 2 * 2 + 2)
+
+
+def test_macro_does_not_expand_behind_a_thin_army() -> None:
+    # saturated 2-base economy but almost no army -> hold at 2, don't walk a Nexus
+    # into a timing attack. With an army to cover it, the 3rd is allowed.
+    thin = GameState(game_time=540, worker_count=44, base_count=2, minerals=100,
+                     army_supply=4)
+    covered = GameState(game_time=540, worker_count=44, base_count=2, minerals=100,
+                        army_supply=24)
+    m_thin = recommend_macro(thin, recommend_investment(thin))
+    m_covered = recommend_macro(covered, recommend_investment(covered))
+    _check("thin army: hold base target at current", m_thin.base_target == 2)
+    _check("covered army: allow the next base", m_covered.base_target >= 3)
+
+
 def test_tactics_favorable_focus_fire() -> None:
     from .combat import assess_engagement
     st = GameState(army_supply=30, enemy_army_supply=18)
