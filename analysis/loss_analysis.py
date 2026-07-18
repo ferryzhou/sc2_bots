@@ -216,8 +216,8 @@ def main():
     print(f"  TOTAL army value produced: us {fa1} vs enemy {fa2}  ratio {fa1/fa2 if fa2 else 0:.2f}"
           f"  |  invested in army: us {fa1/ft1 if ft1 else 0:.0%} vs enemy {fa2/ft2 if ft2 else 0:.0%}\n")
 
-    # 1) army value / supply timeline
-    print("time  | our army (val/sup)  enemy army (val/sup) | ratio | our upg  enemy upg")
+    # 1) army value / supply timeline, with the fight that minute inline
+    print("time  | our army (val/sup)  enemy army (val/sup) | ratio | upg u/e | this-min fight: lost u/e (trade)")
     marks = list(range(60, length + 1, 60))
     behind_since = None
     for t in marks:
@@ -226,13 +226,20 @@ def main():
         ratio = (ov / ev) if ev else (9.9 if ov else 1.0)
         oup = sum(1 for s, _ in upgrades[ours] if s <= t)
         eup = sum(1 for s, _ in upgrades[theirs] if s <= t)
+        lost1, _ = deaths_in(units, ours, t - 60, t)
+        lost2, _ = deaths_in(units, theirs, t - 60, t)
+        battle = ""
+        if max(lost1, lost2) >= 200:  # a real fight happened this minute
+            trade = (lost2 / lost1) if lost1 else 9.9
+            mark = "BATTLE" if max(lost1, lost2) >= 700 else "skirm "
+            battle = f" | {mark} lost {lost1:>4}/{lost2:<4} trade {trade:>4.2f}"
         flag = ""
         if ev > 0 and ov < 0.7 * ev:
             flag = "  <-- army deficit"
             if behind_since is None:
                 behind_since = t
         print(f"{mmss(t):>5} | {ov:>6}/{os_:<3}        {ev:>6}/{es_:<3}       "
-              f"| {ratio:>4.1f}  | {oup:>4}     {eup:<4}{flag}")
+              f"| {ratio:>4.1f}  | {oup:>2}/{eup:<2}{battle}{flag}")
 
     # 2) decisive engagements: 30s buckets where our army lost the most value
     print("\n--- engagements (our army value lost, 30s buckets) ---")
