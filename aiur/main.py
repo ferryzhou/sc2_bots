@@ -78,6 +78,10 @@ ARMY_SUPPLY = {
 }
 ARMY = {U.ZEALOT, U.STALKER, U.IMMORTAL, U.ARCHON, U.ADEPT, U.SENTRY,
         U.HIGHTEMPLAR, U.DARKTEMPLAR, U.COLOSSUS}
+# enemy air units to prioritize for anti-air focus-fire
+AIR_ENEMY_UNITS = {U.MUTALISK, U.BANSHEE, U.VOIDRAY, U.PHOENIX, U.ORACLE,
+                   U.CARRIER, U.TEMPEST, U.LIBERATOR, U.VIKINGFIGHTER,
+                   U.MEDIVAC, U.BATTLECRUISER, U.BROODLORD}
 
 
 class AiurBot(BotAI):
@@ -216,7 +220,7 @@ class AiurBot(BotAI):
 
     # ---------------------------------------------------------------- macro ----
     async def _macro(self, advice):
-        await self._supply()
+        await self._supply(advice)
         self._probes(advice)
         self._chrono()
         await self._gas()
@@ -229,26 +233,33 @@ class AiurBot(BotAI):
         self._train(advice)
 
     def _probes(self, advice):
-        # Principle 1: never stop producing workers (while safe).
-        cap = min(75, 22 * max(1, self.townhalls.amount) + 6)
+        # Principle 1: never stop producing workers (while safe) -- but the macro
+        # plan owns the cap and can pause probes to force units when floating.
+        cap = advice.macro.worker_cap
         if self.supply_workers >= cap:
             return
         # while thin and rushed, bank for gateway units
         if (advice.defense.prioritize_army and self.supply_army < 8
                 and self.time < 240 and self.minerals < 200):
             return
+        # force-train: cut probes for a tick so army production gets the supply/money
+        if advice.macro.force_train and self.supply_left <= 3:
+            return
         for nexus in self.townhalls.ready.idle:
             if self.can_afford(U.PROBE) and self.supply_left > 0:
                 nexus.train(U.PROBE)
 
-    async def _supply(self):
+    async def _supply(self, advice):
         # Principle 2: don't get supply blocked -- build well ahead of the block.
+        # The macro plan raises parallel-pylon limits when we're floating.
         production = max(1, self.structures(U.GATEWAY).amount + self.structures(U.WARPGATE).amount)
         threshold = 3 + 2 * production
         pending = self.already_pending(U.PYLON)
+        parallel = advice.macro.allow_parallel_build
         floating = self.minerals > 500 and self.supply_cap >= 32
         if (self.supply_cap < 200 and self.townhalls and self.can_afford(U.PYLON)
-                and ((self.supply_left <= threshold and pending < 2) or (floating and pending < 3))):
+                and ((self.supply_left <= threshold and pending < 1 + parallel)
+                     or (floating and pending < 2 + parallel))):
             wp = self._wall_pylon()
             if wp is not None and not self.structures(U.PYLON):
                 await self.build(U.PYLON, near=wp)
@@ -340,11 +351,10 @@ class AiurBot(BotAI):
                 and not self.structures(U.ROBOTICSBAY) and self.already_pending(U.ROBOTICSBAY) == 0
                 and self.townhalls.amount >= 2 and self.can_afford(U.ROBOTICSBAY)):
             await self.build(U.ROBOTICSBAY, near=pylon)
-        # scale gateways with economy -- spend the money, don't float
-        target_gates = min(10, 2 * self.townhalls.ready.amount + 1)
-        if advice.defense.prioritize_army:
-            target_gates = min(10, target_gates + 2)
-        max_pending = 2 if self.minerals > 350 else 1
+        # scale gateways with economy -- the macro plan owns the target count and
+        # parallel-build limit, so we convert economy into army rather than float.
+        target_gates = advice.macro.target_production
+        max_pending = advice.macro.allow_parallel_build
         if (gates.amount + self.already_pending(U.GATEWAY) < target_gates
                 and self.already_pending(U.GATEWAY) < max_pending
                 and self.can_afford(U.GATEWAY) and self.minerals > 150):
@@ -452,41 +462,122 @@ class AiurBot(BotAI):
         army = self.units.of_type(ARMY)
         if not army:
             return
+        tac = advice.tactics
         rally = self._rally()
 
-        # 1) defend: enemy units in/near any base
+        # 1) defend: enemy units in/near any base -- always respond, with micro
         threat_base = self._threatened_base()
         if threat_base is not None:
-            enemies = self.enemy_units.closer_than(30, threat_base)
-            target = enemies.closest_to(threat_base) if enemies else threat_base
-            tpos = target.position if hasattr(target, "position") else target
-            for u in army:
-                u.attack(tpos)
-            # pull workers to hold when the base is breached and we're thin
-            no_defense = (self.structures(U.PHOTONCANNON).ready.amount == 0
-                          and self.supply_army < 6)
-            if enemies and (advice.defense.pull_workers
-                            or (advice.defense.emergency and no_defense)):
-                self._pull_workers(threat_base, tpos)
+            self._defend(threat_base, army, tac, advice)
             return
 
-        # 2) attack or hold from the library's engagement read
+        # 2) preserve: library says hold -- don't move out, rally and plug the wall
+        if tac.preserve_units and not self._should_attack(advice, army):
+            self._hold(army, rally)
+            return
+
+        # 3) attack or hold from the engagement read
         if self._should_attack(advice, army):
+            self._push(army, tac)
+        else:
+            self._hold(army, rally)
+
+    def _defend(self, threat_base, army, tac, advice):
+        """Defend a base with focus-fire and kite-back micro (not pure a-move)."""
+        enemies = self.enemy_units.closer_than(30, threat_base)
+        for u in army:
+            # kite badly damaged units back to the base to preserve them
+            if tac.kite_low_hp and self._low_hp(u, tac.retreat_threshold):
+                u.move(threat_base.position)
+                continue
+            if tac.focus_fire and enemies:
+                tgt = self._select_target(u, enemies, tac.target_priority)
+                if tgt is not None:
+                    u.attack(tgt)
+                    continue
+            # fall back to attacking the closest threat position
+            tpos = (enemies.closest_to(threat_base).position if enemies
+                    else threat_base.position)
+            u.attack(tpos)
+        # pull workers to hold when the base is breached and we're thin
+        no_defense = (self.structures(U.PHOTONCANNON).ready.amount == 0
+                      and self.supply_army < 6)
+        if enemies and (advice.defense.pull_workers
+                        or (advice.defense.emergency and no_defense)):
+            tpos = enemies.closest_to(threat_base).position if enemies else threat_base.position
+            self._pull_workers(threat_base, tpos)
+
+    def _push(self, army, tac):
+        """Concentrate into a ball, then commit with focus-fire micro.
+
+        Feeding units piecemeal into the enemy is how even-favorable fights get
+        lost -- the library's tactics plan says gather first, then commit. Once
+        committed, focus-fire on specific targets to drop enemy DPS fast, and kite
+        back damaged units to preserve value.
+        """
+        staging = self._staging()
+        center = army.center
+        concentrated = army.closer_than(11, center).amount >= tac.commit_ratio * army.amount
+        # Gather into a ball first, but commit outright with overwhelming force.
+        if concentrated or self.supply_army >= 55:
             target = self._attack_target(army)
+            nearby = self.enemy_units.closer_than(18, center) if self.enemy_units else None
             for u in army:
+                # kite low-hp units back toward staging to preserve them
+                if tac.kite_low_hp and self._low_hp(u, tac.retreat_threshold):
+                    u.move(staging)
+                    continue
+                # focus fire on a specific target when enemies are visible
+                if tac.focus_fire and nearby:
+                    tgt = self._select_target(u, nearby, tac.target_priority)
+                    if tgt is not None:
+                        u.attack(tgt)
+                        continue
                 u.attack(target)
         else:
-            # plug the ramp wall gap with a zealot while it's still open
-            hold = self._wall_hold()
-            plug = None
-            if hold is not None and self._wall_gap_open() and army:
-                plug = army.closest_to(hold)
-                plug.attack(hold)
             for u in army:
-                if plug is not None and u.tag == plug.tag:
-                    continue
-                if u.distance_to(rally) > 8:
-                    u.move(rally)
+                u.move(staging)
+
+    def _hold(self, army, rally):
+        """Hold at the rally: plug the ramp wall gap, gather the rest at rally."""
+        hold = self._wall_hold()
+        plug = None
+        if hold is not None and self._wall_gap_open() and army:
+            plug = army.closest_to(hold)
+            plug.attack(hold)
+        for u in army:
+            if plug is not None and u.tag == plug.tag:
+                continue
+            if u.distance_to(rally) > 8:
+                u.move(rally)
+
+    def _select_target(self, unit, enemies, priority):
+        """Pick a target for focus-fire based on the library's target_priority."""
+        if priority == "expensive":
+            # target the highest-supply enemy (proxy for cost/value)
+            return max(enemies, key=lambda e: ARMY_SUPPLY.get(e.type_id, 1))
+        if priority == "air":
+            air = enemies.of_type(AIR_ENEMY_UNITS)
+            if air:
+                return air.closest_to(unit)
+            return enemies.closest_to(unit)
+        # "closest" (default) -- kill the nearest unit to reduce surround DPS
+        return enemies.closest_to(unit)
+
+    def _low_hp(self, u, threshold):
+        """Effective health fraction: (shield + hp) / (shield_max + hp_max)."""
+        total = getattr(u, "shield", 0) + getattr(u, "health", 0)
+        total_max = getattr(u, "shield_max", 0) + getattr(u, "health_max", 0)
+        if total_max <= 0:
+            return False
+        return (total / total_max) < threshold
+
+    def _staging(self):
+        """Forward staging point: gather here before committing the attack."""
+        if self.townhalls:
+            base = self.townhalls.closest_to(self.enemy_start_locations[0])
+            return base.position.towards(self.enemy_start_locations[0], 14)
+        return self.start_location
 
     def _should_attack(self, advice, army):
         eng = advice.engagement.verdict
@@ -596,9 +687,17 @@ class AiurBot(BotAI):
         if self.time - self.last_log < 60:
             return
         self.last_log = self.time
+        m = advice.macro
+        t = advice.tactics
         print(f"[{int(self.time)}s] {advice.summary().splitlines()[0]} | "
               f"opp={advice.classification.archetype.value} "
               f"opening={self.enemy_opening or '?'} "
               f"counter={advice.counter.posture} "
               f"workers={self.supply_workers} army={int(self.supply_army)} "
-              f"bases={self.townhalls.amount}")
+              f"bases={self.townhalls.amount} "
+              f"prod={m.target_production}(urg={m.spend_urgency:.1f}"
+              f"{'!' if m.force_train else ''}) "
+              f"tac={'ff' if t.focus_fire else '--'}"
+              f"/{'kite' if t.kite_low_hp else '--'}"
+              f"/{t.target_priority}"
+              f"{'/preserve' if t.preserve_units else ''}")

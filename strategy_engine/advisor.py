@@ -31,6 +31,8 @@ from .harassment import HarassAdvice, harass_advice
 from .combat import EngagementAdvice, assess_engagement
 from .defense import DefensePlan, assess_defense
 from .information import EnemyEstimate, project_enemy
+from .macro import MacroPlan, recommend_macro
+from .tactics import Tactics, recommend_tactics
 
 
 @dataclass
@@ -45,6 +47,8 @@ class Advice:
     harass: HarassAdvice
     enemy_estimate: EnemyEstimate
     rule_hits: List[RuleHit]
+    macro: MacroPlan
+    tactics: Tactics
 
     def summary(self) -> str:
         """A compact human-readable digest, handy for logging from a bot."""
@@ -60,6 +64,13 @@ class Advice:
             f"opponent:   {self.classification.archetype.value} "
             f"({self.classification.confidence:.0%})",
             f"counter:    {self.counter.posture}",
+            f"macro:      target_prod={self.macro.target_production} "
+            f"urgency={self.macro.spend_urgency:.2f}"
+            f"{' FORCE' if self.macro.force_train else ''}",
+            f"tactics:    focus_fire={self.tactics.focus_fire} "
+            f"retreat<{self.tactics.retreat_threshold:.0%} "
+            f"priority={self.tactics.target_priority}"
+            f"{' PRESERVE' if self.tactics.preserve_units else ''}",
         ]
         if self.defense.emergency:
             d = self.defense
@@ -92,17 +103,22 @@ class StrategicAdvisor:
         # rules (including "keep scouting") run on the real state.
         enemy_view, estimate = project_enemy(state)
         classification = classify_opponent(enemy_view)
+        investment = recommend_investment(state)
+        engagement = assess_engagement(enemy_view)
+        timing = power_timing(enemy_view)
         return Advice(
             efficiency=assess_efficiency(state),
-            engagement=assess_engagement(enemy_view),
-            investment=recommend_investment(state),
-            timing=power_timing(enemy_view),
+            engagement=engagement,
+            investment=investment,
+            timing=timing,
             classification=classification,
             counter=counter_stance(classification),
             defense=assess_defense(enemy_view),
             harass=harass_advice(enemy_view),
             enemy_estimate=estimate,
             rule_hits=evaluate_rules(state),
+            macro=recommend_macro(state, investment),
+            tactics=recommend_tactics(state, engagement, timing),
         )
 
     def advise_bot(self, bot, enemy_memory: dict | None = None) -> Advice:

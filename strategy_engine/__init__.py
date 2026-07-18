@@ -60,6 +60,8 @@ from .build_guides import (
     get_build,
 )
 from .advisor import StrategicAdvisor, Advice
+from .macro import MacroPlan, recommend_macro
+from .tactics import Tactics, recommend_tactics
 
 __all__ = [
     "GameState",
@@ -107,4 +109,8 @@ __all__ = [
     "get_build",
     "StrategicAdvisor",
     "Advice",
+    "MacroPlan",
+    "recommend_macro",
+    "Tactics",
+    "recommend_tactics",
 ]
