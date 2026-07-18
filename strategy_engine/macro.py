@@ -61,7 +61,9 @@ def recommend_macro(state: GameState, investment: InvestmentAdvice) -> MacroPlan
     # so a 2-base economy never has to fight a 4-base one. Time drives a steady
     # cadence (+1 base every ~4 min from 4:00); saturation pulls the next base
     # forward; being under threat holds us to at most one more than we have now.
-    phase_target = 2 + max(0, int((minutes - 4) // 4))
+    # pro macro cadence: natural ~2:00, then +1 base every ~3 min (3rd ~5:00,
+    # 4th ~8:00) -- a 2-base economy loses to a Zerg that is on 4.
+    phase_target = 2 + max(0, int((minutes - 2) // 3))
     if saturation >= 0.85:
         phase_target = max(phase_target, bases + 1)
     if minutes < 2.0:
