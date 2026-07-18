@@ -1,18 +1,18 @@
 """Convert ingested spawningtool builds into ares build-runner openings.
 
-AegisBot (ares-sc2) runs step-by-step openings from ``aegis/terran_builds.yml``
+GriffinBot (ares-sc2) runs step-by-step openings from ``griffin/terran_builds.yml``
 in the ares build-runner DSL: each line is ``<supply> <TOKEN> [@ <TARGET>]``,
 where ares upper-cases TOKEN and resolves it as ``UnitTypeId[TOKEN]`` /
 ``UpgradeId[TOKEN]`` (exactly the tokens in ``strategy_engine.build_guides``) or a
 special keyword (SUPPLY, GAS, EXPAND, ORBITAL, CORE, GATE, WORKER).
 
 This turns a build_guides JSON into that DSL so pro builds become first-class
-AegisBot openings. Structures/units that ares has a placement/morph keyword for
+GriffinBot openings. Structures/units that ares has a placement/morph keyword for
 (supply-at-wall, gas-on-geyser, expand-at-next-base, orbital-morph) use the
 keyword; everything else emits the raw token ares resolves directly.
 
     python analysis/spawningtool_to_ares.py 203108 203133 ...   # -> yaml on stdout
-    python analysis/spawningtool_to_ares.py --write aegis/terran_builds.yml 203108 ...
+    python analysis/spawningtool_to_ares.py --write griffin/terran_builds.yml 203108 ...
 
 ``--write`` appends the generated builds under the file's ``Builds:`` section.
 """

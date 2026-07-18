@@ -82,21 +82,21 @@ can open on a mined family for robustness, or follow a named guide step-for-step
 Two bots can reproduce these builds with a single flag; the paths differ because
 the frameworks differ.
 
-**AegisBot (ares-sc2, Terran)** already runs step-by-step openings from
-`aegis/terran_builds.yml` in the ares build-runner DSL. `spawningtool_to_ares.py`
+**GriffinBot (ares-sc2, Terran)** already runs step-by-step openings from
+`griffin/terran_builds.yml` in the ares build-runner DSL. `spawningtool_to_ares.py`
 converts a build_guides JSON into that DSL (each of my sc2 tokens is exactly what
 ares resolves; placement/morph steps use the ares keywords SUPPLY/GAS/EXPAND/
 ORBITAL). The 8 Terran guides are already written into `terran_builds.yml`, so:
 
 ```
-python aegis/run.py --build st_t_SpeCial_TvP_8_worker_standard_opening --race protoss
+python griffin/run.py --build st_t_SpeCial_TvP_8_worker_standard_opening --race protoss
 ```
 
 forces that opening via ares `switch_opening`; once the script completes the ares
 macro controllers take over. Regenerate/add builds with:
 
 ```
-python analysis/spawningtool_to_ares.py --write aegis/terran_builds.yml 203108 203133 ...
+python analysis/spawningtool_to_ares.py --write griffin/terran_builds.yml 203108 203133 ...
 ```
 
 **AthenaBot (python-sc2, Protoss)** has no build runner, so `athena/buildscript.py`
@@ -110,7 +110,7 @@ script so the anti-rush behaviour isn't undone.
 python athena/run.py --build 203087 --race zerg      # Harstem PvZ
 ```
 
-Only same-race builds apply (AegisBot = Terran, Athena = Protoss). HydraBot is
+Only same-race builds apply (GriffinBot = Terran, Athena = Protoss). HydraBot is
 deliberately not wired: it's declarative (profiles → dynamic planner), so its
 analog is the mined `openings` families, not these exact scripts.
 
@@ -131,7 +131,7 @@ Measured results:
 - **AthenaBot / Harstem PvZ: 20/20 steps reproduced.** The opening hits the
   script almost exactly on supply (Pylon @15 vs @12, Gateway @15 vs @14, Nexus
   @19 vs @19, Cybernetics @19 vs @19, Stargate @24 vs @24); median |Δsupply| ≈ 3.
-- **AegisBot / SpeCial TvP: 28/30**, opening faithful (Depot 0:15, Barracks 0:46,
+- **AegisBot (since removed; griffin runs the same ares build runner) / SpeCial TvP: 28/30**, opening faithful (Depot 0:15, Barracks 0:46,
   Refinery 0:54, Factory 2:16, CC 3:33) before ares hands off to macro.
 
 Athena's executor issues **every due, affordable, unblocked step each tick**
