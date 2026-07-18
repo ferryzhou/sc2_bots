@@ -422,7 +422,9 @@ class AiurBot(BotAI):
         # 250..400 so army/gas production barely pauses; robo (gas) runs regardless.
         owe_base = (self.townhalls.amount + self.already_pending(U.NEXUS)
                     < advice.macro.base_target and not advice.defense.emergency)
-        saving_for_expo = owe_base and 250 <= self.minerals < 400
+        if owe_base and self.minerals < 400:
+            return  # bank the whole Nexus cost -- pause army (incl. mineral-heavy
+            #         robo units) for the ~15s it takes, then _expand takes the base
         # robo: one observer for detection, then colossus (splash) or immortals
         robo = self.structures(U.ROBOTICSFACILITY).ready.idle
         if robo:
@@ -439,8 +441,6 @@ class AiurBot(BotAI):
         # and HOLD minerals for it rather than burning them on a Zealot. Keep a
         # charging-Zealot front line vs Zerg (1:1), but never as the bulk.
         floating_gas = self.vespene >= 300
-        if saving_for_expo:
-            return  # bank minerals for the Nexus instead of gateway units
         for gate in self.structures(U.GATEWAY).ready.idle:
             stalkers = self.units(U.STALKER).amount
             zealots = self.units(U.ZEALOT).amount
