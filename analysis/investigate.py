@@ -132,11 +132,15 @@ def report(path, ours, out):
         p(f"- {b}")
     p("")
 
-    # 1) economy head-to-head
-    p("## Economy (workers | bases | minerals bank/inc | gas bank/inc)")
+    # 1) economy head-to-head. Ratios (us/enemy): workers, mining speed (income
+    # rate), and accumulated resources mined -- worker parity can still hide a
+    # resource deficit (fewer bases, less gas, lower saturation).
+    p("## Economy (ratios are us/enemy: workers | mining speed | total mined)")
     p("")
-    p("| time | workers | bases | min bank/inc | gas bank/inc | wkr ratio |")
-    p("|------|:-------:|:-----:|:------------:|:------------:|:---------:|")
+    p("| time | workers | bases | min bank/inc | gas bank/inc "
+      "| wkr ratio | mine-speed ratio | mined ratio |")
+    p("|------|:-------:|:-----:|:------------:|:------------:"
+      "|:---------:|:----------------:|:-----------:|")
     for t in marks:
         w1 = int(la.stat_at(stats, ours, t, "workers_active_count"))
         w2 = int(la.stat_at(stats, theirs, t, "workers_active_count"))
@@ -149,10 +153,17 @@ def report(path, ours, out):
         g1r = int(la.stat_at(stats, ours, t, "vespene_collection_rate"))
         g2b = int(la.stat_at(stats, theirs, t, "vespene_current"))
         g2r = int(la.stat_at(stats, theirs, t, "vespene_collection_rate"))
-        ratio = (w1 / w2) if w2 else 1.0
+        wr = (w1 / w2) if w2 else 1.0
+        inc1, inc2 = m1r + g1r, m2r + g2r          # mining speed = total income rate
+        spd = (inc1 / inc2) if inc2 else 1.0
+        cm1, cg1 = la.collected_by(stats, ours, t)
+        cm2, cg2 = la.collected_by(stats, theirs, t)
+        mined = ((cm1 + cg1) / (cm2 + cg2)) if (cm2 + cg2) else 1.0
         flag = " ⚠️" if (w2 and w1 < 0.85 * w2) else ""
+        sflag = " ⚠️" if (inc2 and inc1 < 0.85 * inc2) else ""
         p(f"| {la.mmss(t)} | {w1} v {w2}{flag} | {b1} v {b2} | "
-          f"{m1b}/{m1r} v {m2b}/{m2r} | {g1b}/{g1r} v {g2b}/{g2r} | {ratio:.2f} |")
+          f"{m1b}/{m1r} v {m2b}/{m2r} | {g1b}/{g1r} v {g2b}/{g2r} | "
+          f"{wr:.2f} | {spd:.2f}{sflag} | {mined:.2f} |")
     p("")
 
     # 2) accumulated

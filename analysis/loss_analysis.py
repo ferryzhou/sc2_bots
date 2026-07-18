@@ -163,9 +163,12 @@ def main():
     print(f"# our pid={ours}, enemy pid={theirs}\n")
     marks_all = list(range(60, length + 1, 60))
 
-    # 0) head-to-head ECONOMY (workers, bases, minerals, gas -- banked + income)
-    print("--- economy: us vs enemy (workers | bases | min bank/inc | gas bank/inc) ---")
-    print("time  |  workers   bases  |   minerals(bank/min)   gas(bank/min)  | wkr ratio")
+    # 0) head-to-head ECONOMY. Ratios (us/enemy): workers, mining speed (income
+    # rate) and accumulated resources mined -- worker parity can hide a resource
+    # deficit (fewer bases / less gas / lower saturation).
+    print("--- economy: us vs enemy (ratios us/enemy) ---")
+    print("time  |  workers   bases  |   minerals(bank/min)   gas(bank/min)  "
+          "| wkr  mine-spd  mined")
     eco_behind = None
     for t in marks_all:
         w1 = int(stat_at(stats, ours, t, "workers_active_count"))
@@ -180,14 +183,20 @@ def main():
         g2b = int(stat_at(stats, theirs, t, "vespene_current"))
         g2r = int(stat_at(stats, theirs, t, "vespene_collection_rate"))
         ratio = (w1 / w2) if w2 else 1.0
+        inc1, inc2 = m1r + g1r, m2r + g2r                 # mining speed = income rate
+        spd = (inc1 / inc2) if inc2 else 1.0
+        cm1, cg1 = collected_by(stats, ours, t)
+        cm2, cg2 = collected_by(stats, theirs, t)
+        mined = ((cm1 + cg1) / (cm2 + cg2)) if (cm2 + cg2) else 1.0
         flag = ""
         if w2 and w1 < 0.85 * w2:
-            flag = "  <-- economy behind"
+            flag = "  <-- workers behind"
             if eco_behind is None:
                 eco_behind = t
         print(f"{mmss(t):>5} | {w1:>3} v {w2:<3}  {b1} v {b2}  | "
               f"{m1b:>4}/{m1r:<4} v {m2b:>4}/{m2r:<4}  "
-              f"{g1b:>4}/{g1r:<4} v {g2b:>4}/{g2r:<4} | {ratio:>4.2f}{flag}")
+              f"{g1b:>4}/{g1r:<4} v {g2b:>4}/{g2r:<4} | "
+              f"{ratio:>4.2f} {spd:>5.2f}   {mined:>4.2f}{flag}")
     pw1 = max((int(stat_at(stats, ours, t, "workers_active_count")) for t in marks_all), default=0)
     pw2 = max((int(stat_at(stats, theirs, t, "workers_active_count")) for t in marks_all), default=0)
     print(f"  peak workers: us {pw1} vs enemy {pw2} | "
