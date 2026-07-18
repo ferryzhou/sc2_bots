@@ -144,8 +144,17 @@ def deficit_scan(units, stats, ours, theirs, length):
             ars.append(ov / ev)
     avg_alive = sum(ars) / len(ars) if ars else 1.0
 
+    # total supply (development tempo) at the mid-game and end
+    def sup(pid, t):
+        return int(la.stat_at(stats, pid, t, "food_used"))
+    su1_12, su2_12 = sup(ours, 720), sup(theirs, 720)   # ~12:00 development check
+    sup_r12 = su1_12 / su2_12 if su2_12 else 1.0
+
     out = []
     # --- economy deficits ---
+    if su2_12 and sup_r12 < 0.85:
+        out.append(f"**supply @12:00** {su1_12} vs {su2_12} ({sup_r12:.2f}) — "
+                   "behind on development tempo through the mid-game")
     if wkr_r < 0.85:
         out.append(f"**workers** {pw1} vs {pw2} ({wkr_r:.2f}) — fewer workers; "
                    + ("bases behind too" if pb1 < pb2 else "check for a worker crash after a lost fight"))
@@ -209,13 +218,15 @@ def report(path, ours, out):
     # 1) economy head-to-head. Ratios (us/enemy): workers, mining speed (income
     # rate), and accumulated resources mined -- worker parity can still hide a
     # resource deficit (fewer bases, less gas, lower saturation).
-    p("## Economy (ratios are us/enemy: workers | mining speed | total mined)")
+    p("## Economy (ratios are us/enemy: total supply | workers | mining speed | total mined)")
     p("")
-    p("| time | workers | bases | min bank/inc | gas bank/inc "
-      "| wkr ratio | mine-speed ratio | mined ratio |")
-    p("|------|:-------:|:-----:|:------------:|:------------:"
-      "|:---------:|:----------------:|:-----------:|")
+    p("| time | supply | workers | bases | min bank/inc | gas bank/inc "
+      "| sup ratio | wkr ratio | mine-speed ratio | mined ratio |")
+    p("|------|:------:|:-------:|:-----:|:------------:|:------------:"
+      "|:---------:|:---------:|:----------------:|:-----------:|")
     for t in marks:
+        su1 = int(la.stat_at(stats, ours, t, "food_used"))
+        su2 = int(la.stat_at(stats, theirs, t, "food_used"))
         w1 = int(la.stat_at(stats, ours, t, "workers_active_count"))
         w2 = int(la.stat_at(stats, theirs, t, "workers_active_count"))
         b1, b2 = la.bases_at(units, ours, t), la.bases_at(units, theirs, t)
@@ -227,19 +238,21 @@ def report(path, ours, out):
         g1r = int(la.stat_at(stats, ours, t, "vespene_collection_rate"))
         g2b = int(la.stat_at(stats, theirs, t, "vespene_current"))
         g2r = int(la.stat_at(stats, theirs, t, "vespene_collection_rate"))
+        sur = (su1 / su2) if su2 else 1.0          # total supply ratio (development)
         wr = (w1 / w2) if w2 else 1.0
         inc1, inc2 = m1r + g1r, m2r + g2r          # mining speed = total income rate
         spd = (inc1 / inc2) if inc2 else 1.0
         cm1, cg1 = la.collected_by(stats, ours, t)
         cm2, cg2 = la.collected_by(stats, theirs, t)
         mined = ((cm1 + cg1) / (cm2 + cg2)) if (cm2 + cg2) else 1.0
+        suf = " ⚠️" if sur < 0.85 else ""
         wf = " ⚠️" if wr < 0.85 else ""
         sf = " ⚠️" if spd < 0.85 else ""
         mf = " ⚠️" if mined < 0.85 else ""
         bf = " ⚠️" if b1 < b2 else ""
-        p(f"| {la.mmss(t)} | {w1} v {w2}{wf} | {b1} v {b2}{bf} | "
+        p(f"| {la.mmss(t)} | {su1} v {su2} | {w1} v {w2}{wf} | {b1} v {b2}{bf} | "
           f"{m1b}/{m1r} v {m2b}/{m2r} | {g1b}/{g1r} v {g2b}/{g2r} | "
-          f"{wr:.2f} | {spd:.2f}{sf} | {mined:.2f}{mf} |")
+          f"{sur:.2f}{suf} | {wr:.2f} | {spd:.2f}{sf} | {mined:.2f}{mf} |")
     p("")
 
     # 2) accumulated

@@ -167,10 +167,12 @@ def main():
     # rate) and accumulated resources mined -- worker parity can hide a resource
     # deficit (fewer bases / less gas / lower saturation).
     print("--- economy: us vs enemy (ratios us/enemy) ---")
-    print("time  |  workers   bases  |   minerals(bank/min)   gas(bank/min)  "
-          "| wkr  mine-spd  mined")
+    print("time  | supply   workers  bases |   minerals(bank/min)   gas(bank/min)  "
+          "| sup  wkr  mine-spd  mined")
     eco_behind = None
     for t in marks_all:
+        su1 = int(stat_at(stats, ours, t, "food_used"))
+        su2 = int(stat_at(stats, theirs, t, "food_used"))
         w1 = int(stat_at(stats, ours, t, "workers_active_count"))
         w2 = int(stat_at(stats, theirs, t, "workers_active_count"))
         b1, b2 = bases_at(units, ours, t), bases_at(units, theirs, t)
@@ -182,6 +184,7 @@ def main():
         g1r = int(stat_at(stats, ours, t, "vespene_collection_rate"))
         g2b = int(stat_at(stats, theirs, t, "vespene_current"))
         g2r = int(stat_at(stats, theirs, t, "vespene_collection_rate"))
+        sur = (su1 / su2) if su2 else 1.0                 # total supply ratio
         ratio = (w1 / w2) if w2 else 1.0
         inc1, inc2 = m1r + g1r, m2r + g2r                 # mining speed = income rate
         spd = (inc1 / inc2) if inc2 else 1.0
@@ -193,10 +196,10 @@ def main():
             flag = "  <-- workers behind"
             if eco_behind is None:
                 eco_behind = t
-        print(f"{mmss(t):>5} | {w1:>3} v {w2:<3}  {b1} v {b2}  | "
+        print(f"{mmss(t):>5} | {su1:>3} v {su2:<3}  {w1:>3} v {w2:<3}  {b1} v {b2}  | "
               f"{m1b:>4}/{m1r:<4} v {m2b:>4}/{m2r:<4}  "
               f"{g1b:>4}/{g1r:<4} v {g2b:>4}/{g2r:<4} | "
-              f"{ratio:>4.2f} {spd:>5.2f}   {mined:>4.2f}{flag}")
+              f"{sur:>4.2f} {ratio:>4.2f} {spd:>5.2f}   {mined:>4.2f}{flag}")
     pw1 = max((int(stat_at(stats, ours, t, "workers_active_count")) for t in marks_all), default=0)
     pw2 = max((int(stat_at(stats, theirs, t, "workers_active_count")) for t in marks_all), default=0)
     print(f"  peak workers: us {pw1} vs enemy {pw2} | "
