@@ -23,6 +23,7 @@ from sc2.data import Difficulty, Race
 from sc2.main import run_game
 from sc2.player import Bot, Computer
 
+from archetype_bot import FourGate2, MassLing2, TwelvePool2
 from four_gate_zealot_bot import FourGateZealotBot
 from mass_ling_bot import MassLingBot
 from twelve_pool_bot import TwelvePoolBot
@@ -31,6 +32,10 @@ SPARRING = {
     "fourgate": (FourGateZealotBot, Race.Protoss),
     "massling": (MassLingBot, Race.Zerg),
     "twelvepool": (TwelvePoolBot, Race.Zerg),
+    # strategy_engine-driven recreations (archetype_bot.py)
+    "fourgate2": (FourGate2, Race.Protoss),
+    "massling2": (MassLing2, Race.Zerg),
+    "twelvepool2": (TwelvePool2, Race.Zerg),
 }
 
 parser = argparse.ArgumentParser()
