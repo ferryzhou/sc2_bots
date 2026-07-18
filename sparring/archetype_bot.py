@@ -72,6 +72,11 @@ class ArchetypeSparringBot(BotAI):
         if step and self.can_afford(U[step.structure.upper()]):
             if step.structure in ("Hatchery", "Nexus", "CommandCenter"):
                 await self.expand_now()
+            elif step.structure in ("Assimilator", "Extractor", "Refinery"):
+                free = self.vespene_geyser.closer_than(12, th).filter(
+                    lambda g: not self.gas_buildings.closer_than(1.0, g))
+                if free and self.workers:
+                    self.workers.random.build_gas(free.first)
             else:
                 await self.build(U[step.structure.upper()],
                                  near=th.position.towards(self.game_info.map_center, 5))
@@ -81,9 +86,9 @@ class ArchetypeSparringBot(BotAI):
                 self.larva.first.train(spec.worker)
             elif not zerg and th.is_idle and self.can_afford(spec.worker):
                 th.train(spec.worker)
-        # 4. macro archetypes: expand behind it (one expansion in flight at a time)
-        elif (self.townhalls.amount < spec.max_bases and self.can_afford(U.HATCHERY)
-                and not self.already_pending(U.HATCHERY)):
+        # 4. macro archetypes (zerg only so far): expand, one in flight at a time
+        elif (zerg and self.townhalls.amount < spec.max_bases
+                and self.can_afford(U.HATCHERY) and not self.already_pending(U.HATCHERY)):
             await self.expand_now()
         # 5. zerg macro: queens + injects
         if spec.queens and self.structures(U.SPAWNINGPOOL).ready:
@@ -99,7 +104,7 @@ class ArchetypeSparringBot(BotAI):
             for larva in self.larva:
                 if self.can_afford(spec.army) and self.supply_left > 0:
                     larva.train(spec.army)
-        elif not zerg:
+        elif not zerg and self.tech_requirement_progress(spec.army) == 1:
             for g in self.structures(U.GATEWAY).ready.idle:
                 if self.can_afford(spec.army) and self.supply_left > 1:
                     g.train(spec.army)
@@ -129,3 +134,14 @@ class MassLing2(ArchetypeSparringBot):
     SPEC = Spec(OPENINGS["zerg_pool_first"],
                 U.DRONE, U.OVERLORD, U.ZERGLING, max_workers=70, max_bases=4,
                 attack_at=60, queens=4)
+
+
+class OneBaseStalker2(ArchetypeSparringBot):
+    """OneBaseStalkerBot (aiarena ~1614 Elo): one-base 4-gate mass stalker.
+
+    Fingerprint from bot_profiles/OneBaseStalkerBot: 22 probes, 4 gateways,
+    2 assimilators, 1 cybernetics core, no expansion, ~22 stalkers, push ~5-6min.
+    """
+    SPEC = Spec(custom("Protoss", "Pylon", "Gateway", "Assimilator", "CyberneticsCore",
+                       "Assimilator", "Gateway", "Pylon", "Gateway", "Gateway"),
+                U.PROBE, U.PYLON, U.STALKER, max_workers=22, max_bases=1, attack_at=8)
