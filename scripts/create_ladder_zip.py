@@ -26,7 +26,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 BOT_REGISTRY = {
     "phoenix": ("PhoenixBot", "protoss_builds.yml"),
     "griffin": ("GriffinBot", "terran_builds.yml"),
-    "aegis": ("AegisBot", "terran_builds.yml"),
 }
 
 BOT_FILES = ["run.py", "ladder.py", "config.yml"]
