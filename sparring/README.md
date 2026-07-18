@@ -52,6 +52,23 @@ replay tracker events): fourgate 4 gates / 0 gas / 27 zealots (first 2:38,
 won 5:42); twelvepool pool 0:39 on 14 drones, 44 lings (first 2:08);
 massling pool 1:19, 5 hatcheries, 4 queens, 73 drones, 288 lings (won).
 
+Cheater-tier sweep (Protoss Macro AI, game-time capped):
+
+| sparring bot | CheatVision | CheatMoney | CheatInsane |
+|---|---|---|---|
+| fourgate | **Win** 6:09 | **Win** 5:32 | **Win** 6:40 (39 zealots) |
+| twelvepool | **Win** 6:32 | Tie at cap | Tie at cap |
+| massling | Loss ~12:53 | Loss ~12:57 | Tie at cap |
+
+The scripted 4-gate all-in beats even CheatInsane — which none of the repo's
+real macro bots reliably do — while the macro-style massling mimic (first ling
+~6:37 behind 70 drones) loses to the cheater tiers' early aggression. This is
+the cleanest demonstration yet of `STRATEGY.md` principle 7: built-in-AI
+difficulty rewards relentless early aggression and punishes macro play, so the
+gauntlet is a catastrophe-guard, not a ladder-strength metric. As sparring
+partners: fourgate/twelvepool stress *rush defense*; massling stresses
+*out-macroing a flood* — both work regardless of their own win rates here.
+
 To reproduce *your* bot's loss, import your bot in `run.py` and put it in the
 players list (there's a commented example). Requires `python-sc2` and a local
 StarCraft II install.
