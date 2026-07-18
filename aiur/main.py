@@ -363,20 +363,18 @@ class AiurBot(BotAI):
                 and self.already_pending(U.ROBOTICSFACILITY) == 0
                 and self.can_afford(U.ROBOTICSFACILITY)):
             await self.build(U.ROBOTICSFACILITY, near=pylon)
-        # tech transition (library composition advice). Anti-air -> Stargate for
-        # Void Rays (the answer to BroodLords / Mutas a ground army can't beat);
-        # splash/escalation -> Templar Archive for Psionic Storm + Archons.
+        # tech transition (library composition advice): Stargate -> Void Rays, the
+        # anti-air / anti-BroodLord a ground army lacks. Start EARLY on escalation
+        # (waiting until air is scouted is too late to build + mass them), and scale
+        # a 2nd stargate with floating gas so the fleet arrives in time.
         comp = advice.composition
-        if (comp.need_anti_air and self.structures(U.CYBERNETICSCORE).ready
-                and not self.structures(U.STARGATE) and self.already_pending(U.STARGATE) == 0
-                and self.can_afford(U.STARGATE)):
-            await self.build(U.STARGATE, near=pylon)
-        if ((comp.need_splash or comp.escalate_tech)
-                and self.structures(U.TWILIGHTCOUNCIL).ready
-                and not self.structures(U.TEMPLARARCHIVE)
-                and self.already_pending(U.TEMPLARARCHIVE) == 0
-                and self.can_afford(U.TEMPLARARCHIVE)):
-            await self.build(U.TEMPLARARCHIVE, near=pylon)
+        if ((comp.escalate_tech or comp.need_anti_air)
+                and self.structures(U.CYBERNETICSCORE).ready):
+            stargates = self.structures(U.STARGATE).amount + self.already_pending(U.STARGATE)
+            cap = 2 if self.vespene >= 500 else 1
+            if (stargates < cap and self.already_pending(U.STARGATE) == 0
+                    and self.can_afford(U.STARGATE)):
+                await self.build(U.STARGATE, near=pylon)
         # scale gateways with economy -- the macro plan owns the target count and
         # parallel-build limit, so we convert economy into army rather than float.
         target_gates = advice.macro.target_production
@@ -446,7 +444,6 @@ class AiurBot(BotAI):
         if owe_base and self.minerals < 400:
             return  # bank the whole Nexus cost -- pause army (incl. mineral-heavy
             #         robo units) for the ~15s it takes, then _expand takes the base
-        comp = advice.composition
         # robo: one observer for detection, then colossus (splash) or immortals --
         # both gas sinks. Prefer Colossus when the library wants splash.
         robo = self.structures(U.ROBOTICSFACILITY).ready.idle
@@ -465,22 +462,14 @@ class AiurBot(BotAI):
                 sg.train(U.VOIDRAY)
         # gateway composition. Principle 3 (don't float): a Zealot costs 0 gas, so
         # an all-Zealot army hoards gas -- read the bank and make Stalkers when gas
-        # piles up. But cap any single unit at the library's max_unit_share: a
-        # mono-Stalker army has no answer to a diversified one, so once Stalkers hit
-        # the cap, stop pumping them and let the robo/stargate tech fill the gap.
-        army_ct = max(1, self.units.of_type(ARMY).amount)
-        stalker_capped = self.units(U.STALKER).amount >= comp.max_unit_share * army_ct
+        # piles up. Diversification comes from the robo (Colossus/Immortal) and
+        # stargate (Void Ray) running in parallel ABOVE, which claim gas first each
+        # step; the gateway fills out the ground line with what's left.
         floating_gas = self.vespene >= 300
         for gate in self.structures(U.GATEWAY).ready.idle:
             stalkers = self.units(U.STALKER).amount
             zealots = self.units(U.ZEALOT).amount
             can_stalk = self.structures(U.CYBERNETICSCORE).ready and self.can_afford(U.STALKER)
-            if stalker_capped:
-                # diversify: a cheap Zealot front line, leaving gas for the robo
-                # (Colossus/Immortal) and stargate (Void Ray) tech to spend.
-                if self.can_afford(U.ZEALOT):
-                    gate.train(U.ZEALOT)
-                continue
             if floating_gas:
                 # spend the gas: take a Stalker if affordable; otherwise hold
                 # minerals for one, only making a Zealot if minerals ALSO pile up.
