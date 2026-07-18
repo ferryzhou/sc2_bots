@@ -98,12 +98,20 @@ rather than droning to full saturation first.
 
 The same executor also recreates a real ladder opponent from its
 `bot_profiles/` dossier: `--bot onebasestalker2` mimics **OneBaseStalkerBot**
-(aiarena ~1614 Elo, one-base 4-gate mass stalker). Validated headless: 4
-gateways / 2 assimilators / 1 cybernetics core / 1 nexus, 17 stalkers (first
-3:26) on 19 probes — matching the profile's observed 4/2/1/1, ~22 stalkers on
-22 probes. Even its results are in character (lost to VeryHard Terran; the
-real bot is 24% vs Terran). Gas placement and army tech-gating were the only
-executor additions — a profiled ladder bot is now a 3-line Spec.
+(aiarena ~1614 Elo, one-base 4-gate mass stalker). Validated headless vs
+VeryHard Terran: 4 gateways / 2 assimilators / 1 cybernetics core / 1 nexus,
+**23 stalkers (first 3:18) on exactly 22 probes, Victory in 6:16** — matching
+(and slightly beating) the profile's observed 4/2/1/1, ~22 stalkers on 22
+probes. Gas placement, army tech-gating, `distribute_workers`, and chrono were
+the executor additions — a profiled ladder bot is now a 3-line Spec.
+
+An earlier draft produced only 17 stalkers on 19 probes and lost; the replay
+diagnosis (gas income 134/min with 3.3k minerals floating) traced it to three
+throughput leaks, all since fixed in the executor: no `distribute_workers()`
+(only the builder probe mined each geyser), the library's 85%-saturation rule
+cutting probes at 19 before the spec's 22 (the spec cap now governs workers —
+the archetype's economy plan is the deliberate deviation), and no chrono
+boost. After the fixes gas income hit ~300/min and the float dropped to ~100.
 
 ## Mimic a different opponent
 

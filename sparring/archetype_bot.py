@@ -46,6 +46,7 @@ class ArchetypeSparringBot(BotAI):
                 u.attack(self.enemy_start_locations[0])
             return
         th, zerg = self.townhalls.first, spec.worker == U.DRONE
+        await self.distribute_workers()  # keep gas geysers actually worked
         state = GameState(
             game_time=self.time, worker_count=int(self.supply_workers),
             base_count=self.townhalls.amount, minerals=self.minerals,
@@ -80,8 +81,11 @@ class ArchetypeSparringBot(BotAI):
             else:
                 await self.build(U[step.structure.upper()],
                                  near=th.position.towards(self.game_info.map_center, 5))
-        # 3. workers while the library ranks economy top AND the spec allows it
-        elif inv.top == Investment.ECONOMY and self.supply_workers < spec.max_workers:
+        # 3. workers up to the spec's cap -- the archetype's own economy plan
+        # governs here (the library's 85%-saturation rule would stop short of
+        # e.g. the stalker bot's exact 22 probes); the library keeps the
+        # supply gate and the opening.
+        elif self.supply_workers < spec.max_workers:
             if zerg and self.larva and self.can_afford(spec.worker):
                 self.larva.first.train(spec.worker)
             elif not zerg and th.is_idle and self.can_afford(spec.worker):
@@ -108,6 +112,11 @@ class ArchetypeSparringBot(BotAI):
             for g in self.structures(U.GATEWAY).ready.idle:
                 if self.can_afford(spec.army) and self.supply_left > 1:
                     g.train(spec.army)
+            busy = self.structures(U.GATEWAY).ready.filter(lambda g: not g.is_idle)
+            for n in self.townhalls.filter(lambda n: n.energy >= 50):
+                if busy:
+                    n(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy.first)
+                    break
         if army.amount >= spec.attack_at:
             target = (self.enemy_structures.random.position if self.enemy_structures
                       else self.enemy_start_locations[0])
