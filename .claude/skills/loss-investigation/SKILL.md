@@ -82,16 +82,24 @@ Example (the Aiur Hard losses):
      early timing in a short game).
    - **MACRO BROKE** — floating cash or, in a long game, a stunted worker count;
      economy/production failed before combat mattered.
-2. **Economy** — per-minute workers / bases / minerals(bank/inc) / gas(bank/inc),
-   with ⚠️ when our workers drop below 0.85× the enemy's.
-3. **Accumulated** — total resources mined and total army value produced over
-   time, plus the share of income invested into army. This separates
-   *"didn't build enough army"* from *"built it and lost it"*.
-4. **Army + fights** — per-minute standing-army value/supply for both sides, the
-   ratio, upgrade counts, and the fight that minute inline (`BATTLE` ≥700 value
-   lost, else `skirm`, with the trade ratio).
-5. **Engagements** — the six costliest 30s fights with the composition going in.
-6. **Peak composition + upgrades** for both sides.
+2. **Deficits & why** — a scan that flags *every* sustained deficit (workers,
+   bases, resources mined, gas, army produced, army on the field) and
+   cross-references the metrics to name the likely cause of each (e.g. "even
+   workers but out-mined → less gas / worse saturation", "under-invested 21% vs
+   31%", "FEEDING: lost 93% of everything built"). Start here after the verdict.
+3. **Economy** — per-minute workers / bases / minerals(bank/inc) / gas(bank/inc)
+   plus three us/enemy ratios: **workers**, **mining speed** (income rate), and
+   **total mined**. Every ratio flags ⚠️ below 0.85, and bases flag when behind —
+   so an income deficit shows up before the worker count does.
+4. **Accumulated** — total resources mined and total army value produced over
+   time, with a **made ratio** (army produced, us/enemy) and the share of income
+   invested into army. Separates *"didn't build enough army"* from *"built it and
+   lost it"*.
+5. **Army + fights** — per-minute standing-army value/supply for both sides, the
+   **val ratio** and **sup ratio** (both flag ⚠️ below 0.85), upgrade counts, and
+   the fight that minute inline (`BATTLE` ≥700 value lost, else `skirm`, trade).
+6. **Engagements** — the six costliest 30s fights with the composition going in.
+7. **Peak composition + upgrades** for both sides.
 
 ## How to read it
 
@@ -102,6 +110,23 @@ Example (the Aiur Hard losses):
   fight** ⇒ the economy crash is a *symptom* of the combat loss, not the cause.
 - **Under-invested + short game** ⇒ died to a timing while teching/droning; fix
   is army-timing/defense, not composition.
+
+### Debugging a lost battle: check army value FIRST
+
+When a fight was lost, the first question is always **"what army value did each side
+bring into it?"** — not micro, not composition. The report's verdict line and the
+`## Army value + the fight each minute` table give it: the val/sup ratio *going in*.
+
+- **Went in below ~0.85 value** ⇒ it was lost before it started — a *quantity*
+  problem (too little army, or the wrong timing to fight). Do not chase micro;
+  ask why the army was small there (under-invested? fed the last fight? behind on
+  economy?). A fight at 0.5 value is unwinnable regardless of how it's executed.
+- **Went in at ~parity (≥0.9) and still traded badly (<0.7)** ⇒ *now* it's a
+  quality problem: composition mismatch (melee into ranged, no splash vs a flood,
+  no anti-air vs air), an upgrade deficit, or bad positioning/engagement.
+
+Only after value is ruled even do composition and micro become the answer. Skipping
+this step is how you "fix" micro on a fight that was a 2:1 value loss.
 
 ### The feeding signature (the trap this skill exists to catch)
 

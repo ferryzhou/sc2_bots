@@ -112,6 +112,75 @@ def verdict(units, stats, ours, theirs, length):
     return head, bullets
 
 
+def deficit_scan(units, stats, ours, theirs, length):
+    """Flag every economy and army deficit (ratio < 0.85) and cross-reference the
+    metrics to explain *why* each one exists. Returns a list of markdown bullets."""
+    marks = list(range(60, length + 1, 60))
+
+    def peak(pid, field):
+        return max((int(la.stat_at(stats, pid, t, field)) for t in marks), default=0)
+    pw1, pw2 = peak(ours, "workers_active_count"), peak(theirs, "workers_active_count")
+    pb1 = max((la.bases_at(units, ours, t) for t in marks), default=0)
+    pb2 = max((la.bases_at(units, theirs, t) for t in marks), default=0)
+    m1, g1 = la.collected_by(stats, ours, length)
+    m2, g2 = la.collected_by(stats, theirs, length)
+    mined1, mined2 = m1 + g1, m2 + g2
+    mined_r = mined1 / mined2 if mined2 else 1.0
+    gas_r = g1 / g2 if g2 else 1.0
+    made1 = la.army_value_made(units, ours, length)
+    made2 = la.army_value_made(units, theirs, length)
+    made_r = made1 / made2 if made2 else 1.0
+    invest = made1 / mined1 if mined1 else 0
+    invest_e = made2 / mined2 if mined2 else 0
+    lost1, _ = la.deaths_in(units, ours, 0, length)
+    fed = lost1 / made1 if made1 else 0  # fraction of production thrown away
+    wkr_r = pw1 / pw2 if pw2 else 1.0
+    # average alive-army value ratio over the game (how the field looked)
+    ars = []
+    for t in marks:
+        ov = la.alive_army(units, ours, t)[0]
+        ev = la.alive_army(units, theirs, t)[0]
+        if ev:
+            ars.append(ov / ev)
+    avg_alive = sum(ars) / len(ars) if ars else 1.0
+
+    out = []
+    # --- economy deficits ---
+    if wkr_r < 0.85:
+        out.append(f"**workers** {pw1} vs {pw2} ({wkr_r:.2f}) — fewer workers; "
+                   + ("bases behind too" if pb1 < pb2 else "check for a worker crash after a lost fight"))
+    if pb1 < pb2:
+        out.append(f"**bases** {pb1} vs {pb2} — expansion behind; "
+                   "either never took them or lost them to an attack")
+    if mined_r < 0.85:
+        why = ("fewer bases" if pb1 < pb2
+               else "even workers but out-mined — less gas / worse saturation"
+               if wkr_r >= 0.85 else "fewer workers")
+        out.append(f"**resources mined** {int(mined1)} vs {int(mined2)} "
+                   f"({mined_r:.2f}) — {why}")
+    if gas_r < 0.85 and mined_r >= 0.85:
+        out.append(f"**gas** {int(g1)} vs {int(g2)} ({gas_r:.2f}) — gas-light "
+                   "(fewer/late assimilators); starves the tech/ranged army")
+    # --- army deficits (under-investment and economy shortfall can both apply) ---
+    if made_r < 0.85:
+        parts = []
+        if invest < 0.9 * invest_e:
+            parts.append(f"under-invested ({invest:.0%} of income into army vs "
+                         f"{invest_e:.0%})")
+        if mined_r < 0.85:
+            parts.append(f"less economy to spend (mined {mined_r:.2f})")
+        why = "; ".join(parts) if parts else "built less army for its economy"
+        out.append(f"**army produced** {made1} vs {made2} ({made_r:.2f}) — {why}")
+    if avg_alive < 0.85 and made_r >= 0.85:
+        out.append(f"**army on the field** avg {avg_alive:.2f} despite producing "
+                   f"{made_r:.2f}x — FEEDING: lost {fed:.0%} of everything built; "
+                   "engagement discipline, not production")
+    if not out:
+        out.append("no sustained deficit ≥15% — the loss is elsewhere "
+                   "(a single decisive fight, tempo, or micro)")
+    return out
+
+
 def report(path, ours, out):
     theirs = 2 if ours == 1 else 1
     r, units, stats, upgrades = la.load(path)
@@ -130,6 +199,11 @@ def report(path, ours, out):
     p("")
     for b in bullets:
         p(f"- {b}")
+    p("")
+    p("## Deficits & why")
+    p("")
+    for d in deficit_scan(units, stats, ours, theirs, length):
+        p(f"- {d}")
     p("")
 
     # 1) economy head-to-head. Ratios (us/enemy): workers, mining speed (income
@@ -159,11 +233,13 @@ def report(path, ours, out):
         cm1, cg1 = la.collected_by(stats, ours, t)
         cm2, cg2 = la.collected_by(stats, theirs, t)
         mined = ((cm1 + cg1) / (cm2 + cg2)) if (cm2 + cg2) else 1.0
-        flag = " ⚠️" if (w2 and w1 < 0.85 * w2) else ""
-        sflag = " ⚠️" if (inc2 and inc1 < 0.85 * inc2) else ""
-        p(f"| {la.mmss(t)} | {w1} v {w2}{flag} | {b1} v {b2} | "
+        wf = " ⚠️" if wr < 0.85 else ""
+        sf = " ⚠️" if spd < 0.85 else ""
+        mf = " ⚠️" if mined < 0.85 else ""
+        bf = " ⚠️" if b1 < b2 else ""
+        p(f"| {la.mmss(t)} | {w1} v {w2}{wf} | {b1} v {b2}{bf} | "
           f"{m1b}/{m1r} v {m2b}/{m2r} | {g1b}/{g1r} v {g2b}/{g2r} | "
-          f"{wr:.2f} | {spd:.2f}{sflag} | {mined:.2f} |")
+          f"{wr:.2f} | {spd:.2f}{sf} | {mined:.2f}{mf} |")
     p("")
 
     # 2) accumulated
@@ -181,8 +257,9 @@ def report(path, ours, out):
         s1 = a1 / t1 if t1 else 0
         s2 = a2 / t2 if t2 else 0
         mr = (a1 / a2) if a2 else (9.9 if a1 else 1.0)   # army value produced ratio
+        mrf = " ⚠️" if mr < 0.85 else ""
         p(f"| {la.mmss(t)} | {int(m1)}/{int(g1)}/{int(t1)} | "
-          f"{int(m2)}/{int(g2)}/{int(t2)} | {a1} v {a2} | {mr:.2f} | {s1:.0%} / {s2:.0%} |")
+          f"{int(m2)}/{int(g2)}/{int(t2)} | {a1} v {a2} | {mr:.2f}{mrf} | {s1:.0%} / {s2:.0%} |")
     fm1, fg1 = la.collected_by(stats, ours, length)
     fm2, fg2 = la.collected_by(stats, theirs, length)
     fa1 = la.army_value_made(units, ours, length)
@@ -208,6 +285,8 @@ def report(path, ours, out):
         ev, es_, _ = la.alive_army(units, theirs, t)
         ratio = (ov / ev) if ev else (9.9 if ov else 1.0)      # army value ratio
         sratio = (os_ / es_) if es_ else (9.9 if os_ else 1.0)  # army supply ratio
+        vf = " ⚠️" if ratio < 0.85 else ""
+        spf = " ⚠️" if sratio < 0.85 else ""
         oup = sum(1 for s, _ in upgrades[ours] if s <= t)
         eup = sum(1 for s, _ in upgrades[theirs] if s <= t)
         lost1, _ = la.deaths_in(units, ours, t - 60, t)
@@ -217,7 +296,7 @@ def report(path, ours, out):
             tr = (lost2 / lost1) if lost1 else 9.9
             tag = "**BATTLE**" if max(lost1, lost2) >= 700 else "skirm"
             fight = f"{tag} {lost1}/{lost2} — {tr:.2f}"
-        p(f"| {la.mmss(t)} | {ov}/{os_} | {ev}/{es_} | {ratio:.2f} | {sratio:.2f} | "
+        p(f"| {la.mmss(t)} | {ov}/{os_} | {ev}/{es_} | {ratio:.2f}{vf} | {sratio:.2f}{spf} | "
           f"{oup}/{eup} | {fight} |")
     p("")
 

@@ -214,9 +214,10 @@ def main():
         sh1 = a1 / tot1 if tot1 else 0
         sh2 = a2 / tot2 if tot2 else 0
         mr = (a1 / a2) if a2 else (9.9 if a1 else 1.0)   # army value produced ratio
+        mflag = "  <-- army production behind" if mr < 0.85 else ""
         print(f"{mmss(t):>5} | {int(m1):>5}/{int(g1):<4}/{int(tot1):<5} "
               f"{int(m2):>5}/{int(g2):<4}/{int(tot2):<5} | "
-              f"{a1:>5} v {a2:<5} {mr:>4.2f} | {sh1:>4.0%}  {sh2:>4.0%}")
+              f"{a1:>5} v {a2:<5} {mr:>4.2f} | {sh1:>4.0%}  {sh2:>4.0%}{mflag}")
     fm1, fg1 = collected_by(stats, ours, length)
     fm2, fg2 = collected_by(stats, theirs, length)
     fa1, fa2 = army_value_made(units, ours, length), army_value_made(units, theirs, length)
