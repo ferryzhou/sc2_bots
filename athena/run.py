@@ -35,9 +35,14 @@ def main():
     p.add_argument("--difficulty", default="VeryHard")
     p.add_argument("--map", default=None)
     p.add_argument("--save-replay", default=None)
+    p.add_argument("--build", default=None,
+                   help="reproduce a spawningtool build id for the opening "
+                        "(a Protoss build ingested into build_guides, e.g. 203087)")
     args, _ = p.parse_known_args()
 
-    bot = Bot(Race.Protoss, AthenaBot())
+    ai = AthenaBot()
+    ai.force_build_id = args.build
+    bot = Bot(Race.Protoss, ai)
 
     if "--LadderServer" in sys.argv:
         # lazy import: only needed on the ladder (griffin's helper matches this sc2)

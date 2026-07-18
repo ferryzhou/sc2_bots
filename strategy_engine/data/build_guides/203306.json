@@ -1,0 +1,1134 @@
+{
+  "id": 203306,
+  "title": "Heromarine TvT new patch build",
+  "race": "Terran",
+  "matchup": "TvT",
+  "source": "https://lotv.spawningtool.com/build/203306/",
+  "steps": [
+    {
+      "i": 0,
+      "supply": 8,
+      "t": 0,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 1,
+      "supply": 11,
+      "t": 36,
+      "action": "build",
+      "name": "Barracks",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 2,
+      "supply": 13,
+      "t": 61,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 3,
+      "supply": 13,
+      "t": 65,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 4,
+      "supply": 16,
+      "t": 104,
+      "action": "train",
+      "name": "Reaper",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 5,
+      "supply": 17,
+      "t": 127,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 6,
+      "supply": 18,
+      "t": 136,
+      "action": "train",
+      "name": "Reaper",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 7,
+      "supply": 18,
+      "t": 139,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 8,
+      "supply": 20,
+      "t": 151,
+      "action": "build",
+      "name": "Factory",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 9,
+      "supply": 21,
+      "t": 165,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 10,
+      "supply": 22,
+      "t": 177,
+      "action": "build",
+      "name": "Barracks Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 11,
+      "supply": 23,
+      "t": 189,
+      "action": "build",
+      "name": "Starport",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 12,
+      "supply": 25,
+      "t": 213,
+      "action": "train",
+      "name": "Hellion",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 13,
+      "supply": 26,
+      "t": 220,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 14,
+      "supply": 30,
+      "t": 222,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 15,
+      "supply": 30,
+      "t": 223,
+      "action": "build",
+      "name": "Barracks Tech Lab",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 16,
+      "supply": 30,
+      "t": 225,
+      "action": "train",
+      "name": "Hellion",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 17,
+      "supply": 36,
+      "t": 246,
+      "action": "train",
+      "name": "Raven",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 18,
+      "supply": 40,
+      "t": 254,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 19,
+      "supply": 40,
+      "t": 258,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 20,
+      "supply": 40,
+      "t": 261,
+      "action": "train",
+      "name": "Hellion",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 21,
+      "supply": 46,
+      "t": 265,
+      "action": "build",
+      "name": "Barracks Tech Lab",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 22,
+      "supply": 46,
+      "t": 270,
+      "action": "research",
+      "name": "Interference Matrix",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 23,
+      "supply": 48,
+      "t": 282,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 24,
+      "supply": 51,
+      "t": 290,
+      "action": "train",
+      "name": "Marine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 25,
+      "supply": 51,
+      "t": 292,
+      "action": "train",
+      "name": "Cyclone",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 26,
+      "supply": 57,
+      "t": 294,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 27,
+      "supply": 58,
+      "t": 304,
+      "action": "train",
+      "name": "Marine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 28,
+      "supply": 58,
+      "t": 316,
+      "action": "train",
+      "name": "Raven",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 29,
+      "supply": 62,
+      "t": 326,
+      "action": "train",
+      "name": "Marine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 30,
+      "supply": 62,
+      "t": 329,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 31,
+      "supply": 67,
+      "t": 341,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 32,
+      "supply": 67,
+      "t": 342,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 33,
+      "supply": 71,
+      "t": 353,
+      "action": "train",
+      "name": "Viking",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 34,
+      "supply": 71,
+      "t": 361,
+      "action": "train",
+      "name": "Marine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 35,
+      "supply": 71,
+      "t": 362,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 36,
+      "supply": 71,
+      "t": 364,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 37,
+      "supply": 79,
+      "t": 366,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 38,
+      "supply": 81,
+      "t": 373,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 39,
+      "supply": 81,
+      "t": 374,
+      "action": "research",
+      "name": "Stimpack",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 40,
+      "supply": 81,
+      "t": 378,
+      "action": "train",
+      "name": "Marine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 41,
+      "supply": 82,
+      "t": 390,
+      "action": "train",
+      "name": "Viking",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 42,
+      "supply": 89,
+      "t": 400,
+      "action": "build",
+      "name": "Barracks",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 43,
+      "supply": 89,
+      "t": 402,
+      "action": "build",
+      "name": "Engineering Bay",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 44,
+      "supply": 94,
+      "t": 414,
+      "action": "train",
+      "name": "Marine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 45,
+      "supply": 97,
+      "t": 422,
+      "action": "train",
+      "name": "Liberator",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 46,
+      "supply": 103,
+      "t": 432,
+      "action": "train",
+      "name": "Marine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 47,
+      "supply": 105,
+      "t": 446,
+      "action": "build",
+      "name": "Barracks",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 48,
+      "supply": 81,
+      "t": 451,
+      "action": "build",
+      "name": "Barracks Reactor",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 49,
+      "supply": 81,
+      "t": 453,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 50,
+      "supply": 81,
+      "t": 454,
+      "action": "research",
+      "name": "Terran Infantry Weapons Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 51,
+      "supply": 80,
+      "t": 457,
+      "action": "research",
+      "name": "Terran Infantry Armor Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 52,
+      "supply": 80,
+      "t": 458,
+      "action": "train",
+      "name": "Marine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 53,
+      "supply": 80,
+      "t": 463,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 54,
+      "supply": 86,
+      "t": 467,
+      "action": "build",
+      "name": "Refinery",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 55,
+      "supply": 86,
+      "t": 468,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 56,
+      "supply": 86,
+      "t": 470,
+      "action": "train",
+      "name": "Viking",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 57,
+      "supply": 91,
+      "t": 478,
+      "action": "train",
+      "name": "Viking",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 58,
+      "supply": 91,
+      "t": 484,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 59,
+      "supply": 95,
+      "t": 487,
+      "action": "build",
+      "name": "Missile Turret",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 60,
+      "supply": 95,
+      "t": 491,
+      "action": "research",
+      "name": "Combat Shield",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 61,
+      "supply": 97,
+      "t": 493,
+      "action": "build",
+      "name": "Barracks Reactor",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 62,
+      "supply": 97,
+      "t": 495,
+      "action": "build",
+      "name": "Sensor Tower",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 63,
+      "supply": 97,
+      "t": 498,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 64,
+      "supply": 99,
+      "t": 501,
+      "action": "train",
+      "name": "Marine",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 65,
+      "supply": 99,
+      "t": 502,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 66,
+      "supply": 106,
+      "t": 510,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 67,
+      "supply": 106,
+      "t": 511,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 68,
+      "supply": 110,
+      "t": 518,
+      "action": "train",
+      "name": "Marine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 69,
+      "supply": 110,
+      "t": 519,
+      "action": "train",
+      "name": "Marine",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 70,
+      "supply": 118,
+      "t": 535,
+      "action": "train",
+      "name": "Marine",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 71,
+      "supply": 118,
+      "t": 539,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 72,
+      "supply": 118,
+      "t": 542,
+      "action": "train",
+      "name": "Marine",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 73,
+      "supply": 124,
+      "t": 545,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 74,
+      "supply": 124,
+      "t": 548,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 75,
+      "supply": 124,
+      "t": 549,
+      "action": "build",
+      "name": "Factory",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 76,
+      "supply": 134,
+      "t": 553,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 77,
+      "supply": 139,
+      "t": 560,
+      "action": "train",
+      "name": "Marine",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 78,
+      "supply": 143,
+      "t": 566,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 79,
+      "supply": 143,
+      "t": 571,
+      "action": "train",
+      "name": "Marine",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 80,
+      "supply": 143,
+      "t": 573,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 81,
+      "supply": 143,
+      "t": 578,
+      "action": "train",
+      "name": "Marine",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 82,
+      "supply": 150,
+      "t": 584,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 83,
+      "supply": 138,
+      "t": 586,
+      "action": "train",
+      "name": "Marine",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 84,
+      "supply": 114,
+      "t": 595,
+      "action": "train",
+      "name": "Marine",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 85,
+      "supply": 114,
+      "t": 598,
+      "action": "train",
+      "name": "Marine",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 86,
+      "supply": 91,
+      "t": 613,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 87,
+      "supply": 101,
+      "t": 616,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 88,
+      "supply": 100,
+      "t": 622,
+      "action": "research",
+      "name": "Terran Infantry Armor Level 2",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 89,
+      "supply": 100,
+      "t": 624,
+      "action": "train",
+      "name": "Marine",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 90,
+      "supply": 100,
+      "t": 626,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 91,
+      "supply": 100,
+      "t": 627,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 92,
+      "supply": 109,
+      "t": 632,
+      "action": "research",
+      "name": "Terran Vehicle Weapons Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 93,
+      "supply": 109,
+      "t": 633,
+      "action": "build",
+      "name": "Barracks Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 94,
+      "supply": 109,
+      "t": 635,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 95,
+      "supply": 117,
+      "t": 640,
+      "action": "train",
+      "name": "Marine",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 96,
+      "supply": 119,
+      "t": 648,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 97,
+      "supply": 119,
+      "t": 649,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 98,
+      "supply": 131,
+      "t": 660,
+      "action": "train",
+      "name": "Medivac",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 99,
+      "supply": 131,
+      "t": 664,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 100,
+      "supply": 140,
+      "t": 667,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 101,
+      "supply": 146,
+      "t": 674,
+      "action": "train",
+      "name": "Marine",
+      "count": 7,
+      "note": ""
+    },
+    {
+      "i": 102,
+      "supply": 149,
+      "t": 680,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 103,
+      "supply": 149,
+      "t": 685,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 104,
+      "supply": 159,
+      "t": 688,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 105,
+      "supply": 159,
+      "t": 690,
+      "action": "train",
+      "name": "Medivac",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 106,
+      "supply": 159,
+      "t": 692,
+      "action": "train",
+      "name": "Marine",
+      "count": 7,
+      "note": ""
+    },
+    {
+      "i": 107,
+      "supply": 163,
+      "t": 695,
+      "action": "train",
+      "name": "Medivac",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 108,
+      "supply": 163,
+      "t": 699,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 109,
+      "supply": 172,
+      "t": 702,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 110,
+      "supply": 175,
+      "t": 710,
+      "action": "train",
+      "name": "Marine",
+      "count": 7,
+      "note": ""
+    },
+    {
+      "i": 111,
+      "supply": 178,
+      "t": 718,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 112,
+      "supply": 178,
+      "t": 720,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 113,
+      "supply": 168,
+      "t": 727,
+      "action": "train",
+      "name": "Marine",
+      "count": 7,
+      "note": ""
+    },
+    {
+      "i": 114,
+      "supply": 166,
+      "t": 731,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 115,
+      "supply": 174,
+      "t": 738,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 116,
+      "supply": 170,
+      "t": 745,
+      "action": "train",
+      "name": "Marine",
+      "count": 7,
+      "note": ""
+    },
+    {
+      "i": 117,
+      "supply": 176,
+      "t": 750,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 118,
+      "supply": 176,
+      "t": 756,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 119,
+      "supply": 183,
+      "t": 763,
+      "action": "train",
+      "name": "Marine",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 120,
+      "supply": 183,
+      "t": 764,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 121,
+      "supply": 186,
+      "t": 771,
+      "action": "train",
+      "name": "Marine",
+      "count": 6,
+      "note": ""
+    },
+    {
+      "i": 122,
+      "supply": 192,
+      "t": 782,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 123,
+      "supply": 192,
+      "t": 785,
+      "action": "train",
+      "name": "Marine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 124,
+      "supply": 200,
+      "t": 803,
+      "action": "train",
+      "name": "Marine",
+      "count": 6,
+      "note": ""
+    }
+  ]
+}

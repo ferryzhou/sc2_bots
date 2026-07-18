@@ -6,6 +6,12 @@ An empirical check of the strategy model in [`PRINCIPLES.md`](../PRINCIPLES.md) 
 [`principle_analyzer.py`](principle_analyzer.py) and
 [`aa_analyze.py`](aa_analyze.py).
 
+For a focused look at the **opening building process** (what top players build,
+and when, in the first two minutes — the standardized economic opening and why
+it barely differs between winners and losers), see
+[`OPENING_PATTERNS.md`](OPENING_PATTERNS.md)
+([`opening_analysis.py`](opening_analysis.py)).
+
 ## Method
 
 - **Data:** two samples —

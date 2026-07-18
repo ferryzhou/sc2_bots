@@ -1,0 +1,225 @@
+{
+  "id": 203109,
+  "title": "Lambo ZvZ 8 workers opening",
+  "race": "Zerg",
+  "matchup": "ZvZ",
+  "source": "https://lotv.spawningtool.com/build/203109/",
+  "steps": [
+    {
+      "i": 0,
+      "supply": 8,
+      "t": 0,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 1,
+      "supply": 12,
+      "t": 39,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 2,
+      "supply": 13,
+      "t": 50,
+      "action": "build",
+      "name": "Spawning Pool",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 3,
+      "supply": 16,
+      "t": 70,
+      "action": "build",
+      "name": "Hatchery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 4,
+      "supply": 17,
+      "t": 100,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 5,
+      "supply": 17,
+      "t": 115,
+      "action": "train",
+      "name": "Queen",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 6,
+      "supply": 17,
+      "t": 120,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 7,
+      "supply": 20,
+      "t": 129,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 8,
+      "supply": 21,
+      "t": 142,
+      "action": "train",
+      "name": "Zergling",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 9,
+      "supply": 23,
+      "t": 150,
+      "action": "train",
+      "name": "Queen",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 10,
+      "supply": 28,
+      "t": 172,
+      "action": "research",
+      "name": "Metabolic Boost",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 11,
+      "supply": 28,
+      "t": 174,
+      "action": "train",
+      "name": "Zergling",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 12,
+      "supply": 28,
+      "t": 177,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 13,
+      "supply": 35,
+      "t": 207,
+      "action": "build",
+      "name": "Hatchery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 14,
+      "supply": 34,
+      "t": 214,
+      "action": "build",
+      "name": "Baneling Nest",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 15,
+      "supply": 34,
+      "t": 221,
+      "action": "train",
+      "name": "Zergling",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 16,
+      "supply": 36,
+      "t": 223,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 17,
+      "supply": 36,
+      "t": 226,
+      "action": "train",
+      "name": "Zergling",
+      "count": 6,
+      "note": ""
+    },
+    {
+      "i": 18,
+      "supply": 37,
+      "t": 235,
+      "action": "train",
+      "name": "Zergling",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 19,
+      "supply": 40,
+      "t": 239,
+      "action": "train",
+      "name": "Overlord",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 20,
+      "supply": 46,
+      "t": 267,
+      "action": "train",
+      "name": "Baneling",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 21,
+      "supply": 50,
+      "t": 278,
+      "action": "train",
+      "name": "Baneling",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 22,
+      "supply": 52,
+      "t": 288,
+      "action": "build",
+      "name": "Extractor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 23,
+      "supply": 52,
+      "t": 289,
+      "action": "build",
+      "name": "Roach Warren",
+      "count": 1,
+      "note": ""
+    }
+  ]
+}

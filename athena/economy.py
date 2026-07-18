@@ -11,12 +11,16 @@ from strategy_engine import Investment
 
 
 class Economy:
-    async def step(self, bot, advice):
+    async def step(self, bot, advice, scripted=False):
         await self._supply(bot, advice)
         self._probes(bot, advice)
+        self._chrono(bot)
+        # while a --build script is running it owns gas + expansions; economy
+        # keeps only worker/supply/chrono so the two don't double-build.
+        if scripted:
+            return
         await self._gas(bot)
         await self._expand(bot, advice)
-        self._chrono(bot)
 
     def _probes(self, bot, advice):
         cap = min(75, 22 * max(1, bot.townhalls.amount) + 6)

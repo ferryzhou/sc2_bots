@@ -106,6 +106,23 @@ def find_start_port() -> int:
     raise RuntimeError("no free port range found")
 
 
+COMPAT_DIR = REPO_ROOT / "harness" / "compat"
+
+
+def opponent_env() -> dict:
+    """Env for opponent subprocesses.
+
+    Prepends harness/compat to PYTHONPATH so its ``sitecustomize.py`` loads at
+    interpreter startup and restores the deprecated numpy aliases (``np.float``
+    etc.) that the OLD python-sc2 bundled by many AI Arena bots still uses --
+    otherwise that whole cohort crashes mid-game under our modern numpy.
+    """
+    env = dict(environ)
+    prior = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = f"{COMPAT_DIR}{':' + prior if prior else ''}"
+    return env
+
+
 def opponent_command(bot_dir: Path, bot_name: str) -> tuple[list[str], Path]:
     """Build the launch command from the bot's zip layout.
 
@@ -141,6 +158,44 @@ def opponent_command(bot_dir: Path, bot_name: str) -> tuple[list[str], Path]:
             return [str(binary)], binary.parent
 
     raise ValueError(f"no launch spec found in {bot_dir}")
+
+
+def _opponent_reached_game(log_path: Path) -> bool:
+    """True if the opponent actually joined the match before exiting.
+
+    Distinguishes a launch failure (import crash before joining) from an
+    opponent that joined and then crashed or resigned in-game -- the latter is
+    a real result we should score, not an error. Markers come from the
+    opponent's own logging: a game Result line, or the SC2 status reaching
+    in_game.
+    """
+    try:
+        text = log_path.read_text(errors="replace")
+    except OSError:
+        return False
+    return bool(re.search(r"Result\b|Status\.in_game|Result for player", text))
+
+
+def _opponent_failure_reason(log_path: Path) -> str:
+    """Pull the most informative line out of a crashed opponent's log.
+
+    Prefer the final exception line (``ModuleNotFoundError: ...``,
+    ``ImportError: ...``, ``AttributeError: ...``) so a field sweep records
+    *why* a bot could not launch -- a missing dependency vs a code crash --
+    instead of an opaque return code.
+    """
+    try:
+        lines = [ln.strip() for ln in
+                 log_path.read_text(errors="replace").splitlines() if ln.strip()]
+    except OSError:
+        return ""
+    # Prefer a real exception; only fall back to a Warning line if there is no
+    # Error/Exception (ResourceWarning noise shouldn't mask the true cause).
+    for pattern in (r"^[A-Za-z_.]*(Error|Exception):", r"^[A-Za-z_.]*Warning:"):
+        for ln in reversed(lines):
+            if re.match(pattern, ln):
+                return ln[:200]
+    return lines[-1][:200] if lines else ""
 
 
 async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
@@ -193,26 +248,72 @@ async def run_match(opponent: dict, map_name: str, timeout: int) -> dict:
                 *our_cmd, cwd=BOT_DIR,
                 stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
             theirs = await asyncio.create_subprocess_exec(
-                *their_cmd, cwd=opp_cwd,
+                *their_cmd, cwd=opp_cwd, env=opponent_env(),
                 stdout=opp_log, stderr=asyncio.subprocess.STDOUT)
 
-            try:
-                # fast-fail: an opponent that dies in the first 25s never
-                # joined - don't burn the full match timeout waiting
-                try:
-                    await asyncio.wait_for(theirs.wait(), timeout=25)
-                    record["result"] = "Error"
-                    record["error"] = (f"opponent exited at launch "
-                                       f"(rc={theirs.returncode})")
-                    ours.kill()
-                    await ours.wait()
-                    record["wall_seconds"] = round(time.time() - wall_start, 1)
-                    return record
-                except asyncio.TimeoutError:
-                    pass
+            opp_log_path = log_dir / f"{opponent['name']}_{stamp}.log"
 
-                out, _ = await asyncio.wait_for(ours.communicate(), timeout=timeout)
-                text = out.decode(errors="replace")
+            def opponent_failed():
+                # Build an Error record for an opponent that died. A dead
+                # opponent leaves its units on the map, so SC2 never declares
+                # us the winner -- our bot would grind to the full timeout.
+                # Classify: launch failure (never joined - bad deps) vs in-game
+                # crash (broken bundled sc2, unknown unit/ability id). Neither
+                # counts toward our win/loss record.
+                opp_log.flush()
+                reason = _opponent_failure_reason(opp_log_path)
+                stage = ("crashed in-game"
+                         if _opponent_reached_game(opp_log_path)
+                         else "exited at launch")
+                record["result"] = "Error"
+                record["error"] = (f"opponent {stage} "
+                                   f"(rc={theirs.returncode})"
+                                   + (f": {reason}" if reason else ""))
+
+            try:
+                # Watch our bot AND the opponent for the whole match. Take our
+                # bot's result when the game ends normally; if the opponent
+                # dies first, abort promptly instead of draining the timeout --
+                # immediately for a launch failure (no game to finish), after a
+                # short grace for an in-game crash (the game may be ending for
+                # us anyway).
+                GRACE = 30
+                game_task = asyncio.ensure_future(ours.communicate())
+                opp_task = asyncio.ensure_future(theirs.wait())
+                deadline = time.time() + timeout
+                text = None
+                while text is None:
+                    remaining = deadline - time.time()
+                    if remaining <= 0:
+                        raise asyncio.TimeoutError
+                    done, _ = await asyncio.wait(
+                        {game_task, opp_task}, timeout=remaining,
+                        return_when=asyncio.FIRST_COMPLETED)
+                    if game_task in done:
+                        out, _ = game_task.result()
+                        text = out.decode(errors="replace")
+                        break
+                    # opponent exited while our bot is still running
+                    opp_log.flush()
+                    if not _opponent_reached_game(opp_log_path):
+                        opponent_failed()          # launch failure -- abort now
+                        game_task.cancel()
+                        ours.kill()
+                        await ours.wait()
+                        record["wall_seconds"] = round(time.time() - wall_start, 1)
+                        return record
+                    try:                            # in-game crash -- brief grace
+                        out, _ = await asyncio.wait_for(
+                            asyncio.shield(game_task), timeout=GRACE)
+                        text = out.decode(errors="replace")
+                    except asyncio.TimeoutError:
+                        opponent_failed()
+                        game_task.cancel()
+                        ours.kill()
+                        await ours.wait()
+                        record["wall_seconds"] = round(time.time() - wall_start, 1)
+                        return record
+
                 (log_dir / f"{BOT_NAME}_{stamp}.log").write_text(text)
                 # anchor to real game results - the bot's own logging can
                 # contain e.g. "EngagementResult.VICTORY_EMPHATIC"

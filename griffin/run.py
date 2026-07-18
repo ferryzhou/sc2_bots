@@ -47,7 +47,8 @@ def main():
             bot_name = config.get("MyBotName", bot_name)
             race = Race[config.get("MyBotRace", "Terran").title()]
 
-    bot = Bot(race, GriffinBot(), bot_name)
+    ai = GriffinBot()
+    bot = Bot(race, ai, bot_name)
 
     if "--LadderServer" in sys.argv:
         print("Starting ladder game...")
@@ -69,7 +70,15 @@ def main():
         help="python-sc2 Difficulty name, e.g. VeryHard, CheatVision, CheatInsane",
     )
     parser.add_argument("--realtime", action="store_true")
+    parser.add_argument(
+        "--build", default=None,
+        help="force a named opening from terran_builds.yml (e.g. a pro build "
+             "ingested via analysis/spawningtool_to_ares.py, "
+             "st_t_SpeCial_TvP_8_worker_standard_opening)",
+    )
     args = parser.parse_args()
+    if args.build:
+        ai.forced_opening = args.build
 
     map_pool = [
         p.stem for p in get_maps_dir().glob("*.SC2Map") if p.is_file()

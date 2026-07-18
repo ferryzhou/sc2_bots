@@ -13,6 +13,27 @@ from sc2.ids.unit_typeid import UnitTypeId as U
 
 TOWNHALLS = {U.NEXUS, U.HATCHERY, U.LAIR, U.HIVE, U.COMMANDCENTER,
              U.ORBITALCOMMAND, U.PLANETARYFORTRESS}
+
+# Enemy structure type -> normalized base name understood by
+# strategy_engine.classify_opening (morphs folded back to the base building).
+OPENING_STRUCT = {
+    U.NEXUS: "Nexus", U.GATEWAY: "Gateway", U.WARPGATE: "Gateway",
+    U.CYBERNETICSCORE: "CyberneticsCore", U.FORGE: "Forge",
+    U.PHOTONCANNON: "PhotonCannon", U.ASSIMILATOR: "Assimilator",
+    U.ROBOTICSFACILITY: "RoboticsFacility", U.STARGATE: "Stargate",
+    U.TWILIGHTCOUNCIL: "TwilightCouncil",
+    U.COMMANDCENTER: "CommandCenter", U.ORBITALCOMMAND: "CommandCenter",
+    U.PLANETARYFORTRESS: "CommandCenter", U.SUPPLYDEPOT: "SupplyDepot",
+    U.BARRACKS: "Barracks", U.REFINERY: "Refinery", U.FACTORY: "Factory",
+    U.STARPORT: "Starport", U.ENGINEERINGBAY: "EngineeringBay", U.BUNKER: "Bunker",
+    U.HATCHERY: "Hatchery", U.LAIR: "Hatchery", U.HIVE: "Hatchery",
+    U.SPAWNINGPOOL: "SpawningPool", U.EXTRACTOR: "Extractor",
+    U.ROACHWARREN: "RoachWarren", U.BANELINGNEST: "BanelingNest",
+    U.EVOLUTIONCHAMBER: "EvolutionChamber", U.SPINECRAWLER: "SpineCrawler",
+    U.HYDRALISKDEN: "HydraliskDen",
+}
+OPENING_GAS = {"Assimilator", "Refinery", "Extractor"}
+OPENING_TH = {"Nexus", "CommandCenter", "Hatchery"}
 PRODUCTION = {U.GATEWAY, U.WARPGATE, U.ROBOTICSFACILITY, U.STARGATE,
               U.BARRACKS, U.FACTORY, U.STARPORT,
               U.ROACHWARREN, U.HYDRALISKDEN, U.SPAWNINGPOOL}
@@ -82,4 +103,39 @@ class Perception:
             lambda u: u.type_id not in WORKERS and u.distance_to(home) < 55)
         mem["enemy_army_moving_out"] = near.amount >= 3
 
+        self._track_enemy_opening(bot, mem)
         return mem
+
+    def _track_enemy_opening(self, bot, mem):
+        """Record first-seen time + placement zone of each enemy structure, so
+        strategy_engine.classify_opening can name the opponent's opening.
+
+        Zones are judged relative to the enemy's main and our own base: a
+        building near the enemy start is 'main'/'natural', one near US (or far
+        from the enemy) is 'forward' -- the proxy tell.
+        """
+        seen = mem.setdefault("enemy_opening_seen", {})   # name -> {t, zone}
+        enemy_main = bot.enemy_start_locations[0]
+        home = bot.start_location
+        for s in bot.enemy_structures:
+            name = OPENING_STRUCT.get(s.type_id)
+            if name is None or name in seen:
+                continue
+            d_enemy = s.distance_to(enemy_main)
+            d_home = s.distance_to(home)
+            if d_home < d_enemy and d_home < 60:
+                zone = "forward"           # proxied toward our base
+            elif d_enemy <= 14:
+                zone = "main"
+            elif d_enemy <= 30:
+                zone = "ramp_wall"
+            else:
+                zone = "natural"
+            seen[name] = {"t": bot.time, "zone": zone}
+        # first gas / expansion timing for the classifier
+        gas_ts = [d["t"] for n, d in seen.items() if n in OPENING_GAS]
+        mem["enemy_first_gas"] = min(gas_ts) if gas_ts else None
+        # a townhall we scouted away from the enemy main = their natural
+        exp_ts = [d["t"] for n, d in seen.items()
+                  if n in OPENING_TH and d["zone"] in ("natural", "ramp_wall")]
+        mem["enemy_expand_t"] = min(exp_ts) if exp_ts else None

@@ -72,6 +72,18 @@ opening-only strategy is never *started* late, a new read must persist before it
 acted on, and a detected emergency pins us to defence immediately. So the bot can
 begin on any of the five and re-choose from the same five whenever its read firms.
 
+### Which strategy it *starts* on (pre-game opponent prior)
+
+`on_start` calls [`opponent_intel`](../opponent_intel/) with `self.opponent_id`
+(the ladder passes the opponent's stable `game_display_id` UUID; the local
+harness passes the name — either works). If the opponent is one we've profiled,
+it opens on the counter to their known play-style instead of the blind default —
+e.g. a zealot-flood opponent → `RoachTiming` (hold), an over-drone macro bot →
+`LingFlood` (punish), a skytoss bot → `MacroRoachHydra` (hydra anti-air), a
+broken bot → `GreedyHydraLurker`. The mid-game selector above then refines it by
+live scouting. A forced `--strategy` or an unknown opponent skips this (safe
+default). See [`opponent_intel/README.md`](../opponent_intel/README.md).
+
 ## Run
 
 ```bash

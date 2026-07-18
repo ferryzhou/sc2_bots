@@ -1,0 +1,270 @@
+{
+  "id": 203107,
+  "title": "SpeCial TvT 8 worker standard opening",
+  "race": "Terran",
+  "matchup": "TvT",
+  "source": "https://lotv.spawningtool.com/build/203107/",
+  "steps": [
+    {
+      "i": 0,
+      "supply": 8,
+      "t": 0,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 1,
+      "supply": 11,
+      "t": 36,
+      "action": "build",
+      "name": "Barracks",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 2,
+      "supply": 13,
+      "t": 61,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 3,
+      "supply": 14,
+      "t": 73,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 4,
+      "supply": 15,
+      "t": 85,
+      "action": "train",
+      "name": "Reaper",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 5,
+      "supply": 18,
+      "t": 109,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 6,
+      "supply": 18,
+      "t": 124,
+      "action": "build",
+      "name": "Factory",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 7,
+      "supply": 18,
+      "t": 131,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 8,
+      "supply": 19,
+      "t": 135,
+      "action": "train",
+      "name": "Reaper",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 9,
+      "supply": 22,
+      "t": 169,
+      "action": "train",
+      "name": "Hellion",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 10,
+      "supply": 24,
+      "t": 177,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 11,
+      "supply": 25,
+      "t": 179,
+      "action": "build",
+      "name": "Barracks Reactor",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 12,
+      "supply": 26,
+      "t": 191,
+      "action": "build",
+      "name": "Starport",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 13,
+      "supply": 26,
+      "t": 195,
+      "action": "train",
+      "name": "Widow Mine",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 14,
+      "supply": 28,
+      "t": 201,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 15,
+      "supply": 29,
+      "t": 218,
+      "action": "build",
+      "name": "Factory Tech Lab",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 16,
+      "supply": 29,
+      "t": 226,
+      "action": "train",
+      "name": "Marine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 17,
+      "supply": 32,
+      "t": 233,
+      "action": "build",
+      "name": "Starport Tech Lab",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 18,
+      "supply": 33,
+      "t": 237,
+      "action": "train",
+      "name": "Cyclone",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 19,
+      "supply": 36,
+      "t": 243,
+      "action": "build",
+      "name": "Refinery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 20,
+      "supply": 37,
+      "t": 250,
+      "action": "build",
+      "name": "Orbital Command",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 21,
+      "supply": 37,
+      "t": 252,
+      "action": "train",
+      "name": "Marine",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 22,
+      "supply": 37,
+      "t": 256,
+      "action": "train",
+      "name": "Raven",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 23,
+      "supply": 43,
+      "t": 272,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 24,
+      "supply": 43,
+      "t": 277,
+      "action": "train",
+      "name": "Siege Tank",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 25,
+      "supply": 49,
+      "t": 294,
+      "action": "train",
+      "name": "Raven",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 26,
+      "supply": 52,
+      "t": 302,
+      "action": "build",
+      "name": "Supply Depot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 27,
+      "supply": 53,
+      "t": 310,
+      "action": "train",
+      "name": "Hellion",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 28,
+      "supply": 58,
+      "t": 328,
+      "action": "build",
+      "name": "Command Center",
+      "count": 1,
+      "note": ""
+    }
+  ]
+}

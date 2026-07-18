@@ -273,11 +273,21 @@ class GriffinBot(AresBot):
         self._last_status_log: float = 0.0
         self._last_attack_decision: float = -999.0
         self._enemy_air_seen: bool = False
+        # optional: force a named opening from terran_builds.yml (set by run.py
+        # --build; e.g. a pro build ingested via spawningtool_to_ares.py)
+        self.forced_opening: Optional[str] = None
 
     async def on_start(self) -> None:
         await super(GriffinBot, self).on_start()
         self.current_base_target = self.enemy_start_locations[0]
         self.expansions_generator = cycle(list(self.expansion_locations_list))
+        if self.forced_opening:
+            try:
+                self.build_order_runner.switch_opening(self.forced_opening)
+                logger.info(f"forced opening: {self.forced_opening}")
+            except Exception as exc:
+                logger.warning(
+                    f"could not force opening {self.forced_opening!r}: {exc}")
 
     async def on_step(self, iteration: int) -> None:
         await super(GriffinBot, self).on_step(iteration)

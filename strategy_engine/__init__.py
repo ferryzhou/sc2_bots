@@ -38,7 +38,30 @@ from .harassment import HarassAdvice, harass_advice
 from .combat import Engagement, EngagementAdvice, assess_engagement
 from .defense import DefensePlan, assess_defense
 from .information import EnemyEstimate, estimate_enemy, project_enemy
+from .openings import (
+    Placement,
+    BuildStep,
+    Opening,
+    OpeningExecutor,
+    Deviation,
+    OPENINGS,
+    classify_opening,
+    openings_for_race,
+    get_opening,
+    best_opening,
+    verify_opening,
+)
+from .build_guides import (
+    ScriptedBuild,
+    BuildAction,
+    BuildExecutor,
+    BUILD_GUIDES,
+    guides_for,
+    get_build,
+)
 from .advisor import StrategicAdvisor, Advice
+from .macro import MacroPlan, recommend_macro
+from .tactics import Tactics, recommend_tactics
 
 __all__ = [
     "GameState",
@@ -67,6 +90,27 @@ __all__ = [
     "EnemyEstimate",
     "estimate_enemy",
     "project_enemy",
+    "Placement",
+    "BuildStep",
+    "Opening",
+    "OpeningExecutor",
+    "Deviation",
+    "OPENINGS",
+    "classify_opening",
+    "openings_for_race",
+    "get_opening",
+    "best_opening",
+    "verify_opening",
+    "ScriptedBuild",
+    "BuildAction",
+    "BuildExecutor",
+    "BUILD_GUIDES",
+    "guides_for",
+    "get_build",
     "StrategicAdvisor",
     "Advice",
+    "MacroPlan",
+    "recommend_macro",
+    "Tactics",
+    "recommend_tactics",
 ]

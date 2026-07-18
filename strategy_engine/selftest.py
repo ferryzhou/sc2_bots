@@ -23,7 +23,20 @@ from .combat import Engagement, assess_engagement
 from .defense import assess_defense
 from .information import estimate_enemy, project_enemy
 from .rules import evaluate_rules
+from .openings import (
+    OPENINGS,
+    Placement,
+    OpeningExecutor,
+    classify_opening,
+    openings_for_race,
+    best_opening,
+    get_opening,
+    verify_opening,
+)
+from .build_guides import BUILD_GUIDES, BuildExecutor, guides_for, get_build
 from .advisor import StrategicAdvisor
+from .macro import MacroPlan, recommend_macro
+from .tactics import Tactics, recommend_tactics
 
 
 def _check(name: str, cond: bool) -> None:
@@ -269,6 +282,113 @@ def test_rules_fire() -> None:
     _check("never scouted -> scout rule fires", "scout" in ids)
 
 
+def test_openings_registry_loaded() -> None:
+    _check("openings registry loaded from data", len(OPENINGS) >= 6)
+    for race in ("Protoss", "Terran", "Zerg"):
+        _check(f"{race} has at least one opening", len(openings_for_race(race)) >= 1)
+    _check("best Protoss opening is the standard gate-expand",
+           best_opening("Protoss").name == "protoss_gate_expand")
+
+
+def test_openings_classify() -> None:
+    # greedy Zerg hatch-before-pool
+    fam = classify_opening("Zerg",
+                           [("Hatchery", 95, "natural"), ("SpawningPool", 130, "main")],
+                           first_gas=105, expand_time=95)
+    _check("hatch-before-pool classifies as hatch_first", fam == "zerg_hatch_first")
+    # forward pylon+gateway = proxy
+    fam = classify_opening("Protoss",
+                           [("Pylon", 48, "forward"), ("Gateway", 80, "forward")],
+                           first_gas=None, expand_time=None)
+    _check("forward buildings classify as proxy", fam == "protoss_proxy")
+    # standard rax-expand
+    fam = classify_opening("Terran",
+                           [("Barracks", 75, "ramp_wall"), ("CommandCenter", 180, "natural")],
+                           first_gas=91, expand_time=180)
+    _check("terran natural in window -> rax_expand", fam == "terran_rax_expand")
+
+
+def test_openings_reproduce() -> None:
+    op = best_opening("Protoss")
+    ex = OpeningExecutor(op)
+    have: dict = {}
+    order = []
+    # walk the whole build; first step should be the first modal structure
+    guard = 0
+    while not ex.is_complete(have) and guard < 50:
+        step = ex.next_step(have)
+        order.append(step.structure)
+        have[step.structure] = have.get(step.structure, 0) + 1
+        guard += 1
+    _check("executor reproduces the modal order",
+           order[:3] == [s.structure for s in op.steps[:3]])
+    _check("executor completes the opening", ex.is_complete(have))
+    _check("executor progress is 1.0 when complete", ex.progress(have) == 1.0)
+    # placements are usable zones
+    first = op.steps[0]
+    _check("first step carries a placement zone", isinstance(first.placement, Placement))
+
+
+def test_openings_verify() -> None:
+    op = get_opening("zerg_hatch_first")
+    # a telemetry that follows the opening -> few/no major deviations
+    good = {
+        "buildings": [{"t": s.at_second or 60, "s": s.structure,
+                       "zone": s.placement.value} for s in op.steps],
+        "economy": {m: {k: (b["median"] if (b := op.economy[m].get(k)) else 0)
+                        for k in ("workers", "supply", "mins_rate")}
+                    for m in op.economy},
+        "units": {},
+    }
+    devs = verify_opening(op, good)
+    majors = [d for d in devs if d.severity == "major"]
+    _check("following the opening yields no MAJOR deviations", not majors)
+    # a pool-rush telemetry checked against hatch_first -> flags a missing hatch
+    bad = {"buildings": [{"t": 39, "s": "SpawningPool", "zone": "main"}],
+           "economy": {}, "units": {}}
+    devs = verify_opening(op, bad)
+    _check("wrong opening flags a missing structure",
+           any(d.category == "missing" for d in devs))
+
+
+def test_build_guides_loaded_and_reproducible() -> None:
+    _check("build guides loaded from data", len(BUILD_GUIDES) >= 3)
+    # every mapped step must carry a non-empty token; most steps map
+    for b in BUILD_GUIDES.values():
+        cov = b.coverage()
+        _check(f"{b.id} has steps", cov["total"] > 0)
+        _check(f"{b.id} is mostly reproducible", cov["fraction"] >= 0.8)
+        for a in b.actions:
+            if a.reproducible:
+                _check(f"{b.id} step {a.index} has a token", bool(a.token))
+
+
+def test_build_guide_reproduce_in_order() -> None:
+    b = next((g for g in BUILD_GUIDES.values() if g.id == 184161), None)
+    if b is None:
+        b = list(BUILD_GUIDES.values())[0]
+    ex = BuildExecutor(b)
+    have: dict = {}
+    first_tokens = []
+    guard = 0
+    while not ex.is_complete(have) and guard < 200:
+        a = ex.next_action(have)
+        key = a.token or a.name
+        if len(first_tokens) < 3:
+            first_tokens.append(key)
+        have[key] = have.get(key, 0) + 1
+        guard += 1
+    _check("executor completes the scripted build", ex.is_complete(have))
+    _check("executor reproduces steps in order",
+           first_tokens == [(a.token or a.name)
+                            for a in ex.actions[:3]])
+    # is_due gates on supply/time targets
+    a0 = ex.actions[0]
+    _check("action not due before its supply",
+           not BuildExecutor.is_due(a0, supply=(a0.at_supply or 99) - 5, seconds=0)
+           if a0.at_supply else True)
+
+
 def test_advisor_end_to_end() -> None:
     st = GameState(
         game_time=240, last_scouted_time=235,
@@ -286,6 +406,113 @@ def test_advisor_end_to_end() -> None:
     print("\n--- example advice digest ---")
     print(advice.summary())
     print("-----------------------------")
+
+
+def test_macro_scales_with_economy_and_float() -> None:
+    # Early game: 1 base, low workers -> small target, low urgency.
+    early = GameState(worker_count=14, base_count=1, minerals=100, production_structures=1)
+    inv_early = recommend_investment(early)
+    m_early = recommend_macro(early, inv_early)
+    _check("early game: small target", m_early.target_production <= 5)
+    _check("early game: low urgency", m_early.spend_urgency < 0.3)
+    _check("early game: no force train", not m_early.force_train)
+
+    # Saturated + floating: should demand much more production and force-train.
+    big = GameState(worker_count=70, base_count=3, minerals=800,
+                    production_structures=5, idle_production=2)
+    inv_big = recommend_investment(big)
+    m_big = recommend_macro(big, inv_big)
+    _check("saturated + floating: target well above base",
+           m_big.target_production >= 10)
+    _check("floating hard: high urgency", m_big.spend_urgency >= 0.8)
+    _check("idle production + high urgency: force train", m_big.force_train)
+    _check("floating: allow parallel build", m_big.allow_parallel_build >= 2)
+    _check("floating flag set when urgency high", m_big.floating)
+
+
+def test_macro_worker_cap_scales_with_bases() -> None:
+    one_base = GameState(worker_count=10, base_count=1, minerals=100)
+    three_base = GameState(worker_count=60, base_count=3, minerals=100)
+    m1 = recommend_macro(one_base, recommend_investment(one_base))
+    m3 = recommend_macro(three_base, recommend_investment(three_base))
+    _check("worker cap grows with bases", m3.worker_cap > m1.worker_cap)
+    _check("worker cap hard-capped at 80", m3.worker_cap <= 80)
+
+
+def test_macro_threat_adds_production() -> None:
+    safe = GameState(worker_count=40, base_count=2, minerals=200)
+    threatened = GameState(worker_count=40, base_count=2, minerals=200,
+                           enemy_army_moving_out=True)
+    m_safe = recommend_macro(safe, recommend_investment(safe))
+    m_threat = recommend_macro(threatened, recommend_investment(threatened))
+    _check("under threat: more production target",
+           m_threat.target_production > m_safe.target_production)
+
+
+def test_tactics_favorable_focus_fire() -> None:
+    from .combat import assess_engagement
+    st = GameState(army_supply=30, enemy_army_supply=18)
+    eng = assess_engagement(st)
+    from .principles import power_timing
+    t = recommend_tactics(st, eng, power_timing(st))
+    _check("favorable fight: focus fire on", t.focus_fire)
+    _check("favorable fight: not preserving", not t.preserve_units)
+    _check("favorable fight: low retreat threshold", t.retreat_threshold <= 0.3)
+
+
+def test_tactics_avoid_preserves_units() -> None:
+    from .combat import assess_engagement
+    from .principles import power_timing
+    st = GameState(army_supply=10, enemy_army_supply=25)  # badly outnumbered
+    eng = assess_engagement(st)
+    t = recommend_tactics(st, eng, power_timing(st))
+    _check("avoid: preserve units", t.preserve_units)
+    _check("avoid: kite low hp", t.kite_low_hp)
+    _check("avoid: high retreat threshold", t.retreat_threshold >= 0.5)
+
+
+def test_tactics_trading_down_retreats_early() -> None:
+    from .combat import assess_engagement
+    from .principles import power_timing
+    st = GameState(army_supply=20, enemy_army_supply=20,
+                   value_killed=400, value_lost=1200)  # trading down
+    eng = assess_engagement(st)
+    t = recommend_tactics(st, eng, power_timing(st))
+    _check("trading down: kite low hp", t.kite_low_hp)
+    _check("trading down: preserve units", t.preserve_units)
+    _check("trading down: retreat threshold high", t.retreat_threshold >= 0.6)
+
+
+def test_tactics_target_priority_by_composition() -> None:
+    from .combat import assess_engagement
+    from .principles import power_timing
+    # mass light enemy (Zerg ling flood): closest first
+    st = GameState(army_supply=20, enemy_army_supply=15, enemy_massing_light=True)
+    eng = assess_engagement(st)
+    t = recommend_tactics(st, eng, power_timing(st))
+    _check("mass light: target closest", t.target_priority == "closest")
+    # enemy air: prioritize air
+    st_air = GameState(army_supply=20, enemy_army_supply=15, enemy_has_air=True)
+    eng_air = assess_engagement(st_air)
+    t_air = recommend_tactics(st_air, eng_air, power_timing(st_air))
+    _check("enemy air: target air", t_air.target_priority == "air")
+
+
+def test_advisor_includes_macro_and_tactics() -> None:
+    st = GameState(
+        game_time=360, worker_count=60, base_count=3, minerals=500,
+        supply_used=120, supply_cap=140, supply_left=20,
+        army_supply=30, production_structures=5, idle_production=1,
+        enemy_base_count=3, enemy_army_supply=20, last_scouted_time=350,
+    )
+    advice = StrategicAdvisor().advise(st)
+    _check("advice includes MacroPlan", isinstance(advice.macro, MacroPlan))
+    _check("advice includes Tactics", isinstance(advice.tactics, Tactics))
+    _check("macro target is sensible", advice.macro.target_production >= 5)
+    _check("tactics has a target priority", advice.tactics.target_priority in
+           ("closest", "expensive", "support", "air"))
+    _check("summary mentions macro and tactics", "macro:" in advice.summary()
+           and "tactics:" in advice.summary())
 
 
 def main() -> None:
