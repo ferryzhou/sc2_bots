@@ -154,12 +154,13 @@ class MacroRoachBot(BotAI):
     async def attack(self):
         roaches = self.units(UnitTypeId.ROACH)
         army = roaches + self.units(UnitTypeId.ZERGLING)
-        if not self.attacking and self.get_total_supply(roaches) >= self.ATTACK_SUPPLY:
+        roach_supply = roaches.amount * 2  # roach = 2 supply
+        if not self.attacking and roach_supply >= self.ATTACK_SUPPLY:
             self.attacking = True
         # once committed, keep attacking while we have a real army; fall back
         # to re-massing if the army is spent (remax, then re-engage)
         if self.attacking:
-            if self.get_total_supply(roaches) < 20:
+            if roach_supply < 20:
                 self.attacking = False
                 return
             target = (
