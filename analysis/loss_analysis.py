@@ -204,8 +204,8 @@ def main():
 
     # 0b) accumulated resources mined + army value produced (cumulative, over time)
     print("--- accumulated: total mined vs army value produced ---")
-    print("time  |   resources mined (min+gas=tot)      | army value made | share to army")
-    print("      |   us (m/g/tot)     enemy (m/g/tot)    |   us  v enemy    |  us    enemy")
+    print("time  |   resources mined (min+gas=tot)      | army value made  ratio | share to army")
+    print("      |   us (m/g/tot)     enemy (m/g/tot)    |   us  v enemy    (u/e)  |  us    enemy")
     for t in marks_all:
         m1, g1 = collected_by(stats, ours, t)
         m2, g2 = collected_by(stats, theirs, t)
@@ -213,9 +213,10 @@ def main():
         tot1, tot2 = m1 + g1, m2 + g2
         sh1 = a1 / tot1 if tot1 else 0
         sh2 = a2 / tot2 if tot2 else 0
+        mr = (a1 / a2) if a2 else (9.9 if a1 else 1.0)   # army value produced ratio
         print(f"{mmss(t):>5} | {int(m1):>5}/{int(g1):<4}/{int(tot1):<5} "
               f"{int(m2):>5}/{int(g2):<4}/{int(tot2):<5} | "
-              f"{a1:>5} v {a2:<5} | {sh1:>4.0%}  {sh2:>4.0%}")
+              f"{a1:>5} v {a2:<5} {mr:>4.2f} | {sh1:>4.0%}  {sh2:>4.0%}")
     fm1, fg1 = collected_by(stats, ours, length)
     fm2, fg2 = collected_by(stats, theirs, length)
     fa1, fa2 = army_value_made(units, ours, length), army_value_made(units, theirs, length)
@@ -225,14 +226,17 @@ def main():
     print(f"  TOTAL army value produced: us {fa1} vs enemy {fa2}  ratio {fa1/fa2 if fa2 else 0:.2f}"
           f"  |  invested in army: us {fa1/ft1 if ft1 else 0:.0%} vs enemy {fa2/ft2 if ft2 else 0:.0%}\n")
 
-    # 1) army value / supply timeline, with the fight that minute inline
-    print("time  | our army (val/sup)  enemy army (val/sup) | ratio | upg u/e | this-min fight: lost u/e (trade)")
+    # 1) army value / supply timeline, with the fight that minute inline. val =
+    # army value ratio (us/enemy), sup = army supply ratio (they can diverge --
+    # cheap melee fills supply without value).
+    print("time  | our army (val/sup)  enemy army (val/sup) | val  sup | upg u/e | this-min fight: lost u/e (trade)")
     marks = list(range(60, length + 1, 60))
     behind_since = None
     for t in marks:
         ov, os_, _ = alive_army(units, ours, t)
         ev, es_, _ = alive_army(units, theirs, t)
         ratio = (ov / ev) if ev else (9.9 if ov else 1.0)
+        sratio = (os_ / es_) if es_ else (9.9 if os_ else 1.0)
         oup = sum(1 for s, _ in upgrades[ours] if s <= t)
         eup = sum(1 for s, _ in upgrades[theirs] if s <= t)
         lost1, _ = deaths_in(units, ours, t - 60, t)
@@ -248,7 +252,7 @@ def main():
             if behind_since is None:
                 behind_since = t
         print(f"{mmss(t):>5} | {ov:>6}/{os_:<3}        {ev:>6}/{es_:<3}       "
-              f"| {ratio:>4.1f}  | {oup:>2}/{eup:<2}{battle}{flag}")
+              f"| {ratio:>4.2f} {sratio:>4.2f} | {oup:>2}/{eup:<2}{battle}{flag}")
 
     # 2) decisive engagements: 30s buckets where our army lost the most value
     print("\n--- engagements (our army value lost, 30s buckets) ---")

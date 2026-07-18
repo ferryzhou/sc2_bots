@@ -169,8 +169,10 @@ def report(path, ours, out):
     # 2) accumulated
     p("## Accumulated — resources mined & army value produced")
     p("")
-    p("| time | mined us (m/g/tot) | mined enemy (m/g/tot) | army made u/e | share u/e |")
-    p("|------|:------------------:|:---------------------:|:-------------:|:---------:|")
+    p("| time | mined us (m/g/tot) | mined enemy (m/g/tot) "
+      "| army made u/e | made ratio | share u/e |")
+    p("|------|:------------------:|:---------------------:"
+      "|:-------------:|:----------:|:---------:|")
     for t in marks:
         m1, g1 = la.collected_by(stats, ours, t)
         m2, g2 = la.collected_by(stats, theirs, t)
@@ -178,8 +180,9 @@ def report(path, ours, out):
         t1, t2 = m1 + g1, m2 + g2
         s1 = a1 / t1 if t1 else 0
         s2 = a2 / t2 if t2 else 0
+        mr = (a1 / a2) if a2 else (9.9 if a1 else 1.0)   # army value produced ratio
         p(f"| {la.mmss(t)} | {int(m1)}/{int(g1)}/{int(t1)} | "
-          f"{int(m2)}/{int(g2)}/{int(t2)} | {a1} v {a2} | {s1:.0%} / {s2:.0%} |")
+          f"{int(m2)}/{int(g2)}/{int(t2)} | {a1} v {a2} | {mr:.2f} | {s1:.0%} / {s2:.0%} |")
     fm1, fg1 = la.collected_by(stats, ours, length)
     fm2, fg2 = la.collected_by(stats, theirs, length)
     fa1 = la.army_value_made(units, ours, length)
@@ -196,12 +199,15 @@ def report(path, ours, out):
     # 3) army value + battle timeline
     p("## Army value + the fight each minute")
     p("")
-    p("| time | our army v/s | enemy v/s | ratio | upg u/e | fight (lost u/e, trade) |")
-    p("|------|:------------:|:---------:|:-----:|:-------:|:-----------------------|")
+    p("| time | our army v/s | enemy v/s | val ratio | sup ratio "
+      "| upg u/e | fight (lost u/e, trade) |")
+    p("|------|:------------:|:---------:|:---------:|:---------:"
+      "|:-------:|:-----------------------|")
     for t in marks:
         ov, os_, _ = la.alive_army(units, ours, t)
         ev, es_, _ = la.alive_army(units, theirs, t)
-        ratio = (ov / ev) if ev else (9.9 if ov else 1.0)
+        ratio = (ov / ev) if ev else (9.9 if ov else 1.0)      # army value ratio
+        sratio = (os_ / es_) if es_ else (9.9 if os_ else 1.0)  # army supply ratio
         oup = sum(1 for s, _ in upgrades[ours] if s <= t)
         eup = sum(1 for s, _ in upgrades[theirs] if s <= t)
         lost1, _ = la.deaths_in(units, ours, t - 60, t)
@@ -211,7 +217,7 @@ def report(path, ours, out):
             tr = (lost2 / lost1) if lost1 else 9.9
             tag = "**BATTLE**" if max(lost1, lost2) >= 700 else "skirm"
             fight = f"{tag} {lost1}/{lost2} — {tr:.2f}"
-        p(f"| {la.mmss(t)} | {ov}/{os_} | {ev}/{es_} | {ratio:.1f} | "
+        p(f"| {la.mmss(t)} | {ov}/{os_} | {ev}/{es_} | {ratio:.2f} | {sratio:.2f} | "
           f"{oup}/{eup} | {fight} |")
     p("")
 
