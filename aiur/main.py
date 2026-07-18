@@ -303,10 +303,14 @@ class AiurBot(BotAI):
         gates = self.structures(U.GATEWAY)
         pylon = self.structures(U.PYLON).ready.random
 
-        # Forge-FIRST when the library wants static defense (proactive insurance
-        # or emergency): cannons beat a shield battery to the punch.
+        # Forge-FIRST when the library wants static defense -- but only for a
+        # scouted rush (emergency) or once the natural is down. PROACTIVE insurance
+        # must not preempt the greedy expand: pros take the natural first (~2:00)
+        # and add the cannon/wall reactively. (This was spending 450 min on a
+        # forge + 2 cannons before the Nexus, slipping it to ~4:45.)
         if (advice.defense.static_defense >= 1 and not self.structures(U.FORGE)
-                and self.already_pending(U.FORGE) == 0 and self.can_afford(U.FORGE)):
+                and self.already_pending(U.FORGE) == 0 and self.can_afford(U.FORGE)
+                and (advice.defense.emergency or self.townhalls.amount >= 2)):
             await self.build(U.FORGE, near=pylon)
             return
         # first gateway -- on the ramp wall if we can
@@ -397,6 +401,10 @@ class AiurBot(BotAI):
         plan = advice.defense
         want = plan.static_defense
         if want <= 0 and not plan.need_detection:
+            return
+        # Proactive (non-emergency) static defense waits until the natural is down
+        # so it doesn't delay a greedy expand; a scouted rush is built immediately.
+        if not plan.emergency and not plan.need_detection and self.townhalls.amount < 2:
             return
         base = self.townhalls.closest_to(self.enemy_start_locations[0]) if self.townhalls else None
         if base is None:
