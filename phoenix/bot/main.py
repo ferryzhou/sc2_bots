@@ -523,12 +523,18 @@ class PhoenixBot(AresBot):
                         add_production_at_bank=(150, 0),
                     )
                 )
-                # a battery behind the wall is the strongest rush holder
+                # batteries are the strongest rush holder - they out-heal
+                # stalker/zealot DPS at the choke. The sparring repro showed 1
+                # per base (~1 covering the ramp fight) wasn't enough to hold
+                # ~18 stalkers; stack them so defender's advantage does the
+                # work the raw army count can't (we're behind on army at the
+                # all-in timing by construction - economic opening vs 100%-army
+                # one-base).
                 macro_plan.add(
                     ProtossStaticDefence(
                         pylons_per_base=1,
                         photon_cannons_per_base=0,
-                        shield_batteries_per_base=1,
+                        shield_batteries_per_base=3,
                     )
                 )
             else:
