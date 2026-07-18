@@ -37,6 +37,7 @@ from .build_guides import BUILD_GUIDES, BuildExecutor, guides_for, get_build
 from .advisor import StrategicAdvisor
 from .macro import MacroPlan, recommend_macro
 from .tactics import Tactics, recommend_tactics
+from .composition import recommend_composition
 
 
 def _check(name: str, cond: bool) -> None:
@@ -480,6 +481,27 @@ def test_macro_does_not_expand_behind_a_thin_army() -> None:
     m_covered = recommend_macro(covered, recommend_investment(covered))
     _check("thin army: hold base target at current", m_thin.base_target == 2)
     _check("covered army: allow the next base", m_covered.base_target >= 3)
+
+
+def test_composition_transitions_tech_late() -> None:
+    # early: no transition, no cap
+    early = GameState(game_time=180, vespene=50, enemy_race="Zerg")
+    c_early = recommend_composition(early)
+    _check("early: no tech escalation", not c_early.escalate_tech)
+    _check("early: no unit-share cap", c_early.max_unit_share == 1.0)
+    # late vs Zerg with air + floating gas: splash, anti-air, escalate, and a cap
+    late = GameState(game_time=1200, vespene=800, enemy_race="Zerg",
+                     enemy_has_air=True, enemy_massing_light=True,
+                     composition_favorable=False)
+    c_late = recommend_composition(late)
+    _check("late: need splash vs a ground flood", c_late.need_splash)
+    _check("late: need anti-air vs air", c_late.need_anti_air)
+    _check("late: escalate tech", c_late.escalate_tech)
+    _check("late: cap the mono-unit share", c_late.max_unit_share < 1.0)
+    # floating gas alone (past the opening) triggers escalation
+    floated = GameState(game_time=600, vespene=500)
+    _check("floating gas past the opening escalates",
+           recommend_composition(floated).escalate_tech)
 
 
 def test_tactics_favorable_focus_fire() -> None:

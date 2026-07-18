@@ -33,6 +33,7 @@ from .defense import DefensePlan, assess_defense
 from .information import EnemyEstimate, project_enemy
 from .macro import MacroPlan, recommend_macro
 from .tactics import Tactics, recommend_tactics
+from .composition import CompositionAdvice, recommend_composition
 
 
 @dataclass
@@ -49,6 +50,7 @@ class Advice:
     rule_hits: List[RuleHit]
     macro: MacroPlan
     tactics: Tactics
+    composition: CompositionAdvice
 
     def summary(self) -> str:
         """A compact human-readable digest, handy for logging from a bot."""
@@ -72,6 +74,13 @@ class Advice:
             f"priority={self.tactics.target_priority}"
             f"{' PRESERVE' if self.tactics.preserve_units else ''}",
         ]
+        comp = self.composition
+        if comp.need_splash or comp.need_anti_air or comp.escalate_tech:
+            needs = [n for n, on in (("splash", comp.need_splash),
+                                     ("anti-air", comp.need_anti_air),
+                                     ("escalate", comp.escalate_tech)) if on]
+            lines.append(f"composition: {', '.join(needs)} "
+                         f"(cap unit share {comp.max_unit_share:.0%})")
         if self.defense.emergency:
             d = self.defense
             lines.append(
@@ -119,6 +128,7 @@ class StrategicAdvisor:
             rule_hits=evaluate_rules(state),
             macro=recommend_macro(state, investment),
             tactics=recommend_tactics(state, engagement, timing),
+            composition=recommend_composition(enemy_view),
         )
 
     def advise_bot(self, bot, enemy_memory: dict | None = None) -> Advice:

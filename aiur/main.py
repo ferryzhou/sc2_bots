@@ -65,7 +65,11 @@ WORKERS = {U.PROBE, U.SCV, U.DRONE}
 CLOAK_HINTS = {U.DARKTEMPLAR, U.BANSHEE, U.DARKSHRINE, U.GHOST,
                U.ROACHWARREN, U.LURKERDENMP}
 AIR_HINTS = {U.STARGATE, U.STARPORT, U.SPIRE, U.VOIDRAY, U.PHOENIX, U.ORACLE,
-             U.MUTALISK, U.BANSHEE, U.LIBERATOR, U.CARRIER, U.TEMPEST}
+             U.MUTALISK, U.BANSHEE, U.LIBERATOR, U.CARRIER, U.TEMPEST,
+             U.BROODLORD, U.GREATERSPIRE, U.CORRUPTOR, U.BATTLECRUISER}
+# light ground units -- a mass of these is a splash (AoE) target
+LIGHT_GROUND = {U.ZERGLING, U.BANELING, U.HYDRALISK, U.MARINE, U.ZEALOT,
+                U.ADEPT, U.REAPER}
 ARMY_SUPPLY = {
     U.ZERGLING: 0.5, U.BANELING: 0.5, U.ROACH: 2, U.HYDRALISK: 2, U.QUEEN: 2,
     U.MUTALISK: 2, U.ULTRALISK: 6, U.LURKERMP: 3, U.RAVAGER: 3,
@@ -76,7 +80,7 @@ ARMY_SUPPLY = {
     U.CYCLONE: 3, U.MEDIVAC: 2, U.VIKINGFIGHTER: 2, U.BANSHEE: 3,
 }
 ARMY = {U.ZEALOT, U.STALKER, U.IMMORTAL, U.ARCHON, U.ADEPT, U.SENTRY,
-        U.HIGHTEMPLAR, U.DARKTEMPLAR, U.COLOSSUS}
+        U.HIGHTEMPLAR, U.DARKTEMPLAR, U.COLOSSUS, U.VOIDRAY, U.TEMPEST}
 # enemy air units to prioritize for anti-air focus-fire
 AIR_ENEMY_UNITS = {U.MUTALISK, U.BANSHEE, U.VOIDRAY, U.PHOENIX, U.ORACLE,
                    U.CARRIER, U.TEMPEST, U.LIBERATOR, U.VIKINGFIGHTER,
@@ -145,6 +149,9 @@ class AiurBot(BotAI):
             mem["enemy_has_cloak"] = True
         if any(e.type_id in AIR_HINTS for e in enemies):
             mem["enemy_has_air"] = True
+        # a mass of light ground units is a splash target (sticky: Zerg re-floods)
+        if self.enemy_units.of_type(LIGHT_GROUND).amount >= 10:
+            mem["enemy_massing_light"] = True
         if self.enemy_structures and self.enemy_structures.closest_distance_to(home) < 45:
             mem["enemy_proxy"] = True
         near = self.enemy_units.filter(
@@ -356,6 +363,20 @@ class AiurBot(BotAI):
                 and self.already_pending(U.ROBOTICSFACILITY) == 0
                 and self.can_afford(U.ROBOTICSFACILITY)):
             await self.build(U.ROBOTICSFACILITY, near=pylon)
+        # tech transition (library composition advice). Anti-air -> Stargate for
+        # Void Rays (the answer to BroodLords / Mutas a ground army can't beat);
+        # splash/escalation -> Templar Archive for Psionic Storm + Archons.
+        comp = advice.composition
+        if (comp.need_anti_air and self.structures(U.CYBERNETICSCORE).ready
+                and not self.structures(U.STARGATE) and self.already_pending(U.STARGATE) == 0
+                and self.can_afford(U.STARGATE)):
+            await self.build(U.STARGATE, near=pylon)
+        if ((comp.need_splash or comp.escalate_tech)
+                and self.structures(U.TWILIGHTCOUNCIL).ready
+                and not self.structures(U.TEMPLARARCHIVE)
+                and self.already_pending(U.TEMPLARARCHIVE) == 0
+                and self.can_afford(U.TEMPLARARCHIVE)):
+            await self.build(U.TEMPLARARCHIVE, near=pylon)
         # scale gateways with economy -- the macro plan owns the target count and
         # parallel-build limit, so we convert economy into army rather than float.
         target_gates = advice.macro.target_production
@@ -425,7 +446,9 @@ class AiurBot(BotAI):
         if owe_base and self.minerals < 400:
             return  # bank the whole Nexus cost -- pause army (incl. mineral-heavy
             #         robo units) for the ~15s it takes, then _expand takes the base
-        # robo: one observer for detection, then colossus (splash) or immortals
+        comp = advice.composition
+        # robo: one observer for detection, then colossus (splash) or immortals --
+        # both gas sinks. Prefer Colossus when the library wants splash.
         robo = self.structures(U.ROBOTICSFACILITY).ready.idle
         if robo:
             have_obs = self.units(U.OBSERVER).amount + self.already_pending(U.OBSERVER)
@@ -435,20 +458,32 @@ class AiurBot(BotAI):
                 robo.first.train(U.COLOSSUS)
             elif self.can_afford(U.IMMORTAL):
                 robo.first.train(U.IMMORTAL)
+        # stargate: Void Rays for anti-air (BroodLords / Mutas) -- the tech a
+        # ground-only army lacks. This is the transition the library asks for.
+        for sg in self.structures(U.STARGATE).ready.idle:
+            if self.can_afford(U.VOIDRAY):
+                sg.train(U.VOIDRAY)
         # gateway composition. Principle 3 (don't float): a Zealot costs 0 gas, so
-        # an all-Zealot army hoards gas -- the bank climbs while army value stays
-        # low. Read the bank: when gas is piling up, make the gas unit (Stalker)
-        # and HOLD minerals for it rather than burning them on a Zealot. Keep a
-        # charging-Zealot front line vs Zerg (1:1), but never as the bulk.
+        # an all-Zealot army hoards gas -- read the bank and make Stalkers when gas
+        # piles up. But cap any single unit at the library's max_unit_share: a
+        # mono-Stalker army has no answer to a diversified one, so once Stalkers hit
+        # the cap, stop pumping them and let the robo/stargate tech fill the gap.
+        army_ct = max(1, self.units.of_type(ARMY).amount)
+        stalker_capped = self.units(U.STALKER).amount >= comp.max_unit_share * army_ct
         floating_gas = self.vespene >= 300
         for gate in self.structures(U.GATEWAY).ready.idle:
             stalkers = self.units(U.STALKER).amount
             zealots = self.units(U.ZEALOT).amount
             can_stalk = self.structures(U.CYBERNETICSCORE).ready and self.can_afford(U.STALKER)
+            if stalker_capped:
+                # diversify: a cheap Zealot front line, leaving gas for the robo
+                # (Colossus/Immortal) and stargate (Void Ray) tech to spend.
+                if self.can_afford(U.ZEALOT):
+                    gate.train(U.ZEALOT)
+                continue
             if floating_gas:
                 # spend the gas: take a Stalker if affordable; otherwise hold
-                # minerals for one, only making a Zealot if minerals ALSO pile up
-                # (so gateways don't idle when both banks are full).
+                # minerals for one, only making a Zealot if minerals ALSO pile up.
                 if can_stalk:
                     gate.train(U.STALKER)
                 elif self.minerals >= 300 and self.can_afford(U.ZEALOT):
