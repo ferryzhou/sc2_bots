@@ -24,7 +24,6 @@ BOT_REGISTRY = {
     "phoenix": ("PhoenixBot", "Protoss"),
     "griffin": ("GriffinBot", "Terran"),
     "hydra": ("HydraBot", "Zerg"),
-    "aegis": ("AegisBot", "Terran"),
 }
 
 # --bot decides which package to import and which dir to chdir into, so it

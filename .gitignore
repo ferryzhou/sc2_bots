@@ -32,12 +32,10 @@ replays/
 # ares-sc2 runtime data (build winrate history, logs)
 phoenix/data/
 griffin/data/
-aegis/data/
 
 # AI Arena ladder zips (build artifacts)
 PhoenixBot.zip
 GriffinBot.zip
-AegisBot.zip
 results/versus_logs/
 
 # Ladder replay binaries (regenerable via harness/ladder_replays.py; keep manifest)
@@ -52,3 +50,5 @@ results/build_replays/
 
 # generated investigation reports (analysis/investigate.py output)
 analysis/reports/
+
+sparring_*.SC2Replay
