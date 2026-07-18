@@ -81,8 +81,9 @@ class ArchetypeSparringBot(BotAI):
                 self.larva.first.train(spec.worker)
             elif not zerg and th.is_idle and self.can_afford(spec.worker):
                 th.train(spec.worker)
-        # 4. macro archetypes: expand behind it
-        elif self.townhalls.amount < spec.max_bases and self.can_afford(U.HATCHERY):
+        # 4. macro archetypes: expand behind it (one expansion in flight at a time)
+        elif (self.townhalls.amount < spec.max_bases and self.can_afford(U.HATCHERY)
+                and not self.already_pending(U.HATCHERY)):
             await self.expand_now()
         # 5. zerg macro: queens + injects
         if spec.queens and self.structures(U.SPAWNINGPOOL).ready:
