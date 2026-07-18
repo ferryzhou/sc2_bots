@@ -15,6 +15,37 @@ Turn a replay into a root-cause report. The discipline: **first ask "did
 production run and did the economy look good?"** — only if macro was fine do you
 attribute the loss to combat. The tooling encodes exactly that order.
 
+## Keep asking "why" until you hit the root cause
+
+The verdict and tables surface **red flags** (a bad trade, a gas pile, a worker
+crash, an army deficit). A red flag is a **symptom, not a cause**. Do not stop at
+the first one — chain "why?" through the metrics *and the bot's code* until you
+reach something you can change in the source. Every "because" must be backed by a
+number from the report or a line in the code, not a guess.
+
+Worked example (Aiur vs Zerg):
+
+1. We lost — *why?* Lost the decisive fight at trade 0.09.
+2. Why 0.09? Went in at **0.71 army value** with an all-Zealot (melee) army vs a
+   ranged Roach/Hydra ball. → but 0.71 is a losing attack regardless, so keep going.
+3. Why only 0.71 army value when the economy was even? Because **~1150 gas sat
+   unspent** at the fight (bank climbs monotonically to 6241) — army value ≈ the
+   unspent resources. Conversion failure, not an economy failure.
+4. Why is the gas unspent? The army is all Zealots, which cost **0 gas**.
+5. Why all Zealots? `_train`'s gateway logic picks units from race + unit counts
+   and **never reads `self.vespene`** — no feedback path from "floating gas" to
+   "build gas units". ← **root cause: composition decision is blind to the bank**
+   (violates Principle 3, "spend your resources — don't float").
+
+Only step 5 is fixable in code; steps 1–4 are symptoms. Stopping at step 2
+("bad composition") would have produced a weaker fix than stopping at step 5
+("wire composition to the bank"). **Report the whole chain in the write-up**, not
+just the surface symptom — the fix lives at the bottom of it.
+
+Rule of thumb: keep asking why until the answer is *a specific function/line or a
+missing rule*. If your "root cause" is still a behavior ("it makes bad units"),
+you are not done — ask why the code produces that behavior.
+
 ## One command
 
 ```
