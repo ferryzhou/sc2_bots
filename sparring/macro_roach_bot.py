@@ -24,9 +24,9 @@ from sc2.ids.unit_typeid import UnitTypeId
 
 
 class MacroRoachBot(BotAI):
-    DRONE_CAP = 60          # drone hard, then pour larva into roaches
-    ATTACK_SUPPLY = 60      # attack once the roach army is big, then remax
-    MAX_HATCH = 4
+    DRONE_CAP = 44          # ~22/base on 2 bases, then pour larva into roaches
+    ATTACK_SUPPLY = 40      # attack with ~20 roaches, then remax and re-engage
+    MAX_HATCH = 5           # more hatches = more larva = faster remax
 
     async def on_start(self):
         self.attacking = False
@@ -125,31 +125,29 @@ class MacroRoachBot(BotAI):
             )
 
     async def make_units(self):
-        if not self.larva:
-            return
-        # early: a few lings for presence/defense off the pool
-        if (
-            self.structures(UnitTypeId.SPAWNINGPOOL).ready
-            and self.units(UnitTypeId.ZERGLING).amount < 6
-            and self.supply_workers > 14
-            and self.can_afford(UnitTypeId.ZERGLING)
-        ):
-            self.larva.random.train(UnitTypeId.ZERGLING)
-            return
-        # drone hard until the cap
-        if (
-            self.supply_workers < self.DRONE_CAP
-            and self.can_afford(UnitTypeId.DRONE)
-            and self.supply_left > 0
-        ):
-            self.larva.random.train(UnitTypeId.DRONE)
-            return
-        # then pour everything into roaches (remax fuel)
-        if (
-            self.structures(UnitTypeId.ROACHWARREN).ready
-            and self.can_afford(UnitTypeId.ROACH)
-        ):
-            self.larva.random.train(UnitTypeId.ROACH)
+        pool = self.structures(UnitTypeId.SPAWNINGPOOL).ready
+        warren = self.structures(UnitTypeId.ROACHWARREN).ready
+        # spend ALL available larva each step (1-per-step can't keep up with
+        # 4-5 hatches + injects, so the remax never lands)
+        for larva in self.larva:
+            # early: a few lings for presence/defense off the pool
+            if (
+                pool
+                and self.units(UnitTypeId.ZERGLING).amount < 6
+                and self.supply_workers > 14
+                and self.can_afford(UnitTypeId.ZERGLING)
+            ):
+                larva.train(UnitTypeId.ZERGLING)
+            elif (
+                self.supply_workers < self.DRONE_CAP
+                and self.can_afford(UnitTypeId.DRONE)
+                and self.supply_left > 0
+            ):
+                larva.train(UnitTypeId.DRONE)
+            elif warren and self.can_afford(UnitTypeId.ROACH) and self.supply_left > 0:
+                larva.train(UnitTypeId.ROACH)
+            else:
+                break
 
     async def attack(self):
         roaches = self.units(UnitTypeId.ROACH)
