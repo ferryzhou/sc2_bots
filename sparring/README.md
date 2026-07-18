@@ -96,6 +96,15 @@ Known deltas: the recreations skip ling-speed/upgrades (no gas in the mined
 zerg families), and massling2 attacks off a 60-ling count (~5:22 first wave)
 rather than droning to full saturation first.
 
+The same executor also recreates a real ladder opponent from its
+`bot_profiles/` dossier: `--bot onebasestalker2` mimics **OneBaseStalkerBot**
+(aiarena ~1614 Elo, one-base 4-gate mass stalker). Validated headless: 4
+gateways / 2 assimilators / 1 cybernetics core / 1 nexus, 17 stalkers (first
+3:26) on 19 probes — matching the profile's observed 4/2/1/1, ~22 stalkers on
+22 probes. Even its results are in character (lost to VeryHard Terran; the
+real bot is 24% vs Terran). Gas placement and army tech-gating were the only
+executor additions — a profiled ladder bot is now a 3-line Spec.
+
 ## Mimic a different opponent
 
 1. `python analysis/extract_build_order.py THEIR_REPLAY <pid>` (use the numeric
