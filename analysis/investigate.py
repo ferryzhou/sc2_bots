@@ -61,13 +61,18 @@ def verdict(units, stats, ours, theirs, length):
     m2, g2 = la.collected_by(stats, theirs, length)
     invest_e = made2 / (m2 + g2) if (m2 + g2) else 0
 
-    # first decisive battle: earliest minute we lost >= 500 value at trade < 0.6
+    # first decisive battle: earliest minute we lost >= 500 value at trade < 0.6.
+    # Capture the standing-army value ratio going in (sampled at the minute start).
     first_battle = None
     for t in marks:
         lost1, _ = la.deaths_in(units, ours, t - 60, t)
         lost2, _ = la.deaths_in(units, theirs, t - 60, t)
         if lost1 >= 500 and (lost2 / lost1 if lost1 else 9.9) < 0.6:
-            first_battle = (t, lost1, lost2, lost2 / lost1)
+            ov0, os0, _ = la.alive_army(units, ours, t - 60)
+            ev0, es0, _ = la.alive_army(units, theirs, t - 60)
+            aratio = ov0 / ev0 if ev0 else 9.9
+            first_battle = (t, lost1, lost2, lost2 / lost1,
+                            ov0, os0, ev0, es0, aratio)
             break
 
     bullets = [
@@ -77,8 +82,11 @@ def verdict(units, stats, ours, theirs, length):
         f"overall trade {trade:.2f} (killed {tot_killed} / lost {tot_lost})",
     ]
     if first_battle:
-        t, l1, l2, tr = first_battle
-        bullets.append(f"first decisive fight {la.mmss(t)}: lost {l1} for {l2} — trade {tr:.2f}")
+        t, l1, l2, tr, ov0, os0, ev0, es0, aratio = first_battle
+        bullets.append(
+            f"first decisive fight {la.mmss(t)}: went in at army value "
+            f"{ov0} vs {ev0} (**ratio {aratio:.2f}**), supply {os0} vs {es0}; "
+            f"lost {l1} for {l2} — trade {tr:.2f}")
 
     # heuristics, most-specific first. Low peak workers only signals a macro
     # failure in a game long enough to have developed economy -- in a short
