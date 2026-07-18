@@ -44,6 +44,8 @@ COST = {
 WORKERS = {"Probe", "SCV", "Drone"}
 NONARMY = WORKERS | {"Overlord", "Larva", "Egg", "Broodling", "MULE",
                      "Interceptor", "AutoTurret", "LocustMP", "Observer"}
+TOWNHALLS = {"Nexus", "Hatchery", "Lair", "Hive", "CommandCenter",
+             "OrbitalCommand", "PlanetaryFortress"}
 
 
 def val(name):
@@ -97,6 +99,23 @@ def alive_army(units, pid, t):
     return v, s, comp
 
 
+def stat_at(stats, pid, t, field, default=0):
+    v = default
+    for e in stats[pid]:
+        if e.second <= t:
+            v = getattr(e, field, default)
+        else:
+            break
+    return v
+
+
+def bases_at(units, pid, t):
+    """Townhalls alive at time t (morphs keep their unit_id, so counted once)."""
+    return sum(1 for owner, name, born, died in units.values()
+               if owner == pid and name in TOWNHALLS
+               and born <= t and (died is None or died > t))
+
+
 def deaths_in(units, pid, t0, t1):
     """(value, Counter) of pid's army units that died in (t0, t1]."""
     v = 0
@@ -117,6 +136,37 @@ def main():
 
     print(f"# Loss analysis: {os.path.basename(path)}  ({r.map_name}, {r.game_length})")
     print(f"# our pid={ours}, enemy pid={theirs}\n")
+    marks_all = list(range(60, length + 1, 60))
+
+    # 0) head-to-head ECONOMY (workers, bases, minerals, gas -- banked + income)
+    print("--- economy: us vs enemy (workers | bases | min bank/inc | gas bank/inc) ---")
+    print("time  |  workers   bases  |   minerals(bank/min)   gas(bank/min)  | wkr ratio")
+    eco_behind = None
+    for t in marks_all:
+        w1 = int(stat_at(stats, ours, t, "workers_active_count"))
+        w2 = int(stat_at(stats, theirs, t, "workers_active_count"))
+        b1, b2 = bases_at(units, ours, t), bases_at(units, theirs, t)
+        m1b = int(stat_at(stats, ours, t, "minerals_current"))
+        m1r = int(stat_at(stats, ours, t, "minerals_collection_rate"))
+        m2b = int(stat_at(stats, theirs, t, "minerals_current"))
+        m2r = int(stat_at(stats, theirs, t, "minerals_collection_rate"))
+        g1b = int(stat_at(stats, ours, t, "vespene_current"))
+        g1r = int(stat_at(stats, ours, t, "vespene_collection_rate"))
+        g2b = int(stat_at(stats, theirs, t, "vespene_current"))
+        g2r = int(stat_at(stats, theirs, t, "vespene_collection_rate"))
+        ratio = (w1 / w2) if w2 else 1.0
+        flag = ""
+        if w2 and w1 < 0.85 * w2:
+            flag = "  <-- economy behind"
+            if eco_behind is None:
+                eco_behind = t
+        print(f"{mmss(t):>5} | {w1:>3} v {w2:<3}  {b1} v {b2}  | "
+              f"{m1b:>4}/{m1r:<4} v {m2b:>4}/{m2r:<4}  "
+              f"{g1b:>4}/{g1r:<4} v {g2b:>4}/{g2r:<4} | {ratio:>4.2f}{flag}")
+    pw1 = max((int(stat_at(stats, ours, t, "workers_active_count")) for t in marks_all), default=0)
+    pw2 = max((int(stat_at(stats, theirs, t, "workers_active_count")) for t in marks_all), default=0)
+    print(f"  peak workers: us {pw1} vs enemy {pw2} | "
+          f"economy first fell behind ~ {mmss(eco_behind) if eco_behind else 'never'}\n")
 
     # 1) army value / supply timeline
     print("time  | our army (val/sup)  enemy army (val/sup) | ratio | our upg  enemy upg")
