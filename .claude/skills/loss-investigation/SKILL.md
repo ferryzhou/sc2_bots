@@ -98,12 +98,60 @@ Example (the Aiur Hard losses):
 - Trades **< 1.0** mean we lost the exchange. A string of 0.1–0.4 BATTLE trades
   with roughly even *standing* armies ⇒ composition mismatch (e.g. melee into
   ranged) — the biggest lever is what units we build and when we choose to fight.
-- Army **produced ≈ even but alive-army always behind** ⇒ the army is fine, it's
-  dying inefficiently. Do **not** "build more army."
 - Economy even/ahead early then a **worker/base collapse right after a lost
   fight** ⇒ the economy crash is a *symptom* of the combat loss, not the cause.
 - **Under-invested + short game** ⇒ died to a timing while teching/droning; fix
   is army-timing/defense, not composition.
+
+### The feeding signature (the trap this skill exists to catch)
+
+Always compare **army value *produced* (cumulative)** against **army value *alive*
+(the per-minute standing-army ratio)**. They tell different stories:
+
+- **Produced ≈ even but alive-army always behind** ⇒ the army is fine, it's dying
+  inefficiently. Do **not** "build more army."
+- **Produced FAR ahead (e.g. 1.5–1.8×) but the alive ratio sits below 1.0 almost
+  the whole game** ⇒ **feeding.** The bot out-builds the enemy and still never has
+  a field-army lead because it throws every batch into a losing fight before the
+  next is built. Quantify it: `lost / produced`. Losing **>85%** of everything you
+  produced (while the enemy loses ~65–70%) is the smoking gun. The fix is *not*
+  more production or better units — it's **engagement discipline** (only commit at
+  a real advantage; hold and let production accumulate into a standing lead).
+- A verdict of "built enough army (ratio 1.7) but traded at 0.4" is this exact
+  case. When the user says "the army ratio is below 1.0 the whole time," they mean
+  *alive* ratio — reconcile it against *produced*, and if produced ≫ alive, it's
+  feeding, full stop.
+
+## From diagnosis to fix
+
+Investigation only pays off if the fix lands in the right place and is verified.
+
+- **Fix the strategy library first, keep bot code thin.** The *decision* (when to
+  expand, what to build, whether to commit) belongs in `strategy_engine`; the bot
+  should be a thin translator of the advice. Before editing bot logic, ask "should
+  this rule live in the library so every bot gets it?" A hard-coded threshold in
+  the bot that overrides a library verdict is a common root cause in itself (e.g.
+  an attack gate that ignores `assess_engagement` and attacks at raw supply).
+- **One fix reveals the next.** Root causes are layered — gas/composition →
+  expansion → tech transition → engagement. After a fix, re-run and re-investigate;
+  expect the verdict to change and a new bottleneck to surface. That's progress,
+  not failure.
+- **Verify across several games, not one.** Variance is high: the same bot dies to
+  an 8-min timing in one game and macros to 30 min in the next. Run 3+ and read the
+  *pattern*. To test a late-game change (tech transition, engagement) you need a
+  game that *reaches* the late game — short timing deaths won't exercise it.
+- **Confirm the mechanism actually triggered.** Intent ≠ effect. After a fix, check
+  the replay's unit/structure births to prove the change happened — e.g. count
+  Stargates built and Void Rays trained, not just "I added the code." A building
+  that gets built but sits idle (unit unaffordable) is a real and common failure.
+  Quick check:
+  ```python
+  import sys; sys.path.insert(0, "analysis"); sys.argv = ["x"]
+  import loss_analysis as la
+  from collections import Counter
+  r, units, stats, upg = la.load("results/build_replays/<name>.SC2Replay")
+  print(Counter(n for owner, n, born, died in units.values() if owner == 1))
+  ```
 
 ## Underlying pieces (if you need finer detail)
 

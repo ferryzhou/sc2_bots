@@ -644,18 +644,22 @@ class AiurBot(BotAI):
         return self.start_location
 
     def _should_attack(self, advice, army):
+        # Trust the library's engagement read: it already folds army ratio, the
+        # upgrade edge, and composition into one verdict. Overriding it with raw
+        # supply thresholds ("attack at 35 supply / at max") is what made the bot
+        # feed -- it out-PRODUCED the enemy 1.78x yet its army on the field stayed
+        # at 0.4x, because it threw every batch into a losing fight. Commit only
+        # when the fight is favorable; otherwise hold and let production accumulate
+        # into an actual field lead.
         eng = advice.engagement.verdict
         if advice.defense.hold_position:               # library says hold at home
             return False
-        if self.supply_used >= 175:                    # near max -- move out before we cap
+        if eng == Engagement.ENGAGE:                   # favorable -- take the fight
             return True
-        if eng == Engagement.ENGAGE:                   # favorable fight
-            return True
-        if eng == Engagement.AVOID and self.supply_army < 30:
-            return False
-        if advice.counter.posture == "aggressive" and army.amount >= 10:
-            return True                                # punish a greedy opponent
-        if self.supply_army >= 35:                     # take the map with a healthy army
+        if eng in (Engagement.AVOID, Engagement.DEFEND):
+            return False                               # behind/even -- don't feed
+        # UNKNOWN (enemy army not scouted): don't sit floating a maxed army.
+        if self.supply_used >= 190:
             return True
         return False
 
