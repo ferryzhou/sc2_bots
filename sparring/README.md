@@ -43,7 +43,14 @@ Tunables at the top of the class: `TARGET_PROBES`, `NUM_GATEWAYS`,
 ```bash
 # verify the sparring bot opens with a 4-gate (vs a built-in AI)
 python sparring/run.py
+python sparring/run.py --bot massling     # mass-ling Zerg macro
+python sparring/run.py --bot twelvepool   # 12-pool ling rush
 ```
+
+All three validated headless vs the VeryHard built-in AI (fingerprints from
+replay tracker events): fourgate 4 gates / 0 gas / 27 zealots (first 2:38,
+won 5:42); twelvepool pool 0:39 on 14 drones, 44 lings (first 2:08);
+massling pool 1:19, 5 hatcheries, 4 queens, 73 drones, 288 lings (won).
 
 To reproduce *your* bot's loss, import your bot in `run.py` and put it in the
 players list (there's a commented example). Requires `python-sc2` and a local

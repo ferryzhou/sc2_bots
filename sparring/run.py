@@ -25,10 +25,12 @@ from sc2.player import Bot, Computer
 
 from four_gate_zealot_bot import FourGateZealotBot
 from mass_ling_bot import MassLingBot
+from twelve_pool_bot import TwelvePoolBot
 
 SPARRING = {
     "fourgate": (FourGateZealotBot, Race.Protoss),
     "massling": (MassLingBot, Race.Zerg),
+    "twelvepool": (TwelvePoolBot, Race.Zerg),
 }
 
 parser = argparse.ArgumentParser()
