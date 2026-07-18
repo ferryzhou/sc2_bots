@@ -534,7 +534,7 @@ class PhoenixBot(AresBot):
                     ProtossStaticDefence(
                         pylons_per_base=1,
                         photon_cannons_per_base=0,
-                        shield_batteries_per_base=3,
+                        shield_batteries_per_base=1,
                     )
                 )
             else:
