@@ -1,0 +1,1035 @@
+{
+  "id": 199301,
+  "title": "PvZ Benchmark",
+  "race": "Protoss",
+  "matchup": "PvZ",
+  "source": "https://lotv.spawningtool.com/build/199301/",
+  "steps": [
+    {
+      "i": 0,
+      "supply": 12,
+      "t": 0,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": "build pylon in natural with the probe pulled from mineral line"
+    },
+    {
+      "i": 1,
+      "supply": 14,
+      "t": 24,
+      "action": "build",
+      "name": "Gateway",
+      "count": 1,
+      "note": "place in wall and scout with probe that built gateway. Scout main base, and patrol probe outside the natural as a spotter"
+    },
+    {
+      "i": 2,
+      "supply": 15,
+      "t": 40,
+      "action": "build",
+      "name": "Assimilator",
+      "count": 1,
+      "note": "as soon as this assimilator finishes, make sure to put 2 in it right away."
+    },
+    {
+      "i": 3,
+      "supply": 17,
+      "t": 51,
+      "action": "build",
+      "name": "Nexus",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 4,
+      "supply": 20,
+      "t": 93,
+      "action": "build",
+      "name": "Cybernetics Core",
+      "count": 1,
+      "note": "place core in wall, leaving your hole for adept."
+    },
+    {
+      "i": 5,
+      "supply": 20,
+      "t": 100,
+      "action": "build",
+      "name": "Assimilator",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 6,
+      "supply": 21,
+      "t": 112,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 7,
+      "supply": 22,
+      "t": 122,
+      "action": "train",
+      "name": "Adept",
+      "count": 1,
+      "note": "chrono the first adept and head across the map to scout 3rd base locations and then wait outside the natural."
+    },
+    {
+      "i": 8,
+      "supply": 22,
+      "t": 124,
+      "action": "build",
+      "name": "Stargate",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 9,
+      "supply": 26,
+      "t": 143,
+      "action": "train",
+      "name": "Adept",
+      "count": 1,
+      "note": "shade across the map and group up with your 1st adept outside enemy natural"
+    },
+    {
+      "i": 10,
+      "supply": 26,
+      "t": 146,
+      "action": "research",
+      "name": "Warp Gate",
+      "count": 1,
+      "note": "start warp gate after building the stargate"
+    },
+    {
+      "i": 11,
+      "supply": 26,
+      "t": 148,
+      "action": "train",
+      "name": "Adept",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 12,
+      "supply": 32,
+      "t": 175,
+      "action": "train",
+      "name": "Oracle (Chrono Boost)",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 13,
+      "supply": 36,
+      "t": 181,
+      "action": "build",
+      "name": "Gateway",
+      "count": 1,
+      "note": "our 3rd gateway here is used to close the wall"
+    },
+    {
+      "i": 14,
+      "supply": 43,
+      "t": 200,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": "can place this at 41-43 supply."
+    },
+    {
+      "i": 15,
+      "supply": 43,
+      "t": 205,
+      "action": "train",
+      "name": "Oracle",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 16,
+      "supply": 45,
+      "t": 217,
+      "action": "build",
+      "name": "Nexus",
+      "count": 1,
+      "note": "in this scenario, the 3rd nexus gets attacked and cancelled. It is restarted at 4:31 when safe to do so. If you have to cancel nexus, cancel it. Add a Pylon beside 3rd."
+    },
+    {
+      "i": 17,
+      "supply": 46,
+      "t": 230,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": "This pylon goes beside the 3rd base and will power the shield battery that will go in the mineral line"
+    },
+    {
+      "i": 18,
+      "supply": 48,
+      "t": 242,
+      "action": "build",
+      "name": "Twilight Council",
+      "count": 1,
+      "note": "twilight and forge go down at the same time for blink and +1 weapons"
+    },
+    {
+      "i": 19,
+      "supply": 49,
+      "t": 248,
+      "action": "build",
+      "name": "Forge",
+      "count": 1,
+      "note": "forge and twilight for +1 weapons and blink"
+    },
+    {
+      "i": 20,
+      "supply": 50,
+      "t": 254,
+      "action": "train",
+      "name": "Adept",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 21,
+      "supply": 49,
+      "t": 261,
+      "action": "build",
+      "name": "Nexus",
+      "count": 1,
+      "note": "we are trying to get our 3rd base down again. This is not a 4th base."
+    },
+    {
+      "i": 22,
+      "supply": 51,
+      "t": 272,
+      "action": "train",
+      "name": "Adept",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 23,
+      "supply": 51,
+      "t": 273,
+      "action": "build",
+      "name": "Shield Battery",
+      "count": 1,
+      "note": "3rd base mineral line battery"
+    },
+    {
+      "i": 24,
+      "supply": 53,
+      "t": 278,
+      "action": "build",
+      "name": "Gateway",
+      "count": 2,
+      "note": "3rd GW in main, 4th GW in main"
+    },
+    {
+      "i": 25,
+      "supply": 53,
+      "t": 279,
+      "action": "build",
+      "name": "Assimilator",
+      "count": 2,
+      "note": "shortly after building the 3rd, take the 3rd and 4th gas in natural, take 3rd and 4th gas in natural shortly after 3rd base"
+    },
+    {
+      "i": 26,
+      "supply": 55,
+      "t": 287,
+      "action": "research",
+      "name": "Blink",
+      "count": 1,
+      "note": "do not chrono blink"
+    },
+    {
+      "i": 27,
+      "supply": 55,
+      "t": 291,
+      "action": "research",
+      "name": "Protoss Ground Weapons Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 28,
+      "supply": 57,
+      "t": 300,
+      "action": "build",
+      "name": "Gateway",
+      "count": 2,
+      "note": "5th GW, 6th GW"
+    },
+    {
+      "i": 29,
+      "supply": 59,
+      "t": 308,
+      "action": "build",
+      "name": "Pylon",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 30,
+      "supply": 62,
+      "t": 329,
+      "action": "build",
+      "name": "Gateway",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 31,
+      "supply": 62,
+      "t": 332,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 32,
+      "supply": 62,
+      "t": 339,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 33,
+      "supply": 65,
+      "t": 354,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 34,
+      "supply": 68,
+      "t": 357,
+      "action": "train",
+      "name": "Stalker",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 35,
+      "supply": 74,
+      "t": 365,
+      "action": "train",
+      "name": "Stalker",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 36,
+      "supply": 74,
+      "t": 369,
+      "action": "build",
+      "name": "Assimilator",
+      "count": 2,
+      "note": "5th gas at 3rd base, 6th gas at 3rd base"
+    },
+    {
+      "i": 37,
+      "supply": 83,
+      "t": 385,
+      "action": "train",
+      "name": "Stalker",
+      "count": 4,
+      "note": ""
+    },
+    {
+      "i": 38,
+      "supply": 91,
+      "t": 390,
+      "action": "build",
+      "name": "Templar Archives",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 39,
+      "supply": 91,
+      "t": 394,
+      "action": "build",
+      "name": "Shield Battery",
+      "count": 1,
+      "note": "shield battery in natural wall (can be placed earlier if needed)"
+    },
+    {
+      "i": 40,
+      "supply": 91,
+      "t": 395,
+      "action": "train",
+      "name": "Stalker",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 41,
+      "supply": 91,
+      "t": 399,
+      "action": "research",
+      "name": "Charge",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 42,
+      "supply": 95,
+      "t": 404,
+      "action": "build",
+      "name": "Pylon",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 43,
+      "supply": 95,
+      "t": 406,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 44,
+      "supply": 98,
+      "t": 416,
+      "action": "research",
+      "name": "Psionic Storm",
+      "count": 1,
+      "note": "start storm as soon as archives finishes"
+    },
+    {
+      "i": 45,
+      "supply": 98,
+      "t": 418,
+      "action": "research",
+      "name": "Protoss Ground Weapons Level 2",
+      "count": 1,
+      "note": "start +2 weapons with storm is a good way to remember this"
+    },
+    {
+      "i": 46,
+      "supply": 98,
+      "t": 427,
+      "action": "train",
+      "name": "High Templar",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 47,
+      "supply": 102,
+      "t": 432,
+      "action": "train",
+      "name": "Zealot",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 48,
+      "supply": 102,
+      "t": 434,
+      "action": "train",
+      "name": "Archon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 49,
+      "supply": 108,
+      "t": 437,
+      "action": "train",
+      "name": "High Templar",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 50,
+      "supply": 110,
+      "t": 444,
+      "action": "train",
+      "name": "Zealot",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 51,
+      "supply": 110,
+      "t": 448,
+      "action": "build",
+      "name": "Robotics Facility",
+      "count": 1,
+      "note": "Robo by 7:30 should be remembered"
+    },
+    {
+      "i": 52,
+      "supply": 117,
+      "t": 452,
+      "action": "train",
+      "name": "Stalker",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 53,
+      "supply": 117,
+      "t": 454,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 54,
+      "supply": 117,
+      "t": 456,
+      "action": "train",
+      "name": "High Templar",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 55,
+      "supply": 121,
+      "t": 465,
+      "action": "train",
+      "name": "Zealot",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 56,
+      "supply": 131,
+      "t": 472,
+      "action": "build",
+      "name": "Nexus",
+      "count": 1,
+      "note": "4th base before 8 minute mark (when main minerals start to dry up)"
+    },
+    {
+      "i": 57,
+      "supply": 131,
+      "t": 479,
+      "action": "build",
+      "name": "Photon Cannon",
+      "count": 2,
+      "note": "Cannons at 3rd while you keep your army close to natural and new 4th base, Cannons at 3rd to help defend while you get your 4th down"
+    },
+    {
+      "i": 58,
+      "supply": 131,
+      "t": 491,
+      "action": "train",
+      "name": "High Templar",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 59,
+      "supply": 137,
+      "t": 493,
+      "action": "build",
+      "name": "Photon Cannon",
+      "count": 2,
+      "note": "cannons at 4th, cannons at 4th"
+    },
+    {
+      "i": 60,
+      "supply": 140,
+      "t": 500,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 61,
+      "supply": 140,
+      "t": 505,
+      "action": "train",
+      "name": "High Templar",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 62,
+      "supply": 141,
+      "t": 513,
+      "action": "train",
+      "name": "Zealot",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 63,
+      "supply": 149,
+      "t": 521,
+      "action": "train",
+      "name": "Zealot",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 64,
+      "supply": 149,
+      "t": 527,
+      "action": "build",
+      "name": "Robotics Facility",
+      "count": 1,
+      "note": "Another ROBO + ROBOTICS BAY"
+    },
+    {
+      "i": 65,
+      "supply": 155,
+      "t": 529,
+      "action": "build",
+      "name": "Pylon",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 66,
+      "supply": 155,
+      "t": 530,
+      "action": "build",
+      "name": "Robotics Bay",
+      "count": 1,
+      "note": "Robo Bay by 9 minutes is a good benchmark"
+    },
+    {
+      "i": 67,
+      "supply": 155,
+      "t": 531,
+      "action": "train",
+      "name": "Immortal",
+      "count": 1,
+      "note": "Immortal once Robo bay is started. ROBO BAY GOES DOWN -> START IMMORTAL."
+    },
+    {
+      "i": 68,
+      "supply": 157,
+      "t": 546,
+      "action": "train",
+      "name": "High Templar",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 69,
+      "supply": 157,
+      "t": 549,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 70,
+      "supply": 169,
+      "t": 551,
+      "action": "build",
+      "name": "Photon Cannon",
+      "count": 2,
+      "note": "an additional cannon at 3rd, an additional cannon at 4th"
+    },
+    {
+      "i": 71,
+      "supply": 169,
+      "t": 552,
+      "action": "build",
+      "name": "Assimilator",
+      "count": 2,
+      "note": "7th gas at 4th, 8th gas at 4th"
+    },
+    {
+      "i": 72,
+      "supply": 169,
+      "t": 556,
+      "action": "train",
+      "name": "Zealot",
+      "count": 7,
+      "note": ""
+    },
+    {
+      "i": 73,
+      "supply": 184,
+      "t": 575,
+      "action": "train",
+      "name": "Colossus",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 74,
+      "supply": 184,
+      "t": 591,
+      "action": "train",
+      "name": "High Templar",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 75,
+      "supply": 194,
+      "t": 593,
+      "action": "train",
+      "name": "Archon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 76,
+      "supply": 194,
+      "t": 597,
+      "action": "build",
+      "name": "Photon Cannon",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 77,
+      "supply": 194,
+      "t": 601,
+      "action": "build",
+      "name": "Shield Battery",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 78,
+      "supply": 194,
+      "t": 603,
+      "action": "train",
+      "name": "Zealot",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 79,
+      "supply": 194,
+      "t": 607,
+      "action": "research",
+      "name": "Protoss Ground Weapons Level 3",
+      "count": 1,
+      "note": "+3 by 10 minutes is a good benchmark"
+    },
+    {
+      "i": 80,
+      "supply": 186,
+      "t": 615,
+      "action": "research",
+      "name": "Extended Thermal Lance",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 81,
+      "supply": 186,
+      "t": 617,
+      "action": "build",
+      "name": "Pylon",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 82,
+      "supply": 167,
+      "t": 625,
+      "action": "train",
+      "name": "Zealot",
+      "count": 10,
+      "note": ""
+    },
+    {
+      "i": 83,
+      "supply": 163,
+      "t": 649,
+      "action": "train",
+      "name": "Zealot",
+      "count": 10,
+      "note": ""
+    },
+    {
+      "i": 84,
+      "supply": 165,
+      "t": 657,
+      "action": "train",
+      "name": "Archon",
+      "count": 3,
+      "note": ""
+    },
+    {
+      "i": 85,
+      "supply": 165,
+      "t": 663,
+      "action": "build",
+      "name": "Assimilator",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 86,
+      "supply": 174,
+      "t": 671,
+      "action": "train",
+      "name": "High Templar",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 87,
+      "supply": 174,
+      "t": 673,
+      "action": "train",
+      "name": "Zealot",
+      "count": 5,
+      "note": ""
+    },
+    {
+      "i": 88,
+      "supply": 190,
+      "t": 696,
+      "action": "build",
+      "name": "Fleet Beacon",
+      "count": 1,
+      "note": "11 to12 minute fleet beacon for lategame transition to air"
+    },
+    {
+      "i": 89,
+      "supply": 190,
+      "t": 698,
+      "action": "build",
+      "name": "Stargate",
+      "count": 1,
+      "note": "FLEET BEACON --> STARGATE immediately with the fleet beacon."
+    },
+    {
+      "i": 90,
+      "supply": 190,
+      "t": 699,
+      "action": "build",
+      "name": "Nexus",
+      "count": 1,
+      "note": "5th base by 12 minutes"
+    },
+    {
+      "i": 91,
+      "supply": 190,
+      "t": 700,
+      "action": "build",
+      "name": "Pylon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 92,
+      "supply": 190,
+      "t": 706,
+      "action": "train",
+      "name": "Zealot",
+      "count": 6,
+      "note": ""
+    },
+    {
+      "i": 93,
+      "supply": 198,
+      "t": 728,
+      "action": "train",
+      "name": "Immortal",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 94,
+      "supply": 196,
+      "t": 743,
+      "action": "build",
+      "name": "Stargate",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 95,
+      "supply": 196,
+      "t": 745,
+      "action": "train",
+      "name": "Archon",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 96,
+      "supply": 168,
+      "t": 757,
+      "action": "train",
+      "name": "Carrier",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 97,
+      "supply": 164,
+      "t": 767,
+      "action": "train",
+      "name": "Immortal",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 98,
+      "supply": 184,
+      "t": 771,
+      "action": "research",
+      "name": "Protoss Air Weapons Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 99,
+      "supply": 184,
+      "t": 779,
+      "action": "train",
+      "name": "High Templar",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 100,
+      "supply": 184,
+      "t": 858,
+      "action": "research",
+      "name": "Protoss Ground Armor Level 1",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 101,
+      "supply": 178,
+      "t": 868,
+      "action": "build",
+      "name": "Photon Cannon",
+      "count": 1,
+      "note": "replace cannons as they get destroyed or additional cannons for safety + defense as you can afford"
+    },
+    {
+      "i": 102,
+      "supply": 178,
+      "t": 871,
+      "action": "train",
+      "name": "High Templar",
+      "count": 1,
+      "note": "templars for storm, archons and zealots. Fight with your batteries and cannons."
+    },
+    {
+      "i": 103,
+      "supply": 198,
+      "t": 891,
+      "action": "research",
+      "name": "Protoss Air Weapons Level 2",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 104,
+      "supply": 198,
+      "t": 906,
+      "action": "train",
+      "name": "Archon",
+      "count": 1,
+      "note": "archons to protect carriers from corruptors"
+    },
+    {
+      "i": 105,
+      "supply": 190,
+      "t": 911,
+      "action": "train",
+      "name": "Zealot",
+      "count": 1,
+      "note": "zealots to protect archons"
+    },
+    {
+      "i": 106,
+      "supply": 200,
+      "t": 946,
+      "action": "build",
+      "name": "Photon Cannon",
+      "count": 1,
+      "note": "canons at every expansion + extra cannons to help defend + batteries"
+    },
+    {
+      "i": 107,
+      "supply": 184,
+      "t": 957,
+      "action": "build",
+      "name": "Nexus",
+      "count": 1,
+      "note": "keep taking expansions."
+    },
+    {
+      "i": 108,
+      "supply": 184,
+      "t": 959,
+      "action": "train",
+      "name": "High Templar",
+      "count": 1,
+      "note": "hella templars for hella archons"
+    },
+    {
+      "i": 109,
+      "supply": 200,
+      "t": 964,
+      "action": "train",
+      "name": "Archon",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 110,
+      "supply": 198,
+      "t": 977,
+      "action": "research",
+      "name": "Protoss Ground Armor Level 2",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 111,
+      "supply": 194,
+      "t": 983,
+      "action": "train",
+      "name": "Observer",
+      "count": 1,
+      "note": ""
+    },
+    {
+      "i": 112,
+      "supply": 195,
+      "t": 1002,
+      "action": "train",
+      "name": "Carrier",
+      "count": 2,
+      "note": ""
+    },
+    {
+      "i": 113,
+      "supply": 171,
+      "t": 1009,
+      "action": "train",
+      "name": "Carrier",
+      "count": 1,
+      "note": "+ a bunch of archons for corruptors"
+    }
+  ]
+}
