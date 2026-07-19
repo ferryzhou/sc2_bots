@@ -116,6 +116,10 @@ class BuildScript:
                 wants.append(Want("PROBE", 50, 0, blocking=False))
             else:
                 wants.insert(0, Want("PROBE", 50, 0, blocking=True))
+        # pre-send the builder probe while banking a Nexus, so it's placed the
+        # instant we can afford it (travel overlaps banking).
+        if any(w.key == "NEXUS" for w in wants) and hasattr(bot, "bs_prep_expansion"):
+            await bot.bs_prep_expansion()
         for key in plan_spend(bot.minerals, bot.vespene, wants):
             if key == "PROBE":
                 bot.townhalls.ready.idle.first.train(U.PROBE)
@@ -201,6 +205,8 @@ class BuildScript:
         if token == "NEXUS":             # a townhall step means "expand"
             if bot.already_pending(U.NEXUS):
                 return False
+            if hasattr(bot, "bs_expand"):    # bot can pre-send the builder probe
+                return await bot.bs_expand()
             await bot.expand_now()
             return True
         if token == "ASSIMILATOR":       # gas goes on a geyser, not "near"

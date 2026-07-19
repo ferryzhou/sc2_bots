@@ -101,6 +101,8 @@ class AiurBot(BotAI):
         self._wall = None               # cached ramp wall layout
         self.force_build_id = None      # set by run.py --build; a spawningtool id
         self.build_script = None
+        self._expo_loc = None           # cached next-expansion Point2
+        self._expo_probe = None          # tag of the pre-sent builder probe
 
     # placement hooks for the shared buildscript driver (see buildscript.py)
     def bs_pylon_pos(self):
@@ -300,8 +302,13 @@ class AiurBot(BotAI):
                 await self.build(U.PYLON, near=nexus.position.towards(self.game_info.map_center, 6))
 
     async def _gas(self):
-        # two gas per base, but only once we have a gateway (no point pre-tech)
+        # Take gas only when we can staff it. Grabbing it earlier (as the greedy
+        # opening did at ~0:27) both drains minerals the natural needs AND leaves
+        # the geyser empty until the mineral line saturates -- pure waste. So hold
+        # the first gas until ~14 workers / the natural, then 2 per base.
         if not self.structures(U.GATEWAY):
+            return
+        if self.townhalls.amount < 2 and self.supply_workers < 14:
             return
         want = min(2 * self.townhalls.ready.amount, 6)
         have = self.gas_buildings.amount + self.already_pending(U.ASSIMILATOR)
@@ -318,12 +325,52 @@ class AiurBot(BotAI):
     async def _expand(self, advice):
         # Principle 4: execute the library's base target. It grows the target through
         # the mid-late game and caps our production so minerals are left for the Nexus,
-        # so here we just take the base when we're below target and can afford it.
+        # so here we just take the base when we're below target.
         if advice.defense.emergency:
             return  # under an active all-in -- army first
-        if (self.townhalls.amount + self.already_pending(U.NEXUS) < advice.macro.base_target
-                and self.can_afford(U.NEXUS)):
-            await self.expand_now()
+        if self.townhalls.amount + self.already_pending(U.NEXUS) < advice.macro.base_target:
+            await self._prep_expansion()   # pre-send the builder probe when close
+            if self.can_afford(U.NEXUS):
+                await self._do_expansion()
+
+    async def _prep_expansion(self):
+        """Pre-send a probe to the next base when we're close to affording it, so
+        the Nexus is placed the instant the bank crosses 400 -- travel overlaps
+        banking instead of following it (saves ~30-40s per expansion). Pro basic."""
+        if self.already_pending(U.NEXUS):
+            self._expo_loc = self._expo_probe = None
+            return
+        if self._expo_loc is None:
+            self._expo_loc = await self.get_next_expansion()
+        loc = self._expo_loc
+        if loc is None:
+            return
+        if self.minerals >= 260 and self._expo_probe is None and self.workers.gathering:
+            w = self.workers.gathering.closest_to(loc)
+            if w is not None:
+                self._expo_probe = w.tag
+                w.move(loc)
+
+    async def _do_expansion(self):
+        """Place the Nexus now, reusing the pre-sent probe if it's on-site."""
+        loc = self._expo_loc or await self.get_next_expansion()
+        if loc is None:
+            return False
+        probe = self.workers.find_by_tag(self._expo_probe) if self._expo_probe else None
+        if probe is None and self.workers.gathering:
+            probe = self.workers.gathering.closest_to(loc)
+        if probe is None:
+            return False
+        probe.build(U.NEXUS, loc)
+        self._expo_loc = self._expo_probe = None
+        return True
+
+    # expansion hooks for the shared buildscript driver
+    async def bs_prep_expansion(self):
+        await self._prep_expansion()
+
+    async def bs_expand(self):
+        return await self._do_expansion()
 
     async def _tech(self, advice):
         gates = self.structures(U.GATEWAY)
