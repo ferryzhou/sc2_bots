@@ -91,6 +91,7 @@ class BuildScript:
         # serialization is the fidelity killer -- a slow step (3rd gas waiting on
         # the natural) otherwise cascade-delays everything after it.
         spent_m = spent_v = 0
+        reserve_m = reserve_v = 0   # bank toward the first blocked (due+unaffordable) step
         pending = False
         issued = set()
         for action, key, need in self.executor._required:
@@ -102,7 +103,15 @@ class BuildScript:
             cost = self._cost(bot, action)
             if cost is None:
                 continue
-            if bot.minerals - spent_m < cost[0] or bot.vespene - spent_v < cost[1]:
+            # Respect build-order priority: if this due step isn't affordable yet,
+            # reserve its cost so cheaper LATER steps don't starve it (e.g. a Nexus
+            # sitting behind a Cyber Core / gas -- the expansion must not be skipped
+            # while we spend its minerals elsewhere). Only the first blocked step is
+            # reserved, so independent affordable steps still fire in parallel.
+            if (bot.minerals - spent_m - reserve_m < cost[0]
+                    or bot.vespene - spent_v - reserve_v < cost[1]):
+                if reserve_m == 0 and reserve_v == 0:
+                    reserve_m, reserve_v = cost
                 continue
             if await self._issue(bot, action):
                 spent_m += cost[0]
