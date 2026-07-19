@@ -106,7 +106,16 @@ class BuildScript:
             by_key[key] = action
         if (manage_workers and bot.townhalls.ready.idle and bot.supply_left > 0
                 and bot.supply_workers < worker_cap):
-            wants.append(Want("PROBE", 50, 0, blocking=False))
+            # Workers are ESSENTIAL up to ~saturation of current bases (keep the
+            # economy growing) and only SURPLUS beyond it. So below saturation the
+            # probe outranks the build steps (don't freeze the economy to bank a
+            # Nexus); at/above saturation it drops below them and yields the surplus
+            # to bank tech/expansions. This is the generic "don't over-cut probes".
+            saturated = bot.supply_workers >= 16 * max(1, bot.townhalls.amount)
+            if saturated:
+                wants.append(Want("PROBE", 50, 0, blocking=False))
+            else:
+                wants.insert(0, Want("PROBE", 50, 0, blocking=True))
         for key in plan_spend(bot.minerals, bot.vespene, wants):
             if key == "PROBE":
                 bot.townhalls.ready.idle.first.train(U.PROBE)
