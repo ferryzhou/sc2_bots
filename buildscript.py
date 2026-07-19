@@ -1,14 +1,20 @@
-"""Follow a scripted opening (a spawningtool build) via strategy_engine.
+"""Shared build-script driver: follow a scripted opening across Protoss bots.
 
-When AthenaBot is launched with ``--build <id>`` it reproduces that exact
-published build for the opening -- issuing each structure / unit / upgrade at its
-supply benchmark via ``strategy_engine.build_guides.BuildExecutor`` -- then hands
-the game back to the adaptive managers once the script is done.
+Reusable by any python-sc2 Protoss bot (AiurBot, AthenaBot, ...). It wraps the
+sc2-free ``strategy_engine.build_guides.BuildExecutor`` (the decision engine --
+what to build next, and whether it's due at the current supply/time) and
+translates each ``BuildAction`` into concrete sc2 orders: place a structure,
+train a unit, research an upgrade, take an expansion, or take gas.
 
-The script OWNS tech/army structure decisions while active; the defense advisor
-still overrides it (an emergency pauses the script so the anti-rush behaviour we
-built isn't undone), and once the script completes the normal production manager
-resumes.
+The only bot-specific thing is *where* to place wall buildings, so that is
+abstracted behind two hooks the bot implements:
+
+    bot.bs_pylon_pos()  -> Point2 | None   # wall pylon spot (first pylon)
+    bot.bs_wall_pos(i)  -> Point2 | None    # i-th wall building spot (0=gate, 1=core)
+
+The script OWNS tech/army/expansion while active; a scouted all-in (emergency)
+pauses it, and it hands the game back to the adaptive managers once complete or
+past the opening window.
 """
 
 from sc2.ids.ability_id import AbilityId
@@ -24,10 +30,11 @@ STARGATE_UNITS = {"ORACLE", "PHOENIX", "VOIDRAY", "CARRIER", "TEMPEST"}
 
 
 class BuildScript:
-    def __init__(self, build_id):
+    def __init__(self, build_id, opening_seconds=300):
         self.build = get_build(int(build_id)) if build_id is not None else None
         self.executor = BuildExecutor(self.build) if self.build else None
         self.active = self.executor is not None
+        self.opening_seconds = opening_seconds
 
     def _unit(self, token):
         try:
@@ -69,9 +76,9 @@ class BuildScript:
     async def step(self, bot, advice):
         if not self.active:
             return False
-        # safety net: openings are ~3-4 min; if a step can't be met, don't stall
+        # safety net: openings are ~3-5 min; if a step can't be met, don't stall
         # forever -- hand the game to the adaptive managers past the opening.
-        if bot.time > 300:
+        if bot.time > self.opening_seconds:
             self.active = False
             return False
         # a scouted all-in pauses the script; the defense manager takes over
@@ -82,9 +89,7 @@ class BuildScript:
         # unaffordable, prereq/producer missing, no free geyser, can't expand),
         # tracking a running mineral/gas budget so we don't over-commit. Strict
         # serialization is the fidelity killer -- a slow step (3rd gas waiting on
-        # the natural) otherwise cascade-delays everything after it, and firing
-        # only one step per tick makes e.g. Warp Gate (on the core) queue behind
-        # Adept production (on the gateway) though they're independent.
+        # the natural) otherwise cascade-delays everything after it.
         spent_m = spent_v = 0
         pending = False
         issued = set()
@@ -163,18 +168,17 @@ class BuildScript:
         return bool(await bot.build(uid, near=near))
 
     def _placement(self, bot, token):
-        wall = bot.wall
         if token == "PYLON":
-            wp = wall.pylon_pos(bot)
+            wp = bot.bs_pylon_pos()
             if wp is not None and not bot.structures(U.PYLON):
                 return wp
             base = bot.townhalls.ready.random if bot.townhalls.ready else bot.townhalls.first
             return base.position.towards(bot.game_info.map_center, 6)
         if token == "GATEWAY":
-            wp = wall.building_pos(bot, 0)
+            wp = bot.bs_wall_pos(0)
             return wp if wp is not None else self._near_pylon(bot)
         if token == "CYBERNETICSCORE":
-            wp = wall.building_pos(bot, 1)
+            wp = bot.bs_wall_pos(1)
             return wp if wp is not None else self._near_pylon(bot)
         return self._near_pylon(bot)
 

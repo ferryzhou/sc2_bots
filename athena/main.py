@@ -38,6 +38,13 @@ class AthenaBot(BotAI):
         self.army = Army()
         self.last_log = 0
 
+    # placement hooks for the shared buildscript driver (see buildscript.py)
+    def bs_pylon_pos(self):
+        return self.wall.pylon_pos(self)
+
+    def bs_wall_pos(self, i):
+        return self.wall.building_pos(self, i)
+
     async def on_start(self):
         self.client.game_step = 4  # responsive without being wasteful
         if self.force_build_id is not None:

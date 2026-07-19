@@ -33,9 +33,14 @@ def main():
     p.add_argument("--difficulty", default="VeryHard")
     p.add_argument("--map", default=None)
     p.add_argument("--save-replay", default=None)
+    p.add_argument("--build", default=None,
+                   help="spawningtool build id to reproduce for the opening")
     args, _ = p.parse_known_args()
 
-    bot = Bot(Race.Protoss, AiurBot())
+    aiur = AiurBot()
+    if args.build is not None:
+        aiur.force_build_id = args.build
+    bot = Bot(Race.Protoss, aiur)
 
     if "--LadderServer" in sys.argv:
         # reuse the shared ladder client in ../griffin (matches this sc2 version)

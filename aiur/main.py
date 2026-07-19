@@ -99,9 +99,23 @@ class AiurBot(BotAI):
         self.last_log = 0.0
         self.enemy_opening = None
         self._wall = None               # cached ramp wall layout
+        self.force_build_id = None      # set by run.py --build; a spawningtool id
+        self.build_script = None
+
+    # placement hooks for the shared buildscript driver (see buildscript.py)
+    def bs_pylon_pos(self):
+        return self._wall_pylon()
+
+    def bs_wall_pos(self, i):
+        return self._wall_building(i)
 
     async def on_start(self):
         self.client.game_step = 4       # responsive without being wasteful
+        if self.force_build_id is not None:
+            from buildscript import BuildScript
+            self.build_script = BuildScript(self.force_build_id)
+            if self.build_script.active:
+                print(f"reproducing build: {self.build_script.build.title}")
 
     async def on_step(self, iteration):
         if not self.townhalls:
@@ -226,9 +240,19 @@ class AiurBot(BotAI):
 
     # ---------------------------------------------------------------- macro ----
     async def _macro(self, advice):
+        # Supply, probes, and chrono always run adaptively (avoid supply blocks,
+        # never stop workers). The rest is either driven by a scripted build (the
+        # --build opening, reproducing a pro benchmark) or the reactive managers.
         await self._supply(advice)
         self._probes(advice)
         self._chrono()
+        scripted = (self.build_script is not None and self.build_script.active
+                    and not advice.defense.emergency)
+        if scripted:
+            # the script OWNS tech/army/expansion/gas while active; still defend.
+            await self.build_script.step(self, advice)
+            await self._defense(advice)
+            return
         await self._gas()
         await self._expand(advice)
         if not self.structures(U.PYLON).ready:
