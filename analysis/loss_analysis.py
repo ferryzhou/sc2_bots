@@ -166,8 +166,8 @@ def main():
     # 0) head-to-head ECONOMY. Ratios (us/enemy): workers, mining speed (income
     # rate) and accumulated resources mined -- worker parity can hide a resource
     # deficit (fewer bases / less gas / lower saturation).
-    print("--- economy: us vs enemy (ratios us/enemy) ---")
-    print("time  | supply   workers  bases |   minerals(bank/min)   gas(bank/min)  "
+    print("--- economy: us vs enemy (absolute; ratios us/enemy) ---")
+    print("time  | supply(army) workers bases |   minerals(bank/min)   gas(bank/min)  "
           "| sup  wkr  mine-spd  mined")
     eco_behind = None
     for t in marks_all:
@@ -175,6 +175,7 @@ def main():
         su2 = int(stat_at(stats, theirs, t, "food_used"))
         w1 = int(stat_at(stats, ours, t, "workers_active_count"))
         w2 = int(stat_at(stats, theirs, t, "workers_active_count"))
+        as1, as2 = max(0, su1 - w1), max(0, su2 - w2)     # army supply = total - workers
         b1, b2 = bases_at(units, ours, t), bases_at(units, theirs, t)
         m1b = int(stat_at(stats, ours, t, "minerals_current"))
         m1r = int(stat_at(stats, ours, t, "minerals_collection_rate"))
@@ -196,7 +197,7 @@ def main():
             flag = "  <-- workers behind"
             if eco_behind is None:
                 eco_behind = t
-        print(f"{mmss(t):>5} | {su1:>3} v {su2:<3}  {w1:>3} v {w2:<3}  {b1} v {b2}  | "
+        print(f"{mmss(t):>5} | {su1:>3}({as1:>3}) v {su2:>3}({as2:>3}) {w1:>3} v {w2:<3} {b1} v {b2} | "
               f"{m1b:>4}/{m1r:<4} v {m2b:>4}/{m2r:<4}  "
               f"{g1b:>4}/{g1r:<4} v {g2b:>4}/{g2r:<4} | "
               f"{sur:>4.2f} {ratio:>4.2f} {spd:>5.2f}   {mined:>4.2f}{flag}")

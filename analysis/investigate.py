@@ -218,17 +218,18 @@ def report(path, ours, out):
     # 1) economy head-to-head. Ratios (us/enemy): workers, mining speed (income
     # rate), and accumulated resources mined -- worker parity can still hide a
     # resource deficit (fewer bases, less gas, lower saturation).
-    p("## Economy (ratios are us/enemy: total supply | workers | mining speed | total mined)")
+    p("## Economy (absolute us v enemy; ratios us/enemy)")
     p("")
-    p("| time | supply | workers | bases | min bank/inc | gas bank/inc "
+    p("| time | total supply | army supply | workers | bases | min bank/inc | gas bank/inc "
       "| sup ratio | wkr ratio | mine-speed ratio | mined ratio |")
-    p("|------|:------:|:-------:|:-----:|:------------:|:------------:"
+    p("|------|:------------:|:-----------:|:-------:|:-----:|:------------:|:------------:"
       "|:---------:|:---------:|:----------------:|:-----------:|")
     for t in marks:
         su1 = int(la.stat_at(stats, ours, t, "food_used"))
         su2 = int(la.stat_at(stats, theirs, t, "food_used"))
         w1 = int(la.stat_at(stats, ours, t, "workers_active_count"))
         w2 = int(la.stat_at(stats, theirs, t, "workers_active_count"))
+        as1, as2 = max(0, su1 - w1), max(0, su2 - w2)   # army supply = total - workers
         b1, b2 = la.bases_at(units, ours, t), la.bases_at(units, theirs, t)
         m1b = int(la.stat_at(stats, ours, t, "minerals_current"))
         m1r = int(la.stat_at(stats, ours, t, "minerals_collection_rate"))
@@ -250,7 +251,7 @@ def report(path, ours, out):
         sf = " ⚠️" if spd < 0.85 else ""
         mf = " ⚠️" if mined < 0.85 else ""
         bf = " ⚠️" if b1 < b2 else ""
-        p(f"| {la.mmss(t)} | {su1} v {su2} | {w1} v {w2}{wf} | {b1} v {b2}{bf} | "
+        p(f"| {la.mmss(t)} | {su1} v {su2} | {as1} v {as2} | {w1} v {w2}{wf} | {b1} v {b2}{bf} | "
           f"{m1b}/{m1r} v {m2b}/{m2r} | {g1b}/{g1r} v {g2b}/{g2r} | "
           f"{sur:.2f}{suf} | {wr:.2f} | {spd:.2f}{sf} | {mined:.2f}{mf} |")
     p("")
