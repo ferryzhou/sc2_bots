@@ -38,6 +38,7 @@ from .advisor import StrategicAdvisor
 from .macro import MacroPlan, recommend_macro
 from .tactics import Tactics, recommend_tactics
 from .composition import recommend_composition
+from .spending import Want, plan_spend
 
 
 def _check(name: str, cond: bool) -> None:
@@ -481,6 +482,26 @@ def test_macro_does_not_expand_behind_a_thin_army() -> None:
     m_covered = recommend_macro(covered, recommend_investment(covered))
     _check("thin army: hold base target at current", m_thin.base_target == 2)
     _check("covered army: allow the next base", m_covered.base_target >= 3)
+
+
+def test_spending_priority_and_starvation() -> None:
+    # bank 350: a blocking 400 Nexus is unaffordable, so a soft probe below it is
+    # starved (banking toward the Nexus) -- the opening starvation fix.
+    wants = [Want("NEXUS", 400, 0, blocking=True), Want("PROBE", 50, 0, blocking=False)]
+    _check("blocking Nexus starves the probe while banking",
+           plan_spend(350, 0, wants) == [])
+    # bank 450: Nexus affordable, and the probe spends the surplus above it.
+    _check("probe spends only the surplus above the Nexus",
+           plan_spend(450, 0, wants) == ["NEXUS", "PROBE"])
+    # a soft want unaffordable does NOT block a cheaper want below it.
+    soft_wants = [Want("COLOSSUS", 300, 200, blocking=False),
+                  Want("STALKER", 125, 50, blocking=True)]
+    _check("a soft unaffordable want doesn't block lower wants",
+           plan_spend(150, 60, soft_wants) == ["STALKER"])
+    # gas is reserved independently of minerals.
+    gas_wants = [Want("STORM", 0, 200, blocking=True), Want("ZEALOT", 100, 0, blocking=False)]
+    _check("gas reservation doesn't block a mineral-only want",
+           plan_spend(500, 100, gas_wants) == ["ZEALOT"])
 
 
 def test_composition_transitions_tech_late() -> None:

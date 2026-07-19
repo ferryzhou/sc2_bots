@@ -21,7 +21,7 @@ from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId as U
 from sc2.ids.upgrade_id import UpgradeId as Up
 
-from strategy_engine import get_build, BuildExecutor
+from strategy_engine import get_build, BuildExecutor, Want, plan_spend
 
 # tokens whose training producer isn't auto-resolved cleanly -> where to make them
 GATEWAY_UNITS = {"ZEALOT", "STALKER", "ADEPT", "SENTRY", "HIGHTEMPLAR", "DARKTEMPLAR"}
@@ -73,7 +73,7 @@ class BuildScript:
             have["GATEWAY"] += bot.structures(U.WARPGATE).amount
         return have
 
-    async def step(self, bot, advice):
+    async def step(self, bot, advice, manage_workers=False, worker_cap=80):
         if not self.active:
             return False
         # safety net: openings are ~3-5 min; if a step can't be met, don't stall
@@ -85,41 +85,70 @@ class BuildScript:
         if advice.defense.emergency:
             return True
         have = dict(self._have(bot))
-        # Issue EVERY due + issuable step this tick (skipping blocked ones:
-        # unaffordable, prereq/producer missing, no free geyser, can't expand),
-        # tracking a running mineral/gas budget so we don't over-commit. Strict
-        # serialization is the fidelity killer -- a slow step (3rd gas waiting on
-        # the natural) otherwise cascade-delays everything after it.
-        spent_m = spent_v = 0
-        reserve_m = reserve_v = 0   # bank toward the first blocked (due+unaffordable) step
-        pending = False
-        issued = set()
+        # Build a PRIORITY-ORDERED want list from the due, prereq-ready, unmet steps
+        # (Pylons excluded -- the bot's supply manager owns those), then let the
+        # generic allocator (strategy_engine.spending) decide what to issue: it
+        # banks toward each blocking step in build order so cheap steps can't starve
+        # an expensive one (Nexus behind a Cyber Core), and -- with manage_workers --
+        # probes are a SOFT want below them, so worker production pauses to bank the
+        # Nexus and resumes on the surplus. Same primitive works for any plan.
+        wants = []
+        by_key = {}
         for action, key, need in self.executor._required:
-            if have.get(key, 0) >= need:
+            if have.get(key, 0) >= need or key in by_key:
                 continue
-            pending = True
-            if key in issued or not self._due(action, bot):
+            if key == "PYLON" or not self._due(action, bot) or not self._ready(bot, action):
                 continue
             cost = self._cost(bot, action)
             if cost is None:
                 continue
-            # Respect build-order priority: if this due step isn't affordable yet,
-            # reserve its cost so cheaper LATER steps don't starve it (e.g. a Nexus
-            # sitting behind a Cyber Core / gas -- the expansion must not be skipped
-            # while we spend its minerals elsewhere). Only the first blocked step is
-            # reserved, so independent affordable steps still fire in parallel.
-            if (bot.minerals - spent_m - reserve_m < cost[0]
-                    or bot.vespene - spent_v - reserve_v < cost[1]):
-                if reserve_m == 0 and reserve_v == 0:
-                    reserve_m, reserve_v = cost
-                continue
-            if await self._issue(bot, action):
-                spent_m += cost[0]
-                spent_v += cost[1]
-                issued.add(key)
-        if not pending:
+            wants.append(Want(key, cost[0], cost[1], blocking=True))
+            by_key[key] = action
+        if (manage_workers and bot.townhalls.ready.idle and bot.supply_left > 0
+                and bot.supply_workers < worker_cap):
+            wants.append(Want("PROBE", 50, 0, blocking=False))
+        for key in plan_spend(bot.minerals, bot.vespene, wants):
+            if key == "PROBE":
+                bot.townhalls.ready.idle.first.train(U.PROBE)
+            else:
+                await self._issue(bot, by_key[key])
+        if not any(have.get(k, 0) < n for _, k, n in self.executor._required):
             self.active = False
         return True
+
+    def _ready(self, bot, action):
+        """Cheap prereq check: could this step be issued if we could afford it?
+        Keeps unbuildable steps out of the allocator so they don't reserve (and
+        needlessly pause probes) while waiting on a producer/prereq/geyser."""
+        token = action.token
+        if action.action == "research":
+            up = self._upgrade(token)
+            if up is None or bot.already_pending_upgrade(up):
+                return False
+            return any(bot.structures(getattr(U, s)).ready.idle
+                       for s in _RESEARCH_FROM.get(token, []))
+        uid = self._unit(token)
+        if uid is None:
+            return False
+        if action.action == "build":
+            if token == "NEXUS":
+                return bot.already_pending(U.NEXUS) == 0
+            if token == "ASSIMILATOR":
+                return any(not bot.gas_buildings.closer_than(1, g)
+                           for nx in bot.townhalls.ready
+                           for g in bot.vespene_geyser.closer_than(10, nx))
+            if not bot.structures(U.PYLON).ready or bot.tech_requirement_progress(uid) < 1:
+                return False
+            return True
+        if token == "PROBE":
+            return bool(bot.townhalls.ready.idle)
+        if bot.tech_requirement_progress(uid) < 1:
+            return False
+        for group, producer in ((GATEWAY_UNITS, U.GATEWAY), (ROBO_UNITS, U.ROBOTICSFACILITY),
+                                (STARGATE_UNITS, U.STARGATE)):
+            if token in group:
+                return bool(bot.structures(producer).ready.idle)
+        return False
 
     def _cost(self, bot, action):
         ent = (self._upgrade(action.token) if action.action == "research"

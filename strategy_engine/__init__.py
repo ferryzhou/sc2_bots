@@ -63,6 +63,7 @@ from .advisor import StrategicAdvisor, Advice
 from .macro import MacroPlan, recommend_macro
 from .tactics import Tactics, recommend_tactics
 from .composition import CompositionAdvice, recommend_composition
+from .spending import Want, plan_spend
 
 __all__ = [
     "GameState",
@@ -116,4 +117,6 @@ __all__ = [
     "recommend_tactics",
     "CompositionAdvice",
     "recommend_composition",
+    "Want",
+    "plan_spend",
 ]
