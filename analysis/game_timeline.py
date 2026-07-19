@@ -5,8 +5,13 @@ action sequence -- every structure, unit, and upgrade produced that minute.
 
     python analysis/game_timeline.py <replay> [our_pid] [build_id]
 
-With a build_id, adds a head-to-head column vs that professional build: the pro's
-supply benchmark (interpolated) and the pro's key actions that minute.
+The per-minute numeric STATE is pulled from the shared ``loss_analysis.metrics_at``
+extractor (the one place the metric set is defined), so this and every other
+comparison tool score the same fields. This module only adds the play-by-play
+(action sequences) and, with a build_id, the head-to-head vs a professional build:
+each metric shown ``us/pro`` with '!' when we're under 80% of the pro benchmark.
+The pro side is derived from the build guide by ``pro_metrics`` into the same dict
+shape, so extraction and comparison stay decoupled.
 """
 import sys
 import os
@@ -16,11 +21,13 @@ from collections import Counter, defaultdict
 import principle_analyzer as pa  # noqa: F401  (sc2reader arena shim)
 import loss_analysis as la
 
-TECH_STRUCT = {"CyberneticsCore", "TwilightCouncil", "Forge", "Stargate",
-               "RoboticsFacility", "RoboticsBay", "TemplarArchive", "FleetBeacon",
-               "DarkShrine"}
 PRO_TECH = {"Cybernetics Core", "Twilight Council", "Forge", "Stargate",
             "Robotics Facility", "Robotics Bay", "Templar Archives", "Fleet Beacon"}
+# the metrics scored us-vs-pro, in display order: (metric key, header, width).
+# Add a metric by adding one row here (both sources already produce the key).
+COMPARE_COLS = [("workers", "workers", 9), ("army", "army sup", 9),
+                ("supply", "supply", 9), ("bases", "bases", 7),
+                ("tech", "tech", 7), ("upg", "upg", 7)]
 # guide unit name -> its supply cost
 PRO_ARMY_SUPPLY = {"Adept": 2, "Zealot": 2, "Stalker": 2, "Sentry": 2, "Oracle": 3,
                    "Phoenix": 2, "Void Ray": 4, "Immortal": 4, "Colossus": 6,
@@ -109,21 +116,13 @@ def main():
     r, units, stats, upgrades = la.load(path)
     length = int(r.game_length.seconds)
 
-    # bucket births (structures / non-worker units / worker count) by minute,
-    # and keep running totals (bases, tech buildings) for the state at time t
+    # bucket the ACTIONS (structures / non-worker units / probes / upgrades) by
+    # minute -- the play-by-play. The numeric STATE per minute (workers, army,
+    # supply, bases, tech, upgrades, income) is not re-derived here: it comes from
+    # the shared la.metrics_at extractor, so every scorecard sees the same metrics.
     struct_min = defaultdict(list)
     unit_min = defaultdict(Counter)
     probe_min = Counter()
-    base_at = []   # (born, cumulative bases)  -- start base pre-exists
-    tech_at = []   # (born, cumulative tech buildings)
-    bases = tech = 0
-    for born, name in sorted((b, n) for o, n, b, _ in units.values() if o == ours):
-        if name == "Nexus":
-            bases += 1
-            base_at.append((born, bases))
-        elif name in TECH_STRUCT:
-            tech += 1
-            tech_at.append((born, tech))
     for owner, name, born, _ in units.values():
         if owner != ours:
             continue
@@ -134,26 +133,9 @@ def main():
             probe_min[m] += 1
         elif la.is_army(name) or name in ("Observer", "WarpPrism", "Oracle"):
             unit_min[m][name] += 1
-    # upgrades completed, by minute
     upg_min = defaultdict(list)
     for sec, name in upgrades[ours]:
         upg_min[int(sec) // 60].append(name)
-
-    def count_by(pairs, t):
-        """cumulative count from a sorted list of (time, cumulative) at time t."""
-        c = 0
-        for born, cum in pairs:
-            if born <= t:
-                c = cum
-            else:
-                break
-        return c
-
-    def upg_count(t):
-        return sum(1 for sec, _ in upgrades[ours] if sec <= t)
-
-    def stat(t, f):
-        return int(la.stat_at(stats, ours, t, f))
 
     title = f"# Timeline: {os.path.basename(path)} ({r.map_name}, {r.game_length}) pid {ours}"
     if build_id:
@@ -161,9 +143,8 @@ def main():
     print(title + "\n")
     if build_id:
         # us/pro side-by-side for every headline metric, then our income + actions
-        hdr = (f"{'time':>5} | {'workers':>9} | {'army sup':>9} | {'supply':>9} | "
-               f"{'bases':>7} | {'tech':>7} | {'upg':>7} | {'min/gas inc':>11} | "
-               f"actions  (us  ‖  PRO)")
+        hdr = f"{'time':>5} | " + " | ".join(f"{h:>{w}}" for _, h, w in COMPARE_COLS)
+        hdr += f" | {'min/gas inc':>11} | actions  (us  ‖  PRO)"
         print(hdr)
         print("-" * len(hdr))
     else:
@@ -173,10 +154,10 @@ def main():
         t = m * 60
         if t == 0:
             continue
-        wk = stat(t, "workers_active_count")
-        used, made = stat(t, "food_used"), stat(t, "food_made")
-        mb, mr = stat(t, "minerals_current"), stat(t, "minerals_collection_rate")
-        gb, gr = stat(t, "vespene_current"), stat(t, "vespene_collection_rate")
+        us = la.metrics_at(units, stats, upgrades, ours, t)
+        made = int(la.stat_at(stats, ours, t, "food_made"))
+        mb = int(la.stat_at(stats, ours, t, "minerals_current"))
+        gb = int(la.stat_at(stats, ours, t, "vespene_current"))
         acts = []
         for _, name in sorted(struct_min.get(m - 1, [])):  # produced in the PRIOR minute
             acts.append("+" + DISPLAY.get(name, name))
@@ -188,21 +169,16 @@ def main():
             acts.append("*" + u.replace("Level", "L").replace("Protoss", ""))
         line = ", ".join(acts) if acts else "-"
         if build_id:
-            army = max(0, used - wk)          # non-worker supply
-            us = {"workers": wk, "army": army, "supply": used,
-                  "bases": count_by(base_at, t) + 1, "tech": count_by(tech_at, t),
-                  "upg": upg_count(t)}
             pro = pro_metrics(steps, t)
             pa_line = ", ".join(dict.fromkeys(pro_acts.get(m - 1, []))) or "-"
-
-            def cell(k):
-                return f"{us[k]:>3}/{pro[k]:<3}{_flag(us[k], pro[k])}"
-            print(f"{mmss(t):>5} | {cell('workers'):>9} | {cell('army'):>9} | "
-                  f"{cell('supply'):>9} | {cell('bases'):>7} | {cell('tech'):>7} | "
-                  f"{cell('upg'):>7} | {mr:>4}/{gr:<6} | {line}  ‖  {pa_line}")
+            cells = " | ".join(
+                f"{f'{us[k]:>3}/{pro[k]:<3}{_flag(us[k], pro[k])}':>{w}}"
+                for k, _, w in COMPARE_COLS)
+            print(f"{mmss(t):>5} | {cells} | "
+                  f"{us['min_inc']:>4}/{us['gas_inc']:<6} | {line}  ‖  {pa_line}")
         else:
-            print(f"{mmss(t):>5} | {wk:>3} | {used:>3}/{made:<3} | "
-                  f"{mb:>4}/{mr:<6} | {gb:>4}/{gr:<5} | {line}")
+            print(f"{mmss(t):>5} | {us['workers']:>3} | {us['supply']:>3}/{made:<3} | "
+                  f"{mb:>4}/{us['min_inc']:<6} | {gb:>4}/{us['gas_inc']:<5} | {line}")
 
 
 if __name__ == "__main__":

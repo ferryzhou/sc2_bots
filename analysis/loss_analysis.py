@@ -46,6 +46,18 @@ NONARMY = WORKERS | {"Overlord", "Larva", "Egg", "Broodling", "MULE",
                      "Interceptor", "AutoTurret", "LocustMP", "Observer"}
 TOWNHALLS = {"Nexus", "Hatchery", "Lair", "Hive", "CommandCenter",
              "OrbitalCommand", "PlanetaryFortress"}
+# "teched-up" production / research buildings, all races -- the tech-tree count
+TECH = {  # protoss
+        "CyberneticsCore", "TwilightCouncil", "Forge", "Stargate",
+        "RoboticsFacility", "RoboticsBay", "TemplarArchive", "FleetBeacon",
+        "DarkShrine",
+        # terran
+        "Factory", "Starport", "EngineeringBay", "Armory", "GhostAcademy",
+        "FusionCore",
+        # zerg
+        "SpawningPool", "RoachWarren", "BanelingNest", "EvolutionChamber",
+        "HydraliskDen", "InfestationPit", "Spire", "GreaterSpire", "LurkerDenMP",
+        "UltraliskCavern"}
 
 
 def val(name):
@@ -114,6 +126,40 @@ def bases_at(units, pid, t):
     return sum(1 for owner, name, born, died in units.values()
                if owner == pid and name in TOWNHALLS
                and born <= t and (died is None or died > t))
+
+
+def tech_at(units, pid, t):
+    """Tech-tree buildings alive at time t (Cyber, Twilight, Robo, Stargate...)."""
+    return sum(1 for owner, name, born, died in units.values()
+               if owner == pid and name in TECH
+               and born <= t and (died is None or died > t))
+
+
+def upgrades_at(upgrades, pid, t):
+    """Count of upgrades pid has completed by time t."""
+    return sum(1 for s, _ in upgrades[pid] if s <= t)
+
+
+def metrics_at(units, stats, upgrades, pid, t):
+    """The headline macro state of one player at time t, as a uniform dict.
+
+    This is the single 'extract stats from a replay' primitive that comparison
+    tools consume: the same keys can be produced from another replay (enemy) or
+    derived from a pro build guide, then diffed field-by-field. Keeping the metric
+    set defined here (not in each caller) keeps every scorecard consistent.
+    """
+    wk = int(stat_at(stats, pid, t, "workers_active_count"))
+    supply = int(stat_at(stats, pid, t, "food_used"))
+    return {
+        "workers": wk,
+        "army": max(0, supply - wk),              # non-worker supply
+        "supply": supply,
+        "bases": bases_at(units, pid, t),
+        "tech": tech_at(units, pid, t),
+        "upg": upgrades_at(upgrades, pid, t),
+        "min_inc": int(stat_at(stats, pid, t, "minerals_collection_rate")),
+        "gas_inc": int(stat_at(stats, pid, t, "vespene_collection_rate")),
+    }
 
 
 def deaths_in(units, pid, t0, t1):
