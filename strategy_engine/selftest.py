@@ -611,7 +611,8 @@ def test_production_saturates_and_balances() -> None:
     gassy = ProductionState(0, 0, 2000, 1000, 0, bases=6, gateways=0, robos=0,
                             stargates=0, ready_gateways=0, ready_robos=0,
                             ready_stargates=0,
-                            have_tech=frozenset({"ROBOTICSFACILITY", "STARGATE"}))
+                            have_tech=frozenset({"CYBERNETICSCORE", "ROBOTICSFACILITY",
+                                                 "STARGATE"}))
     _check("robo count grows with gas income", desired_robos(gassy, None) >= 3)
     _check("stargate count grows with gas income", desired_stargates(gassy, None) >= 3)
 

@@ -132,8 +132,13 @@ def _gas_producers_wanted(state: ProductionState) -> int:
     return int(round(state.vespene_income / GAS_PER_TECH_PROD))
 
 
+# NB: gate on the PREREQ (Cybernetics Core), not on the producer itself -- gating
+# on ROBOTICSFACILITY/STARGATE would return 0 until one already exists, so the FIRST
+# one never gets built (that chicken-and-egg left the stargate count stuck at 0 and
+# gas floating). The bot still decides WHETHER to open a tech path; this only sizes
+# it once the prereq is down.
 def desired_robos(state: ProductionState, comp) -> int:
-    if "ROBOTICSFACILITY" not in state.have_tech:
+    if "CYBERNETICSCORE" not in state.have_tech:
         return 0
     # split the gas-sink fleet with the stargate; bias to robo when splash is wanted
     want = 1 + _gas_producers_wanted(state) // 2
@@ -143,7 +148,7 @@ def desired_robos(state: ProductionState, comp) -> int:
 
 
 def desired_stargates(state: ProductionState, comp) -> int:
-    if "STARGATE" not in state.have_tech:
+    if "CYBERNETICSCORE" not in state.have_tech:
         return 0
     want = 1 + _gas_producers_wanted(state) // 2
     if getattr(comp, "need_anti_air", False):
