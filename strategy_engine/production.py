@@ -47,14 +47,17 @@ class UnitSpec:
     tech: Optional[str] = None   # required tech building key, or None if always available
 
 
-# Gateway MASS roster -- the three units you actually a-move with: Zealot is the
-# pure-mineral sink, Stalker the staple gas sink, Adept a light-mineral alternative.
-# Casters (Sentry, High Templar) are deliberately excluded: you want 1-2 for their
-# spell, never a massed line, so the bot's composition layer adds them by count --
-# a "drain the most gas" planner would wrongly mass the highest-gas unit.
+# Gateway MASS roster -- the pro core you actually a-move with: Zealot is the
+# pure-mineral sink, Stalker the staple gas sink. Deliberately just these two so
+# the resource-drain rule is clean (gas floats -> Stalker; minerals float ->
+# Zealot). Adept, Sentry, and High Templar are excluded on purpose: they are
+# tactical adds you want a fixed handful of (harass / guardian shield / storm),
+# never a massed line -- the bot's composition layer adds them by count. A "drain
+# the most gas" planner set loose on them mono-masses the mid-cost one (we saw it
+# field 90+ Adepts because Adept, at 25 gas, was the priciest gas unit still
+# affordable once a batch drained gas below the Stalker's 50).
 GATEWAY_UNITS = [
     UnitSpec("ZEALOT", 100, 0, 2),
-    UnitSpec("ADEPT", 100, 25, 2, "CYBERNETICSCORE"),
     UnitSpec("STALKER", 125, 50, 2, "CYBERNETICSCORE"),
 ]
 ROBO_UNITS = [
