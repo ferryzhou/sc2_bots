@@ -93,8 +93,12 @@ class ArchetypeSparringBot(BotAI):
                 and not self.already_pending(TOWNHALL[spec.worker])):
             await self.expand_now()
         # 4. greedy archetypes: production count set by the library
-        # (recommend_macro scales it with bases, saturation, and float)
+        # (recommend_macro scales it with bases, saturation, and float).
+        # Reserve the bank for the next expansion until the base count is met
+        # -- without this, production siphons the nexus/CC money and the
+        # 200-supply race stalls on two bases.
         elif spec.production and self.can_afford(spec.production) and (
+                self.townhalls.amount >= spec.max_bases or self.minerals > 450) and (
                 self.structures(spec.production).amount
                 + self.already_pending(spec.production)
                 < recommend_macro(state, inv).target_production
@@ -124,7 +128,8 @@ class ArchetypeSparringBot(BotAI):
         # 7. army with everything left, attack at the archetype's timing.
         # Greedy specs spend excess into army (float or near worker cap);
         # rushes spend everything, always.
-        eco_first = spec.production and self.minerals < 300 and (
+        reserve = 450 if self.townhalls.amount < spec.max_bases else 300
+        eco_first = spec.production and self.minerals < reserve and (
             self.supply_workers < spec.max_workers - 4)
         train_from = spec.production or U.GATEWAY
         if eco_first:
