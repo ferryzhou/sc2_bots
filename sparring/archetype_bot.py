@@ -220,6 +220,11 @@ class GreedyTerran2(ArchetypeSparringBot):
 
 
 class GreedyZerg2(ArchetypeSparringBot):
-    SPEC = Spec(OPENINGS["zerg_hatch_first"], U.DRONE, U.OVERLORD, U.ZERGLING,
+    # Gasless variant of the mined hatch_first family: greedyz spends zero gas
+    # (drone/ling/hatch/queen are all minerals), so the family's Extractor is
+    # dead money at the most timing-critical moment -- drop it and bake the
+    # 3rd hatchery into the opening to pull the larva engine forward.
+    SPEC = Spec(custom("Zerg", "Hatchery", "SpawningPool", "Hatchery"),
+                U.DRONE, U.OVERLORD, U.ZERGLING,
                 max_workers=75, max_bases=6, attack_at=150, queens=8,
                 production=U.HATCHERY)  # macro hatcheries = larva engines

@@ -128,15 +128,18 @@ Unpressured benchmark (vs Easy AI, supply/min from replay tracker):
 
 | bot | 200 supply at | 8 min | 10 min | workers peak |
 |---|---|---|---|---|
-| greedyz | **10:40** | 100 | 175 | 80 |
+| greedyz | **10:00** | 121 | 200 | 79 |
 | greedyp | **11:30** | 103 | 151 | 69 |
 | greedyt | 13:40 | 91 | 120 | 69 |
 
-The inject-optimization pass (one fresh inject per un-injected hatch, queens
-scaled to hatch count, draining the whole larva burst per step) took greedyz
-11:10 → 10:40 with a ~42 supply/min late ramp; the residual constraint is the
-4-7 min window (pre-inject larva capacity). A true pro-speed 9-10 min max
-would additionally need the race-specific mechanics the concise executor
+Two optimization rounds took greedyz 11:10 → **10:00 exactly**: the inject
+pass (one fresh inject per un-injected hatch, queens scaled to hatch count,
+draining the whole larva burst per step; 11:10 → 10:40), then a gasless
+3-hatch opening — greedyz spends zero gas, so the mined family's Extractor
+was dead money at the most timing-critical moment; dropping it and baking the
+3rd hatchery into the opening pulls the larva engine forward (10:40 → 10:00,
+~40 supply/min sustained from 7:00). Pushing further (9:xx for zerg, or the
+protoss/terran gaps) needs the race mechanics the concise executor
 deliberately omits — mules/orbitals + reactors (the whole Terran gap),
 warpgate, creep spread. Under VeryHard pressure the same specs survive and
 macro (168-189 peak) but get punished — the archetype's designed weakness.
