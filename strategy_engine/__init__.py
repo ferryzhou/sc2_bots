@@ -64,6 +64,15 @@ from .macro import MacroPlan, recommend_macro
 from .tactics import Tactics, recommend_tactics
 from .composition import CompositionAdvice, recommend_composition
 from .spending import Want, plan_spend
+from .production import (
+    UnitSpec,
+    ProductionState,
+    ProductionPlan,
+    plan_production,
+    desired_gateways,
+    desired_robos,
+    desired_stargates,
+)
 
 __all__ = [
     "GameState",
@@ -119,4 +128,11 @@ __all__ = [
     "recommend_composition",
     "Want",
     "plan_spend",
+    "UnitSpec",
+    "ProductionState",
+    "ProductionPlan",
+    "plan_production",
+    "desired_gateways",
+    "desired_robos",
+    "desired_stargates",
 ]

@@ -14,6 +14,7 @@ expand, scout, fight only favorable engagements, keep upgrades working) are
 """
 
 import os
+import random
 import sys
 
 # make the repo-root strategy_engine importable
@@ -30,7 +31,25 @@ from strategy_engine import (
     GameState,
     Engagement,
     classify_opening,
+    ProductionState,
+    plan_production,
+    desired_gateways,
 )
+
+# gateway unit token -> its warp-in ability (for warpgate production)
+WARP_ABILITY = {
+    U.ZEALOT: AbilityId.WARPGATETRAIN_ZEALOT,
+    U.STALKER: AbilityId.WARPGATETRAIN_STALKER,
+    U.ADEPT: AbilityId.TRAINWARP_ADEPT,
+    U.SENTRY: AbilityId.WARPGATETRAIN_SENTRY,
+    U.HIGHTEMPLAR: AbilityId.WARPGATETRAIN_HIGHTEMPLAR,
+}
+# tech-building key (strategy_engine.production) -> the structure that provides it
+TECH_STRUCT = {
+    "CYBERNETICSCORE": U.CYBERNETICSCORE, "ROBOTICSFACILITY": U.ROBOTICSFACILITY,
+    "STARGATE": U.STARGATE, "ROBOTICSBAY": U.ROBOTICSBAY,
+    "TEMPLARARCHIVE": U.TEMPLARARCHIVE, "FLEETBEACON": U.FLEETBEACON,
+}
 
 # --------------------------------------------------------------------------- #
 # Scouting tables: enemy structure -> normalized name (for classify_opening)   #
@@ -264,7 +283,7 @@ class AiurBot(BotAI):
         await self._tech(advice)
         await self._defense(advice)
         await self._upgrades()
-        self._train(advice)
+        await self._train(advice)
 
     def _probes(self, advice):
         # Principle 1: never stop producing workers (while safe) -- but the macro
@@ -374,6 +393,10 @@ class AiurBot(BotAI):
 
     async def _tech(self, advice):
         gates = self.structures(U.GATEWAY)
+        # count warpgates too: once Warp Gate research lands, gateways morph out of
+        # structures(GATEWAY), so 'do we have a gateway' must include warpgates or we
+        # wrongly rebuild the 'first gateway' on the wall forever.
+        gate_count = gates.amount + self.structures(U.WARPGATE).amount
         pylon = self.structures(U.PYLON).ready.random
 
         # Forge-FIRST when the library wants static defense -- but only for a
@@ -387,7 +410,7 @@ class AiurBot(BotAI):
             await self.build(U.FORGE, near=pylon)
             return
         # first gateway -- on the ramp wall if we can
-        if gates.amount + self.already_pending(U.GATEWAY) == 0:
+        if gate_count + self.already_pending(U.GATEWAY) == 0:
             if self.can_afford(U.GATEWAY):
                 wp = self._wall_building(0)
                 near = wp if wp is not None else pylon.position.towards(self.game_info.map_center, 5)
@@ -397,7 +420,7 @@ class AiurBot(BotAI):
         if advice.defense.emergency:
             cannons = self.structures(U.PHOTONCANNON).amount + self.already_pending(U.PHOTONCANNON)
             if self.structures(U.FORGE).ready and cannons < advice.defense.static_defense:
-                if (gates.amount + self.already_pending(U.GATEWAY) < 2
+                if (gate_count + self.already_pending(U.GATEWAY) < 2
                         and self.can_afford(U.GATEWAY) and self.minerals > 320):
                     await self.build(U.GATEWAY, near=pylon.position.towards(self.game_info.map_center, 5))
                 return
@@ -459,11 +482,15 @@ class AiurBot(BotAI):
             if (stargates < cap and self.already_pending(U.STARGATE) == 0
                     and self.can_afford(U.STARGATE)):
                 await self.build(U.STARGATE, near=pylon)
-        # scale gateways with economy -- the macro plan owns the target count and
-        # parallel-build limit, so we convert economy into army rather than float.
-        target_gates = advice.macro.target_production
+        # scale gateways with INCOME (strategy_engine.production): add a Gateway
+        # whenever the mineral income outruns current throughput, capped by bases.
+        # Counting warpgates too (they ARE gateways) fixes the old bug where morphed
+        # gates dropped out of the count and we over/under-built. This is what keeps
+        # 'somewhere to spend' ahead of the economy so army production never idles.
+        have_gates = (self.structures(U.GATEWAY).amount + self.structures(U.WARPGATE).amount
+                      + self.already_pending(U.GATEWAY))
         max_pending = advice.macro.allow_parallel_build
-        if (gates.amount + self.already_pending(U.GATEWAY) < target_gates
+        if (have_gates < self._desired_gateways()
                 and self.already_pending(U.GATEWAY) < max_pending
                 and self.can_afford(U.GATEWAY) and self.minerals > 150):
             await self.build(U.GATEWAY, near=pylon.position.towards(self.game_info.map_center, 5))
@@ -522,72 +549,107 @@ class AiurBot(BotAI):
                 forge.first.research(up)
                 return
 
-    def _train(self, advice):
-        # Reserve minerals for a mandated expansion (Principle 4): when the library
-        # says we owe a base (base_target), hold the final stretch of minerals for
-        # the 400-cost Nexus instead of spending it on gateway units. Bounded to
-        # 250..400 so army/gas production barely pauses; robo (gas) runs regardless.
+    async def _train(self, advice):
+        # Production is DECIDED by strategy_engine.production (how many facilities to
+        # add + what to build now to saturate every ready producer, resource- and
+        # supply-balanced) and only EXECUTED here. This is the fix for the pro-gap:
+        # we out-mine the pro but fielded a fraction of the army because production
+        # sat idle -- above all, warpgates never warped (no warp-in logic existed).
+        state = self._prod_state(advice)
+        plan = plan_production(state, advice.composition)
+
+        # ROBO + STARGATE: train from each idle producer, in the planned order.
+        robos = list(self.structures(U.ROBOTICSFACILITY).ready.idle)
+        for token, prod in zip(plan.robo_units, robos):
+            uid = getattr(U, token)
+            if self.can_afford(uid):
+                prod.train(uid)
+        stargates = list(self.structures(U.STARGATE).ready.idle)
+        for token, prod in zip(plan.stargate_units, stargates):
+            uid = getattr(U, token)
+            if self.can_afford(uid):
+                prod.train(uid)
+
+        # GATEWAY: warp in from every off-cooldown warpgate (the army engine), and
+        # train from any un-morphed idle gateway (pre-Warp-Gate).
+        if not plan.gateway_units:
+            return
+        warpgates = self.structures(U.WARPGATE).ready
+        ready_wg = []
+        if warpgates:
+            for wg, abils in zip(warpgates, await self.get_available_abilities(warpgates)):
+                if any(a in abils for a in WARP_ABILITY.values()):
+                    ready_wg.append(wg)
+        gates = list(self.structures(U.GATEWAY).ready.idle)
+        pylon = self._warp_pylon()
+        for token in plan.gateway_units:
+            uid = getattr(U, token)
+            if not self.can_afford(uid):
+                continue
+            if ready_wg and pylon is not None:
+                if await self._warp_in(ready_wg[-1], uid, pylon):
+                    ready_wg.pop()
+                    continue
+            if gates:
+                gates.pop().train(uid)
+
+    def _prod_state(self, advice):
+        """Snapshot the bot as a framework-agnostic ProductionState for the planner.
+
+        ``minerals`` is what's *spendable on army*: when we still owe a mandated
+        expansion we hide the 400 Nexus cost from the planner, so it banks toward
+        the base instead of leaking it into units (the generic 'reserve via the
+        resource input' trick -- no special-case hold needed)."""
         owe_base = (self.townhalls.amount + self.already_pending(U.NEXUS)
                     < advice.macro.base_target and not advice.defense.emergency)
-        if owe_base and self.minerals < 400:
-            return  # bank the whole Nexus cost -- pause army (incl. mineral-heavy
-            #         robo units) for the ~15s it takes, then _expand takes the base
-        comp = advice.composition
-        # robo: observer, then colossus (splash) or immortals. When the library wants
-        # splash, hold for a Colossus rather than defaulting to an Immortal.
-        robo = self.structures(U.ROBOTICSFACILITY).ready.idle
-        if robo:
-            have_obs = self.units(U.OBSERVER).amount + self.already_pending(U.OBSERVER)
-            bay = self.structures(U.ROBOTICSBAY).ready
-            if have_obs == 0 and self.can_afford(U.OBSERVER):
-                robo.first.train(U.OBSERVER)
-            elif bay and self.can_afford(U.COLOSSUS):
-                robo.first.train(U.COLOSSUS)
-            elif bay and comp.need_splash and self.minerals < 300:
-                pass  # hold for a Colossus (splash) instead of an Immortal
-            elif self.can_afford(U.IMMORTAL):
-                robo.first.train(U.IMMORTAL)
-        # stargate: Void Rays for anti-air (BroodLords / Mutas) -- the tech a
-        # ground-only army lacks. This is the transition the library asks for.
-        for sg in self.structures(U.STARGATE).ready.idle:
-            if self.can_afford(U.VOIDRAY):
-                sg.train(U.VOIDRAY)
-        # Escalating: the mineral-heavy tech units (Void Ray 250, Colossus 300) get
-        # starved by cheap gateway Stalkers, leaving the tech buildings idle. If a
-        # Stargate or Robo(+Bay) is waiting and we can't afford its unit yet, hold
-        # the gateway so the minerals bank for it instead of leaking into Stalkers.
-        if comp.escalate_tech and self.minerals < 300:
-            sg_idle = self.structures(U.STARGATE).ready.idle.exists
-            robo_waiting = (self.structures(U.ROBOTICSBAY).ready
-                            and self.structures(U.ROBOTICSFACILITY).ready.idle.exists)
-            if sg_idle or robo_waiting:
-                return  # bank minerals for the Void Ray / Colossus
-        # gateway composition. Principle 3 (don't float): a Zealot costs 0 gas, so
-        # an all-Zealot army hoards gas -- read the bank and make Stalkers when gas
-        # piles up. Diversification comes from the robo (Colossus/Immortal) and
-        # stargate (Void Ray) running in parallel ABOVE, which claim gas first.
-        floating_gas = self.vespene >= 300
-        for gate in self.structures(U.GATEWAY).ready.idle:
-            stalkers = self.units(U.STALKER).amount
-            zealots = self.units(U.ZEALOT).amount
-            can_stalk = self.structures(U.CYBERNETICSCORE).ready and self.can_afford(U.STALKER)
-            if floating_gas:
-                # spend the gas: take a Stalker if affordable; otherwise hold
-                # minerals for one, only making a Zealot if minerals ALSO pile up.
-                if can_stalk:
-                    gate.train(U.STALKER)
-                elif self.minerals >= 300 and self.can_afford(U.ZEALOT):
-                    gate.train(U.ZEALOT)
-                continue
-            # gas healthy: a Zealot front line vs Zerg (1:1), Stalker-heavy else.
-            want_zealot = (zealots <= stalkers if self.enemy_race == Race.Zerg
-                           else zealots * 2 <= stalkers)
-            if want_zealot and self.can_afford(U.ZEALOT):
-                gate.train(U.ZEALOT)
-            elif can_stalk:
-                gate.train(U.STALKER)
-            elif self.can_afford(U.ZEALOT):
-                gate.train(U.ZEALOT)
+        spendable_min = self.minerals - (400 if owe_base else 0)
+        have_tech = frozenset(k for k, uid in TECH_STRUCT.items()
+                              if self.structures(uid).ready)
+        need_obs = (self.structures(U.ROBOTICSFACILITY).ready
+                    and self.units(U.OBSERVER).amount + self.already_pending(U.OBSERVER) == 0)
+        return ProductionState(
+            minerals=max(0.0, spendable_min), vespene=float(self.vespene),
+            mineral_income=self._income()[0], vespene_income=self._income()[1],
+            supply_left=float(self.supply_left),
+            bases=max(1, self.townhalls.ready.amount),
+            gateways=self.structures(U.GATEWAY).amount + self.structures(U.WARPGATE).amount,
+            robos=self.structures(U.ROBOTICSFACILITY).amount,
+            stargates=self.structures(U.STARGATE).amount,
+            ready_gateways=(self.structures(U.GATEWAY).ready.idle.amount
+                            + self.structures(U.WARPGATE).ready.amount),
+            ready_robos=self.structures(U.ROBOTICSFACILITY).ready.idle.amount,
+            ready_stargates=self.structures(U.STARGATE).ready.idle.amount,
+            have_tech=have_tech, need_observer=bool(need_obs),
+        )
+
+    def _income(self):
+        """(mineral, vespene) collection rate per minute, from the game score."""
+        sc = self.state.score
+        return (float(getattr(sc, "collection_rate_minerals", 0)),
+                float(getattr(sc, "collection_rate_vespene", 0)))
+
+    def _desired_gateways(self):
+        """Income-scaled gateway target (strategy_engine.production), capped by bases."""
+        return desired_gateways(ProductionState(
+            0, 0, self._income()[0], 0, 0, bases=max(1, self.townhalls.ready.amount),
+            gateways=0, robos=0, stargates=0, ready_gateways=0, ready_robos=0,
+            ready_stargates=0))
+
+    def _warp_pylon(self):
+        """A powered pylon to warp near -- the one closest to our rally/front."""
+        pylons = self.structures(U.PYLON).ready
+        return pylons.closest_to(self._rally()) if pylons else None
+
+    async def _warp_in(self, warpgate, uid, pylon):
+        """Warp ``uid`` in at a buildable spot near ``pylon``. Returns True if issued."""
+        ability = WARP_ABILITY.get(uid)
+        if ability is None:
+            return False
+        pos = pylon.position.towards(self._rally(), 2).random_on_distance([1, 4])
+        placement = await self.find_placement(ability, pos, placement_step=1)
+        if placement is None:
+            return False
+        return bool(warpgate.warp_in(uid, placement))
 
     def _chrono(self):
         # Chrono technique: in the OPENING, pump probes -- accelerating the worker

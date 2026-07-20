@@ -591,6 +591,63 @@ def test_advisor_includes_macro_and_tactics() -> None:
            and "tactics:" in advice.summary())
 
 
+def test_production_saturates_and_balances() -> None:
+    from .production import ProductionState, plan_production, desired_gateways
+
+    # facility count tracks mineral income: ~1500/min -> ~6 gates, capped by bases.
+    _check("gate target scales with income",
+           desired_gateways(ProductionState(0, 0, 1500, 0, 0, bases=3, gateways=0,
+                                            robos=0, stargates=0, ready_gateways=0,
+                                            ready_robos=0, ready_stargates=0)) == 6)
+    _check("gate target capped by bases",
+           desired_gateways(ProductionState(0, 0, 5000, 0, 0, bases=1, gateways=0,
+                                            robos=0, stargates=0, ready_gateways=0,
+                                            ready_robos=0, ready_stargates=0)) == 3)
+
+    # 3 ready warpgates, gas floating (900 gas, minerals to match): drain gas ->
+    # all Stalkers, and add gateways toward the income target we don't yet have.
+    st = ProductionState(minerals=600, vespene=900, mineral_income=1500,
+                         vespene_income=600, supply_left=20, bases=3, gateways=3,
+                         robos=0, stargates=0, ready_gateways=3, ready_robos=0,
+                         ready_stargates=0, have_tech=frozenset({"CYBERNETICSCORE"}))
+    plan = plan_production(st, comp=None)
+    _check("floating gas -> gateways make the gas unit (Stalker)",
+           plan.gateway_units == ["STALKER", "STALKER", "STALKER"])
+    _check("adds gateways toward the income target", plan.add_gateways == 3)
+    # only what we can afford NOW is issued (200 min -> a single Stalker); the rest
+    # comes next step as income flows. Saturation is across steps, not one batch.
+    st_poor = ProductionState(minerals=200, vespene=900, mineral_income=1500,
+                              vespene_income=600, supply_left=20, bases=3, gateways=3,
+                              robos=0, stargates=0, ready_gateways=3, ready_robos=0,
+                              ready_stargates=0, have_tech=frozenset({"CYBERNETICSCORE"}))
+    _check("issues only what's affordable now",
+           plan_production(st_poor).gateway_units == ["STALKER"])
+
+    # minerals piling, gas dry: make the pure-mineral unit (Zealot), no gas spent.
+    st2 = ProductionState(minerals=900, vespene=20, mineral_income=1600,
+                          vespene_income=50, supply_left=20, bases=3, gateways=6,
+                          robos=0, stargates=0, ready_gateways=2, ready_robos=0,
+                          ready_stargates=0, have_tech=frozenset({"CYBERNETICSCORE"}))
+    _check("floating minerals -> Zealots (no gas)",
+           plan_production(st2).gateway_units == ["ZEALOT", "ZEALOT"])
+
+    # supply-capped: only 2 supply left fits exactly one 2-supply unit, not two.
+    st3 = ProductionState(minerals=1000, vespene=1000, mineral_income=1500,
+                          vespene_income=500, supply_left=2, bases=3, gateways=6,
+                          robos=0, stargates=0, ready_gateways=3, ready_robos=0,
+                          ready_stargates=0, have_tech=frozenset({"CYBERNETICSCORE"}))
+    _check("supply cap limits the batch", len(plan_production(st3).gateway_units) == 1)
+
+    # robo claims gas first and makes an Observer when detection is needed.
+    st4 = ProductionState(minerals=1000, vespene=400, mineral_income=1500,
+                          vespene_income=300, supply_left=20, bases=3, gateways=6,
+                          robos=1, stargates=0, ready_gateways=0, ready_robos=1,
+                          ready_stargates=0, need_observer=True,
+                          have_tech=frozenset({"CYBERNETICSCORE", "ROBOTICSFACILITY"}))
+    _check("robo builds an observer when detection is needed",
+           plan_production(st4).robo_units == ["OBSERVER"])
+
+
 def main() -> None:
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     print(f"running {len(tests)} strategy_engine checks...\n")
