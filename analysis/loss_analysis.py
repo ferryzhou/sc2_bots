@@ -147,12 +147,18 @@ def metrics_at(units, stats, upgrades, pid, t):
     tools consume: the same keys can be produced from another replay (enemy) or
     derived from a pro build guide, then diffed field-by-field. Keeping the metric
     set defined here (not in each caller) keeps every scorecard consistent.
+
+    ``army`` is the supply of army units actually alive (unit tracking); ``workers``
+    is everything else (total supply - army), NOT the tracker's
+    ``workers_active_count`` -- that counts only *mining* probes and undercounts
+    while probes walk to new expansions. This keeps workers/army symmetric with a
+    pro build guide (also total - army), so the head-to-head is apples-to-apples.
     """
-    wk = int(stat_at(stats, pid, t, "workers_active_count"))
     supply = int(stat_at(stats, pid, t, "food_used"))
+    _, army_sup, _ = alive_army(units, pid, t)
     return {
-        "workers": wk,
-        "army": max(0, supply - wk),              # non-worker supply
+        "workers": max(0, supply - int(army_sup)),
+        "army": int(army_sup),
         "supply": supply,
         "bases": bases_at(units, pid, t),
         "tech": tech_at(units, pid, t),
