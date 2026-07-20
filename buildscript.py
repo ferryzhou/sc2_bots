@@ -108,16 +108,23 @@ class BuildScript:
             wants.append(Want(key, cost[0], cost[1], blocking=True))
             by_key[key] = action
         if manage_workers and bot.townhalls.ready.idle and bot.supply_workers < worker_cap:
-            # Workers are ESSENTIAL up to ~saturation of current bases (keep the
-            # economy growing) and only SURPLUS beyond it. So below saturation the
-            # probe outranks the build steps (don't freeze the economy to bank a
-            # Nexus); at/above saturation it drops below them and yields the surplus
-            # to bank tech/expansions. This is the generic "don't over-cut probes".
+            # Where the auto-probe sits in priority. Pro guides list NO continuous
+            # probe production -- the listed army/tech/expansion steps sit ON TOP of
+            # an assumed baseline worker pump. So we reproduce that: the plan's
+            # explicit ARMY steps (the pro's on-time Adepts) rank ABOVE the auto-probe
+            # -- else worker spam starves them (we made 2 Adepts by 5:00 vs the pro's
+            # 6). The probe is the BASELINE beneath them, but still above EXPANSIONS
+            # so a 400 Nexus bank can't freeze the worker pump. At/above saturation it
+            # drops to the very bottom and only spends the surplus.
             saturated = bot.supply_workers >= 16 * max(1, bot.townhalls.amount)
-            if saturated:
-                wants.append(Want("PROBE", 50, 0, blocking=False))
-            elif bot.supply_left > 0:
-                wants.insert(0, Want("PROBE", 50, 0, blocking=True))
+            army = [w for w in wants if by_key[w.key].action == "train"]
+            other = [w for w in wants if by_key[w.key].action != "train"]  # tech + expansions
+            probe = Want("PROBE", 50, 0, blocking=not saturated)
+            # army > probe > tech/expansions (build order). At saturation the probe
+            # drops to the bottom (surplus only). Keeping tech+expansions BELOW the
+            # baseline probe protects the worker ramp -- the economy is the
+            # foundation everything else is paid from.
+            wants = (army + other + [probe]) if saturated else (army + [probe] + other)
         # supply: bank a pylon the instant a block looms, ABOVE everything -- probes
         # can't starve it into a block. (The driver owns supply while manage_workers,
         # so the bot's own supply manager sits out; a block stalls all production.)
