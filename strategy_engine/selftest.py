@@ -594,15 +594,26 @@ def test_advisor_includes_macro_and_tactics() -> None:
 def test_production_saturates_and_balances() -> None:
     from .production import ProductionState, plan_production, desired_gateways
 
-    # facility count tracks mineral income: ~1500/min -> ~6 gates, capped by bases.
+    # facility count tracks mineral income: ~1500/min -> ~5 gates (1500/300).
     _check("gate target scales with income",
            desired_gateways(ProductionState(0, 0, 1500, 0, 0, bases=3, gateways=0,
                                             robos=0, stargates=0, ready_gateways=0,
-                                            ready_robos=0, ready_stargates=0)) == 6)
+                                            ready_robos=0, ready_stargates=0)) == 5)
+    # capped at 2/base so gateways can't out-run the minerals that feed them
+    # (over-building mineral sinks is what left gas floating).
     _check("gate target capped by bases",
            desired_gateways(ProductionState(0, 0, 5000, 0, 0, bases=1, gateways=0,
                                             robos=0, stargates=0, ready_gateways=0,
-                                            ready_robos=0, ready_stargates=0)) == 3)
+                                            ready_robos=0, ready_stargates=0)) == 2)
+    # gas-sink facilities scale with GAS income so a fat gas bank gets spent:
+    # ~1000 gas/min -> ~5 robo+stargate, split between them.
+    from strategy_engine.production import desired_robos, desired_stargates
+    gassy = ProductionState(0, 0, 2000, 1000, 0, bases=6, gateways=0, robos=0,
+                            stargates=0, ready_gateways=0, ready_robos=0,
+                            ready_stargates=0,
+                            have_tech=frozenset({"ROBOTICSFACILITY", "STARGATE"}))
+    _check("robo count grows with gas income", desired_robos(gassy, None) >= 3)
+    _check("stargate count grows with gas income", desired_stargates(gassy, None) >= 3)
 
     # 3 ready warpgates, gas floating (900 gas, minerals to match): drain gas ->
     # all Stalkers, and add gateways toward the income target we don't yet have.
@@ -613,7 +624,7 @@ def test_production_saturates_and_balances() -> None:
     plan = plan_production(st, comp=None)
     _check("floating gas -> gateways make the gas unit (Stalker)",
            plan.gateway_units == ["STALKER", "STALKER", "STALKER"])
-    _check("adds gateways toward the income target", plan.add_gateways == 3)
+    _check("adds gateways toward the income target", plan.add_gateways == 2)
     # only what we can afford NOW is issued (200 min -> a single Stalker); the rest
     # comes next step as income flows. Saturation is across steps, not one batch.
     st_poor = ProductionState(minerals=200, vespene=900, mineral_income=1500,

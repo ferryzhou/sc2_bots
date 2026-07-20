@@ -108,31 +108,47 @@ class ProductionPlan:
     stargate_units: List[str] = field(default_factory=list)
 
 
-# --- facility targets: enough production to spend the income, capped by bases ----
-# One saturated warpgate absorbs very roughly ~250 minerals/min (a ~112-mineral
-# gateway unit every ~28s). So aim gateway count at mineral_income/250, floored to
-# 1 and capped so we don't build more than the bases can power/afford. This
-# reproduces the pro's "5 gates by 5:30" without hardcoding a timing.
-MINS_PER_GATEWAY = 250.0
+# --- facility targets: BALANCE mineral-sink and gas-sink capacity to income ------
+# The failure this balance fixes: gateways are ~pure MINERAL sinks (a Zealot costs
+# no gas), so sizing them to mineral income alone builds a big gateway count that
+# eats the minerals -- while the GAS from the same economy piles up unspent
+# (measured: 2400 floating gas late game). The gas-draining army (Immortal,
+# Colossus, Void Ray) comes from robo/stargate, so those must scale with the GAS
+# income, not sit at a fixed 1-2. Size each producer class to the resource it
+# spends: gateways to minerals, robo+stargate to gas.
+MINS_PER_GATEWAY = 300.0   # a warpgate saturated on Stalkers/Zealots ~= 300 min/min
+GAS_PER_TECH_PROD = 200.0  # a robo/stargate saturated on its unit ~= 200 gas/min
 
 
 def desired_gateways(state: ProductionState) -> int:
     by_income = round(state.mineral_income / MINS_PER_GATEWAY)
-    return int(max(1, min(by_income, 3 * max(1, state.bases))))
+    # cap at 2 per base: beyond that the minerals can't feed them and they idle
+    # (leaving gas to float) -- gas income should go to robo/stargate instead.
+    return int(max(1, min(by_income, 2 * max(1, state.bases))))
+
+
+def _gas_producers_wanted(state: ProductionState) -> int:
+    """How many robo+stargate the GAS income can keep saturated (each ~200 gas/min)."""
+    return int(round(state.vespene_income / GAS_PER_TECH_PROD))
 
 
 def desired_robos(state: ProductionState, comp) -> int:
     if "ROBOTICSFACILITY" not in state.have_tech:
         return 0
-    want = 2 if (getattr(comp, "need_splash", False) or state.vespene_income > 250) else 1
-    return min(want, max(1, state.bases))
+    # split the gas-sink fleet with the stargate; bias to robo when splash is wanted
+    want = 1 + _gas_producers_wanted(state) // 2
+    if getattr(comp, "need_splash", False):
+        want += 1
+    return int(min(want, 1 + state.bases))
 
 
 def desired_stargates(state: ProductionState, comp) -> int:
     if "STARGATE" not in state.have_tech:
         return 0
-    heavy = getattr(comp, "need_anti_air", False) and state.vespene_income > 300
-    return 2 if heavy else 1
+    want = 1 + _gas_producers_wanted(state) // 2
+    if getattr(comp, "need_anti_air", False):
+        want += 1
+    return int(min(want, 1 + state.bases))
 
 
 def _prefer_gas(state: ProductionState) -> bool:
