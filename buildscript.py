@@ -85,16 +85,16 @@ class BuildScript:
         if advice.defense.emergency:
             return True
         have = dict(self._have(bot))
-        # Build a PRIORITY-ORDERED want list, then let the generic allocator
-        # (strategy_engine.spending) bank toward each blocking want so a cheap step
-        # can't starve an expensive one. Priority, highest first:
-        #   PYLON (supply)  >  PROBE below saturation  >  NEXUS (expansion)
-        #     >  other build steps (build order)  >  PROBE above saturation
-        # Two deliberate deviations from raw build order, both pro macro principles:
-        #   * supply first -- a block stalls EVERYTHING, so bank the pylon over probes
-        #     (worker spam starving the pylon is the opening's #1 tempo killer);
-        #   * expansions over tech -- a base compounds, so bank the next Nexus ahead
-        #     of an optional Stargate/upgrade (else the 3rd/4th never gets afforded).
+        # Build a PRIORITY-ORDERED want list (build order), then let the generic
+        # allocator (strategy_engine.spending) bank toward each blocking want so a
+        # cheap step can't starve an expensive one. The one deviation from raw build
+        # order is SUPPLY FIRST: a supply block stalls EVERYTHING, so when a block
+        # looms the pylon is banked above probes and every build step -- worker/army
+        # spam starving the pylon into a block is the opening's #1 tempo killer.
+        # (Expansions are NOT force-sorted ahead of army: banking the whole Nexus
+        # over all unit production leaves us defenceless into a timing attack. The
+        # build order already places the natural early; the supply fix lets the
+        # improved economy afford the later expansions on time on its own.)
         wants = []
         by_key = {}
         for action, key, need in self.executor._required:
@@ -107,8 +107,6 @@ class BuildScript:
                 continue
             wants.append(Want(key, cost[0], cost[1], blocking=True))
             by_key[key] = action
-        # expansions ahead of tech (stable sort keeps build order within each group)
-        wants.sort(key=lambda w: 0 if w.key == "NEXUS" else 1)
         if manage_workers and bot.townhalls.ready.idle and bot.supply_workers < worker_cap:
             # Workers are ESSENTIAL up to ~saturation of current bases (keep the
             # economy growing) and only SURPLUS beyond it. So below saturation the
