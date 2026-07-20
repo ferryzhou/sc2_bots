@@ -11,6 +11,7 @@ from dataclasses import dataclass
 
 from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
+from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as U
 
 from strategy_engine.macro import recommend_macro
@@ -114,20 +115,32 @@ class ArchetypeSparringBot(BotAI):
         # library keeps the supply gate, opening, and production scaling.
         elif self.supply_workers < spec.max_workers:
             if zerg and self.larva and self.can_afford(spec.worker):
-                self.larva.first.train(spec.worker)
+                # drain the whole inject burst, not one larva per frame
+                need = min(spec.max_workers - int(self.supply_workers),
+                           self.minerals // 50, int(self.supply_left))
+                for larva in self.larva[:max(0, need)]:
+                    larva.train(spec.worker)
             elif not zerg and self.can_afford(spec.worker):
                 for t in self.townhalls.ready.idle:
                     t.train(spec.worker)
                     break
-        # 6. zerg macro: queens + injects
+        # 6. zerg macro: queens (scaled to hatch count) + inject hygiene --
+        # injects don't stack, so cast one fresh inject per un-injected hatch
         if spec.queens and self.structures(U.SPAWNINGPOOL).ready:
-            if self.units(U.QUEEN).amount + self.already_pending(U.QUEEN) < spec.queens:
+            want = min(spec.queens, self.townhalls.ready.amount)
+            if self.units(U.QUEEN).amount + self.already_pending(U.QUEEN) < want:
                 for h in self.townhalls.ready.idle:
                     if self.can_afford(U.QUEEN):
                         h.train(U.QUEEN)
                         break
-            for q in self.units(U.QUEEN).filter(lambda q: q.energy >= 25):
-                q(AbilityId.EFFECT_INJECTLARVA, self.townhalls.ready.closest_to(q))
+            free = self.units(U.QUEEN).filter(lambda q: q.energy >= 25)
+            for h in self.townhalls.ready.filter(
+                    lambda h: not h.has_buff(BuffId.QUEENSPAWNLARVATIMER)):
+                if not free:
+                    break
+                q = free.closest_to(h)
+                q(AbilityId.EFFECT_INJECTLARVA, h)
+                free = free.filter(lambda u: u.tag != q.tag)
         # 7. army with everything left, attack at the archetype's timing.
         # Greedy specs spend excess into army (float or near worker cap);
         # rushes spend everything, always.
@@ -208,5 +221,5 @@ class GreedyTerran2(ArchetypeSparringBot):
 
 class GreedyZerg2(ArchetypeSparringBot):
     SPEC = Spec(OPENINGS["zerg_hatch_first"], U.DRONE, U.OVERLORD, U.ZERGLING,
-                max_workers=75, max_bases=6, attack_at=150, queens=6,
+                max_workers=75, max_bases=6, attack_at=150, queens=8,
                 production=U.HATCHERY)  # macro hatcheries = larva engines

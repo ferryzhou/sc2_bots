@@ -128,15 +128,18 @@ Unpressured benchmark (vs Easy AI, supply/min from replay tracker):
 
 | bot | 200 supply at | 8 min | 10 min | workers peak |
 |---|---|---|---|---|
-| greedyz | **11:10** | 101 | 151 | 83 |
+| greedyz | **10:40** | 100 | 175 | 80 |
 | greedyp | **11:30** | 103 | 151 | 69 |
 | greedyt | 13:40 | 91 | 120 | 69 |
 
-A true pro-speed 9-10 min max would additionally need the race-specific
-mechanics the concise executor deliberately omits — mules/orbitals + reactors
-(the whole Terran gap), warpgate, inject/creep optimization. Under VeryHard
-pressure the same specs survive and macro (168-189 peak) but get punished —
-which is exactly the archetype's designed weakness.
+The inject-optimization pass (one fresh inject per un-injected hatch, queens
+scaled to hatch count, draining the whole larva burst per step) took greedyz
+11:10 → 10:40 with a ~42 supply/min late ramp; the residual constraint is the
+4-7 min window (pre-inject larva capacity). A true pro-speed 9-10 min max
+would additionally need the race-specific mechanics the concise executor
+deliberately omits — mules/orbitals + reactors (the whole Terran gap),
+warpgate, creep spread. Under VeryHard pressure the same specs survive and
+macro (168-189 peak) but get punished — the archetype's designed weakness.
 
 ## Mimic a different opponent
 
