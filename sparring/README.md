@@ -113,6 +113,31 @@ cutting probes at 19 before the spec's 22 (the spec cap now governs workers —
 the archetype's economy plan is the deliberate deviation), and no chrono
 boost. After the fixes gas income hit ~300/min and the float dropped to ~100.
 
+## Greedy archetypes (`--bot greedyp|greedyt|greedyz`)
+
+One per race: race to 200 supply, army only from excess, attack only near max
+— the opposite pole from the rushes, for testing *punishing greed* (`STRATEGY.md`:
+counter GREEDY_ECO with aggression) and macro-race endurance. Openings are the
+mined pro expand-first families (`gate_expand` / `rax_expand` / `hatch_first`,
+~100% expand-in-window across the 66-replay pro study); expansion cadence (two
+in flight), production scaling (`recommend_macro`: bases/saturation/float), and
+the supply gate come from the library. Zerg greed uses macro hatcheries as
+larva engines; protoss chronos its own probe queue until gateways are busy.
+
+Unpressured benchmark (vs Easy AI, supply/min from replay tracker):
+
+| bot | 200 supply at | 8 min | 10 min | workers peak |
+|---|---|---|---|---|
+| greedyz | **11:10** | 101 | 151 | 83 |
+| greedyp | **11:30** | 103 | 151 | 69 |
+| greedyt | 13:40 | 91 | 120 | 69 |
+
+A true pro-speed 9-10 min max would additionally need the race-specific
+mechanics the concise executor deliberately omits — mules/orbitals + reactors
+(the whole Terran gap), warpgate, inject/creep optimization. Under VeryHard
+pressure the same specs survive and macro (168-189 peak) but get punished —
+which is exactly the archetype's designed weakness.
+
 ## Mimic a different opponent
 
 1. `python analysis/extract_build_order.py THEIR_REPLAY <pid>` (use the numeric

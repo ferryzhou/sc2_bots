@@ -13,9 +13,12 @@ from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.unit_typeid import UnitTypeId as U
 
+from strategy_engine.macro import recommend_macro
 from strategy_engine.openings import OPENINGS, BuildStep, Opening, OpeningExecutor, Placement
 from strategy_engine.principles import Investment, recommend_investment
 from strategy_engine.state import GameState
+
+TOWNHALL = {U.DRONE: U.HATCHERY, U.PROBE: U.NEXUS, U.SCV: U.COMMANDCENTER}
 
 
 def custom(race: str, *structures: str) -> Opening:
@@ -29,10 +32,11 @@ class Spec:
     worker: U
     supply: U
     army: U
-    max_workers: int   # the rush-defining economy cutoff
+    max_workers: int   # the archetype's own economy plan (cutoff or greed target)
     max_bases: int
     attack_at: int     # attack when this many army units exist
     queens: int = 0    # zerg macro archetypes: queens for larva injects
+    production: U = None  # greedy archetypes: structure recommend_macro scales
 
 
 class ArchetypeSparringBot(BotAI):
@@ -53,13 +57,15 @@ class ArchetypeSparringBot(BotAI):
             vespene=self.vespene, supply_used=int(self.supply_used),
             supply_cap=int(self.supply_cap), supply_left=int(self.supply_left),
             army_supply=self.supply_used - self.supply_workers,
-            production_structures=self.structures(U.GATEWAY).amount or self.townhalls.amount,
+            production_structures=(self.structures(spec.production).amount
+                                   if spec.production else 0) or self.townhalls.amount,
         )
         inv = recommend_investment(state)
 
-        # 1. supply, when the library's gate fires
+        # 1. supply, when the library's gate fires (pending allowance scales
+        # with production so a 200-supply race is never supply-blocked)
         if (inv.top == Investment.SUPPLY and self.can_afford(spec.supply)
-                and self.already_pending(spec.supply) < (2 if zerg else 1)):
+                and self.already_pending(spec.supply) < 1 + state.production_structures // 3):
             if zerg and self.larva:
                 self.larva.first.train(U.OVERLORD)
             elif not zerg:
@@ -81,20 +87,39 @@ class ArchetypeSparringBot(BotAI):
             else:
                 await self.build(U[step.structure.upper()],
                                  near=th.position.towards(self.game_info.map_center, 5))
-        # 3. workers up to the spec's cap -- the archetype's own economy plan
-        # governs here (the library's 85%-saturation rule would stop short of
-        # e.g. the stalker bot's exact 22 probes); the library keeps the
-        # supply gate and the opening.
+        # 3. macro archetypes: expand (any race). Expansions are the income
+        # ramp, so greedy specs keep two in flight; others one at a time.
+        elif (self.townhalls.amount + self.already_pending(TOWNHALL[spec.worker])
+                < spec.max_bases
+                and self.can_afford(TOWNHALL[spec.worker])
+                and self.already_pending(TOWNHALL[spec.worker])
+                < (2 if spec.production else 1)):
+            await self.expand_now()
+        # 4. greedy archetypes: production count set by the library
+        # (recommend_macro scales it with bases, saturation, and float).
+        # Reserve the bank for the next expansion until the base count is met
+        # -- without this, production siphons the nexus/CC money and the
+        # 200-supply race stalls on two bases.
+        elif spec.production and self.can_afford(spec.production) and (
+                self.townhalls.amount >= spec.max_bases or self.minerals > 450) and (
+                self.structures(spec.production).amount
+                + self.already_pending(spec.production)
+                < recommend_macro(state, inv).target_production
+                and self.already_pending(spec.production)
+                < recommend_macro(state, inv).allow_parallel_build):
+            await self.build(spec.production,
+                             near=th.position.towards(self.game_info.map_center, 5))
+        # 5. workers up to the spec's cap -- the archetype's own economy plan
+        # governs (a rush cuts at 13-22; a greedy spec drones to 66+); the
+        # library keeps the supply gate, opening, and production scaling.
         elif self.supply_workers < spec.max_workers:
             if zerg and self.larva and self.can_afford(spec.worker):
                 self.larva.first.train(spec.worker)
-            elif not zerg and th.is_idle and self.can_afford(spec.worker):
-                th.train(spec.worker)
-        # 4. macro archetypes (zerg only so far): expand, one in flight at a time
-        elif (zerg and self.townhalls.amount < spec.max_bases
-                and self.can_afford(U.HATCHERY) and not self.already_pending(U.HATCHERY)):
-            await self.expand_now()
-        # 5. zerg macro: queens + injects
+            elif not zerg and self.can_afford(spec.worker):
+                for t in self.townhalls.ready.idle:
+                    t.train(spec.worker)
+                    break
+        # 6. zerg macro: queens + injects
         if spec.queens and self.structures(U.SPAWNINGPOOL).ready:
             if self.units(U.QUEEN).amount + self.already_pending(U.QUEEN) < spec.queens:
                 for h in self.townhalls.ready.idle:
@@ -103,19 +128,28 @@ class ArchetypeSparringBot(BotAI):
                         break
             for q in self.units(U.QUEEN).filter(lambda q: q.energy >= 25):
                 q(AbilityId.EFFECT_INJECTLARVA, self.townhalls.ready.closest_to(q))
-        # 6. army with everything left, attack at the archetype's timing
-        if zerg and self.structures(U.SPAWNINGPOOL).ready:
+        # 7. army with everything left, attack at the archetype's timing.
+        # Greedy specs spend excess into army (float or near worker cap);
+        # rushes spend everything, always.
+        reserve = 450 if self.townhalls.amount < spec.max_bases else 300
+        eco_first = spec.production and self.minerals < reserve and (
+            self.supply_workers < spec.max_workers - 4)
+        train_from = spec.production or U.GATEWAY
+        if eco_first:
+            pass
+        elif zerg and self.structures(U.SPAWNINGPOOL).ready:
             for larva in self.larva:
                 if self.can_afford(spec.army) and self.supply_left > 0:
                     larva.train(spec.army)
         elif not zerg and self.tech_requirement_progress(spec.army) == 1:
-            for g in self.structures(U.GATEWAY).ready.idle:
+            for g in self.structures(train_from).ready.idle:
                 if self.can_afford(spec.army) and self.supply_left > 1:
                     g.train(spec.army)
-            busy = self.structures(U.GATEWAY).ready.filter(lambda g: not g.is_idle)
+            busy = self.structures(train_from).ready.filter(lambda g: not g.is_idle)
             for n in self.townhalls.filter(lambda n: n.energy >= 50):
-                if busy:
-                    n(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy.first)
+                tgt = busy.first if busy else (n if not n.is_idle else None)
+                if tgt:  # boost army production, else our own probe queue
+                    n(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, tgt)
                     break
         if army.amount >= spec.attack_at:
             target = (self.enemy_structures.random.position if self.enemy_structures
@@ -154,3 +188,25 @@ class OneBaseStalker2(ArchetypeSparringBot):
     SPEC = Spec(custom("Protoss", "Pylon", "Gateway", "Assimilator", "CyberneticsCore",
                        "Assimilator", "Gateway", "Pylon", "Gateway", "Gateway"),
                 U.PROBE, U.PYLON, U.STALKER, max_workers=22, max_bases=1, attack_at=8)
+
+
+# Greedy archetypes: race to 200 supply (~9-11 min), army only from excess.
+# Openings are the mined pro expand-first families (analysis/OPENING_PATTERNS.md:
+# gate_expand / rax_expand / hatch_first, each ~100% expand-in-window across 66
+# pro replays); expansion count, production scaling (recommend_macro), and the
+# supply gate come from the library. Attack only near max.
+
+class GreedyProtoss2(ArchetypeSparringBot):
+    SPEC = Spec(OPENINGS["protoss_gate_expand"], U.PROBE, U.PYLON, U.ZEALOT,
+                max_workers=66, max_bases=4, attack_at=50, production=U.GATEWAY)
+
+
+class GreedyTerran2(ArchetypeSparringBot):
+    SPEC = Spec(OPENINGS["terran_rax_expand"], U.SCV, U.SUPPLYDEPOT, U.MARINE,
+                max_workers=66, max_bases=4, attack_at=100, production=U.BARRACKS)
+
+
+class GreedyZerg2(ArchetypeSparringBot):
+    SPEC = Spec(OPENINGS["zerg_hatch_first"], U.DRONE, U.OVERLORD, U.ZERGLING,
+                max_workers=75, max_bases=6, attack_at=150, queens=6,
+                production=U.HATCHERY)  # macro hatcheries = larva engines
