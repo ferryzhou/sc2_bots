@@ -130,8 +130,13 @@ def recommend_macro(state: GameState, investment: InvestmentAdvice) -> MacroPlan
     if force_train:
         reasons.append("high spend urgency + idle production: force units now")
 
-    # Worker cap: ~22/bases + small surplus for transfers; hard-cap 80.
-    worker_cap = min(80, 22 * bases + 4)
+    # Worker cap. Pros deliberately UNDER-saturate in the mid-game -- ~16 workers a
+    # base (2/mineral patch) plus gas, capping around ~66-70 total -- and pour the
+    # rest of the economy into ARMY. Sizing to full 22/base saturation (up to 80+)
+    # over-drones: those extra ~15 probes eat the minerals that should buy Stalkers/
+    # Immortals, so the army stays small and gas floats (measured: 82 workers / 18
+    # army supply at 10:00 while gas piled to 1100). Cap ~16/base, hard-cap 70.
+    worker_cap = min(70, 16 * bases + 6)
 
     # Allow parallel production construction when floating (so we don't serialize
     # our way out of a float one building at a time).
