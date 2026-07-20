@@ -34,6 +34,8 @@ from strategy_engine import (
     ProductionState,
     plan_production,
     desired_gateways,
+    desired_robos,
+    desired_stargates,
 )
 
 # gateway unit token -> its warp-in ability (for warpgate production)
@@ -462,25 +464,22 @@ class AiurBot(BotAI):
                 and not self.structures(U.ROBOTICSBAY) and self.already_pending(U.ROBOTICSBAY) == 0
                 and self.townhalls.amount >= 2 and self.can_afford(U.ROBOTICSBAY)):
             await self.build(U.ROBOTICSBAY, near=pylon)
-        # scale robotics production with floating gas: each robo trains Immortal
-        # (100 gas) / Colossus (200 gas), the gas sink a gateway army lacks. This
-        # is what actually stops the gas pile a Zealot/Stalker mix leaves behind.
+        # scale robo + stargate with GAS income (strategy_engine.production): these
+        # are the gas sinks (Immortal/Colossus/Void Ray), so their count tracks the
+        # gas the economy makes -- the fix for floating gas while out-mining but
+        # under-arming. desired_robos/stargates already fold in splash/anti-air need.
         robos = self.structures(U.ROBOTICSFACILITY).amount + self.already_pending(U.ROBOTICSFACILITY)
-        if (self.vespene >= 400 and self.structures(U.ROBOTICSFACILITY).ready
-                and robos < min(3, self.townhalls.amount)
+        if (self.structures(U.ROBOTICSFACILITY).ready and robos < desired_robos(
+                self._facility_state(), advice.composition)
                 and self.already_pending(U.ROBOTICSFACILITY) == 0
                 and self.can_afford(U.ROBOTICSFACILITY)):
             await self.build(U.ROBOTICSFACILITY, near=pylon)
-        # tech transition (library composition advice): Stargate -> Void Rays, the
-        # anti-air / anti-BroodLord a ground army lacks. Start EARLY on escalation
-        # (waiting until air is scouted is too late to build + mass them), and scale
-        # a 2nd stargate with floating gas so the fleet arrives in time.
         comp = advice.composition
-        if ((comp.escalate_tech or comp.need_anti_air)
+        if ((comp.escalate_tech or comp.need_anti_air or self.vespene >= 300)
                 and self.structures(U.CYBERNETICSCORE).ready):
             stargates = self.structures(U.STARGATE).amount + self.already_pending(U.STARGATE)
-            cap = 2 if self.vespene >= 500 else 1
-            if (stargates < cap and self.already_pending(U.STARGATE) == 0
+            if (stargates < desired_stargates(self._facility_state(), comp)
+                    and self.already_pending(U.STARGATE) == 0
                     and self.can_afford(U.STARGATE)):
                 await self.build(U.STARGATE, near=pylon)
         # scale gateways with INCOME (strategy_engine.production): add a Gateway
@@ -629,12 +628,20 @@ class AiurBot(BotAI):
         return (float(getattr(sc, "collection_rate_minerals", 0)),
                 float(getattr(sc, "collection_rate_vespene", 0)))
 
+    def _facility_state(self):
+        """Minimal ProductionState for the library's facility-count targets: it only
+        reads income, bases, and which tech is up."""
+        mi, vi = self._income()
+        return ProductionState(
+            0, 0, mi, vi, 0, bases=max(1, self.townhalls.ready.amount),
+            gateways=0, robos=0, stargates=0, ready_gateways=0, ready_robos=0,
+            ready_stargates=0,
+            have_tech=frozenset(k for k, uid in TECH_STRUCT.items()
+                                if self.structures(uid).ready))
+
     def _desired_gateways(self):
         """Income-scaled gateway target (strategy_engine.production), capped by bases."""
-        return desired_gateways(ProductionState(
-            0, 0, self._income()[0], 0, 0, bases=max(1, self.townhalls.ready.amount),
-            gateways=0, robos=0, stargates=0, ready_gateways=0, ready_robos=0,
-            ready_stargates=0))
+        return desired_gateways(self._facility_state())
 
     def _warp_pylon(self):
         """A powered pylon to warp near -- the one closest to our rally/front."""
