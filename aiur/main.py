@@ -356,9 +356,12 @@ class AiurBot(BotAI):
                 await self._do_expansion()
 
     async def _prep_expansion(self):
-        """Pre-send a probe to the next base when we're close to affording it, so
-        the Nexus is placed the instant the bank crosses 400 -- travel overlaps
-        banking instead of following it (saves ~30-40s per expansion). Pro basic."""
+        """Pre-send a probe to the next base while still banking the Nexus, so it's
+        ON-SITE the instant the bank crosses 400 and the Nexus goes down immediately
+        -- travel (~40s) overlaps banking instead of following it. The measured cost
+        of sending too late (at 260, only ~11s before we can afford it) was the Nexus
+        landing ~40s after we could pay for it. Send as soon as it's the next step and
+        we have a third of the cost banked, so the whole travel is hidden. Pro basic."""
         if self.already_pending(U.NEXUS):
             self._expo_loc = self._expo_probe = None
             return
@@ -367,7 +370,7 @@ class AiurBot(BotAI):
         loc = self._expo_loc
         if loc is None:
             return
-        if self.minerals >= 260 and self._expo_probe is None and self.workers.gathering:
+        if self.minerals >= 150 and self._expo_probe is None and self.workers.gathering:
             w = self.workers.gathering.closest_to(loc)
             if w is not None:
                 self._expo_probe = w.tag

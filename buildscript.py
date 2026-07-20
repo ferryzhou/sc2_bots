@@ -108,24 +108,21 @@ class BuildScript:
             wants.append(Want(key, cost[0], cost[1], blocking=True))
             by_key[key] = action
         if manage_workers and bot.townhalls.ready.idle and bot.supply_workers < worker_cap:
-            # Where the auto-probe sits in priority. Pro guides list NO continuous
-            # probe production -- the listed steps sit ON TOP of an assumed baseline
-            # worker pump. Reproduce that with the whole scripted plan above the probe,
-            # split only so a big EXPANSION bank can't freeze the pump:
-            #   army + tech/structures (build order)  >  baseline PROBE  >  expansions
-            # The army-engine critical path -- Gateway -> Cyber -> Warp Gate -- MUST be
-            # above the probe, or worker spam delays it and the whole army comes online
-            # minutes late (measured: Warp Gate at ~6:00 vs the pro's 2:26). Expansions
-            # (400) sit below the probe so banking the next Nexus doesn't stall workers.
-            # At/above saturation the probe drops to the very bottom (surplus only).
-            saturated = bot.supply_workers >= 16 * max(1, bot.townhalls.amount)
-            # Within the plan, order: army units + army-enabling RESEARCH first, then
-            # secondary structures, then (below the probe) expansions. Research (Warp
-            # Gate, Blink, weapons) is cheap and unlocks army tempo, so it must not
-            # wait behind a 150-mineral secondary structure -- Warp Gate research
-            # stuck behind the Stargate is what kept the army engine ~4 min late
-            # (6:20 vs the pro's 2:26). It only becomes a want once its prereq
-            # structure is up, so ranking it above structures is safe.
+            # ECONOMY FIRST -- and the pro's economy is EXPANSIONS, not just probes.
+            # A pro is on 4 bases by 5:00 (natural 0:51, 3rd 3:37, 4th 4:21); each base
+            # is another probe-production line, which is how they reach 44 workers at
+            # 5:00. One base caps the worker ramp at ~24 no matter how we prioritise
+            # probes -- so the next Nexus must be banked ABOVE the baseline probe (it
+            # multiplies future probe output), and the probe sits just below it, above
+            # army/tech, so workers then ramp continuously on the new bases. Army/tech
+            # bank from the surplus below -- later, deliberately: economy compounds.
+            #   PYLON  >  next NEXUS  >  baseline PROBE  >  army units > research > structures
+            # (An earlier ordering with the probe on top starved the natural to 4:45 --
+            # stuck on one base, 26 workers at 5:00; ordering tech above the probe
+            # stalled workers at 16. Expansions on top fixes both.) At/above saturation
+            # the probe drops to the bottom (surplus only).
+            bases_soon = bot.townhalls.amount + bot.already_pending(U.NEXUS)
+            saturated = bot.supply_workers >= 16 * max(1, bases_soon)
             act = lambda w: by_key[w.key].action
             trains = [w for w in wants if act(w) == "train"]
             research = [w for w in wants if act(w) == "research"]
@@ -133,7 +130,7 @@ class BuildScript:
             nexus = [w for w in wants if w.key == "NEXUS"]
             army_tech = trains + research + builds
             probe = Want("PROBE", 50, 0, blocking=not saturated)
-            wants = (army_tech + nexus + [probe]) if saturated else (army_tech + [probe] + nexus)
+            wants = (army_tech + nexus + [probe]) if saturated else (nexus + [probe] + army_tech)
         # supply: bank a pylon the instant a block looms, ABOVE everything -- probes
         # can't starve it into a block. (The driver owns supply while manage_workers,
         # so the bot's own supply manager sits out; a block stalls all production.)
