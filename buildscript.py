@@ -85,13 +85,16 @@ class BuildScript:
         if advice.defense.emergency:
             return True
         have = dict(self._have(bot))
-        # Build a PRIORITY-ORDERED want list from the due, prereq-ready, unmet steps
-        # (Pylons excluded -- the bot's supply manager owns those), then let the
-        # generic allocator (strategy_engine.spending) decide what to issue: it
-        # banks toward each blocking step in build order so cheap steps can't starve
-        # an expensive one (Nexus behind a Cyber Core), and -- with manage_workers --
-        # probes are a SOFT want below them, so worker production pauses to bank the
-        # Nexus and resumes on the surplus. Same primitive works for any plan.
+        # Build a PRIORITY-ORDERED want list, then let the generic allocator
+        # (strategy_engine.spending) bank toward each blocking want so a cheap step
+        # can't starve an expensive one. Priority, highest first:
+        #   PYLON (supply)  >  PROBE below saturation  >  NEXUS (expansion)
+        #     >  other build steps (build order)  >  PROBE above saturation
+        # Two deliberate deviations from raw build order, both pro macro principles:
+        #   * supply first -- a block stalls EVERYTHING, so bank the pylon over probes
+        #     (worker spam starving the pylon is the opening's #1 tempo killer);
+        #   * expansions over tech -- a base compounds, so bank the next Nexus ahead
+        #     of an optional Stargate/upgrade (else the 3rd/4th never gets afforded).
         wants = []
         by_key = {}
         for action, key, need in self.executor._required:
@@ -104,8 +107,9 @@ class BuildScript:
                 continue
             wants.append(Want(key, cost[0], cost[1], blocking=True))
             by_key[key] = action
-        if (manage_workers and bot.townhalls.ready.idle and bot.supply_left > 0
-                and bot.supply_workers < worker_cap):
+        # expansions ahead of tech (stable sort keeps build order within each group)
+        wants.sort(key=lambda w: 0 if w.key == "NEXUS" else 1)
+        if manage_workers and bot.townhalls.ready.idle and bot.supply_workers < worker_cap:
             # Workers are ESSENTIAL up to ~saturation of current bases (keep the
             # economy growing) and only SURPLUS beyond it. So below saturation the
             # probe outranks the build steps (don't freeze the economy to bank a
@@ -114,8 +118,13 @@ class BuildScript:
             saturated = bot.supply_workers >= 16 * max(1, bot.townhalls.amount)
             if saturated:
                 wants.append(Want("PROBE", 50, 0, blocking=False))
-            else:
+            elif bot.supply_left > 0:
                 wants.insert(0, Want("PROBE", 50, 0, blocking=True))
+        # supply: bank a pylon the instant a block looms, ABOVE everything -- probes
+        # can't starve it into a block. (The driver owns supply while manage_workers,
+        # so the bot's own supply manager sits out; a block stalls all production.)
+        if manage_workers and self._supply_needed(bot):
+            wants.insert(0, Want("PYLON", 100, 0, blocking=True))
         # pre-send the builder probe while banking a Nexus, so it's placed the
         # instant we can afford it (travel overlaps banking).
         if any(w.key == "NEXUS" for w in wants) and hasattr(bot, "bs_prep_expansion"):
@@ -123,11 +132,25 @@ class BuildScript:
         for key in plan_spend(bot.minerals, bot.vespene, wants):
             if key == "PROBE":
                 bot.townhalls.ready.idle.first.train(U.PROBE)
+            elif key == "PYLON":
+                await self._build_structure(bot, U.PYLON, "PYLON")
             else:
                 await self._issue(bot, by_key[key])
         if not any(have.get(k, 0) < n for _, k, n in self.executor._required):
             self.active = False
         return True
+
+    @staticmethod
+    def _supply_needed(bot):
+        """True when a supply block is near: build a pylon well ahead of the cap,
+        scaling the lead with how fast we can spend supply (more producers + bases
+        raise the buffer, so a fast worker/warp-in ramp never runs into the cap)."""
+        if bot.supply_cap >= 200 or not bot.townhalls.ready:
+            return False
+        producers = bot.structures(U.GATEWAY).amount + bot.structures(U.WARPGATE).amount
+        buffer = 3 + 2 * (producers + bot.townhalls.ready.amount)
+        pending = bot.already_pending(U.PYLON) * 8
+        return bot.supply_left + pending <= buffer
 
     def _ready(self, bot, action):
         """Cheap prereq check: could this step be issued if we could afford it?

@@ -264,17 +264,18 @@ class AiurBot(BotAI):
         # Supply, probes, and chrono always run adaptively (avoid supply blocks,
         # never stop workers). The rest is either driven by a scripted build (the
         # --build opening, reproducing a pro benchmark) or the reactive managers.
-        await self._supply(advice)
         self._chrono()
         scripted = (self.build_script is not None and self.build_script.active
                     and not advice.defense.emergency)
         if scripted:
-            # the script OWNS tech/army/expansion/gas AND workers while active (so
-            # probes yield to the Nexus via the shared allocator); still defend.
+            # the script OWNS supply/tech/army/expansion/gas AND workers while active
+            # (probes and pylons yield to the Nexus via the shared allocator, so the
+            # opening never supply-blocks or starves an expansion); still defend.
             await self.build_script.step(self, advice, manage_workers=True,
                                          worker_cap=advice.macro.worker_cap)
             await self._defense(advice)
             return
+        await self._supply(advice)
         self._probes(advice)
         await self._gas()
         await self._expand(advice)
