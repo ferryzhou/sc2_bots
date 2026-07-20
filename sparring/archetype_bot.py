@@ -87,10 +87,13 @@ class ArchetypeSparringBot(BotAI):
             else:
                 await self.build(U[step.structure.upper()],
                                  near=th.position.towards(self.game_info.map_center, 5))
-        # 3. macro archetypes: expand (any race), one in flight at a time
-        elif (self.townhalls.amount < spec.max_bases
+        # 3. macro archetypes: expand (any race). Expansions are the income
+        # ramp, so greedy specs keep two in flight; others one at a time.
+        elif (self.townhalls.amount + self.already_pending(TOWNHALL[spec.worker])
+                < spec.max_bases
                 and self.can_afford(TOWNHALL[spec.worker])
-                and not self.already_pending(TOWNHALL[spec.worker])):
+                and self.already_pending(TOWNHALL[spec.worker])
+                < (2 if spec.production else 1)):
             await self.expand_now()
         # 4. greedy archetypes: production count set by the library
         # (recommend_macro scales it with bases, saturation, and float).
@@ -144,8 +147,9 @@ class ArchetypeSparringBot(BotAI):
                     g.train(spec.army)
             busy = self.structures(train_from).ready.filter(lambda g: not g.is_idle)
             for n in self.townhalls.filter(lambda n: n.energy >= 50):
-                if busy:
-                    n(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy.first)
+                tgt = busy.first if busy else (n if not n.is_idle else None)
+                if tgt:  # boost army production, else our own probe queue
+                    n(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, tgt)
                     break
         if army.amount >= spec.attack_at:
             target = (self.enemy_structures.random.position if self.enemy_structures
@@ -204,5 +208,5 @@ class GreedyTerran2(ArchetypeSparringBot):
 
 class GreedyZerg2(ArchetypeSparringBot):
     SPEC = Spec(OPENINGS["zerg_hatch_first"], U.DRONE, U.OVERLORD, U.ZERGLING,
-                max_workers=70, max_bases=5, attack_at=150, queens=5,
+                max_workers=75, max_bases=6, attack_at=150, queens=6,
                 production=U.HATCHERY)  # macro hatcheries = larva engines
