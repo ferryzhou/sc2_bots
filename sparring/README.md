@@ -130,7 +130,7 @@ Unpressured benchmark (vs Easy AI, supply/min from replay tracker):
 |---|---|---|---|---|
 | greedyz | **10:00** | 121 | 200 | 79 |
 | greedyp | **11:10** | 103 | 155 | 69 |
-| greedyt | **12:40** | 92 | 130 | 69 |
+| greedyt | **12:20** | 91 | 136 | 69 |
 
 Two optimization rounds took greedyz 11:10 → **10:00 exactly**: the inject
 pass (one fresh inject per un-injected hatch, queens scaled to hatch count,
@@ -144,13 +144,17 @@ Protoss and terran then got their signature mechanics, gated to greedy specs
 so the rushes stay untouched: **warpgate** (research → morph gates → warp-in;
 warpgates count as gateways everywhere production is counted) took greedyp
 11:30 → 11:10 with 12 warpgates warping the zealot flood, and
-**orbitals + MULEs** took greedyt 13:40 → 12:40 (8 orbitals, 25 MULEs).
-These times are near race-realistic pro pace — zerg is *the* fast-max race
-(~9-10 min pro), while pro protoss/terran maxouts run ~11-12 min. The
-remaining terran minute is reactors (double marine production per rax), left
-out to keep add-on placement logic out of the executor. Under VeryHard
-pressure the same specs survive and macro (168-189 peak) but get punished —
-the archetype's designed weakness.
+**orbitals + MULEs** took greedyt 13:40 → 12:40 (8 orbitals, 25 MULEs), then
+**reactors** on every second rax took it to 12:20 — built with a
+lift-and-re-land fallback when the rax lacks add-on room (the silent add-on
+failure behind the aegis 0-tank games), and trained via two production slots
+while a reactor is attached (7 reactors, 156 marines off 17 rax, the whole
+mid-curve lifted: 196 vs 179 supply at 12:00). These times are near
+race-realistic pro pace — zerg is *the* fast-max race (~9-10 min pro), while
+pro protoss/terran maxouts run ~11-12 min. Terran's residual gap is
+income-curve shape (mule timing, CC-first openings) — diminishing returns
+from here. Under VeryHard pressure the same specs survive and macro (168-189
+peak) but get punished — the archetype's designed weakness.
 
 ## Mimic a different opponent
 
