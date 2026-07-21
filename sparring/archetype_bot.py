@@ -14,6 +14,7 @@ from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as U
 from sc2.ids.upgrade_id import UpgradeId
+from sc2.position import Point2
 
 from strategy_engine.macro import recommend_macro
 from strategy_engine.openings import OPENINGS, BuildStep, Opening, OpeningExecutor, Placement
@@ -155,6 +156,26 @@ class ArchetypeSparringBot(BotAI):
                         cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND)
             for ob in self.townhalls(U.ORBITALCOMMAND).filter(lambda o: o.energy >= 50):
                 ob(AbilityId.CALLDOWNMULE_CALLDOWNMULE, self.mineral_field.closest_to(ob))
+            # reactors on every second rax: two marines at once per reactor.
+            # Lift-and-re-land when the rax has no add-on room (the silent
+            # add-on failure behind the aegis 0-tank games).
+            rax = self.structures(U.BARRACKS).ready
+            n_reactors = (self.structures(U.BARRACKSREACTOR).amount
+                          + self.already_pending(U.BARRACKSREACTOR))
+            if n_reactors < rax.amount // 2 and self.can_afford(U.BARRACKSREACTOR):
+                for b in rax.idle.filter(lambda b: not b.has_add_on):
+                    if self._addon_room(b.position):
+                        b.build(U.BARRACKSREACTOR)
+                    else:
+                        b(AbilityId.LIFT)
+                    break
+            for flyer in self.structures(U.BARRACKSFLYING).idle:
+                spots = [(th.position + Point2((dx, dy))).rounded
+                         for dx in range(-9, 10, 3) for dy in range(-9, 10, 3)]
+                spot = next((s for s in spots if self.in_placement_grid(s)
+                             and self._addon_room(s)), None)
+                if spot:
+                    flyer(AbilityId.LAND, spot)
         elif spec.production and spec.worker == U.PROBE:
             cyber = self.structures(U.CYBERNETICSCORE).ready
             if (cyber and self.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) == 0
@@ -188,7 +209,10 @@ class ArchetypeSparringBot(BotAI):
                         wg_train, pylons.random.position, placement_step=1)
                     if pos:
                         wg.warp_in(spec.army, pos)
-            for g in self.structures(train_from).ready.idle:
+            # reactored rax have two production slots: train while orders < 2
+            reactors = self.structures(U.BARRACKSREACTOR).ready.tags
+            for g in self.structures(train_from).ready.filter(
+                    lambda b: len(b.orders) < (2 if b.add_on_tag in reactors else 1)):
                 if self.can_afford(spec.army) and self.supply_left > 1:
                     g.train(spec.army)
             busy = self.structures(train_from).ready.filter(lambda g: not g.is_idle)
@@ -202,6 +226,13 @@ class ArchetypeSparringBot(BotAI):
                       else self.enemy_start_locations[0])
             for u in army.idle:
                 u.attack(target)
+
+    def _addon_room(self, pos) -> bool:
+        """Free 2x2 to the building's right where an add-on lands."""
+        pts = [(pos + Point2((2.5, -0.5)) + Point2((x - 0.5, y - 0.5))).rounded
+               for x in range(2) for y in range(2)]
+        return all(self.in_map_bounds(p) and self.in_placement_grid(p)
+                   and self.in_pathing_grid(p) for p in pts)
 
     def _exec(self) -> OpeningExecutor:
         if not hasattr(self, "_executor"):
