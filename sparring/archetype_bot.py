@@ -13,6 +13,7 @@ from sc2.bot_ai import BotAI
 from sc2.ids.ability_id import AbilityId
 from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as U
+from sc2.ids.upgrade_id import UpgradeId
 
 from strategy_engine.macro import recommend_macro
 from strategy_engine.openings import OPENINGS, BuildStep, Opening, OpeningExecutor, Placement
@@ -52,13 +53,19 @@ class ArchetypeSparringBot(BotAI):
             return
         th, zerg = self.townhalls.first, spec.worker == U.DRONE
         await self.distribute_workers()  # keep gas geysers actually worked
+
+        def n_of(s: U) -> int:
+            # warpgates are morphed gateways -- count them as the same thing
+            n = self.structures(s).amount + int(self.already_pending(s))
+            return n + (self.structures(U.WARPGATE).amount if s == U.GATEWAY else 0)
+
         state = GameState(
             game_time=self.time, worker_count=int(self.supply_workers),
             base_count=self.townhalls.amount, minerals=self.minerals,
             vespene=self.vespene, supply_used=int(self.supply_used),
             supply_cap=int(self.supply_cap), supply_left=int(self.supply_left),
             army_supply=self.supply_used - self.supply_workers,
-            production_structures=(self.structures(spec.production).amount
+            production_structures=(n_of(spec.production)
                                    if spec.production else 0) or self.townhalls.amount,
         )
         inv = recommend_investment(state)
@@ -72,8 +79,7 @@ class ArchetypeSparringBot(BotAI):
             elif not zerg:
                 await self.build(spec.supply, near=th.position.towards(self.game_info.map_center, 6))
         # 2. the archetype's opening build (OpeningExecutor decides what's next)
-        have = {s.structure: self.structures(U[s.structure.upper()]).amount
-                + int(self.already_pending(U[s.structure.upper()]))
+        have = {s.structure: n_of(U[s.structure.upper()])
                 - (1 if s.structure in ("Hatchery", "Nexus", "CommandCenter") else 0)
                 for s, _ in self._exec()._required}
         step = self._exec().next_step(have)
@@ -103,9 +109,7 @@ class ArchetypeSparringBot(BotAI):
         # 200-supply race stalls on two bases.
         elif spec.production and self.can_afford(spec.production) and (
                 self.townhalls.amount >= spec.max_bases or self.minerals > 450) and (
-                self.structures(spec.production).amount
-                + self.already_pending(spec.production)
-                < recommend_macro(state, inv).target_production
+                n_of(spec.production) < recommend_macro(state, inv).target_production
                 and self.already_pending(spec.production)
                 < recommend_macro(state, inv).allow_parallel_build):
             await self.build(spec.production,
@@ -141,6 +145,24 @@ class ArchetypeSparringBot(BotAI):
                 q = free.closest_to(h)
                 q(AbilityId.EFFECT_INJECTLARVA, h)
                 free = free.filter(lambda u: u.tag != q.tag)
+        # 6b. greedy race mechanics -- the income/production cycles a
+        # 200-supply race is actually gated on (mules for terran, warpgate
+        # for protoss). Greedy specs only; rushes stay untouched.
+        if spec.production and spec.worker == U.SCV:
+            if self.structures(U.BARRACKS).ready:
+                for cc in self.townhalls(U.COMMANDCENTER).ready.idle:
+                    if self.can_afford(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND):
+                        cc(AbilityId.UPGRADETOORBITAL_ORBITALCOMMAND)
+            for ob in self.townhalls(U.ORBITALCOMMAND).filter(lambda o: o.energy >= 50):
+                ob(AbilityId.CALLDOWNMULE_CALLDOWNMULE, self.mineral_field.closest_to(ob))
+        elif spec.production and spec.worker == U.PROBE:
+            cyber = self.structures(U.CYBERNETICSCORE).ready
+            if (cyber and self.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) == 0
+                    and self.can_afford(UpgradeId.WARPGATERESEARCH)):
+                cyber.first.research(UpgradeId.WARPGATERESEARCH)
+            if self.already_pending_upgrade(UpgradeId.WARPGATERESEARCH) == 1:
+                for g in self.structures(U.GATEWAY).ready.idle:
+                    g(AbilityId.MORPH_WARPGATE)
         # 7. army with everything left, attack at the archetype's timing.
         # Greedy specs spend excess into army (float or near worker cap);
         # rushes spend everything, always.
@@ -155,6 +177,17 @@ class ArchetypeSparringBot(BotAI):
                 if self.can_afford(spec.army) and self.supply_left > 0:
                     larva.train(spec.army)
         elif not zerg and self.tech_requirement_progress(spec.army) == 1:
+            wg_train = getattr(AbilityId, f"WARPGATETRAIN_{spec.army.name}", None)
+            pylons = self.structures(U.PYLON).ready
+            for wg in self.structures(U.WARPGATE).ready:
+                if not (wg_train and pylons and self.can_afford(spec.army)
+                        and self.supply_left > 1):
+                    break
+                if wg_train in await self.get_available_abilities(wg):
+                    pos = await self.find_placement(
+                        wg_train, pylons.random.position, placement_step=1)
+                    if pos:
+                        wg.warp_in(spec.army, pos)
             for g in self.structures(train_from).ready.idle:
                 if self.can_afford(spec.army) and self.supply_left > 1:
                     g.train(spec.army)
