@@ -176,6 +176,13 @@ printed at game start (`RandomSparringBot: race=... archetype=...`) and
 to reproduce a specific game. Local testing only; it is not wired into the
 ladder zip.
 
+Validated headless vs VeryHard Terran (8-min cap): the engine assigned Zerg,
+Terran, Zerg across three Race.Random games and the bot picked and played
+TwelvePool2 (**Win**), GreedyTerran2 (Tie at cap — attacks near max, as
+designed), TwelvePool2 (Tie at cap); a fourth game confirmed the Protoss
+branch (FourGate2 pick). Race detection, per-race pooling, and Spec handoff
+to the executor all work.
+
 ## Mimic a different opponent
 
 1. `python analysis/extract_build_order.py THEIR_REPLAY <pid>` (use the numeric
