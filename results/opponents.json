@@ -50,16 +50,6 @@
   "zip_mb": 2.6
  },
  {
-  "name": "Mulebot",
-  "id": 718,
-  "type": "python",
-  "race": "T",
-  "elo": 1745,
-  "division": 2,
-  "active": true,
-  "zip_mb": 1.0
- },
- {
   "name": "Clicadinha",
   "id": 699,
   "type": "python",
@@ -78,16 +68,6 @@
   "division": 0,
   "active": false,
   "zip_mb": 1.4
- },
- {
-  "name": "zig-reapers",
-  "id": 574,
-  "type": "cpplinux",
-  "race": "T",
-  "elo": 1636,
-  "division": 4,
-  "active": true,
-  "zip_mb": 1.6
  },
  {
   "name": "oberon",
@@ -140,16 +120,6 @@
   "zip_mb": 1.2
  },
  {
-  "name": "Thssprtssbt",
-  "id": 1178,
-  "type": "python",
-  "race": "P",
-  "elo": 1551,
-  "division": 5,
-  "active": true,
-  "zip_mb": 0.2
- },
- {
   "name": "onlyfans",
   "id": 1050,
   "type": "cpplinux",
@@ -180,16 +150,6 @@
   "zip_mb": 2.7
  },
  {
-  "name": "PolyMorph",
-  "id": 1038,
-  "type": "python",
-  "race": "Z",
-  "elo": 1502,
-  "division": 6,
-  "active": true,
-  "zip_mb": 4.4
- },
- {
   "name": "puck",
   "id": 943,
   "type": "cpplinux",
@@ -208,16 +168,6 @@
   "division": 0,
   "active": false,
   "zip_mb": 0.3
- },
- {
-  "name": "zigster",
-  "id": 560,
-  "type": "cpplinux",
-  "race": "T",
-  "elo": 1426,
-  "division": 6,
-  "active": true,
-  "zip_mb": 1.7
  },
  {
   "name": "MY_SCRIPTING_SON",
@@ -277,32 +227,11 @@
   "zip_mb": 0.2
  },
  {
-  "name": "MadBot",
-  "id": 60,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 7.5
- },
- {
   "name": "Zerran",
   "id": 62,
   "type": "python",
   "race": "T",
   "zip_mb": 0.2
- },
- {
-  "name": "MadAI",
-  "id": 66,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 33.4
- },
- {
-  "name": "Paul",
-  "id": 78,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 1.4
  },
  {
   "name": "Bot_Stardust",
@@ -324,20 +253,6 @@
   "type": "python",
   "race": "P",
   "zip_mb": 0.5
- },
- {
-  "name": "TheCinderBlock",
-  "id": 83,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 0.1
- },
- {
-  "name": "Terra",
-  "id": 86,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 0.0
  },
  {
   "name": "RandomEdge",
@@ -375,83 +290,6 @@
   "zip_mb": 0.7
  },
  {
-  "name": "SharpKnives",
-  "id": 92,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
-  "name": "RustyLocks",
-  "id": 90,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 9.5
- },
- {
-  "name": "BluntTeeth",
-  "id": 94,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 9.5
- },
- {
-  "name": "BluntSpit",
-  "id": 97,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 9.5
- },
- {
-  "name": "RustyMarines",
-  "id": 98,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 9.5
- },
- {
-  "name": "SharpShadows",
-  "id": 100,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
-  "name": "FlyingRust",
-  "id": 101,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 9.5
- },
- {
-  "name": "SharpRays",
-  "id": 102,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
-  "name": "SharpSpiders",
-  "id": 103,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
-  "name": "SharpRobots",
-  "id": 104,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
-  "name": "Derg",
-  "id": 138,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 2.2
- },
- {
   "name": "VibuTerran",
   "id": 141,
   "type": "python",
@@ -473,32 +311,11 @@
   "zip_mb": 2.9
  },
  {
-  "name": "sharpy_PVP_EZ",
-  "id": 176,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 1.6
- },
- {
-  "name": "Jackbot",
-  "id": 177,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 1.4
- },
- {
   "name": "Zerg001",
   "id": 184,
   "type": "python",
   "race": "Z",
   "zip_mb": 0.3
- },
- {
-  "name": "Nikbot",
-  "id": 195,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 0.0
  },
  {
   "name": "NikbotLearns",
@@ -520,20 +337,6 @@
   "type": "python",
   "race": "Z",
   "zip_mb": 0.2
- },
- {
-  "name": "SunTzuBot",
-  "id": 209,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 2.0
- },
- {
-  "name": "sharpy-pvp-probots-season3",
-  "id": 211,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 1.6
  },
  {
   "name": "Chaosbot",
@@ -564,20 +367,6 @@
   "zip_mb": 0.5
  },
  {
-  "name": "SmoothBrainV0",
-  "id": 547,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 2.3
- },
- {
-  "name": "Nightmare",
-  "id": 290,
-  "type": "cpplinux",
-  "race": "P",
-  "zip_mb": 1.8
- },
- {
   "name": "TooManyStalkers",
   "id": 294,
   "type": "python",
@@ -599,46 +388,11 @@
   "zip_mb": 2.9
  },
  {
-  "name": "SharpCannon",
-  "id": 91,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
   "name": "Monte",
   "id": 310,
   "type": "cpplinux",
   "race": "T",
   "zip_mb": 3.4
- },
- {
-  "name": "SelfAssemblingWorkerDisassembler",
-  "id": 337,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 5.4
- },
- {
-  "name": "LordyBot",
-  "id": 784,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 4.5
- },
- {
-  "name": "BluntMacro",
-  "id": 96,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 9.5
- },
- {
-  "name": "SilverBio",
-  "id": 318,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 9.5
  },
  {
   "name": "Roubibot",
@@ -690,34 +444,6 @@
   "zip_mb": 3.0
  },
  {
-  "name": "JAIOFAI",
-  "id": 450,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 5.4
- },
- {
-  "name": "ascyZerg002",
-  "id": 462,
-  "type": "cpplinux",
-  "race": "Z",
-  "zip_mb": 2.2
- },
- {
-  "name": "MAReaperExample",
-  "id": 486,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 2.0
- },
- {
-  "name": "BluntFlies",
-  "id": 95,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 9.5
- },
- {
   "name": "sharpy-micro-T",
   "id": 796,
   "type": "python",
@@ -744,62 +470,6 @@
   "type": "python",
   "race": "P",
   "zip_mb": 0.2
- },
- {
-  "name": "SilverHydra",
-  "id": 556,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 9.5
- },
- {
-  "name": "SilverStalkerRush",
-  "id": 557,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
-  "name": "OneBaseTempest",
-  "id": 252,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
-  "name": "SmoothBrain",
-  "id": 579,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 2.4
- },
- {
-  "name": "TheGoldenArmada",
-  "id": 142,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 7.3
- },
- {
-  "name": "ibiree_bot",
-  "id": 646,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
-  "name": "BluntMacroReup",
-  "id": 656,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 9.7
- },
- {
-  "name": "AresTest",
-  "id": 719,
-  "type": "python",
-  "race": "R",
-  "zip_mb": 6.2
  },
  {
   "name": "sharpy-micro-P",
@@ -830,32 +500,11 @@
   "zip_mb": 31.5
  },
  {
-  "name": "OneBaseTurtle",
-  "id": 250,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 9.5
- },
- {
-  "name": "SafeRaven",
-  "id": 249,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 9.5
- },
- {
   "name": "a_move_bot",
   "id": 623,
   "type": "python",
   "race": "T",
   "zip_mb": 0.3
- },
- {
-  "name": "Jeff_The_Bot",
-  "id": 748,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 34.8
  },
  {
   "name": "Moros",
@@ -865,20 +514,6 @@
   "zip_mb": 3.7
  },
  {
-  "name": "Snake_Bot",
-  "id": 874,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 0.7
- },
- {
-  "name": "SharpSpheres",
-  "id": 253,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 9.5
- },
- {
   "name": "BigBotTT",
   "id": 799,
   "type": "python",
@@ -886,46 +521,11 @@
   "zip_mb": 15.3
  },
  {
-  "name": "JV_Bot",
-  "id": 776,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 34.7
- },
- {
-  "name": "angler",
-  "id": 780,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 4.8
- },
- {
-  "name": "Tartarus",
-  "id": 742,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 4.8
- },
- {
   "name": "sharpy-micro-Z",
   "id": 795,
   "type": "python",
   "race": "Z",
   "zip_mb": 2.6
- },
- {
-  "name": "MontyBot",
-  "id": 878,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 1.6
- },
- {
-  "name": "Thessaloniki",
-  "id": 922,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 43.7
  },
  {
   "name": "sludge-revived",
@@ -977,20 +577,6 @@
   "zip_mb": 0.2
  },
  {
-  "name": "Nani-Z",
-  "id": 658,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 6.2
- },
- {
-  "name": "qin2",
-  "id": 828,
-  "type": "python",
-  "race": "P",
-  "zip_mb": 10.8
- },
- {
   "name": "Kilroy",
   "id": 929,
   "type": "cpplinux",
@@ -1024,27 +610,6 @@
   "type": "python",
   "race": "P",
   "zip_mb": 1.9
- },
- {
-  "name": "Newsc2monsterbot",
-  "id": 995,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 0.0
- },
- {
-  "name": "RustyTanks",
-  "id": 99,
-  "type": "python",
-  "race": "T",
-  "zip_mb": 9.5
- },
- {
-  "name": "BluntLurkers",
-  "id": 251,
-  "type": "python",
-  "race": "Z",
-  "zip_mb": 9.5
  },
  {
   "name": "WorkerRush",
