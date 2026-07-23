@@ -27,6 +27,7 @@ from archetype_bot import (FourGate2, GreedyProtoss2, GreedyTerran2, GreedyZerg2
                            MassLing2, OneBaseStalker2, TwelvePool2)
 from four_gate_zealot_bot import FourGateZealotBot
 from mass_ling_bot import MassLingBot
+from random_race_bot import RandomSparringBot
 from twelve_pool_bot import TwelvePoolBot
 
 SPARRING = {
@@ -41,6 +42,8 @@ SPARRING = {
     "greedyp": (GreedyProtoss2, Race.Protoss),
     "greedyt": (GreedyTerran2, Race.Terran),
     "greedyz": (GreedyZerg2, Race.Zerg),
+    # Random race + random archetype of that race (random_race_bot.py)
+    "random": (RandomSparringBot, Race.Random),
 }
 
 parser = argparse.ArgumentParser()

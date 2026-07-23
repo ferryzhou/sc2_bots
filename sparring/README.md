@@ -156,6 +156,26 @@ income-curve shape (mule timing, CC-first openings) — diminishing returns
 from here. Under VeryHard pressure the same specs survive and macro (168-189
 peak) but get punished — the archetype's designed weakness.
 
+## Random race + random archetype (`--bot random`)
+
+`random_race_bot.py` registers as **Race.Random**, so the SC2 engine assigns
+the actual race at game start; in `on_start` the bot reads its assigned race
+and randomly picks one of the archetype Specs of that race — from then on it
+*is* that archetype (the executor is driven entirely by `SPEC`):
+
+| assigned race | archetype pool |
+|---|---|
+| Protoss | FourGate2, OneBaseStalker2, GreedyProtoss2 |
+| Terran | GreedyTerran2 |
+| Zerg | TwelvePool2, MassLing2, GreedyZerg2 |
+
+One opponent, many looks — rush, timing push, or greed in any race — for
+testing a bot's adaptability without knowing what's coming. The pick is
+printed at game start (`RandomSparringBot: race=... archetype=...`) and
+`SPARRING_ARCHETYPE=<class name>` forces it (when the assigned race matches)
+to reproduce a specific game. Local testing only; it is not wired into the
+ladder zip.
+
 ## Mimic a different opponent
 
 1. `python analysis/extract_build_order.py THEIR_REPLAY <pid>` (use the numeric
