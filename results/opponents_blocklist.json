@@ -1,0 +1,302 @@
+[
+ {
+  "name": "AresTest",
+  "reason": "exited rc=1 in 3s: ImportError: cannot import name 'bootstrap' from partially initialized module 'cython_extensions' (most likely due to a circular import) (/root/arena_bots/AresT",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "BluntFlies",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "BluntLurkers",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "BluntMacro",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "BluntMacroReup",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "BluntSpit",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "BluntTeeth",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Derg",
+  "reason": "exited rc=1 in 5s: ModuleNotFoundError: No module named 'sklearn.neighbors.typedefs'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "FlyingRust",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "JAIOFAI",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "JV_Bot",
+  "reason": "exited rc=1 in 3s: ImportError: cannot import name 'bootstrap' from partially initialized module 'cython_extensions' (most likely due to a circular import) (/root/arena_bots/JV_Bo",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Jackbot",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sklearn.neighbors.typedefs'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Jeff_The_Bot",
+  "reason": "exited rc=1 in 4s: ImportError: cannot import name 'bootstrap' from partially initialized module 'cython_extensions' (most likely due to a circular import) (/root/arena_bots/Jeff_",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "LordyBot",
+  "reason": "exited rc=1 in 3s: ImportError: cannot import name 'bootstrap' from partially initialized module 'cython_extensions' (most likely due to a circular import) (/root/arena_bots/Lordy",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "MAReaperExample",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'pkg_resources'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "MadAI",
+  "reason": "exited rc=1 in 5s: ModuleNotFoundError: No module named 'keras'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "MadBot",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'keras'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "MontyBot",
+  "reason": "exited rc=1 in 1s: ModuleNotFoundError: No module named 'pandas'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Mulebot",
+  "reason": "launches but crashed in-game in all 6 recorded attempts (FileNotFoundError: data/badpos.txt)",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Nani-Z",
+  "reason": "exited rc=1 in 3s: ImportError: cannot import name 'bootstrap' from partially initialized module 'cython_extensions' (most likely due to a circular import) (/root/arena_bots/Nani-",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Newsc2monsterbot",
+  "reason": "exited rc=1 in 1s: [ERROR] python-sc2 library not found. Install with: pip install burnysc2",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Nightmare",
+  "reason": "exited rc=127 in 0s: /root/arena_bots/Nightmare/Nightmare: error while loading shared libraries: libssl.so.1.1: cannot open shared object file: No such file or directory",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Nikbot",
+  "reason": "exited rc=1 in 0s: ImportError: cannot import name 'Race' from 'sc2' (/root/venv312/lib/python3.12/site-packages/sc2/__init__.py)",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "OneBaseTempest",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "OneBaseTurtle",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Paul",
+  "reason": "exited rc=1 in 5s: ModuleNotFoundError: No module named 'sklearn.neighbors.typedefs'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "PolyMorph",
+  "reason": "exited rc=1 in 8s: ImportError: cannot import name 'BufferTarget' from 'ares.behaviors.combat.individual' (/root/venv312/lib/python3.12/site-packages/src/ares/behaviors/combat/ind",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "RustyLocks",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "RustyMarines",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "RustyTanks",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SafeRaven",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SelfAssemblingWorkerDisassembler",
+  "reason": "exited rc=2 in 0s: /root/venv312/bin/python: can't open file '/root/arena_bots/SelfAssemblingWorkerDisassembler/sharpy-sc2/run.py': [Errno 2] No such file or directory",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SharpCannon",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SharpKnives",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SharpRays",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SharpRobots",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SharpShadows",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SharpSpheres",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SharpSpiders",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SilverBio",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SilverHydra",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SilverStalkerRush",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SmoothBrain",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'pkg_resources'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SmoothBrainV0",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'pkg_resources'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Snake_Bot",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'bot'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SunTzuBot",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'numpy.lib.arraysetops'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Tartarus",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'pkg_resources'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Terra",
+  "reason": "exited rc=1 in 1s: ImportError: cannot import name 'Race' from 'sc2' (/root/venv312/lib/python3.12/site-packages/sc2/__init__.py)",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "TheCinderBlock",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'pandas'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "TheGoldenArmada",
+  "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Thessaloniki",
+  "reason": "exited rc=1 in 6s: ImportError: cannot import name 'cy_closer_than' from 'cython_extensions.units_utils' (/root/arena_bots/Thessaloniki/cython_extensions/bootstrap.cpython-312-x86",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Thssprtssbt",
+  "reason": "exited rc=1 in 1s: ImportError: cannot import name 'ConnectionAlreadyClosedError' from 'sc2.protocol' (/root/venv312/lib/python3.12/site-packages/sc2/protocol.py). Did you mean: '",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "angler",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'pkg_resources'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "ascyZerg002",
+  "reason": "spawn failed: [Errno 8] Exec format error: '/root/arena_bots/ascyZerg002/ascyZerg002'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "ibiree_bot",
+  "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "qin2",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'pkg_resources'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "sharpy-pvp-probots-season3",
+  "reason": "exited rc=1 in 5s: ModuleNotFoundError: No module named 'sklearn.neighbors.typedefs'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "sharpy_PVP_EZ",
+  "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sklearn.neighbors.typedefs'",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "zig-reapers",
+  "reason": "exited rc=1 in 1s: error: EndOfStream",
+  "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "zigster",
+  "reason": "exited rc=0 in 0s: SC2_RESULT: {\"result\":\"defeat\",\"crashed\":true,\"durationSeconds\":0}",
+  "at": "2026-07-23T02:30:00"
+ }
+]

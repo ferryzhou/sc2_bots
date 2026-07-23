@@ -7,14 +7,18 @@ sweep tells you exactly where effort converts into wins.
 
     python harness/field_measure.py --bot athena --timeout 600
 
-Appends per-game results to results/history_<bot>.jsonl (via versus.py) and
-prints a per-opponent W/L table grouped by race. Resumable: skips opponents
-already recorded in this run's fresh history file.
+Appends per-game results to <bot>/results/history.jsonl (via versus.py) and
+prints a per-opponent W/L table grouped by race. A sweep is scoped by a start
+timestamp: records at/after it count as this sweep, so an interrupted sweep
+resumes with --since <printed timestamp> (already-played opponents are
+skipped). --shard i/n runs an interleaved slice so multiple processes can
+split the field.
 """
 import argparse
 import json
 import subprocess
 import sys
+from datetime import datetime
 from os import environ
 from pathlib import Path
 
@@ -31,19 +35,46 @@ def opponents():
     return names
 
 
+def sweep_records(hist: Path, since: str) -> list[dict]:
+    if not hist.is_file():
+        return []
+    rows = []
+    for line in hist.read_text().splitlines():
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if r.get("mode") == "versus" and r.get("started_at", "") >= since:
+            rows.append(r)
+    return rows
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--bot", default="athena")
     p.add_argument("--timeout", type=int, default=600)
     p.add_argument("--maps", default=None, help="optional comma-separated map override")
+    p.add_argument("--since", default=None,
+                   help="ISO timestamp scoping this sweep (resume an "
+                        "interrupted sweep by passing its printed value)")
+    p.add_argument("--shard", default=None,
+                   help="i/n: play only every n-th opponent starting at i "
+                        "(run n processes to split the field)")
     args = p.parse_args()
 
-    hist = REPO / "results" / f"history_{args.bot}.jsonl"
-    hist.unlink(missing_ok=True)  # fresh sweep
+    hist = REPO / args.bot / "results" / "history.jsonl"
+    since = args.since or datetime.now().isoformat(timespec="seconds")
+    print(f"sweep scope: --since {since}")
 
     names = opponents()
+    if args.shard:
+        i, n = (int(x) for x in args.shard.split("/"))
+        names = names[i::n]
     print(f"sweeping {args.bot} vs {len(names)} opponents (1 game each, {args.timeout}s cap)\n")
     for i, name in enumerate(names):
+        if name in {r["opponent_name"] for r in sweep_records(hist, since)}:
+            print(f"[{i+1}/{len(names)}] vs {name} already recorded, skipping")
+            continue
         cmd = [PY312, "harness/versus.py", "--bot", args.bot, "--opponent", name,
                "--games", "1", "--timeout", str(args.timeout)]
         if args.maps:
@@ -55,7 +86,7 @@ def main():
         except subprocess.TimeoutExpired:
             print(f"    {name}: process timeout")
 
-    summarize(hist)
+    summarize(hist, since)
 
 
 def _tag(r):
@@ -69,11 +100,11 @@ def _tag(r):
     return "L"
 
 
-def summarize(hist):
-    if not hist.is_file():
+def summarize(hist, since=""):
+    rows = sweep_records(hist, since)
+    if not rows:
         print("no results")
         return
-    rows = [json.loads(l) for l in hist.read_text().splitlines() if l.strip()]
     tags = [_tag(r) for r in rows]
     w, l, e = tags.count("W"), tags.count("L"), tags.count("E")
     decisive = w + l + tags.count("T")
