@@ -33,12 +33,14 @@ from four_gate_zealot_bot import FourGateZealotBot
 from mass_ling_bot import MassLingBot
 from one_base_stalker_bot import OneBaseStalkerBot
 from macro_roach_bot import MacroRoachBot
+from twelve_pool_bot import TwelvePoolBot
 
 SPARRING = {
     "fourgate": (FourGateZealotBot, Race.Protoss),
     "stalker": (OneBaseStalkerBot, Race.Protoss),
     "massling": (MassLingBot, Race.Zerg),
     "macroroach": (MacroRoachBot, Race.Zerg),
+    "twelvepool": (TwelvePoolBot, Race.Zerg),
 }
 
 
