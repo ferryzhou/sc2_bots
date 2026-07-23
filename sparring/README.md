@@ -156,6 +156,28 @@ income-curve shape (mule timing, CC-first openings) — diminishing returns
 from here. Under VeryHard pressure the same specs survive and macro (168-189
 peak) but get punished — the archetype's designed weakness.
 
+### Built-in-AI calibration: punishment is the *build*, not the difficulty
+
+Sweeping the greedy trio against the built-in AI settled how to read its
+difficulty tiers. On the **Macro** build, no tier punishes greed — not Hard,
+not CheatInsane: in every game the first real resource loss came *after* the
+10-12 min maxout (greedyz maxed at 10:00 against CheatInsane untouched).
+Varying CheatInsane's `ai_build` instead:
+
+| CheatInsane build | greedyz | greedyp | greedyt |
+|---|---|---|---|
+| Rush | dead 8:46 (peak 69) | dead 7:33 (peak 54) | dead 6:11 (peak 38) |
+| Timing | dead 9:12 | maxed 11:00, then wiped | Tie (held 97v99) |
+| Macro / Air | maxed untouched, Tie/loss after | peak ~197, Tie/loss after | maxed, Tie |
+
+**Rush** is the only true greed-punisher (first damage 5:20-5:50, all three
+dead); **Timing** discriminates the races' defensive profiles; **Macro/Air**
+are free macro races. So: use `CheatInsane + Rush` as the harshest
+survive-while-greedy test the built-in AI offers, and read all Macro-build
+gauntlet results as macro races, not punishment tests. The greedy bots' own
+losses after maxing are the designed ceiling (one unupgraded mineral unit) --
+they are maxout racers, not closers.
+
 ## Mimic a different opponent
 
 1. `python analysis/extract_build_order.py THEIR_REPLAY <pid>` (use the numeric
