@@ -178,6 +178,16 @@ gauntlet results as macro races, not punishment tests. The greedy bots' own
 losses after maxing are the designed ceiling (one unupgraded mineral unit) --
 they are maxout racers, not closers.
 
+Pitting the package's own poles against each other (greedy trio vs rush trio,
+9 bot-vs-bot games) caps the ranking: **our sparring rushes punish greed
+1.5-3 minutes faster than anything the built-in AI offers**. Punisher ranking
+by first structural damage: twelvepool2 3:40 (kills by ~4:00) > fourgate2
+5:10 > CheatInsane+Rush 5:20 > onebasestalker2 6:20 > everything else never.
+Greedy went 0W-3T-6L with peaks collapsed to 23-75 supply; every "tie" was a
+rush that had functionally won (end states 0v140, 25v144) but could not
+close -- lifted terran buildings and last-structure hunting are the rushes'
+own documented ceiling, mirroring the greedy bots' no-upgrade one.
+
 ## Mimic a different opponent
 
 1. `python analysis/extract_build_order.py THEIR_REPLAY <pid>` (use the numeric
