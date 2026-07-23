@@ -484,7 +484,16 @@ class PhoenixBot(AresBot):
                 # keep the stalker/zealot mix only vs light.
                 armored, light = self._enemy_armored_light_supply()
                 if armored > max(light, 4.0):
-                    comp = ARMY_COMP  # pure stalker
+                    # vs a ranged/armored all-in (stalker/roach/marauder): pure
+                    # stalkers don't win the army-count race (we open economic,
+                    # they go 100% army), so add IMMORTALS - the hard counter to
+                    # stalkers (armored bonus + tanky). Robo is a touch late for
+                    # the first hit but stabilises the sustained flood; a couple
+                    # immortals + batteries hold what pure gateway army can't.
+                    comp = {
+                        UnitID.STALKER: {"proportion": 0.6, "priority": 0},
+                        UnitID.IMMORTAL: {"proportion": 0.4, "priority": 1},
+                    }
                 else:
                     comp = self._emergency_comp
             elif self._all_in_read:
