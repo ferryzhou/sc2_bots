@@ -197,3 +197,20 @@ own documented ceiling, mirroring the greedy bots' no-upgrade one.
 
 The extractor handles AI Arena arena-client replays (via the sc2reader shim in
 `analysis/principle_analyzer.py`).
+
+## Gym report: the ladder bots vs the archetype poles
+
+Six in-process games (the `vs_phoenix.py` pattern generalized): each repo
+ladder bot vs twelvepool2 (survive the 3:40 rush?) and greedyz (punish the
+10:00 maxout?).
+
+| bot | vs twelvepool2 | vs greedyz |
+|---|---|---|
+| phoenix | **Win 6:08** (rush held to 20 supply) | **Win 10:28** (greed capped at 136, never maxed) |
+| griffin | Win 8:59 | **Tie** -- greedyz maxed to 200, griffin turtled at 112, stalemate at cap |
+| hydra | Win 8:49 | **Defeat 8:54** -- out-macroed 200 v 90 by the sparring bot |
+
+Rush defense is solid repo-wide; punishing greed is phoenix-only. Griffin
+reproduces its documented long-grind/no-close ladder weakness on demand, and
+hydra loses the zerg macro mirror outright to the Spec-driven inject engine
+-- the two concrete work items this gym exists to surface.
