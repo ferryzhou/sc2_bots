@@ -475,8 +475,18 @@ class PhoenixBot(AresBot):
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
             if self._emergency:
-                # rush defense: gateway units + batteries, no robo detour
-                comp = self._emergency_comp
+                # rush defense: gateway units + batteries, no robo detour.
+                # Reactive comp: zealots TANK a light flood (zealot/ling/marine)
+                # but get kited to death by a ranged/armored all-in (stalker/
+                # roach/marauder) - the one-base STALKER all-in was our worst
+                # matchup partly because half our emergency army was zealots
+                # feeding the enemy stalkers. Use pure stalkers vs armored,
+                # keep the stalker/zealot mix only vs light.
+                armored, light = self._enemy_armored_light_supply()
+                if armored > max(light, 4.0):
+                    comp = ARMY_COMP  # pure stalker
+                else:
+                    comp = self._emergency_comp
             elif self._all_in_read:
                 # one-base all-in inbound: robo tech is too slow to matter,
                 # pump gateway army now
