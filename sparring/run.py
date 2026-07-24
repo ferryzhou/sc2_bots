@@ -5,13 +5,12 @@ without the opponent's source code.
 
     python sparring/run.py                 # 4-gate zealot (default), vs Very Hard AI
     python sparring/run.py --bot massling  # mass-ling Zerg
-    python sparring/run.py --bot random    # Random race, random archetype
     python sparring/run.py --map LeyLinesAIE
 
 Ladder-client mode (used by harness/versus.py to play downloaded AI Arena
-bots): any --LadderServer invocation joins an external game instead. The
-sparring bot to field defaults to "random"; set SPARRING_BOT=<key> to
-override (versus.py passes no custom args through).
+bots): any --LadderServer invocation joins an external game instead. Set
+SPARRING_BOT=<key> to pick the archetype to field (versus.py passes no
+custom args through); defaults to "fourgate".
 
 By default the sparring bot plays a Very Hard built-in AI so you can verify the
 opening. To reproduce *your* bot's loss, import your bot and put it in the
@@ -33,7 +32,6 @@ from archetype_bot import (FourGate2, GreedyProtoss2, GreedyTerran2, GreedyZerg2
                            MassLing2, OneBaseStalker2, TwelvePool2)
 from four_gate_zealot_bot import FourGateZealotBot
 from mass_ling_bot import MassLingBot
-from random_race_bot import RandomSparringBot
 from twelve_pool_bot import TwelvePoolBot
 
 SPARRING = {
@@ -48,14 +46,12 @@ SPARRING = {
     "greedyp": (GreedyProtoss2, Race.Protoss),
     "greedyt": (GreedyTerran2, Race.Terran),
     "greedyz": (GreedyZerg2, Race.Zerg),
-    # Random race + random archetype of that race (random_race_bot.py)
-    "random": (RandomSparringBot, Race.Random),
 }
 
 
 def main():
     if "--LadderServer" in sys.argv:
-        bot_cls, race = SPARRING[os.environ.get("SPARRING_BOT", "random")]
+        bot_cls, race = SPARRING[os.environ.get("SPARRING_BOT", "fourgate")]
         repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         sys.path.insert(0, os.path.join(repo_root, "griffin"))
         from ladder import run_ladder_game

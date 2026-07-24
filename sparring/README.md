@@ -156,44 +156,12 @@ income-curve shape (mule timing, CC-first openings) — diminishing returns
 from here. Under VeryHard pressure the same specs survive and macro (168-189
 peak) but get punished — the archetype's designed weakness.
 
-## Random race + random archetype (`--bot random`)
+## Sparring vs downloaded arena bots (ladder-client mode)
 
-`random_race_bot.py` registers as **Race.Random**, so the SC2 engine assigns
-the actual race at game start; in `on_start` the bot reads its assigned race
-and randomly picks one of the archetype Specs of that race — from then on it
-*is* that archetype (the executor is driven entirely by `SPEC`):
-
-| assigned race | archetype pool |
-|---|---|
-| Protoss | FourGate2, OneBaseStalker2, GreedyProtoss2 |
-| Terran | GreedyTerran2 |
-| Zerg | TwelvePool2, MassLing2, GreedyZerg2 |
-
-One opponent, many looks — rush, timing push, or greed in any race — for
-testing a bot's adaptability without knowing what's coming. The pick is
-printed at game start (`RandomSparringBot: race=... archetype=...`) and
-`SPARRING_ARCHETYPE=<class name>` forces it (when the assigned race matches)
-to reproduce a specific game. Local testing only; it is not wired into the
-ladder zip.
-
-Validated headless vs VeryHard Terran (8-min cap): the engine assigned Zerg,
-Terran, Zerg across three Race.Random games and the bot picked and played
-TwelvePool2 (**Win**), GreedyTerran2 (Tie at cap — attacks near max, as
-designed), TwelvePool2 (Tie at cap); a fourth game confirmed the Protoss
-branch (FourGate2 pick). Race detection, per-race pooling, and Spec handoff
-to the executor all work.
-
-Field strength (one game vs every runnable downloaded AI Arena bot,
-`harness/field_measure.py --bot sparring`, 600s wall cap): **19-25-1 (42%)
-in games that completed** — 6/11 vs P, 7/15 vs T, 5/15 vs Z, 1/4 vs R.
-It beats the bottom of the field (a-move/one-trick bots: BCMACHINE,
-a_move_bot, Zerglord, sharpy-micro-T/Z, TooManyStalkers, …) and the
-occasional mid-lister (QueenBot 1568, CompetitiveBotTest 1482, Chance 1290)
-but loses to every ranked bot above ~1600 (MicroMachine 2111, who 2044,
-VeTerran-revived 1932, 12PoolBot 1821, Krillin 1600). Consistent with its
-purpose: deliberately non-reactive archetypes are training equipment, not a
-ladder competitor — roughly bottom-third field strength (~1300-1450 Elo
-equivalent).
+`run.py` doubles as a ladder client: any `--LadderServer` invocation joins
+an external game instead of launching one, so `harness/versus.py --bot
+sparring` plays a sparring archetype against the downloaded AI Arena bots.
+Pick the archetype with `SPARRING_BOT=<key>` (default `fourgate`).
 
 ## Mimic a different opponent
 
