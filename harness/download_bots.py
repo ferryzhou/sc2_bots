@@ -5,6 +5,12 @@ Linux) into BOTS_DIR, extracts each into its own folder, and writes a
 manifest (results/opponents.json) with name, type, race and current-season
 Elo so gauntlets can pick opponents by strength.
 
+Each freshly extracted bot is probed for launchability (probe_bots.py): a
+bot that cannot even start on this box (missing deps, bad binary) is
+deleted, recorded in results/opponents_blocklist.json with the failure
+reason, and skipped by future runs. --retry-blocked re-attempts them
+(e.g. after installing deps); --no-probe trusts the zip as-is.
+
 Usage:
     AIARENA_API_TOKEN=... python harness/download_bots.py [--limit N]
 """
@@ -15,6 +21,7 @@ import json
 import shutil
 import sys
 import zipfile
+from datetime import datetime
 from os import environ
 from pathlib import Path
 
@@ -23,6 +30,7 @@ import requests
 REPO_ROOT = Path(__file__).resolve().parent.parent
 BOTS_DIR = Path(environ.get("ARENA_BOTS_DIR", "/root/arena_bots"))
 MANIFEST = REPO_ROOT / "results" / "opponents.json"
+BLOCKLIST = REPO_ROOT / "results" / "opponents_blocklist.json"
 RUNNABLE_TYPES = {"python", "cpplinux"}
 CURRENT_COMPETITION = 36
 MIN_FREE_GB = 4.0
@@ -42,7 +50,20 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--limit", type=int, default=None,
                         help="max bots to download (default: all runnable)")
+    parser.add_argument("--no-probe", action="store_true",
+                        help="skip the launchability probe on new downloads")
+    parser.add_argument("--retry-blocked", action="store_true",
+                        help="re-download and re-probe blocklisted bots")
     args = parser.parse_args()
+
+    blocklist = {}
+    if BLOCKLIST.is_file():
+        try:
+            blocklist = {e["name"]: e for e in json.loads(BLOCKLIST.read_text())}
+        except (ValueError, KeyError):
+            pass
+    if args.retry_blocked:
+        blocklist = {}
 
     token = environ.get("AIARENA_API_TOKEN")
     if not token:
@@ -83,6 +104,7 @@ def main() -> None:
 
     BOTS_DIR.mkdir(parents=True, exist_ok=True)
     manifest = []
+    skipped_blocked = 0
     for i, b in enumerate(runnable):
         name = b["name"]
         dest = BOTS_DIR / name
@@ -93,6 +115,9 @@ def main() -> None:
             "race": b["plays_race"]["label"],
             **elo_by_bot.get(b["id"], {}),
         }
+        if name in blocklist:
+            skipped_blocked += 1
+            continue
         if dest.is_dir():
             manifest.append(entry)
             continue
@@ -105,12 +130,27 @@ def main() -> None:
             with zipfile.ZipFile(io.BytesIO(r.content)) as z:
                 z.extractall(dest)
             entry["zip_mb"] = round(len(r.content) / 1e6, 1)
-            manifest.append(entry)
-            print(f"[{i + 1}/{len(runnable)}] {name} "
-                  f"({entry['type']}, {entry['race']}, elo={entry.get('elo')}, "
-                  f"{entry['zip_mb']}MB)")
         except Exception as exc:  # noqa: BLE001
             print(f"[{i + 1}/{len(runnable)}] {name} FAILED: {exc}")
+            continue
+        if not args.no_probe:
+            from probe_bots import probe
+            ok, detail = probe(name)
+            if not ok:
+                shutil.rmtree(dest, ignore_errors=True)
+                blocklist[name] = {
+                    "name": name, "reason": detail,
+                    "at": datetime.now().isoformat(timespec="seconds"),
+                }
+                print(f"[{i + 1}/{len(runnable)}] {name} BLOCKED: {detail[:120]}")
+                continue
+        manifest.append(entry)
+        print(f"[{i + 1}/{len(runnable)}] {name} "
+              f"({entry['type']}, {entry['race']}, elo={entry.get('elo')}, "
+              f"{entry['zip_mb']}MB)")
+    if skipped_blocked:
+        print(f"skipped {skipped_blocked} blocklisted bots "
+              f"(--retry-blocked to re-attempt)")
 
     # merge with the existing manifest: keep entries for bots that are no
     # longer publicly downloadable but are still extracted locally
@@ -126,7 +166,10 @@ def main() -> None:
 
     MANIFEST.parent.mkdir(exist_ok=True)
     MANIFEST.write_text(json.dumps(manifest, indent=1))
-    print(f"\n{len(manifest)} opponents ready in {BOTS_DIR}")
+    BLOCKLIST.write_text(json.dumps(
+        sorted(blocklist.values(), key=lambda e: e["name"]), indent=1))
+    print(f"\n{len(manifest)} opponents ready in {BOTS_DIR} "
+          f"({len(blocklist)} blocklisted)")
     print(f"manifest: {MANIFEST}")
 
 

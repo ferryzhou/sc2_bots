@@ -156,6 +156,13 @@ income-curve shape (mule timing, CC-first openings) — diminishing returns
 from here. Under VeryHard pressure the same specs survive and macro (168-189
 peak) but get punished — the archetype's designed weakness.
 
+## Sparring vs downloaded arena bots (ladder-client mode)
+
+`run.py` doubles as a ladder client: any `--LadderServer` invocation joins
+an external game instead of launching one, so `harness/versus.py --bot
+sparring` plays a sparring archetype against the downloaded AI Arena bots.
+Pick the archetype with `SPARRING_BOT=<key>` (default `fourgate`).
+
 ## Mimic a different opponent
 
 1. `python analysis/extract_build_order.py THEIR_REPLAY <pid>` (use the numeric

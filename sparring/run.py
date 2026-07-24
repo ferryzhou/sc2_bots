@@ -1,4 +1,4 @@
-"""Run a local game against a sparring partner (a replay-derived mimic).
+"""Run a sparring partner locally (vs built-in AI) or as a ladder client.
 
 Purpose: reproduce a loss to a specific opponent style so you can test defenses,
 without the opponent's source code.
@@ -6,6 +6,11 @@ without the opponent's source code.
     python sparring/run.py                 # 4-gate zealot (default), vs Very Hard AI
     python sparring/run.py --bot massling  # mass-ling Zerg
     python sparring/run.py --map LeyLinesAIE
+
+Ladder-client mode (used by harness/versus.py to play downloaded AI Arena
+bots): any --LadderServer invocation joins an external game instead. Set
+SPARRING_BOT=<key> to pick the archetype to field (versus.py passes no
+custom args through); defaults to "fourgate".
 
 By default the sparring bot plays a Very Hard built-in AI so you can verify the
 opening. To reproduce *your* bot's loss, import your bot and put it in the
@@ -43,23 +48,34 @@ SPARRING = {
     "greedyz": (GreedyZerg2, Race.Zerg),
 }
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--bot", default="fourgate", choices=sorted(SPARRING))
-parser.add_argument("--map", default="PersephoneAIE")
-parser.add_argument("--opponent-race", default="Protoss")
-args = parser.parse_args()
 
-bot_cls, race = SPARRING[args.bot]
-sparring = Bot(race, bot_cls())
+def main():
+    if "--LadderServer" in sys.argv:
+        bot_cls, race = SPARRING[os.environ.get("SPARRING_BOT", "fourgate")]
+        repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        sys.path.insert(0, os.path.join(repo_root, "griffin"))
+        from ladder import run_ladder_game
+        print("Starting ladder game...")
+        result, opponent_id = run_ladder_game(Bot(race, bot_cls()))
+        print(result, " against opponent ", opponent_id)
+        return
 
-# --- your bot under test ----------------------------------------------------
-# Reproduce a loss by replacing this Computer with YOUR bot, e.g.:
-#     sys.path.insert(0, os.path.join(<repo>, "lishimin"))
-#     from multi_pylon import MultiPylonBot
-#     opponent = Bot(Race.Protoss, MultiPylonBot())
-opponent = Computer(Race[args.opponent_race], Difficulty.VeryHard)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--bot", default="fourgate", choices=sorted(SPARRING))
+    parser.add_argument("--map", default="PersephoneAIE")
+    parser.add_argument("--opponent-race", default="Protoss")
+    args = parser.parse_args()
 
-if __name__ == "__main__":
+    bot_cls, race = SPARRING[args.bot]
+    sparring = Bot(race, bot_cls())
+
+    # --- your bot under test --------------------------------------------
+    # Reproduce a loss by replacing this Computer with YOUR bot, e.g.:
+    #     sys.path.insert(0, os.path.join(<repo>, "lishimin"))
+    #     from multi_pylon import MultiPylonBot
+    #     opponent = Bot(Race.Protoss, MultiPylonBot())
+    opponent = Computer(Race[args.opponent_race], Difficulty.VeryHard)
+
     run_game(
         maps.get(args.map),
         [sparring, opponent],
@@ -67,3 +83,7 @@ if __name__ == "__main__":
         disable_fog=False,
         save_replay_as=f"sparring_{args.bot}.SC2Replay",
     )
+
+
+if __name__ == "__main__":
+    main()
