@@ -96,7 +96,19 @@ class FourGateZealotBot(BotAI):
         return sum(1 for s in self.structures(tid).closer_than(20, self.proxy)
                    if s.build_progress < 1.0)
 
-    # --- 4 gateways at the proxy pylon, built in PARALLEL -------------------
+    def _all_gates_placed(self):
+        # all 4 proxy gateways either standing or under construction. Until
+        # this is true the real ZEALO commits EVERY mineral to the gates --
+        # no probes, no zealots -- which is what gets 4 gates down by ~2:06.
+        return (self._proxy_gates().amount
+                + self.already_pending(UnitTypeId.GATEWAY)) >= self.NUM_GATEWAYS
+
+    # --- 4 gateways at the proxy pylon, minerals-first ---------------------
+    # One gate per frame, but on_step runs many times a second, so all 4 go
+    # down within a heartbeat of each other AS SOON AS minerals allow. The
+    # speed lever is not this loop -- it is starving probes/zealots (see
+    # _all_gates_placed) so the whole bank funds gates. That took the 4th gate
+    # from 3.5m to ~2.7m, near the real ZEALO's 4-gates-by-2:06.
     async def proxy_gateways(self):
         pylon = self._proxy_pylons().ready
         if not pylon:
@@ -133,13 +145,19 @@ class FourGateZealotBot(BotAI):
     async def build_probes(self, nexus):
         if self.supply_workers >= self.TARGET_PROBES or not nexus.is_idle:
             return
-        # never at the cost of the proxy gates
-        if self._proxy_gates().amount < self.NUM_GATEWAYS and self.minerals < 200:
+        # gates FIRST: bank every mineral for the 4 gateways. Only once all 4
+        # are placed do the starting 12 probes get topped up toward TARGET.
+        if not self._all_gates_placed():
             return
         if self.can_afford(UnitTypeId.PROBE):
             nexus.train(UnitTypeId.PROBE)
 
     async def make_zealots(self):
+        # don't leak minerals into zealots before all 4 gates are down -- that
+        # is exactly what delayed gates 3 and 4 to 2.4m/3.5m. Flood only once
+        # the full 4-gate is committed, then every gate pumps continuously.
+        if not self._all_gates_placed():
+            return
         for gate in self._proxy_gates().ready.idle:
             if self.can_afford(UnitTypeId.ZEALOT):
                 gate.train(UnitTypeId.ZEALOT)
