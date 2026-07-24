@@ -169,6 +169,7 @@ class PhoenixBot(AresBot):
         super().__init__(game_step_override)
         self._commenced_attack: bool = False
         self._emergency: bool = False
+        self._defense_opening: bool = False
         self._last_threat_time: float = 0.0
         # per-stalker blink cooldown tracking (blink is ~11s; avoids an
         # async get_available_abilities call per unit each frame)
@@ -304,6 +305,17 @@ class PhoenixBot(AresBot):
         await super(PhoenixBot, self).on_step(iteration)
 
         self._all_in_read: bool = self._enemy_all_in
+        # a chosen defensive opening commits us to the anti-all-in posture for
+        # the whole all-in window - no expansion/tech, pump stalkers + wall +
+        # batteries - regardless of what we've scouted. WinrateBased deploys
+        # OneBaseDefense only vs opponents whose one-base all-in beats our
+        # economic openings, so this posture is opponent-targeted.
+        self._defense_opening = (
+            self.build_order_runner.chosen_opening == "OneBaseDefense"
+            and self.time < 450.0
+        )
+        if self._defense_opening:
+            self._all_in_read = True
         self._update_emergency()
         self._counter_proxy_structures()
         self._macro()
@@ -436,8 +448,12 @@ class PhoenixBot(AresBot):
                 self._emergency = True
                 reason = "early rush" if early_rush else "one-base all-in"
                 logger.warning(f"{self.time_formatted} EMERGENCY: {reason}")
-                if not self.build_order_runner.build_completed:
-                    # hand control to the reactive macro plan immediately
+                # abort an ECONOMIC opening to react - but NOT the OneBaseDefense
+                # opening, which IS the response and must be allowed to run (its
+                # wall + 4 gates + gas + cyber ARE our defense). Aborting it at
+                # t=0 left us at 22 supply / 0 army - it completed instantly.
+                if (not self.build_order_runner.build_completed
+                        and not self._defense_opening):
                     self.build_order_runner.set_build_completed()
         elif (
             self._emergency
@@ -475,8 +491,11 @@ class PhoenixBot(AresBot):
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
             if self._emergency:
-                # rush defense: gateway units + batteries, no robo detour
-                comp = self._emergency_comp
+                # rush defense: gateway units + batteries, no robo detour.
+                # In the dedicated one-base defense we know it's a ranged/armored
+                # all-in - pump PURE stalkers (zealots just get kited); otherwise
+                # the stalker/zealot mix (zealots tank light floods).
+                comp = ARMY_COMP if self._defense_opening else self._emergency_comp
             elif self._all_in_read:
                 # one-base all-in inbound: robo tech is too slow to matter,
                 # pump gateway army now
