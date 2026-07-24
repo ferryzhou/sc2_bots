@@ -1,5 +1,10 @@
 [
  {
+  "name": "Aeolus",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=-6): what():  Failed to open data/config/contingency_plans.json",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "AresTest",
   "reason": "exited rc=1 in 3s: ImportError: cannot import name 'bootstrap' from partially initialized module 'cython_extensions' (most likely due to a circular import) (/root/arena_bots/AresT",
   "at": "2026-07-23T02:30:00"
@@ -35,9 +40,24 @@
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "Chaosbot",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=1): FileNotFoundError: [Errno 2] No such file or directory: 'data/botnames.txt'",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "CheeZerg",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=0): 2026-07-24 02:08:52 [Warning] connection.go:89 - waiting for *api.Request_Query response",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "Derg",
   "reason": "exited rc=1 in 5s: ModuleNotFoundError: No module named 'sklearn.neighbors.typedefs'",
   "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Ender",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=1): FileNotFoundError: [Errno 2] No such file or directory: 'data/botnames.txt'",
+  "at": "2026-07-24T04:50:59"
  },
  {
   "name": "FlyingRust",
@@ -70,6 +90,11 @@
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "LvlUp",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=1): NameError: name 'ConnectionAlreadyClosed' is not defined",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "MAReaperExample",
   "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'pkg_resources'",
   "at": "2026-07-23T02:30:00"
@@ -85,6 +110,11 @@
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "Monte",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=-11): #50 [INFO] Mapper: our location: (37.500000, 34.500000, 11.987552)",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "MontyBot",
   "reason": "exited rc=1 in 1s: ModuleNotFoundError: No module named 'pandas'",
   "at": "2026-07-23T02:30:00"
@@ -93,6 +123,11 @@
   "name": "Mulebot",
   "reason": "launches but crashed in-game in all 6 recorded attempts (FileNotFoundError: data/badpos.txt)",
   "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "My1stProtossNormalStategy",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): 2026-07-24 02:32:14.604 | INFO     | sc2.main:_play_game:213 - Player 2 - Bot StalkerRushBot(Protoss)",
+  "at": "2026-07-24T04:50:59"
  },
  {
   "name": "Nani-Z",
@@ -115,6 +150,11 @@
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "NikbotZerg",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): 2026-07-24 02:31:55.897 | INFO     | sc2.main:_play_game:323 - Player 2 - Bot NikbotZerg(Zerg)",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "OneBaseTempest",
   "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
   "at": "2026-07-23T02:30:00"
@@ -123,6 +163,11 @@
   "name": "OneBaseTurtle",
   "reason": "exited rc=1 in 3s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
   "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "Patatron",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): Game started",
+  "at": "2026-07-24T04:50:59"
  },
  {
   "name": "Paul",
@@ -135,6 +180,26 @@
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "PrismBeams",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=0): ValueError: 3813 is not a valid AbilityId",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "Ravager_Rush",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): Game started",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "Roach_ravager_final",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): Game started",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "Roubibot",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): Game started",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "RustyLocks",
   "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
   "at": "2026-07-23T02:30:00"
@@ -145,6 +210,11 @@
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "RustyNikolaj",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=None): [DEBUGGER] 0956.1 Started training ThorAALance from 4367319041",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "RustyTanks",
   "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
   "at": "2026-07-23T02:30:00"
@@ -153,6 +223,11 @@
   "name": "SafeRaven",
   "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
   "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "SalBOT",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): {3331}",
+  "at": "2026-07-24T04:50:59"
  },
  {
   "name": "SelfAssemblingWorkerDisassembler",
@@ -260,6 +335,11 @@
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "Zerran",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=1): NameError: name 'ConnectionAlreadyClosed' is not defined",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "angler",
   "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'pkg_resources'",
   "at": "2026-07-23T02:30:00"
@@ -270,14 +350,54 @@
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "clone",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): 2026-07-24 03:45:44.287 | INFO     | botcode.strategy:do_build_stuff:3624 - Next to build is an SCV",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "ibiree_bot",
   "reason": "exited rc=1 in 2s: ModuleNotFoundError: No module named 'sc2pathlib.sc2pathlib'",
   "at": "2026-07-23T02:30:00"
  },
  {
+  "name": "kiss",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=None)",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "oberon",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=None): ts=2026-07-24T03:14:29.621914841Z level=info target=faerie message=\"joining remote game\"",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "onlyfans",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=None): ts=2026-07-24T03:56:40.465176126Z level=info target=faerie message=\"joining remote game\"",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "puck",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=None): note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
   "name": "qin2",
   "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'pkg_resources'",
   "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "raynorbot",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=1): [2026-07-24 03:31:57.099] [12507] [WorkerManager] [INFO] First worker destroyed but first depot not started, finding another w",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "sample_protoss_bot",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): 2026-07-24 04:11:13.377 | INFO     | bot.main:on_start:42 - Game initialized!",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "sharpy-micro-P",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): 2026-07-24 03:36:54.141 | 02:40  217ms 1665M    0G  12/ 14U [GameAnalyzer] Income advantage is now SmallDisadvantage",
+  "at": "2026-07-24T04:50:59"
  },
  {
   "name": "sharpy-pvp-probots-season3",
@@ -288,6 +408,26 @@
   "name": "sharpy_PVP_EZ",
   "reason": "exited rc=1 in 4s: ModuleNotFoundError: No module named 'sklearn.neighbors.typedefs'",
   "at": "2026-07-23T02:30:00"
+ },
+ {
+  "name": "sludge-revived",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=0): KeyError: 1995",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "titania",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent exited at launch (rc=None): ts=2026-07-24T04:25:02.960865229Z level=info target=faerie message=\"joining remote game\"",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "what",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): 2026-07-24 03:56:11.106 | INFO     | ares.behaviors.macro.upgrade_controller:execute:104 - 07:49: Researching UpgradeId.ZERG",
+  "at": "2026-07-24T04:50:59"
+ },
+ {
+  "name": "why",
+  "reason": "passed launch probe but no real game ever completed; sweep: opponent crashed in-game (rc=None): 2026-07-24 04:37:18.862 | INFO     | ares.build_runner.build_order_runner:do_step:513 - 12 00:00 SCV",
+  "at": "2026-07-24T04:50:59"
  },
  {
   "name": "zig-reapers",

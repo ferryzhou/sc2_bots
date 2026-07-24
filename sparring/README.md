@@ -183,6 +183,18 @@ designed), TwelvePool2 (Tie at cap); a fourth game confirmed the Protoss
 branch (FourGate2 pick). Race detection, per-race pooling, and Spec handoff
 to the executor all work.
 
+Field strength (one game vs every runnable downloaded AI Arena bot,
+`harness/field_measure.py --bot sparring`, 600s wall cap): **19-25-1 (42%)
+in games that completed** — 6/11 vs P, 7/15 vs T, 5/15 vs Z, 1/4 vs R.
+It beats the bottom of the field (a-move/one-trick bots: BCMACHINE,
+a_move_bot, Zerglord, sharpy-micro-T/Z, TooManyStalkers, …) and the
+occasional mid-lister (QueenBot 1568, CompetitiveBotTest 1482, Chance 1290)
+but loses to every ranked bot above ~1600 (MicroMachine 2111, who 2044,
+VeTerran-revived 1932, 12PoolBot 1821, Krillin 1600). Consistent with its
+purpose: deliberately non-reactive archetypes are training equipment, not a
+ladder competitor — roughly bottom-third field strength (~1300-1450 Elo
+equivalent).
+
 ## Mimic a different opponent
 
 1. `python analysis/extract_build_order.py THEIR_REPLAY <pid>` (use the numeric
