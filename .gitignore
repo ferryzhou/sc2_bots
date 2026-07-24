@@ -52,3 +52,6 @@ results/build_replays/
 analysis/reports/
 
 sparring_*.SC2Replay
+
+# Sparring bot match records (training equipment, not a scored bot)
+sparring/results/
