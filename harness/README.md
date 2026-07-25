@@ -19,6 +19,11 @@ improvement loops plug into.
   bots' files.
 - `versus.py` — runs a repo bot against downloaded AI Arena bots through
   the real ladder entrypoint (see `download_bots.py`).
+- `measure_strength.py` — the one-command strength benchmark: plays every
+  playable downloaded opponent (in parallel, via `versus.py`), then writes
+  `<bot>/results/strength_report.md` with the decisive record, per-race
+  splits, a maximum-likelihood Elo estimate from games vs ranked opponents,
+  a per-opponent table, and the loss-replay list for analysis.
 
 All three take `--bot {phoenix,griffin}` (default `phoenix`); the scoreboard
 tracks each bot separately.
@@ -40,7 +45,19 @@ $VENV/bin/python harness/gauntlet.py --games 12 \
 
 # re-print the all-time scoreboard
 $VENV/bin/python harness/gauntlet.py --summary-only
+
+# strength benchmark vs the whole playable arena field (uses venv312)
+/root/venv312/bin/python harness/measure_strength.py --bot phoenix
+/root/venv312/bin/python harness/measure_strength.py --bot griffin --games 2
+/root/venv312/bin/python harness/measure_strength.py --bot phoenix --min-elo 1400
+# interrupted? resume with the timestamp it printed
+/root/venv312/bin/python harness/measure_strength.py --bot phoenix --since <ts>
 ```
+
+Replays from `versus.py`/`measure_strength.py` land in
+`<bot>/replays/versus/` with opponent, map, and result in the filename;
+the strength report lists each loss replay, ready for
+`analysis/sc2reader_analyzer.py`.
 
 Replays land in `<bot>/replays/harness/` (gitignored). Loss replays are the
 input for replay-based loss analysis (`analysis/sc2reader_analyzer.py`).
