@@ -133,6 +133,19 @@ LATE_COMP_GAS_BANK: int = 800
 FACTORY_FLOAT_GAS: int = 500
 MAX_FACTORIES: int = 5
 
+# Barracks-at-float: the MINERAL analog of the factory fix above. Loss-replay
+# audit of the long macro losses showed griffin banks 1.5-2.9k unspent MINERALS
+# once it reaches 3-4 bases (Slowpoke 4891307: 2920 minerals floated at 16min
+# on 82 workers / 3600 min-rate) because ~4-5 barracks can't convert that bio
+# income into army fast enough - so its supply stalls at ~120-140 while the
+# opponent maxes 200 supply and out-remaxes it. Adding barracks (only when
+# minerals are actually floating, capped to base count) drains the bank into
+# bio throughput so griffin keeps climbing to max. Barracks only + mineral-gated
+# so it can't spend gas/starve the army the way the blanket production-at-bank
+# regression did (it built every comp type at bank, 1-5 gauntlet).
+BARRACKS_FLOAT_MIN: int = 500
+MAX_BARRACKS: int = 8
+
 # early-rush window: proximity aggression before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
 # one-base/two-base all-in window: griffin's dominant ladder loss (zig-reapers,
@@ -299,6 +312,7 @@ class GriffinBot(AresBot):
         self._counter_proxy_structures()
         self._build_turrets_vs_air()
         self._build_factories_vs_float()
+        self._build_barracks_vs_float()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
@@ -559,6 +573,34 @@ class GriffinBot(AresBot):
                 BuildStructure(
                     base_location=self.start_location,
                     structure_id=UnitID.FACTORY,
+                )
+            )
+
+    def _build_barracks_vs_float(self) -> None:
+        """Add barracks when floating minerals so bio production can spend the
+        bank - the mineral analog of _build_factories_vs_float. Griffin banks
+        1.5-2.9k unspent minerals in long macro games (Slowpoke: 2920 at 16min
+        on 82 workers) because ~4-5 barracks can't convert an 80-worker income
+        into army, so supply stalls at ~120-140 while the enemy maxes 200 and
+        out-remaxes it. More barracks convert the mineral float into bio.
+        Barracks only + mineral-gated + base-capped so it can't spend gas or
+        over-build and starve the army (the add_production_at_bank regression)."""
+        if self._emergency or self.time < 360.0:
+            return
+        if self.minerals < BARRACKS_FLOAT_MIN:
+            return
+        have = (
+            self.structures(UnitID.BARRACKS).ready.amount
+            + self.already_pending(UnitID.BARRACKS)
+        )
+        cap = min(MAX_BARRACKS, 2 * len(self.townhalls))
+        if have >= cap:
+            return
+        if self.can_afford(UnitID.BARRACKS):
+            self.register_behavior(
+                BuildStructure(
+                    base_location=self.start_location,
+                    structure_id=UnitID.BARRACKS,
                 )
             )
 
