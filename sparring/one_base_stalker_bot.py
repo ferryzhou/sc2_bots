@@ -25,7 +25,12 @@ from sc2.ids.unit_typeid import UnitTypeId
 class OneBaseStalkerBot(BotAI):
     TARGET_PROBES = 22          # stalls ~22 workers on one base -- all-in
     NUM_GATEWAYS = 4
-    ATTACK_AT_STALKERS = 16     # mass before committing (real bot: ~18-20)
+    # The real bot does NOT mass 16 at home first -- that let Phoenix macro
+    # freely to 850 army by 4:00 and the mimic lost. It moves out with the
+    # first small ball (~4:30) and REINFORCES continuously, so the pressure
+    # lands while Phoenix is still on a cyber core. That early, sustained
+    # pressure is what pinned Phoenix to 175 army @4:00 on the ladder.
+    ATTACK_AT_STALKERS = 6      # commit the first ball, then never stop
 
     async def on_start(self):
         self.attacking = False
