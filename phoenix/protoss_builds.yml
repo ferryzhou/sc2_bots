@@ -14,11 +14,21 @@ BuildChoices:
             - SafeExpand
             - GateExpand
 
+    # GateExpand is intentionally NOT in the Protoss cycle. Its nexus goes down
+    # at supply 20 (~2:30) -- inside our all-in detection gap (the one-base
+    # all-in read is floored at 3:30, and the early-aggression trigger only
+    # fires once the enemy's ball approaches ~4:00). Against a one-base stalker
+    # all-in (e.g. OneBaseStalkerBot) that early expansion is fatal: replay of
+    # the 2026-07-24 ladder loss showed us expanding at 2:30 and reaching ~1
+    # stalker by 5:00 while the enemy had 700 army at 4:00. SafeExpand's nexus
+    # is at supply 27 (~4:30), which the emergency abort catches first -- so it
+    # holds the all-in (verified 2-0 in sparring) AND still macros to 5 bases vs
+    # a non-all-in (verified 2-0 vs macro Zerg). GateExpand stays available for
+    # the T/Z/Random cycles below, where that PvP timing gap doesn't apply.
     Protoss:
         BotName: ProtossRace
         Cycle:
             - SafeExpand
-            - GateExpand
             - OneBaseDefense
 
     Random:
