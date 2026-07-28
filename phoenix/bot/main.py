@@ -134,6 +134,17 @@ BUILD_ORDER_SUPPLY_CAP: float = 36.0
 
 # early-rush window: aggression detected before this triggers emergency mode
 EARLY_THREAT_UNTIL: float = 300.0
+
+# scout-driven opening switch: if we scout a COMMITTED one-base Protoss (no
+# natural + this many gates + gas) before we'd take our own natural, switch the
+# opening to OneBaseDefense. ares' get_enemy_four_gate needs 3 gates by 3:20,
+# but a one-base stalker all-in only lands its 3rd gate ~3:16 -- after our
+# SafeExpand nexus (supply 27, ~3:29). The 2-gate + 2-gas + no-natural tell is
+# visible ~2:15-2:30, early enough to preempt our expansion. Must fire before
+# the expand; gated to Protoss enemies (gateways only exist for them).
+DEFENSE_SWITCH_UNTIL: float = 210.0
+ONE_BASE_MIN_GATES: int = 2
+ONE_BASE_MIN_GAS: int = 2
 # don't spend on forge/twilight upgrades before this (a 2:32 forge+twilight
 # was the direct cause of rush losses - see the Chance loss analysis)
 UPGRADES_AFTER: float = 300.0
@@ -170,6 +181,7 @@ class PhoenixBot(AresBot):
         self._commenced_attack: bool = False
         self._emergency: bool = False
         self._defense_opening: bool = False
+        self._switched_to_defense: bool = False
         self._last_threat_time: float = 0.0
         # per-stalker blink cooldown tracking (blink is ~11s; avoids an
         # async get_available_abilities call per unit each frame)
@@ -222,6 +234,44 @@ class PhoenixBot(AresBot):
             lost_value=lost,
         )
         await super(PhoenixBot, self).on_end(game_result)
+
+    def _enemy_committed_one_base(self) -> bool:
+        """Scouted tell of a committed one-base Protoss all-in, EARLY enough to
+        react (before our own natural). Enemy has no second base yet but is
+        pouring into one-base tech: >=2 gateways AND >=2 assimilators. Gateways
+        exist only for Protoss, so this is implicitly race-gated. Structures
+        persist as snapshots once scouted, so a scout that dies after one look
+        still counts. ares' four-gate read needs 3 gates by 3:20 - too late for
+        a stalker all-in whose 3rd gate lands ~3:16, past our 3:29 expand."""
+        if self.mediator.get_enemy_expanded:
+            return False
+        gates = self.enemy_structures.filter(
+            lambda s: s.type_id in (UnitID.GATEWAY, UnitID.WARPGATE)
+        ).amount
+        gas = self.enemy_structures(UnitID.ASSIMILATOR).amount
+        return gates >= ONE_BASE_MIN_GATES and gas >= ONE_BASE_MIN_GAS
+
+    def _maybe_switch_to_defense(self) -> None:
+        """Before we commit to our economic expansion, if the scout reads a
+        committed one-base all-in, switch the opening to OneBaseDefense (no
+        expo, 4-gate + gas + cyber behind the wall). This closes the gap the
+        GateExpand removal only narrowed: SafeExpand still expands at ~3:29 and
+        loses the midgame production race. Fires once, only while the opening
+        is still running and before ~3:30 so it preempts the natural."""
+        if (
+            self._switched_to_defense
+            or self.build_order_runner.build_completed
+            or self.build_order_runner.chosen_opening == "OneBaseDefense"
+            or self.time > DEFENSE_SWITCH_UNTIL
+        ):
+            return
+        if self._enemy_committed_one_base():
+            self.build_order_runner.switch_opening("OneBaseDefense")
+            self._switched_to_defense = True
+            logger.warning(
+                f"{self.time_formatted} SCOUT SWITCH -> OneBaseDefense "
+                f"(committed one-base all-in read)"
+            )
 
     @property
     def _enemy_all_in(self) -> bool:
@@ -304,6 +354,7 @@ class PhoenixBot(AresBot):
     async def on_step(self, iteration: int) -> None:
         await super(PhoenixBot, self).on_step(iteration)
 
+        self._maybe_switch_to_defense()
         self._all_in_read: bool = self._enemy_all_in
         # a chosen defensive opening commits us to the anti-all-in posture for
         # the whole all-in window - no expansion/tech, pump stalkers + wall +
