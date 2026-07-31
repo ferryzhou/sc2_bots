@@ -34,6 +34,7 @@ from mass_ling_bot import MassLingBot
 from one_base_stalker_bot import OneBaseStalkerBot
 from macro_roach_bot import MacroRoachBot
 from macro_protoss_bot import MacroProtossBot
+from macro_terran_bot import MacroTerranBot
 from twelve_pool_bot import TwelvePoolBot
 
 SPARRING = {
@@ -42,6 +43,7 @@ SPARRING = {
     "massling": (MassLingBot, Race.Zerg),
     "macroroach": (MacroRoachBot, Race.Zerg),
     "macroprotoss": (MacroProtossBot, Race.Protoss),
+    "macroterran": (MacroTerranBot, Race.Terran),
     "twelvepool": (TwelvePoolBot, Race.Zerg),
 }
 
