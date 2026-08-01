@@ -25,11 +25,12 @@ from sc2.ids.upgrade_id import UpgradeId as UP
 
 
 class MacroTerranBot(BotAI):
-    TARGET_SCVS = 60
-    N_BARRACKS = 12
-    MAX_BASES = 3
-    PUSH_AT = 60           # supply of army to first commit
-    MARAUDER_EVERY = 4     # 1 in 4 bio is a marauder (armored punch)
+    TARGET_SCVS = 42       # 2-base bio timing, not a greedy 3-base macro
+    N_BARRACKS = 10
+    MAX_BASES = 2
+    PUSH_AT = 28           # commit the first stim-marine timing ~5:00 to deny
+                           # Phoenix's greedy macro, then reinforce forever
+    MARAUDER_EVERY = 5
 
     async def on_start(self):
         self.committed = False
@@ -117,7 +118,7 @@ class MacroTerranBot(BotAI):
                 b.build(U.BARRACKSREACTOR)
 
     async def ebay_and_upgrades(self, cc):
-        if self.time < 150:
+        if self.time < 240:   # front-load marines for the ~5:00 timing first
             return
         ebays = self.structures(U.ENGINEERINGBAY)
         if ebays.amount + self.already_pending(U.ENGINEERINGBAY) < 2 \
@@ -140,7 +141,7 @@ class MacroTerranBot(BotAI):
                     break
 
     async def starport(self, cc):
-        if self.time < 200 or not self.structures(U.BARRACKS).ready:
+        if self.time < 330 or not self.structures(U.BARRACKS).ready:
             return
         sp = self.structures(U.STARPORT)
         if sp.amount + self.already_pending(U.STARPORT) < 1 and self.can_afford(U.STARPORT):

@@ -24,9 +24,11 @@ from sc2.ids.unit_typeid import UnitTypeId
 
 
 class MacroRoachBot(BotAI):
-    DRONE_CAP = 44          # ~22/base on 2 bases, then pour larva into roaches
-    ATTACK_SUPPLY = 40      # attack with ~20 roaches, then remax and re-engage
-    MAX_HATCH = 5           # more hatches = more larva = faster remax
+    DRONE_CAP = 66          # HARD macro: ~22/base over 3 bases before roaches -
+                            # the KoB loss was 168 roaches + 120 drones out-
+                            # producing us. Test whether we can out-macro that.
+    ATTACK_SUPPLY = 56      # mass a big roach ball (~28 roaches) then remax
+    MAX_HATCH = 7           # more hatches = more larva = faster remax
 
     async def on_start(self):
         self.attacking = False
