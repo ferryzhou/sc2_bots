@@ -251,13 +251,30 @@ class PhoenixBot(AresBot):
         gas = self.enemy_structures(UnitID.ASSIMILATOR).amount
         return gates >= ONE_BASE_MIN_GATES and gas >= ONE_BASE_MIN_GAS
 
+    def _enemy_proxy_aggression(self) -> bool:
+        """Proxy all-in tell that _enemy_committed_one_base MISSES: a proxy
+        4-gate builds its gateways FORWARD (near us, not at the enemy base) and
+        skips gas, so a read keyed on gates+gas at the enemy base never sees it.
+        That is exactly how a ZEALOCALYPSE proxy-zealot flood walked past our
+        expansion on the ladder (we took a natural and got overrun by 55
+        zealots). Use ares' proxy read plus our own proximity check on any enemy
+        gateway/pylon planted near OUR base."""
+        if self.mediator.get_is_proxy_zealot:
+            return True
+        return any(
+            s.type_id in (UnitID.GATEWAY, UnitID.WARPGATE, UnitID.PYLON)
+            and s.distance_to(self.start_location) < 60.0
+            for s in self.enemy_structures
+        )
+
     def _maybe_switch_to_defense(self) -> None:
         """Before we commit to our economic expansion, if the scout reads a
-        committed one-base all-in, switch the opening to OneBaseDefense (no
-        expo, 4-gate + gas + cyber behind the wall). This closes the gap the
-        GateExpand removal only narrowed: SafeExpand still expands at ~3:29 and
-        loses the midgame production race. Fires once, only while the opening
-        is still running and before ~3:30 so it preempts the natural."""
+        committed one-base all-in (home tech OR a forward proxy), switch the
+        opening to OneBaseDefense (no expo, 4-gate + gas + cyber behind the
+        wall). This closes the gap the GateExpand removal only narrowed:
+        SafeExpand still expands at ~3:29 and loses the midgame production race.
+        Fires once, only while the opening is still running and before ~3:30 so
+        it preempts the natural."""
         if (
             self._switched_to_defense
             or self.build_order_runner.build_completed
@@ -265,12 +282,13 @@ class PhoenixBot(AresBot):
             or self.time > DEFENSE_SWITCH_UNTIL
         ):
             return
-        if self._enemy_committed_one_base():
+        proxy = self._enemy_proxy_aggression()
+        if self._enemy_committed_one_base() or proxy:
             self.build_order_runner.switch_opening("OneBaseDefense")
             self._switched_to_defense = True
+            reason = "proxy all-in" if proxy else "committed one-base all-in"
             logger.warning(
-                f"{self.time_formatted} SCOUT SWITCH -> OneBaseDefense "
-                f"(committed one-base all-in read)"
+                f"{self.time_formatted} SCOUT SWITCH -> OneBaseDefense ({reason})"
             )
 
     @property
