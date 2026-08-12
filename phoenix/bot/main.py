@@ -296,13 +296,17 @@ class PhoenixBot(AresBot):
         )
 
     def _enemy_armored_light_supply(self) -> tuple[float, float]:
-        """Scouted enemy army supply split into armored vs light. Uses ares'
-        cached enemy army dict (includes remembered units), so a unit seen
-        once still counts even after it leaves vision."""
+        """Scouted enemy GROUND army supply split into armored vs light. Uses
+        ares' cached enemy army dict (includes remembered units), so a unit
+        seen once still counts even after it leaves vision. Flyers are excluded:
+        this read drives the robo comp (immortal/colossus), and BOTH are
+        ground-only - counting mutalisks as 'light' picked colossus (which can't
+        even hit air) vs the kas muta/ultra army while the Ultralisks that
+        actually needed immortals went unanswered. Stalkers cover air."""
         armored = light = 0.0
         for units in self.mediator.get_enemy_army_dict.values():
             for u in units:
-                if u.type_id in WORKER_TYPES:
+                if u.type_id in WORKER_TYPES or u.is_flying:
                     continue
                 sup = self.calculate_supply_cost(u.type_id)
                 if u.is_armored:
