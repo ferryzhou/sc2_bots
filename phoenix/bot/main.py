@@ -346,6 +346,23 @@ class PhoenixBot(AresBot):
                     air += self.calculate_supply_cost(u.type_id)
         return air
 
+    def _won_the_hold(self) -> bool:
+        """The all-in is weathered and we're clearly ahead - convert the won
+        defense into ECONOMY. The 08-18 OneBaseStalkerBot ladder loss: Phoenix
+        held, led 2450v1050 at 10:00, yet sat on ONE base for 19 minutes, mined
+        out and collapsed 0v3500. Reproduced in sparring (17.5-min grind, Nexus
+        x1 the whole game). Ahead = past the all-in's peak window, holding a
+        real army, and at least 1.5x the scouted enemy army supply."""
+        if self.time < 420.0:
+            return False
+        own = self.supply_used - self.supply_workers
+        enemy = 0.0
+        for units in self.mediator.get_enemy_army_dict.values():
+            for u in units:
+                if u.type_id not in WORKER_TYPES:
+                    enemy += self.calculate_supply_cost(u.type_id)
+        return own >= 20.0 and own >= 1.5 * max(enemy, 1.0)
+
     def _choose_army_comp(self) -> dict[UnitID, dict]:
         """Reactive composition: answer the scouted enemy army. Robo units are
         added only once we actually see the army they counter, never during
@@ -600,7 +617,13 @@ class PhoenixBot(AresBot):
             macro_plan.add(AutoSupply(base_location=self.start_location))
             if self._emergency:
                 # units and production only - no expansions, no upgrades,
-                # no worker overinvestment until the rush is dead
+                # no worker overinvestment until the rush is dead. EXCEPTION:
+                # once the hold is clearly won, take the natural - and fund it
+                # FIRST, before SpawnController drains the bank (the grind
+                # repro showed the bank pinned under ~105, so an expansion
+                # added later in the plan never gets paid for).
+                if self._won_the_hold():
+                    macro_plan.add(ExpansionController(to_count=2, max_pending=1))
                 macro_plan.add(SpawnController(comp))
                 macro_plan.add(
                     BuildWorkers(to_count=min(28, 22 * len(self.townhalls)))
@@ -626,6 +649,10 @@ class PhoenixBot(AresBot):
                 macro_plan.add(
                     BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
                 )
+                # the all-in read blocks expansion below - but a WON hold must
+                # still convert to economy, funded before SpawnController
+                if self._all_in_read and self._won_the_hold():
+                    macro_plan.add(ExpansionController(to_count=2, max_pending=1))
                 macro_plan.add(SpawnController(comp))
                 # upgrades only once we're stable: past the rush window AND
                 # holding a real army (a 5:00 forge while defending was a
