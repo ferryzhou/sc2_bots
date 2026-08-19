@@ -185,6 +185,7 @@ class PhoenixBot(AresBot):
         self._emergency: bool = False
         self._defense_opening: bool = False
         self._switched_to_defense: bool = False
+        self._posthold_logged: bool = False
         self._last_threat_time: float = 0.0
         # per-stalker blink cooldown tracking (blink is ~11s; avoids an
         # async get_available_abilities call per unit each frame)
@@ -615,15 +616,30 @@ class PhoenixBot(AresBot):
                 # reactive robo composition vs the scouted enemy army
                 comp = self._choose_army_comp()
             macro_plan.add(AutoSupply(base_location=self.start_location))
-            if self._emergency:
+            # post-hold conversion: once the all-in hold is clearly won, take
+            # the natural. Merely adding an ExpansionController is NOT enough -
+            # it has no mineral reservation, and SpawnController's continuous
+            # spend pins the bank under ~105 (verified in the grind repro), so
+            # the nexus never gets funded. While converting, the plan is ONLY
+            # supply + expansion - army production pauses the ~40s it takes to
+            # bank 400 (we are >=1.5x ahead by definition, so that is safe).
+            posthold_expand = (
+                (self._emergency or self._all_in_read)
+                and self._won_the_hold()
+                and len(self.townhalls) < 2
+                and not self.already_pending(UnitID.NEXUS)
+            )
+            if posthold_expand and not self._posthold_logged:
+                self._posthold_logged = True
+                logger.warning(
+                    f"{self.time_formatted} POST-HOLD: won the defense, "
+                    f"converting - taking the natural"
+                )
+            if posthold_expand:
+                macro_plan.add(ExpansionController(to_count=2, max_pending=1))
+            elif self._emergency:
                 # units and production only - no expansions, no upgrades,
-                # no worker overinvestment until the rush is dead. EXCEPTION:
-                # once the hold is clearly won, take the natural - and fund it
-                # FIRST, before SpawnController drains the bank (the grind
-                # repro showed the bank pinned under ~105, so an expansion
-                # added later in the plan never gets paid for).
-                if self._won_the_hold():
-                    macro_plan.add(ExpansionController(to_count=2, max_pending=1))
+                # no worker overinvestment until the rush is dead
                 macro_plan.add(SpawnController(comp))
                 macro_plan.add(
                     BuildWorkers(to_count=min(28, 22 * len(self.townhalls)))
@@ -649,10 +665,6 @@ class PhoenixBot(AresBot):
                 macro_plan.add(
                     BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
                 )
-                # the all-in read blocks expansion below - but a WON hold must
-                # still convert to economy, funded before SpawnController
-                if self._all_in_read and self._won_the_hold():
-                    macro_plan.add(ExpansionController(to_count=2, max_pending=1))
                 macro_plan.add(SpawnController(comp))
                 # upgrades only once we're stable: past the rush window AND
                 # holding a real army (a 5:00 forge while defending was a
