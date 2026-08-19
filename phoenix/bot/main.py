@@ -113,6 +113,9 @@ COLOSSUS_COMP: dict[UnitID, dict] = {
 # (a real presence, not one stray unit) - keeps the opening on pure stalkers
 ARMORED_TRIGGER: float = 8.0
 LIGHT_TRIGGER: float = 14.0
+# enemy FLYING army supply past this (and outweighing their ground) locks the
+# comp to pure stalker - immortal/colossus can't shoot up (42-VoidRay Arpy loss)
+AIR_TRIGGER: float = 12.0
 
 # used while defending early aggression - zealots are the only gateway unit
 # available before cybercore tech and hold rushes far better than nothing
@@ -333,12 +336,30 @@ class PhoenixBot(AresBot):
                     light += sup
         return armored, light
 
+    def _enemy_air_supply(self) -> float:
+        """Scouted enemy FLYING army supply (overlords cost 0 so they don't
+        count). Drives the anti-air guard below."""
+        air = 0.0
+        for units in self.mediator.get_enemy_army_dict.values():
+            for u in units:
+                if u.is_flying and u.type_id not in WORKER_TYPES:
+                    air += self.calculate_supply_cost(u.type_id)
+        return air
+
     def _choose_army_comp(self) -> dict[UnitID, dict]:
         """Reactive composition: answer the scouted enemy army. Robo units are
         added only once we actually see the army they counter, never during
         the opening/all-in window - that reactivity is what separates this
         from the always-on immortal comp that regressed."""
         armored, light = self._enemy_armored_light_supply()
+        # anti-air guard: vs a real AIR army, robo splash is a dead spend --
+        # immortals and colossus cannot shoot up. The 26-min Arpy loss massed
+        # 42 Void Rays while our 32-zealot ground read teched colossus; every
+        # robo mineral was wasted. Stalkers are our only scalable AA, so once
+        # the enemy's air outweighs their ground army, stay on pure stalkers.
+        air = self._enemy_air_supply()
+        if air >= AIR_TRIGGER and air > max(armored, light):
+            return ARMY_COMP
         # armored takes precedence (immortals also beat the light-vs-colossus
         # case acceptably, and armored is the deadlier miss for stalkers)
         if armored >= ARMORED_TRIGGER and armored >= light:

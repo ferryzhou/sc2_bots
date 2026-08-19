@@ -150,9 +150,15 @@ class OneBaseStalkerBot(BotAI):
             nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, nexus)
 
     async def attack(self):
+        """Push with each ball, then RE-MASS at home when it's spent -- the
+        real OneBaseStalkerBot grinds like this for 19+ minutes (64 stalkers
+        over the game in the 08-18 ladder loss), it doesn't feed one ball. The
+        long grind is what exposed Phoenix's post-hold one-base stall."""
         stalkers = self.units(UnitTypeId.STALKER)
         if not self.attacking and stalkers.amount >= self.ATTACK_AT_STALKERS:
             self.attacking = True
+        if self.attacking and stalkers.amount < max(4, self.ATTACK_AT_STALKERS // 3):
+            self.attacking = False   # ball spent: fall back and re-mass
         if self.attacking:
             target = (
                 self.enemy_structures.random.position
@@ -161,6 +167,11 @@ class OneBaseStalkerBot(BotAI):
             )
             for s in stalkers:
                 s.attack(target)
+        else:
+            # defend the ramp while re-massing
+            home = self.start_location.towards(self.game_info.map_center, 10)
+            for s in stalkers.further_than(14, home):
+                s.move(home)
 
     async def on_end(self, result: Result):
         print(f"OneBaseStalkerBot game ended: {result}")

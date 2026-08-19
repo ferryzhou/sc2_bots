@@ -36,6 +36,7 @@ from macro_roach_bot import MacroRoachBot
 from macro_protoss_bot import MacroProtossBot
 from macro_terran_bot import MacroTerranBot
 from twelve_pool_bot import TwelvePoolBot
+from void_ray_bot import VoidRayBot
 
 SPARRING = {
     "fourgate": (FourGateZealotBot, Race.Protoss),
@@ -45,6 +46,7 @@ SPARRING = {
     "macroprotoss": (MacroProtossBot, Race.Protoss),
     "macroterran": (MacroTerranBot, Race.Terran),
     "twelvepool": (TwelvePoolBot, Race.Zerg),
+    "voidray": (VoidRayBot, Race.Protoss),
 }
 
 
