@@ -113,6 +113,9 @@ COLOSSUS_COMP: dict[UnitID, dict] = {
 # (a real presence, not one stray unit) - keeps the opening on pure stalkers
 ARMORED_TRIGGER: float = 8.0
 LIGHT_TRIGGER: float = 14.0
+# enemy FLYING army supply past this (and outweighing their ground) locks the
+# comp to pure stalker - immortal/colossus can't shoot up (42-VoidRay Arpy loss)
+AIR_TRIGGER: float = 12.0
 
 # used while defending early aggression - zealots are the only gateway unit
 # available before cybercore tech and hold rushes far better than nothing
@@ -182,6 +185,7 @@ class PhoenixBot(AresBot):
         self._emergency: bool = False
         self._defense_opening: bool = False
         self._switched_to_defense: bool = False
+        self._posthold_logged: bool = False
         self._last_threat_time: float = 0.0
         # per-stalker blink cooldown tracking (blink is ~11s; avoids an
         # async get_available_abilities call per unit each frame)
@@ -333,12 +337,47 @@ class PhoenixBot(AresBot):
                     light += sup
         return armored, light
 
+    def _enemy_air_supply(self) -> float:
+        """Scouted enemy FLYING army supply (overlords cost 0 so they don't
+        count). Drives the anti-air guard below."""
+        air = 0.0
+        for units in self.mediator.get_enemy_army_dict.values():
+            for u in units:
+                if u.is_flying and u.type_id not in WORKER_TYPES:
+                    air += self.calculate_supply_cost(u.type_id)
+        return air
+
+    def _won_the_hold(self) -> bool:
+        """The all-in is weathered and we're clearly ahead - convert the won
+        defense into ECONOMY. The 08-18 OneBaseStalkerBot ladder loss: Phoenix
+        held, led 2450v1050 at 10:00, yet sat on ONE base for 19 minutes, mined
+        out and collapsed 0v3500. Reproduced in sparring (17.5-min grind, Nexus
+        x1 the whole game). Ahead = past the all-in's peak window, holding a
+        real army, and at least 1.5x the scouted enemy army supply."""
+        if self.time < 420.0:
+            return False
+        own = self.supply_used - self.supply_workers
+        enemy = 0.0
+        for units in self.mediator.get_enemy_army_dict.values():
+            for u in units:
+                if u.type_id not in WORKER_TYPES:
+                    enemy += self.calculate_supply_cost(u.type_id)
+        return own >= 20.0 and own >= 1.5 * max(enemy, 1.0)
+
     def _choose_army_comp(self) -> dict[UnitID, dict]:
         """Reactive composition: answer the scouted enemy army. Robo units are
         added only once we actually see the army they counter, never during
         the opening/all-in window - that reactivity is what separates this
         from the always-on immortal comp that regressed."""
         armored, light = self._enemy_armored_light_supply()
+        # anti-air guard: vs a real AIR army, robo splash is a dead spend --
+        # immortals and colossus cannot shoot up. The 26-min Arpy loss massed
+        # 42 Void Rays while our 32-zealot ground read teched colossus; every
+        # robo mineral was wasted. Stalkers are our only scalable AA, so once
+        # the enemy's air outweighs their ground army, stay on pure stalkers.
+        air = self._enemy_air_supply()
+        if air >= AIR_TRIGGER and air > max(armored, light):
+            return ARMY_COMP
         # armored takes precedence (immortals also beat the light-vs-colossus
         # case acceptably, and armored is the deadlier miss for stalkers)
         if armored >= ARMORED_TRIGGER and armored >= light:
@@ -577,7 +616,28 @@ class PhoenixBot(AresBot):
                 # reactive robo composition vs the scouted enemy army
                 comp = self._choose_army_comp()
             macro_plan.add(AutoSupply(base_location=self.start_location))
-            if self._emergency:
+            # post-hold conversion: once the all-in hold is clearly won, take
+            # the natural. Merely adding an ExpansionController is NOT enough -
+            # it has no mineral reservation, and SpawnController's continuous
+            # spend pins the bank under ~105 (verified in the grind repro), so
+            # the nexus never gets funded. While converting, the plan is ONLY
+            # supply + expansion - army production pauses the ~40s it takes to
+            # bank 400 (we are >=1.5x ahead by definition, so that is safe).
+            posthold_expand = (
+                (self._emergency or self._all_in_read)
+                and self._won_the_hold()
+                and len(self.townhalls) < 2
+                and not self.already_pending(UnitID.NEXUS)
+            )
+            if posthold_expand and not self._posthold_logged:
+                self._posthold_logged = True
+                logger.warning(
+                    f"{self.time_formatted} POST-HOLD: won the defense, "
+                    f"converting - taking the natural"
+                )
+            if posthold_expand:
+                macro_plan.add(ExpansionController(to_count=2, max_pending=1))
+            elif self._emergency:
                 # units and production only - no expansions, no upgrades,
                 # no worker overinvestment until the rush is dead
                 macro_plan.add(SpawnController(comp))
