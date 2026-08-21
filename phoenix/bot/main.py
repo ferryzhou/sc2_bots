@@ -554,6 +554,20 @@ class PhoenixBot(AresBot):
         early_rush = (intel_rush or self._early_aggression_seen()) and (
             self.time < EARLY_THREAT_UNTIL
         )
+        # a WON hold ends the lockdown - and blocks re-entry while we stay
+        # clearly ahead. The all-in read alone kept emergency alive until
+        # ~12:00 vs early-pressure opponents, and the lockdown's costs (28-
+        # worker cap, zealot-heavy comp, no robo/upgrades) are what lost the
+        # DemsTossV2-style grinds: we sat on 28 workers making zealots while
+        # they macroed to 80 probes and teched immortals.
+        if self._won_the_hold():
+            if self._emergency:
+                self._emergency = False
+                logger.warning(
+                    f"{self.time_formatted} POST-HOLD: lockdown released "
+                    f"(clearly ahead) - resuming full macro"
+                )
+            return
         if early_rush or self._all_in_read:
             self._last_threat_time = self.time
             if not self._emergency:

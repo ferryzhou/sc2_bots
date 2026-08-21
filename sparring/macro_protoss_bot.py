@@ -31,6 +31,7 @@ class MacroProtossBot(BotAI):
         await self.gates(nexus)
         await self.cyber(nexus)
         await self.probes()
+        await self.robo()
         await self.army()
         await self.chrono(nexus)
         await self.attack()
@@ -91,11 +92,32 @@ class MacroProtossBot(BotAI):
             if self.can_afford(UnitTypeId.PROBE):
                 nx.train(UnitTypeId.PROBE)
 
-    async def army(self):
+    async def robo(self):
+        # DemsTossV2 pattern: tech immortals behind the pressure (13 immortals
+        # in the 08-18 ladder loss while Phoenix sat in emergency zealots)
         if not self.structures(UnitTypeId.CYBERNETICSCORE).ready:
             return
+        if (not self.structures(UnitTypeId.ROBOTICSFACILITY)
+                and not self.already_pending(UnitTypeId.ROBOTICSFACILITY)
+                and self.can_afford(UnitTypeId.ROBOTICSFACILITY)
+                and self.townhalls.amount >= 2):
+            pylon = self.structures(UnitTypeId.PYLON).ready.random
+            await self.build(UnitTypeId.ROBOTICSFACILITY,
+                             near=pylon.position.towards(self.game_info.map_center, 5))
+        for rb in self.structures(UnitTypeId.ROBOTICSFACILITY).ready.idle:
+            if self.can_afford(UnitTypeId.IMMORTAL):
+                rb.train(UnitTypeId.IMMORTAL)
+
+    async def army(self):
+        # a few zealots FIRST (early poke keeps the defender's threat
+        # detection hot - the DemsTossV2 grind pinned Phoenix in emergency
+        # lockdown), then stalkers once the core finishes
+        core = self.structures(UnitTypeId.CYBERNETICSCORE).ready
         for gate in self.structures(UnitTypeId.GATEWAY).ready.idle:
-            if self.can_afford(UnitTypeId.STALKER):
+            if not core or self.units(UnitTypeId.ZEALOT).amount < 4:
+                if self.can_afford(UnitTypeId.ZEALOT):
+                    gate.train(UnitTypeId.ZEALOT)
+            elif self.can_afford(UnitTypeId.STALKER):
                 gate.train(UnitTypeId.STALKER)
 
     async def chrono(self, nexus):
@@ -106,10 +128,21 @@ class MacroProtossBot(BotAI):
             nexus(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy[0])
 
     async def attack(self):
+        zealots = self.units(UnitTypeId.ZEALOT)
         stalkers = self.units(UnitTypeId.STALKER)
-        if stalkers.amount >= 24:
-            for s in stalkers:
-                s.attack(self.enemy_start_locations[0])
+        immortals = self.units(UnitTypeId.IMMORTAL)
+        # early zealot poke at the enemy's natural (~2:30-4:00): enough combat
+        # units near their base to read as aggression, keeping the emergency on
+        if self.time > 150 and zealots and stalkers.amount < 6:
+            poke = self.enemy_start_locations[0].towards(
+                self.game_info.map_center, 14)
+            for z in zealots:
+                z.attack(poke)
+        # main push once the immortal/stalker ball is real, reinforce forever
+        ball = stalkers.amount + 2 * immortals.amount
+        if ball >= 20:
+            for u in (stalkers + immortals + zealots):
+                u.attack(self.enemy_start_locations[0])
 
     async def on_end(self, result: Result):
         print(f"MacroProtossBot game ended: {result}")
