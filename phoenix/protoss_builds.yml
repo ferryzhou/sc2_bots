@@ -25,11 +25,15 @@ BuildChoices:
     # holds the all-in (verified 2-0 in sparring) AND still macros to 5 bases vs
     # a non-all-in (verified 2-0 vs macro Zerg). GateExpand stays available for
     # the T/Z/Random cycles below, where that PvP timing gap doesn't apply.
+    # OneBaseDefense is kept in Builds: below for _maybe_switch_to_defense()
+    # when scouting confirms a 1-base or proxy all-in, but removed from the
+    # blind Protoss Cycle: selecting OneBaseDefense blindly vs macro Protoss
+    # (Slenderina 0-14, Thssprtssbt 6-18 in 2026 S1) trapped Phoenix on 1 base
+    # / 22 probes / 0 upgrades while the opponent expanded to 3-4 bases.
     Protoss:
         BotName: ProtossRace
         Cycle:
             - SafeExpand
-            - OneBaseDefense
 
     Random:
         BotName: RandomRace
