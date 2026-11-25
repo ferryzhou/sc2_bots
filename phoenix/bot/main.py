@@ -125,8 +125,9 @@ MIXED_ROBO_COMP: dict[UnitID, dict] = {
 ARMORED_TRIGGER: float = 8.0
 LIGHT_TRIGGER: float = 8.0
 # enemy FLYING army supply past this (and outweighing their ground) locks the
-# comp to pure stalker - immortal/colossus can't shoot up (42-VoidRay Arpy loss)
-AIR_TRIGGER: float = 12.0
+# comp to pure stalker - immortal/colossus can't shoot up (Arpy Void Rays,
+# who Tempests, Mulebot BCs)
+AIR_TRIGGER: float = 6.0
 
 # Cloak / burrow units and tech structures that require Observer detection
 # (2026-08-22 Hestia loss to 4 cloaked Banshees, Lissy 3-28 loss to burrowed
@@ -586,11 +587,13 @@ class PhoenixBot(AresBot):
             scout.move(enemy_nat)
 
     def _evacuate_harassed_probes(self) -> None:
-        """Pull probes away from air/cloaked raiders in our mineral lines
-        (Rule 9b: pull threatened workers out of the raid). Cuts probe losses
-        to Cloaked Banshees / Oracles / Void Rays while detection or army
-        arrives."""
+        """Pull gathering probes away from air/cloaked raiders in our mineral
+        lines (Rule 9b: pull threatened workers out of the raid). Only touches
+        GATHERING probes so BUILDING probes aren't cancelled mid-construction."""
         if not self.townhalls or not self.workers:
+            return
+        gathering = self.mediator.get_units_from_role(role=UnitRole.GATHERING)
+        if not gathering:
             return
         raiders = self.enemy_units.filter(
             lambda u: not u.is_memory
@@ -603,7 +606,7 @@ class PhoenixBot(AresBot):
             return
         for raider in raiders:
             danger_radius = 7.0 if raider.is_cloaked else 5.5
-            threatened = self.workers.closer_than(danger_radius, raider)
+            threatened = gathering.closer_than(danger_radius, raider)
             if not threatened:
                 continue
             # Move toward another safe townhall if available, else away from raider
@@ -644,6 +647,7 @@ class PhoenixBot(AresBot):
         self._update_emergency()
         self._counter_proxy_structures()
         self._macro()
+        await self._fallback_build_robo()
         self._evacuate_harassed_probes()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
@@ -712,10 +716,22 @@ class PhoenixBot(AresBot):
         if self._commenced_attack:
             self._micro(forces, target=self.attack_target)
         else:
-            # stage the army between our bases and the map center
-            rally: Point2 = self.main_base_ramp.top_center.towards(
-                self.game_info.map_center, 4.0
-            )
+            # Stage the army at our front-most ready expansion (when on 2+
+            # bases outside emergency) so we guard expansions and attack
+            # sooner instead of retreating all the way to the main ramp.
+            ready_th = self.townhalls.ready
+            if len(ready_th) >= 2 and not self._emergency:
+                front_th = min(
+                    ready_th,
+                    key=lambda th: th.distance_to(self.game_info.map_center),
+                )
+                rally: Point2 = front_th.position.towards(
+                    self.game_info.map_center, 6.0
+                )
+            else:
+                rally = self.main_base_ramp.top_center.towards(
+                    self.game_info.map_center, 4.0
+                )
             grid: np.ndarray = self.mediator.get_ground_grid
             for unit in forces:
                 if unit.distance_to(rally) > 8.0:
@@ -1061,24 +1077,73 @@ class PhoenixBot(AresBot):
 
             macro_plan.add(AutoSupply(base_location=prod_base))
 
-            # Power-grid deadlock breaker (diagnosed from Thssprtssbt loss):
-            # if all powered 3x3 placement slots are occupied while supply_left
-            # keeps AutoSupply quiet (e.g. 55/70 on 2 WarpGates), EVERY 3x3
-            # build request (Gateway, Forge, Twilight, Robo) returns None
-            # forever and the bot floats 2k+ minerals. Build a production Pylon
-            # whenever we have resources to build and zero powered 3x3 slots.
-            if (
-                self.minerals >= 350
-                and not self.already_pending(UnitID.PYLON)
-                and not self.not_started_but_in_building_tracker(UnitID.PYLON)
-                and self.mediator.request_building_placement(
+            # Check whether a critical 3x3 tech/detection building is needed so
+            # we can use non-production 3x3 slots or build a power Pylon at
+            # >=100m instead of deadlocking at <350m (diagnosed from who's
+            # ProxyDarkShrine loss where 4 gates + CyberCore filled all 5 main
+            # production slots and blocked RoboticsFacility for 3+ minutes).
+            has_gate = bool(
+                self.structures(UnitID.GATEWAY).ready
+                or self.structures(UnitID.WARPGATE).ready
+            )
+            need_cyber_rebuild = (
+                has_gate
+                and not self.structure_present_or_pending(UnitID.CYBERNETICSCORE)
+            )
+            gates_total = (
+                self.structures(UnitID.GATEWAY).amount
+                + self.structures(UnitID.WARPGATE).amount
+                + self.already_pending(UnitID.GATEWAY)
+            )
+            need_emergency_robo = (
+                self._emergency
+                and self.time >= 210.0
+                and gates_total >= 4
+                and self.structures(UnitID.CYBERNETICSCORE).ready
+                and not self.structures(UnitID.ROBOTICSFACILITY)
+            )
+            need_detection_robo = (
+                self._need_detection
+                and self.structures(UnitID.CYBERNETICSCORE).ready
+                and not self.structures(UnitID.ROBOTICSFACILITY)
+            )
+            need_urgent_3x3 = (
+                need_cyber_rebuild
+                or need_detection_robo
+                or need_emergency_robo
+            )
+            has_prod_3x3 = (
+                self.mediator.request_building_placement(
                     base_location=prod_base,
                     structure_type=UnitID.GATEWAY,
                     within_psionic_matrix=True,
                     reserve_placement=False,
                     production=True,
                 )
-                is None
+                is not None
+            )
+            has_any_3x3 = has_prod_3x3 or (
+                self.mediator.request_building_placement(
+                    base_location=prod_base,
+                    structure_type=UnitID.ROBOTICSFACILITY,
+                    within_psionic_matrix=True,
+                    reserve_placement=False,
+                    production=False,
+                )
+                is not None
+            )
+
+            # Power-grid deadlock breaker (diagnosed from Thssprtssbt & who
+            # losses): build a production Pylon whenever all powered 3x3 slots
+            # are full and we either float >=350m or urgently need a 3x3 tech
+            # structure (>=100m).
+            if (
+                not self.already_pending(UnitID.PYLON)
+                and not self.not_started_but_in_building_tracker(UnitID.PYLON)
+                and (
+                    (self.minerals >= 350 and not has_prod_3x3)
+                    or (need_urgent_3x3 and self.minerals >= 100 and not has_any_3x3)
+                )
             ):
                 macro_plan.add(
                     BuildStructure(
@@ -1098,39 +1163,32 @@ class PhoenixBot(AresBot):
             # Rebuild CyberneticsCore immediately at a live base if lost
             # (Arpy / DemsTossV2 froze for 4.5-5 min floating 3k+ when the
             # single ramp CyberCore died).
-            has_gate = bool(
-                self.structures(UnitID.GATEWAY).ready
-                or self.structures(UnitID.WARPGATE).ready
-            )
-            if has_gate and not self.structure_present_or_pending(
-                UnitID.CYBERNETICSCORE
-            ):
+            if need_cyber_rebuild:
                 macro_plan.add(
                     BuildStructure(
                         base_location=prod_base,
                         structure_id=UnitID.CYBERNETICSCORE,
                         to_count=1,
+                        production=has_prod_3x3,
                     )
                 )
 
             # Build a Robotics Facility immediately when cloak/burrow is
-            # scouted and we don't have one yet (Hestia Banshees, Lissy Lurkers).
+            # scouted and we don't have one yet (Hestia Banshees, Lissy Lurkers,
+            # who ProxyDarkShrine). Keep saving_for_robo True while the builder
+            # walks to the site too (SC2 deducts 150m/100g on placement, not on
+            # dispatch), so SpawnController can't steal the builder's minerals.
             saving_for_robo = False
-            if (
-                self._need_detection
-                and self.structures(UnitID.CYBERNETICSCORE).ready
-                and not self.structure_present_or_pending(
-                    UnitID.ROBOTICSFACILITY
-                )
-            ):
+            if need_detection_robo:
                 macro_plan.add(
                     BuildStructure(
                         base_location=prod_base,
                         structure_id=UnitID.ROBOTICSFACILITY,
                         to_count=1,
+                        production=has_prod_3x3,
                     )
                 )
-                saving_for_robo = not self.can_afford(UnitID.ROBOTICSFACILITY)
+                saving_for_robo = self.minerals < 275 or self.vespene < 150
 
             # post-hold conversion: once the all-in hold is clearly won, take
             # the natural. Merely adding an ExpansionController is NOT enough -
@@ -1182,28 +1240,21 @@ class PhoenixBot(AresBot):
                     )
                 # Break prolonged 1-base standoffs with a Robo once 4+ gates
                 # are down (gives Immortals vs Stalker/Marauder/Roach + an
-                # Observer for hallucinations, cloak, and natural re-scouting).
-                gates_total = (
-                    self.structures(UnitID.GATEWAY).amount
-                    + self.structures(UnitID.WARPGATE).amount
-                    + self.already_pending(UnitID.GATEWAY)
-                )
+                # Observer by ~4:25 for DTs, hallucinations, and nat re-scout).
                 if (
-                    self.time >= 210.0
-                    and gates_total >= 4
-                    and self.structures(UnitID.CYBERNETICSCORE).ready
-                    and not self.structure_present_or_pending(
-                        UnitID.ROBOTICSFACILITY
-                    )
-                    and self.can_afford(UnitID.ROBOTICSFACILITY)
+                    need_emergency_robo
+                    and not need_detection_robo
+                    and self.vespene >= 100
                 ):
                     macro_plan.add(
                         BuildStructure(
                             base_location=prod_base,
                             structure_id=UnitID.ROBOTICSFACILITY,
                             to_count=1,
+                            production=has_prod_3x3,
                         )
                     )
+                    saving_for_robo = self.minerals < 275 or self.vespene < 150
                 # units and production only - no expansions, no upgrades,
                 # no worker overinvestment until the rush is dead
                 if not (
@@ -1212,9 +1263,16 @@ class PhoenixBot(AresBot):
                     or saving_for_robo_unit
                 ):
                     macro_plan.add(SpawnController(comp))
-                macro_plan.add(
-                    BuildWorkers(to_count=min(28, 22 * len(self.townhalls)))
-                )
+                # Pause Probe replacement while urgently saving for our first
+                # detection Robo/Observer so dying Probes don't drain 50m/ea.
+                if not (
+                    self._need_detection
+                    and (saving_for_robo or saving_for_observer)
+                    and self.workers.amount >= 8
+                ):
+                    macro_plan.add(
+                        BuildWorkers(to_count=min(28, 22 * len(self.townhalls)))
+                    )
                 macro_plan.add(
                     ProductionController(
                         comp,
@@ -1288,7 +1346,7 @@ class PhoenixBot(AresBot):
                     want_robo = (
                         UnitID.IMMORTAL in comp or UnitID.COLOSSUS in comp
                     )
-                    if want_robo and not self.structure_present_or_pending(
+                    if want_robo and not self.structures(
                         UnitID.ROBOTICSFACILITY
                     ):
                         macro_plan.add(
@@ -1296,29 +1354,27 @@ class PhoenixBot(AresBot):
                                 base_location=prod_base,
                                 structure_id=UnitID.ROBOTICSFACILITY,
                                 to_count=1,
+                                production=has_prod_3x3,
                             )
                         )
                         saving_for_tech = (
-                            not self.can_afford(UnitID.ROBOTICSFACILITY)
-                            and self.vespene >= 50
+                            self.vespene >= 50 and self.minerals < 275
                         )
                     elif (
                         UnitID.COLOSSUS in comp
                         and self.structures(UnitID.ROBOTICSFACILITY).ready
-                        and not self.structure_present_or_pending(
-                            UnitID.ROBOTICSBAY
-                        )
+                        and not self.structures(UnitID.ROBOTICSBAY)
                     ):
                         macro_plan.add(
                             BuildStructure(
                                 base_location=prod_base,
                                 structure_id=UnitID.ROBOTICSBAY,
                                 to_count=1,
+                                production=has_prod_3x3,
                             )
                         )
                         saving_for_tech = (
-                            not self.can_afford(UnitID.ROBOTICSBAY)
-                            and self.vespene >= 75
+                            self.vespene >= 75 and self.minerals < 275
                         )
                     elif (
                         UnitID.COLOSSUS in comp
@@ -1334,6 +1390,47 @@ class PhoenixBot(AresBot):
                             UpgradeId.EXTENDEDTHERMALLANCE
                         )
 
+                # Upgrades ahead of SpawnController once stable: previously
+                # WarpGates pinned minerals < 125 so +2/+2 and +3/+3 stalled
+                # until minute 21 (DemsTossV2 4v11, BioBot2.0 4v9, Lissy 5v14).
+                # Add a 2nd Forge on 3+ bases to cut +3/+3 time in half.
+                if (
+                    self.time > UPGRADES_AFTER
+                    and army_supply >= 16
+                    and not self._all_in_read
+                    and not need_expand
+                ):
+                    macro_plan.add(
+                        UpgradeController(
+                            upgrade_list=list(DESIRED_UPGRADES),
+                            base_location=prod_base,
+                            prioritize=(
+                                self.vespene >= 100
+                                and army_supply >= 22.0
+                                and not self._home_threat()
+                            ),
+                        )
+                    )
+                    if (
+                        len(self.townhalls) >= 3
+                        and self.time > 360.0
+                        and army_supply >= 20.0
+                        and not self._home_threat()
+                        and self.structures(UnitID.FORGE).amount == 1
+                        and not self.already_pending(UnitID.FORGE)
+                        and not self.not_started_but_in_building_tracker(
+                            UnitID.FORGE
+                        )
+                        and self.minerals >= 200
+                    ):
+                        macro_plan.add(
+                            BuildStructure(
+                                base_location=prod_base,
+                                structure_id=UnitID.FORGE,
+                                to_count=2,
+                            )
+                        )
+
                 if not (
                     saving_for_observer
                     or saving_for_robo
@@ -1342,21 +1439,6 @@ class PhoenixBot(AresBot):
                     or (need_expand and self.minerals < 525)
                 ):
                     macro_plan.add(SpawnController(comp))
-                # upgrades only once we're stable: past the rush window AND
-                # holding a real army (a 5:00 forge while defending was a
-                # second death spiral in the Chance loss analysis); never
-                # while a one-base all-in is inbound
-                if (
-                    self.time > UPGRADES_AFTER
-                    and army_supply >= 16
-                    and not self._all_in_read
-                ):
-                    macro_plan.add(
-                        UpgradeController(
-                            upgrade_list=list(DESIRED_UPGRADES),
-                            base_location=prod_base,
-                        )
-                    )
                 macro_plan.add(
                     ProductionController(comp, base_location=prod_base)
                 )
@@ -1422,6 +1504,46 @@ class PhoenixBot(AresBot):
         self._research_warpgate()
         self._research_thermal_lance()
         self._chrono_production()
+
+    async def _fallback_build_robo(self) -> None:
+        """Native python-sc2 placement failsafe for urgent RoboticsFacility
+        (detection or 1-base standoff) when all precalculated ares 3x3 slots
+        at prod_base are occupied (who ProxyDarkShrine 4-gate main fill)."""
+        if self.state.game_loop % 8 != 0:
+            return
+        gates_total = (
+            self.structures(UnitID.GATEWAY).amount
+            + self.structures(UnitID.WARPGATE).amount
+            + self.already_pending(UnitID.GATEWAY)
+        )
+        urgent = self._need_detection or (
+            self._emergency and self.time >= 210.0 and gates_total >= 4
+        )
+        if (
+            not urgent
+            or not self.structures(UnitID.CYBERNETICSCORE).ready
+            or self.structure_present_or_pending(UnitID.ROBOTICSFACILITY)
+            or self.not_started_but_in_building_tracker(UnitID.ROBOTICSFACILITY)
+            or not self.can_afford(UnitID.ROBOTICSFACILITY)
+        ):
+            return
+        pylons = self.structures(UnitID.PYLON).ready
+        if not pylons:
+            return
+        prod_base = self._production_base()
+        if (
+            self.mediator.request_building_placement(
+                base_location=prod_base,
+                structure_type=UnitID.ROBOTICSFACILITY,
+                within_psionic_matrix=True,
+                reserve_placement=False,
+                production=False,
+            )
+            is not None
+        ):
+            return
+        anchor = pylons.closest_to(prod_base).position
+        await self.build(UnitID.ROBOTICSFACILITY, near=anchor)
 
     def _research_warpgate(self) -> None:
         """Start Warp Gate research as soon as Cybernetics Core completes
@@ -1505,6 +1627,12 @@ class PhoenixBot(AresBot):
         hold_height: float = (
             self.get_terrain_height(hold_pos) if hold_pos is not None else 0.0
         )
+        robo_units: Units = forces.of_type({UnitID.COLOSSUS, UnitID.IMMORTAL})
+        front_robo: Optional[Unit] = (
+            cy_closest_to(target, robo_units)
+            if (hold_pos is None and robo_units)
+            else None
+        )
 
         for unit in forces:
             maneuver: CombatManeuver = CombatManeuver()
@@ -1519,6 +1647,40 @@ class PhoenixBot(AresBot):
             )
 
             if all_close:
+                # Prismatic Alignment Void Ray peel-back (Arpy / sharpy losses):
+                # aligned Void Rays deal +6 bonus vs Armored (44 DPS) while
+                # slowed to 2.62 speed vs Stalker 4.13. Kite out of the beam
+                # until Alignment expires, then re-engage on its 43s cooldown.
+                if unit.is_armored and only_enemy_units:
+                    aligned_vrs = only_enemy_units.filter(
+                        lambda u: u.type_id == UnitID.VOIDRAY
+                        and u.has_buff(BuffId.VOIDRAYSWARMDAMAGEBOOST)
+                        and u.distance_to(unit) < 8.5
+                    )
+                    if aligned_vrs:
+                        safe: Point2 = self.mediator.find_closest_safe_spot(
+                            from_pos=unit.position, grid=grid
+                        )
+                        if (
+                            unit.type_id == UnitID.STALKER
+                            and UpgradeId.BLINKTECH in self.state.upgrades
+                            and self.time - self._blinked_at.get(unit.tag, -100.0)
+                            > 11.0
+                            and aligned_vrs.closest_distance_to(unit) < 6.5
+                        ):
+                            maneuver.add(
+                                UseAbility(
+                                    AbilityId.EFFECT_BLINK_STALKER,
+                                    unit,
+                                    unit.position.towards(safe, 8.0),
+                                )
+                            )
+                            self._blinked_at[unit.tag] = self.time
+                        else:
+                            maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
+                        self.register_behavior(maneuver)
+                        continue
+
                 # shoot whatever is already in range (units before structures)
                 in_range_unit = False
                 if in_attack_range := cy_in_attack_range(unit, only_enemy_units):
@@ -1531,9 +1693,35 @@ class PhoenixBot(AresBot):
                         ShootTargetInRange(unit=unit, targets=in_attack_range)
                     )
 
-                enemy_target: Unit = cy_pick_enemy_target(
-                    only_enemy_units if only_enemy_units else all_close
+                # Never get stuck pressing into a cliff wall chasing a long-
+                # range flyer (Tempest / Carrier / Banshee / WarpPrism) hovering
+                # over unpathable dead space when reachable units or enemy
+                # structures are right next to us (who ProxyDarkShrine->Tempest).
+                reachable_units: Units = only_enemy_units.filter(
+                    lambda u: (not u.is_flying)
+                    or u.distance_to(unit) <= unit.air_range + 1.5
+                    or self.in_pathing_grid(u.position)
                 )
+                structures_close: Units = all_close.filter(
+                    lambda u: u.type_id in ALL_STRUCTURES
+                )
+                if reachable_units:
+                    enemy_target: Unit = cy_pick_enemy_target(reachable_units)
+                elif structures_close:
+                    enemy_target = cy_pick_enemy_target(structures_close)
+                else:
+                    # Only out-of-range flyers over unpathable void remain:
+                    # keep marching toward target (or step back if taking fire)
+                    # instead of wedging against the cliff edge.
+                    if unit.shield_percentage < 0.7:
+                        maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
+                    else:
+                        maneuver.add(
+                            PathUnitToTarget(unit=unit, grid=grid, target=target)
+                        )
+                        maneuver.add(AMove(unit=unit, target=target))
+                    self.register_behavior(maneuver)
+                    continue
                 # Ramp-hold leash (Thssprtssbt loss): never march down our own
                 # main ramp 1-by-1 into a larger army camping the low ground.
                 # Units shoot freely from high ground and stay near hold_pos
@@ -1577,7 +1765,7 @@ class PhoenixBot(AresBot):
                     and self.time - self._blinked_at.get(unit.tag, -100.0) > 11.0
                 ):
                     # Blink-back damaged stalker instantly out of danger
-                    safe: Point2 = self.mediator.find_closest_safe_spot(
+                    safe = self.mediator.find_closest_safe_spot(
                         from_pos=unit.position, grid=grid
                     )
                     maneuver.add(
@@ -1625,7 +1813,21 @@ class PhoenixBot(AresBot):
                             StutterUnitForward(unit=unit, target=enemy_target)
                         )
             else:
-                maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=target))
-                maneuver.add(AMove(unit=unit, target=target))
+                # Deathball cohesion: keep fast Stalkers/Zealots screened in
+                # front of our slower Colossi/Immortals while marching so the
+                # Gateway screen doesn't arrive 10s early and die piecemeal.
+                move_target = target
+                if (
+                    front_robo is not None
+                    and unit.type_id in (UnitID.STALKER, UnitID.ZEALOT)
+                    and unit.distance_to(target) + 8.0
+                    < front_robo.distance_to(target)
+                    and unit.distance_to(front_robo) > 10.0
+                ):
+                    move_target = front_robo.position.towards(target, 4.0)
+                maneuver.add(
+                    PathUnitToTarget(unit=unit, grid=grid, target=move_target)
+                )
+                maneuver.add(AMove(unit=unit, target=move_target))
 
             self.register_behavior(maneuver)

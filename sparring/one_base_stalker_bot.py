@@ -110,6 +110,7 @@ class OneBaseStalkerBot(BotAI):
     async def build_cyber(self, nexus):
         if (
             self.structures(UnitTypeId.GATEWAY).ready
+            and self.structures(UnitTypeId.PYLON).ready
             and not self.structures(UnitTypeId.CYBERNETICSCORE)
             and not self.already_pending(UnitTypeId.CYBERNETICSCORE)
             and self.can_afford(UnitTypeId.CYBERNETICSCORE)
