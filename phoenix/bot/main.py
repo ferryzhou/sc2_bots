@@ -227,6 +227,8 @@ class PhoenixBot(AresBot):
         self._nat_rescout_tag: Optional[int] = None
         self._nat_rescout_done: bool = False
         self._enemy_has_expanded: bool = False
+        self._obs_nat_check_active: bool = False
+        self._last_obs_nat_check: float = -100.0
         self._last_threat_time: float = 0.0
         # per-stalker blink cooldown tracking (blink is ~11s; avoids an
         # async get_available_abilities call per unit each frame)
@@ -449,7 +451,11 @@ class PhoenixBot(AresBot):
         armored = light = 0.0
         for units in self.mediator.get_enemy_army_dict.values():
             for u in units:
-                if u.type_id in WORKER_TYPES or u.is_flying:
+                if (
+                    u.type_id in WORKER_TYPES
+                    or u.is_flying
+                    or u.is_hallucination
+                ):
                     continue
                 sup = self.calculate_supply_cost(u.type_id)
                 if u.is_armored:
@@ -464,7 +470,11 @@ class PhoenixBot(AresBot):
         air = 0.0
         for units in self.mediator.get_enemy_army_dict.values():
             for u in units:
-                if u.is_flying and u.type_id not in WORKER_TYPES:
+                if (
+                    u.is_flying
+                    and u.type_id not in WORKER_TYPES
+                    and not u.is_hallucination
+                ):
                     air += self.calculate_supply_cost(u.type_id)
         return air
 
@@ -481,7 +491,7 @@ class PhoenixBot(AresBot):
         enemy = 0.0
         for units in self.mediator.get_enemy_army_dict.values():
             for u in units:
-                if u.type_id not in WORKER_TYPES:
+                if u.type_id not in WORKER_TYPES and not u.is_hallucination:
                     enemy += self.calculate_supply_cost(u.type_id)
         return own >= 20.0 and own >= 1.5 * max(enemy, 1.0)
 
@@ -563,10 +573,11 @@ class PhoenixBot(AresBot):
 
         if (
             self._nat_rescout_done
+            or self._enemy_has_expanded
             or self.mediator.get_enemy_expanded
-            or not (190.0 <= self.time <= 250.0)
+            or not (190.0 <= self.time <= 260.0)
             or self.workers.amount < 20
-            or self._emergency
+            or bool(self._home_threat())
         ):
             return
         if scout := self.mediator.select_worker(target_position=enemy_nat):
@@ -640,12 +651,29 @@ class PhoenixBot(AresBot):
         self._micro_observers(forces)
 
         if threat := self._home_threat():
-            # defend: during an early rush hold the ramp choke (don't chase
-            # down the ramp into the flood) unless enemies are already inside
+            # defend: during an early rush / 1-base hold, hold the ramp choke
+            # (don't chase down the ramp into the flood) unless enemies are
+            # already inside, we have a natural to defend, or our army already
+            # decisively outnumbers the local attackers (>=1.5x supply)
             target: Point2 = threat.position
-            if self._emergency and threat.distance_to(self.start_location) > 18.0:
-                target = self.main_base_ramp.top_center
-            self._micro(forces, target=target)
+            hold_pos: Optional[Point2] = None
+            if (
+                self._emergency
+                and len(self.townhalls) == 1
+                and threat.distance_to(self.start_location) > 18.0
+            ):
+                local_enemy = self.enemy_units.filter(
+                    lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES
+                    and u.type_id not in WORKER_TYPES
+                    and not u.is_memory
+                    and not u.is_hallucination
+                    and u.distance_to(self.start_location) < 35.0
+                )
+                local_enemy_supply = self.get_total_supply(local_enemy)
+                if forces_supply < 1.5 * max(local_enemy_supply, 4.0):
+                    target = self.main_base_ramp.top_center
+                    hold_pos = self.main_base_ramp.top_center
+            self._micro(forces, target=target, hold_pos=hold_pos)
             return
 
         # engagement gating: simulate the fight against the visible enemy
@@ -654,6 +682,7 @@ class PhoenixBot(AresBot):
             lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES
             and u.type_id not in WORKER_TYPES
             and not u.is_memory
+            and not u.is_hallucination
         )
         fight = None
         if forces and enemy_army:
@@ -721,6 +750,7 @@ class PhoenixBot(AresBot):
             for u in self.enemy_units
             if u.type_id not in COMMON_UNIT_IGNORE_TYPES
             and not u.is_memory
+            and not u.is_hallucination
             and any(u.distance_to(th) < DEFEND_RADIUS for th in self.townhalls)
         ]
         if not threats:
@@ -831,7 +861,11 @@ class PhoenixBot(AresBot):
         robos = self.structures(UnitID.ROBOTICSFACILITY).ready
         if not robos:
             return False
-        want_obs = 2 if self._need_detection else (1 if self.time >= 300.0 else 0)
+        want_obs = (
+            2
+            if self._need_detection
+            else (1 if (self.time >= 300.0 or self._emergency) else 0)
+        )
         if want_obs == 0:
             return False
         obs_total = self.units(UnitID.OBSERVER).amount + self.already_pending(
@@ -848,8 +882,9 @@ class PhoenixBot(AresBot):
         return self._need_detection and obs_total == 0
 
     def _micro_observers(self, forces: Units) -> None:
-        """Keep Observers covering cloaked/burrowed threats or escorting the
-        main army just behind the front line so they aren't sniped."""
+        """Keep Observers covering cloaked/burrowed threats, periodically
+        checking the enemy natural while still on a 1-base read, or escorting
+        the main army just behind the front line so they aren't sniped."""
         observers = self.units(UnitID.OBSERVER)
         if not observers:
             return
@@ -864,6 +899,19 @@ class PhoenixBot(AresBot):
         home_hidden = hidden.filter(
             lambda u: any(u.distance_to(th) < 30.0 for th in self.townhalls)
         )
+        enemy_nat: Point2 = self.mediator.get_enemy_nat
+        if self._enemy_has_expanded:
+            self._obs_nat_check_active = False
+        elif (
+            not self._obs_nat_check_active
+            and not home_hidden
+            and not self._need_detection
+            and self.time >= 270.0
+            and self.time - self._last_obs_nat_check >= 75.0
+        ):
+            self._obs_nat_check_active = True
+            self._last_obs_nat_check = self.time
+
         army_center: Point2 = (
             forces.center if forces else self.main_base_ramp.top_center
         )
@@ -874,6 +922,10 @@ class PhoenixBot(AresBot):
             elif hidden and idx == 0:
                 t = hidden.closest_to(army_center)
                 dest = t.position.towards(army_center, 3.0)
+            elif self._obs_nat_check_active and idx == len(observers) - 1:
+                dest = enemy_nat
+                if obs.distance_to(enemy_nat) < 9.0:
+                    self._obs_nat_check_active = False
             elif idx == 0 and forces:
                 dest = army_center.towards(self.start_location, 3.0)
             elif self.townhalls:
@@ -919,11 +971,20 @@ class PhoenixBot(AresBot):
         macro_plan: MacroPlan = MacroPlan()
         if self.build_order_runner.build_completed:
             if self._emergency:
-                # rush defense: gateway units + batteries, no robo detour.
-                # In the dedicated one-base defense we know it's a ranged/armored
-                # all-in - pump PURE stalkers (zealots just get kited); otherwise
-                # the stalker/zealot mix (zealots tank light floods).
-                comp = ARMY_COMP if self._defense_opening else self._emergency_comp
+                # rush defense: gateway units + batteries, plus Immortals once
+                # an emergency Robo completes vs armored 1-base armies
+                # (Stalkers, Marauders, Roaches).
+                if (
+                    self.structures(UnitID.ROBOTICSFACILITY).ready
+                    and self._enemy_armored_light_supply()[0] >= 6.0
+                ):
+                    comp = IMMORTAL_COMP
+                else:
+                    comp = (
+                        ARMY_COMP
+                        if self._defense_opening
+                        else self._emergency_comp
+                    )
             elif self._all_in_read:
                 # one-base all-in inbound: robo tech is too slow to matter,
                 # pump gateway army now
@@ -933,6 +994,33 @@ class PhoenixBot(AresBot):
                 comp = self._choose_army_comp()
 
             macro_plan.add(AutoSupply(base_location=prod_base))
+
+            # Power-grid deadlock breaker (diagnosed from Thssprtssbt loss):
+            # if all powered 3x3 placement slots are occupied while supply_left
+            # keeps AutoSupply quiet (e.g. 55/70 on 2 WarpGates), EVERY 3x3
+            # build request (Gateway, Forge, Twilight, Robo) returns None
+            # forever and the bot floats 2k+ minerals. Build a production Pylon
+            # whenever we have resources to build and zero powered 3x3 slots.
+            if (
+                self.minerals >= 350
+                and not self.already_pending(UnitID.PYLON)
+                and not self.not_started_but_in_building_tracker(UnitID.PYLON)
+                and self.mediator.request_building_placement(
+                    base_location=prod_base,
+                    structure_type=UnitID.GATEWAY,
+                    within_psionic_matrix=True,
+                    reserve_placement=False,
+                    production=True,
+                )
+                is None
+            ):
+                macro_plan.add(
+                    BuildStructure(
+                        base_location=prod_base,
+                        structure_id=UnitID.PYLON,
+                        production=True,
+                    )
+                )
 
             # Train Observers ahead of SpawnController so Stalkers don't drain
             # the 75 gas needed for detection against cloaked/burrowed units.
@@ -997,6 +1085,56 @@ class PhoenixBot(AresBot):
             if posthold_expand:
                 macro_plan.add(ExpansionController(to_count=2, max_pending=1))
             elif self._emergency:
+                # 1-base ramp Shield Battery: ProtossStaticDefence places its
+                # battery next to the Nexus (~12 range behind the ramp), so it
+                # healed 0 shields during the Thssprtssbt ramp siege. Place one
+                # right behind main_base_ramp.top_center first.
+                ramp_top = self.main_base_ramp.top_center
+                has_ramp_battery = any(
+                    s.distance_to(ramp_top) < 9.0
+                    for s in self.structures(UnitID.SHIELDBATTERY)
+                )
+                if (
+                    len(self.townhalls) == 1
+                    and self.structures(UnitID.CYBERNETICSCORE).ready
+                    and not has_ramp_battery
+                    and not self.already_pending(UnitID.SHIELDBATTERY)
+                    and not self.not_started_but_in_building_tracker(
+                        UnitID.SHIELDBATTERY
+                    )
+                ):
+                    macro_plan.add(
+                        BuildStructure(
+                            base_location=self.start_location,
+                            structure_id=UnitID.SHIELDBATTERY,
+                            closest_to=ramp_top,
+                            production=False,
+                        )
+                    )
+                # Break prolonged 1-base standoffs with a Robo once 4+ gates
+                # are down (gives Immortals vs Stalker/Marauder/Roach + an
+                # Observer for hallucinations, cloak, and natural re-scouting).
+                gates_total = (
+                    self.structures(UnitID.GATEWAY).amount
+                    + self.structures(UnitID.WARPGATE).amount
+                    + self.already_pending(UnitID.GATEWAY)
+                )
+                if (
+                    self.time >= 210.0
+                    and gates_total >= 4
+                    and self.structures(UnitID.CYBERNETICSCORE).ready
+                    and not self.structure_present_or_pending(
+                        UnitID.ROBOTICSFACILITY
+                    )
+                    and self.can_afford(UnitID.ROBOTICSFACILITY)
+                ):
+                    macro_plan.add(
+                        BuildStructure(
+                            base_location=prod_base,
+                            structure_id=UnitID.ROBOTICSFACILITY,
+                            to_count=1,
+                        )
+                    )
                 # units and production only - no expansions, no upgrades,
                 # no worker overinvestment until the rush is dead
                 if not (saving_for_observer or saving_for_robo):
@@ -1011,14 +1149,32 @@ class PhoenixBot(AresBot):
                         add_production_at_bank=(150, 0),
                     )
                 )
-                # a battery behind the wall is the strongest rush holder
-                macro_plan.add(
-                    ProtossStaticDefence(
-                        pylons_per_base=1,
-                        photon_cannons_per_base=0,
-                        shield_batteries_per_base=1,
+                # Bank-driven emergency Gateways: never float 1k+ minerals on 2
+                # gates during an emergency hold (Thssprtssbt 2-gate loss).
+                if self.minerals >= 400:
+                    gates = (
+                        self.structures(UnitID.GATEWAY).amount
+                        + self.structures(UnitID.WARPGATE).amount
                     )
-                )
+                    pending_gates = self.already_pending(UnitID.GATEWAY)
+                    target_gates = min(8, max(4, 3 * len(self.townhalls)))
+                    if gates + pending_gates < target_gates and pending_gates < 2:
+                        macro_plan.add(
+                            BuildStructure(
+                                base_location=prod_base,
+                                structure_id=UnitID.GATEWAY,
+                            )
+                        )
+                # a battery at additional bases (main ramp battery already
+                # handled above when on 1 base)
+                if len(self.townhalls) > 1 or has_ramp_battery:
+                    macro_plan.add(
+                        ProtossStaticDefence(
+                            pylons_per_base=1,
+                            photon_cannons_per_base=0,
+                            shield_batteries_per_base=1,
+                        )
+                    )
             else:
                 army_supply = self.supply_used - self.supply_workers
                 # mineral income was the true constraint in the Hestia loss
@@ -1183,7 +1339,12 @@ class PhoenixBot(AresBot):
                     chronoed_tags.add(busy[0].tag)
                     break
 
-    def _micro(self, forces: Units, target: Point2) -> None:
+    def _micro(
+        self,
+        forces: Units,
+        target: Point2,
+        hold_pos: Optional[Point2] = None,
+    ) -> None:
         near_enemy: dict[int, Units] = self.mediator.get_units_in_range(
             start_points=forces,
             distances=15,
@@ -1191,12 +1352,17 @@ class PhoenixBot(AresBot):
             return_as_dict=True,
         )
         grid: np.ndarray = self.mediator.get_ground_grid
+        hold_height: float = (
+            self.get_terrain_height(hold_pos) if hold_pos is not None else 0.0
+        )
 
         for unit in forces:
             maneuver: CombatManeuver = CombatManeuver()
 
             all_close: Units = near_enemy[unit.tag].filter(
-                lambda u: not u.is_memory and u.type_id not in COMMON_UNIT_IGNORE_TYPES
+                lambda u: not u.is_memory
+                and not u.is_hallucination
+                and u.type_id not in COMMON_UNIT_IGNORE_TYPES
             )
             only_enemy_units: Units = all_close.filter(
                 lambda u: u.type_id not in ALL_STRUCTURES
@@ -1204,7 +1370,9 @@ class PhoenixBot(AresBot):
 
             if all_close:
                 # shoot whatever is already in range (units before structures)
+                in_range_unit = False
                 if in_attack_range := cy_in_attack_range(unit, only_enemy_units):
+                    in_range_unit = True
                     maneuver.add(
                         ShootTargetInRange(unit=unit, targets=in_attack_range)
                     )
@@ -1213,7 +1381,41 @@ class PhoenixBot(AresBot):
                         ShootTargetInRange(unit=unit, targets=in_attack_range)
                     )
 
-                enemy_target: Unit = cy_pick_enemy_target(all_close)
+                enemy_target: Unit = cy_pick_enemy_target(
+                    only_enemy_units if only_enemy_units else all_close
+                )
+                # Ramp-hold leash (Thssprtssbt loss): never march down our own
+                # main ramp 1-by-1 into a larger army camping the low ground.
+                # Units shoot freely from high ground and stay near hold_pos
+                # until the enemy actually climbs onto our terrain height.
+                if hold_pos is not None:
+                    unit_height = self.get_terrain_height(unit.position)
+                    enemy_height = self.get_terrain_height(enemy_target.position)
+                    if (
+                        unit.distance_to(hold_pos) > 5.5
+                        or unit_height < hold_height - 4.0
+                    ):
+                        maneuver.add(
+                            PathUnitToTarget(
+                                unit=unit, grid=grid, target=hold_pos
+                            )
+                        )
+                        self.register_behavior(maneuver)
+                        continue
+                    if enemy_height < hold_height - 4.0:
+                        if unit.shield_percentage < 0.2:
+                            maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
+                        elif unit.distance_to(hold_pos) > 3.0:
+                            maneuver.add(
+                                PathUnitToTarget(
+                                    unit=unit, grid=grid, target=hold_pos
+                                )
+                            )
+                        elif in_range_unit:
+                            maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
+                        self.register_behavior(maneuver)
+                        continue
+
                 if unit.type_id == UnitID.ZEALOT:
                     # Zealots are melee: always close in and fight rather than
                     # kiting backwards away from enemies
@@ -1245,9 +1447,11 @@ class PhoenixBot(AresBot):
                     # lost even 11v11 Stalker fights 3-8 vs OneBaseStalkerBot
                     maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
                 else:
-                    # Kite backwards when we outrange a mobile threat (melee /
-                    # roaches / zealots); step forward into full concave vs
-                    # equal-or-longer-range enemies and structures
+                    # Ranged stutter: step BACK on cooldown when already inside
+                    # attack range of a mobile threat (or when we outrange it)
+                    # so front-line Stalkers hold max range instead of walking
+                    # face-first into enemy focus fire; back-line units NOT yet
+                    # in range step FORWARD into full concave.
                     own_range = (
                         unit.air_range
                         if enemy_target.is_flying
@@ -1258,9 +1462,8 @@ class PhoenixBot(AresBot):
                         if unit.is_flying
                         else enemy_target.ground_range
                     )
-                    if (
-                        enemy_target.type_id not in ALL_STRUCTURES
-                        and own_range > enemy_range + 1.0
+                    if enemy_target.type_id not in ALL_STRUCTURES and (
+                        in_range_unit or own_range > enemy_range + 1.0
                     ):
                         maneuver.add(
                             StutterUnitBack(
