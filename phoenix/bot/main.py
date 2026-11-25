@@ -28,6 +28,7 @@ from ares.behaviors.combat.individual import (
     PathUnitToTarget,
     ShootTargetInRange,
     StutterUnitBack,
+    StutterUnitForward,
     UseAbility,
 )
 from sc2.ids.ability_id import AbilityId
@@ -223,6 +224,9 @@ class PhoenixBot(AresBot):
         self._posthold_logged: bool = False
         self._need_detection: bool = False
         self._detection_logged: bool = False
+        self._nat_rescout_tag: Optional[int] = None
+        self._nat_rescout_done: bool = False
+        self._enemy_has_expanded: bool = False
         self._last_threat_time: float = 0.0
         # per-stalker blink cooldown tracking (blink is ~11s; avoids an
         # async get_available_abilities call per unit each frame)
@@ -415,7 +419,12 @@ class PhoenixBot(AresBot):
         8-11min: their army value was 2-6x ours while we teched/expanded."""
         if not (210.0 < self.time < 660.0):
             return False
-        if self.mediator.get_enemy_expanded:
+        if self._enemy_has_expanded or self.mediator.get_enemy_expanded:
+            return False
+        # Already established on 3+ bases with 40+ probes: dropping back into
+        # 28-worker/no-robo/no-upgrade emergency lockdown hurts macro more than
+        # it helps (seen oscillating at 6:23-8:10 vs macroprotoss).
+        if len(self.townhalls) >= 3 and self.supply_workers >= 40:
             return False
         enemy_army_supply = self.get_total_supply(
             self.enemy_units.filter(
@@ -528,11 +537,87 @@ class PhoenixBot(AresBot):
             ):
                 probe.attack(target)
 
+    def _midgame_nat_rescout(self) -> None:
+        """Send one quick probe to check the enemy natural around 3:10 if our
+        1:45 probe missed a ~2:00 expansion (Rule 5: Scout constantly).
+        Eliminates false EMERGENCY: one-base all-in alarms at 6:00-7:30 vs
+        2-base macro opponents (seen in macroprotoss and macroterran)."""
+        enemy_nat: Point2 = self.mediator.get_enemy_nat
+        if self._nat_rescout_tag is not None:
+            scout = self.workers.find_by_tag(self._nat_rescout_tag)
+            if (
+                scout is None
+                or self.mediator.get_enemy_expanded
+                or scout.distance_to(enemy_nat) < 8.0
+                or self.time > 300.0
+            ):
+                if scout is not None:
+                    self.mediator.assign_role(
+                        tag=scout.tag, role=UnitRole.GATHERING
+                    )
+                self._nat_rescout_tag = None
+                self._nat_rescout_done = True
+                return
+            scout.move(enemy_nat)
+            return
+
+        if (
+            self._nat_rescout_done
+            or self.mediator.get_enemy_expanded
+            or not (190.0 <= self.time <= 250.0)
+            or self.workers.amount < 20
+            or self._emergency
+        ):
+            return
+        if scout := self.mediator.select_worker(target_position=enemy_nat):
+            self.mediator.assign_role(tag=scout.tag, role=UnitRole.SCOUTING)
+            self._nat_rescout_tag = scout.tag
+            scout.move(enemy_nat)
+
+    def _evacuate_harassed_probes(self) -> None:
+        """Pull probes away from air/cloaked raiders in our mineral lines
+        (Rule 9b: pull threatened workers out of the raid). Cuts probe losses
+        to Cloaked Banshees / Oracles / Void Rays while detection or army
+        arrives."""
+        if not self.townhalls or not self.workers:
+            return
+        raiders = self.enemy_units.filter(
+            lambda u: not u.is_memory
+            and u.type_id not in WORKER_TYPES
+            and u.type_id not in COMMON_UNIT_IGNORE_TYPES
+            and (u.is_flying or u.is_cloaked)
+            and any(u.distance_to(th) < 10.0 for th in self.townhalls)
+        )
+        if not raiders:
+            return
+        for raider in raiders:
+            danger_radius = 7.0 if raider.is_cloaked else 5.5
+            threatened = self.workers.closer_than(danger_radius, raider)
+            if not threatened:
+                continue
+            # Move toward another safe townhall if available, else away from raider
+            safe_ths = [
+                th
+                for th in self.townhalls.ready
+                if th.distance_to(raider) > 16.0
+            ]
+            for probe in threatened:
+                if not raider.is_cloaked and probe.shield_percentage >= 0.55:
+                    continue
+                if safe_ths:
+                    dest = min(safe_ths, key=lambda th: th.distance_to(probe)).position
+                else:
+                    dest = probe.position.towards(raider.position, -8.0)
+                probe.move(dest)
+
     async def on_step(self, iteration: int) -> None:
         await super(PhoenixBot, self).on_step(iteration)
 
+        if self.mediator.get_enemy_expanded:
+            self._enemy_has_expanded = True
         self._maybe_switch_to_defense()
         self._update_detection()
+        self._midgame_nat_rescout()
         self._all_in_read: bool = self._enemy_all_in
         # a chosen defensive opening commits us to the anti-all-in posture
         # while the opponent is actually on one base. Release immediately if
@@ -541,13 +626,14 @@ class PhoenixBot(AresBot):
         self._defense_opening = (
             self.build_order_runner.chosen_opening == "OneBaseDefense"
             and self.time < 450.0
-            and not self.mediator.get_enemy_expanded
+            and not self._enemy_has_expanded
         )
         if self._defense_opening:
             self._all_in_read = True
         self._update_emergency()
         self._counter_proxy_structures()
         self._macro()
+        self._evacuate_harassed_probes()
 
         forces: Units = self.mediator.get_units_from_role(role=UnitRole.ATTACKING)
         forces_supply: float = self.get_total_supply(forces)
@@ -1043,21 +1129,59 @@ class PhoenixBot(AresBot):
             macro_plan.add(SpawnController(ARMY_COMP))
         self.register_behavior(macro_plan)
 
+        self._research_warpgate()
         self._chrono_production()
 
+    def _research_warpgate(self) -> None:
+        """Start Warp Gate research as soon as Cybernetics Core completes
+        (~1:55 instead of waiting until 5:00 in UpgradeController, and even
+        during OneBaseDefense/emergency where UpgradeController is off).
+        50m/50g cuts Stalker cycle time from 30s to 23s (+30% throughput)."""
+        if (
+            UpgradeId.WARPGATERESEARCH in self.state.upgrades
+            or self.already_pending_upgrade(UpgradeId.WARPGATERESEARCH)
+            or not self.can_afford(UpgradeId.WARPGATERESEARCH)
+        ):
+            return
+        idle_cores = self.structures(UnitID.CYBERNETICSCORE).ready.idle
+        if idle_cores:
+            idle_cores.first.research(UpgradeId.WARPGATERESEARCH)
+
     def _chrono_production(self) -> None:
+        """Spend Nexus Chrono Boost energy across key bottlenecks instead of
+        capping at 200 energy once Gateways become WarpGates."""
         structures_dict = self.mediator.get_own_structures_dict
+        priority_types: list[UnitID] = [
+            UnitID.CYBERNETICSCORE,
+            UnitID.ROBOTICSFACILITY,
+            UnitID.FORGE,
+            UnitID.TWILIGHTCOUNCIL,
+            UnitID.GATEWAY,
+        ]
+        if (
+            self.supply_workers < 66
+            and not self._emergency
+            and not self._defense_opening
+        ):
+            priority_types.append(UnitID.NEXUS)
+
+        chronoed_tags: set[int] = set()
         for th in self.townhalls:
-            if th.energy >= 50:
-                if busy := [
+            if th.energy < 50:
+                continue
+            for type_id in priority_types:
+                busy = [
                     s
-                    for type_id in (UnitID.ROBOTICSFACILITY, UnitID.GATEWAY)
                     for s in structures_dict[type_id]
                     if s.build_progress >= 1.0
                     and not s.is_idle
                     and not s.has_buff(BuffId.CHRONOBOOSTENERGYCOST)
-                ]:
+                    and s.tag not in chronoed_tags
+                ]
+                if busy:
                     th(AbilityId.EFFECT_CHRONOBOOSTENERGYCOST, busy[0])
+                    chronoed_tags.add(busy[0].tag)
+                    break
 
     def _micro(self, forces: Units, target: Point2) -> None:
         near_enemy: dict[int, Units] = self.mediator.get_units_in_range(
@@ -1090,38 +1214,63 @@ class PhoenixBot(AresBot):
                     )
 
                 enemy_target: Unit = cy_pick_enemy_target(all_close)
-                if self._emergency and unit.type_id == UnitID.ZEALOT:
-                    # holding a wall gap: kiting backwards opens the door,
-                    # so zealots stand and fight
+                if unit.type_id == UnitID.ZEALOT:
+                    # Zealots are melee: always close in and fight rather than
+                    # kiting backwards away from enemies
                     maneuver.add(AMove(unit=unit, target=enemy_target.position))
-                elif unit.shield_percentage < 0.3:
-                    # damaged stalker: blink toward safety if it's ready
-                    # (jumps 8 range instantly out of the fight), else run.
-                    # BLINKTECH is already in DESIRED_UPGRADES but was never
-                    # actually fired before this.
-                    if (
-                        unit.type_id == UnitID.STALKER
-                        and UpgradeId.BLINKTECH in self.state.upgrades
-                        and self.time - self._blinked_at.get(unit.tag, -100.0)
-                        > 11.0
-                    ):
-                        safe: Point2 = self.mediator.find_closest_safe_spot(
-                            from_pos=unit.position, grid=grid
+                elif (
+                    unit.type_id == UnitID.STALKER
+                    and unit.shield_percentage < 0.3
+                    and UpgradeId.BLINKTECH in self.state.upgrades
+                    and self.time - self._blinked_at.get(unit.tag, -100.0) > 11.0
+                ):
+                    # Blink-back damaged stalker instantly out of danger
+                    safe: Point2 = self.mediator.find_closest_safe_spot(
+                        from_pos=unit.position, grid=grid
+                    )
+                    maneuver.add(
+                        UseAbility(
+                            AbilityId.EFFECT_BLINK_STALKER,
+                            unit,
+                            unit.position.towards(safe, 8.0),
                         )
+                    )
+                    self._blinked_at[unit.tag] = self.time
+                elif (
+                    unit.shield_percentage < 0.1
+                    and unit.health_percentage < 0.75
+                ):
+                    # Only walk back on foot once shields are gone and hull is
+                    # taking real damage -- pulling out at 29% shields / 100% HP
+                    # lost even 11v11 Stalker fights 3-8 vs OneBaseStalkerBot
+                    maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
+                else:
+                    # Kite backwards when we outrange a mobile threat (melee /
+                    # roaches / zealots); step forward into full concave vs
+                    # equal-or-longer-range enemies and structures
+                    own_range = (
+                        unit.air_range
+                        if enemy_target.is_flying
+                        else unit.ground_range
+                    )
+                    enemy_range = (
+                        enemy_target.air_range
+                        if unit.is_flying
+                        else enemy_target.ground_range
+                    )
+                    if (
+                        enemy_target.type_id not in ALL_STRUCTURES
+                        and own_range > enemy_range + 1.0
+                    ):
                         maneuver.add(
-                            UseAbility(
-                                AbilityId.EFFECT_BLINK_STALKER,
-                                unit,
-                                unit.position.towards(safe, 8.0),
+                            StutterUnitBack(
+                                unit=unit, target=enemy_target, grid=grid
                             )
                         )
-                        self._blinked_at[unit.tag] = self.time
                     else:
-                        maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
-                else:
-                    maneuver.add(
-                        StutterUnitBack(unit=unit, target=enemy_target, grid=grid)
-                    )
+                        maneuver.add(
+                            StutterUnitForward(unit=unit, target=enemy_target)
+                        )
             else:
                 maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=target))
                 maneuver.add(AMove(unit=unit, target=target))
