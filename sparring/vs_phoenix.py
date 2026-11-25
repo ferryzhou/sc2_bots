@@ -37,6 +37,7 @@ from macro_protoss_bot import MacroProtossBot
 from macro_terran_bot import MacroTerranBot
 from twelve_pool_bot import TwelvePoolBot
 from void_ray_bot import VoidRayBot
+from cloaked_banshee_bot import CloakedBansheeBot
 
 SPARRING = {
     "fourgate": (FourGateZealotBot, Race.Protoss),
@@ -47,6 +48,7 @@ SPARRING = {
     "macroterran": (MacroTerranBot, Race.Terran),
     "twelvepool": (TwelvePoolBot, Race.Zerg),
     "voidray": (VoidRayBot, Race.Protoss),
+    "banshee": (CloakedBansheeBot, Race.Terran),
 }
 
 
