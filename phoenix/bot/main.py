@@ -123,7 +123,7 @@ MIXED_ROBO_COMP: dict[UnitID, dict] = {
 # supply of scouted enemy armored / light army value that triggers the switch
 # (a real presence, not one stray unit) - keeps the opening on pure stalkers
 ARMORED_TRIGGER: float = 8.0
-LIGHT_TRIGGER: float = 14.0
+LIGHT_TRIGGER: float = 8.0
 # enemy FLYING army supply past this (and outweighing their ground) locks the
 # comp to pure stalker - immortal/colossus can't shoot up (42-VoidRay Arpy loss)
 AIR_TRIGGER: float = 12.0
@@ -881,6 +881,69 @@ class PhoenixBot(AresBot):
             return False
         return self._need_detection and obs_total == 0
 
+    def _train_robo_units(self, comp: dict[UnitID, dict]) -> bool:
+        """Train Colossi / Immortals directly from idle Robotics Facilities
+        ahead of SpawnController so continuous 125m Stalker warp-ins never
+        pin minerals below 275-300 (fixes 0-Colossus losses vs 43-Marine Bio
+        in BioBot2.0 / Terranosaur / Mulebot, and avoids ares SpawnController's
+        can_afford-before-proportion blocking quirk).
+
+        Returns True only when a ready idle Robo genuinely needs a Colossus or
+        Immortal (below target proportion, gas available) so SpawnController
+        pauses briefly (~3-5s) to fund it.
+        """
+        want_colossus = UnitID.COLOSSUS in comp
+        want_immortal = UnitID.IMMORTAL in comp
+        if not (want_colossus or want_immortal):
+            return False
+        idle_robos = self.structures(UnitID.ROBOTICSFACILITY).ready.idle
+        if not idle_robos:
+            return False
+
+        stalkers = self.units(UnitID.STALKER).amount + self.already_pending(
+            UnitID.STALKER
+        )
+        immortals = self.units(UnitID.IMMORTAL).amount + self.already_pending(
+            UnitID.IMMORTAL
+        )
+        colossi = self.units(UnitID.COLOSSUS).amount + self.already_pending(
+            UnitID.COLOSSUS
+        )
+        total = max(1, stalkers + immortals + colossi)
+
+        target_unit: Optional[UnitID] = None
+        if (
+            want_colossus
+            and self.structures(UnitID.ROBOTICSBAY).ready
+            and colossi < 6
+            and colossi / total < comp[UnitID.COLOSSUS]["proportion"]
+        ):
+            target_unit = UnitID.COLOSSUS
+        elif (
+            want_immortal
+            and immortals < 8
+            and immortals / total < comp[UnitID.IMMORTAL]["proportion"]
+        ):
+            target_unit = UnitID.IMMORTAL
+
+        if target_unit is None:
+            return False
+
+        supply_need = self.calculate_supply_cost(target_unit)
+        if self.can_afford(target_unit) and self.supply_left >= supply_need:
+            idle_robos.first.train(target_unit)
+            return False
+
+        # Only pause Stalker warp-ins if we already have an army and enough gas
+        # on hand so we don't float minerals waiting 30s on gas.
+        army_supply = self.supply_used - self.supply_workers
+        min_gas = 120 if target_unit == UnitID.COLOSSUS else 50
+        return (
+            army_supply >= 10.0
+            and self.vespene >= min_gas
+            and self.supply_left >= supply_need
+        )
+
     def _micro_observers(self, forces: Units) -> None:
         """Keep Observers covering cloaked/burrowed threats, periodically
         checking the enemy natural while still on a 1-base read, or escorting
@@ -973,8 +1036,11 @@ class PhoenixBot(AresBot):
             if self._emergency:
                 # rush defense: gateway units + batteries, plus Immortals once
                 # an emergency Robo completes vs armored 1-base armies
-                # (Stalkers, Marauders, Roaches).
-                if (
+                # (Stalkers, Marauders, Roaches). Never build Zealots vs flyers
+                # (kas 22-Mutalisk loss built 16 Zealots in emergency mode).
+                if self._enemy_air_supply() >= 4.0:
+                    comp = ARMY_COMP
+                elif (
                     self.structures(UnitID.ROBOTICSFACILITY).ready
                     and self._enemy_armored_light_supply()[0] >= 6.0
                 ):
@@ -1022,9 +1088,12 @@ class PhoenixBot(AresBot):
                     )
                 )
 
-            # Train Observers ahead of SpawnController so Stalkers don't drain
-            # the 75 gas needed for detection against cloaked/burrowed units.
+            # Train Observers and Robo power units (Colossi/Immortals) ahead of
+            # SpawnController so Stalker warp-ins never drain the bank first.
             saving_for_observer = self._train_observers()
+            saving_for_robo_unit = (
+                False if saving_for_observer else self._train_robo_units(comp)
+            )
 
             # Rebuild CyberneticsCore immediately at a live base if lost
             # (Arpy / DemsTossV2 froze for 4.5-5 min floating 3k+ when the
@@ -1137,7 +1206,11 @@ class PhoenixBot(AresBot):
                     )
                 # units and production only - no expansions, no upgrades,
                 # no worker overinvestment until the rush is dead
-                if not (saving_for_observer or saving_for_robo):
+                if not (
+                    saving_for_observer
+                    or saving_for_robo
+                    or saving_for_robo_unit
+                ):
                     macro_plan.add(SpawnController(comp))
                 macro_plan.add(
                     BuildWorkers(to_count=min(28, 22 * len(self.townhalls)))
@@ -1199,9 +1272,73 @@ class PhoenixBot(AresBot):
                             to_count=desired_bases, max_pending=1
                         )
                     )
+
+                # Reactive Robo / RoboBay tech reservation AHEAD of
+                # SpawnController: previously SpawnController pinned minerals
+                # < 125 on Stalker warp-ins so RoboticsBay never got funded
+                # (0 Colossi vs 43 Marines in BioBot2.0 / Terranosaur / Mulebot).
+                saving_for_tech = False
+                if (
+                    not need_expand
+                    and not self._all_in_read
+                    and not self._home_threat()
+                    and army_supply >= 10.0
+                    and self.structures(UnitID.CYBERNETICSCORE).ready
+                ):
+                    want_robo = (
+                        UnitID.IMMORTAL in comp or UnitID.COLOSSUS in comp
+                    )
+                    if want_robo and not self.structure_present_or_pending(
+                        UnitID.ROBOTICSFACILITY
+                    ):
+                        macro_plan.add(
+                            BuildStructure(
+                                base_location=prod_base,
+                                structure_id=UnitID.ROBOTICSFACILITY,
+                                to_count=1,
+                            )
+                        )
+                        saving_for_tech = (
+                            not self.can_afford(UnitID.ROBOTICSFACILITY)
+                            and self.vespene >= 50
+                        )
+                    elif (
+                        UnitID.COLOSSUS in comp
+                        and self.structures(UnitID.ROBOTICSFACILITY).ready
+                        and not self.structure_present_or_pending(
+                            UnitID.ROBOTICSBAY
+                        )
+                    ):
+                        macro_plan.add(
+                            BuildStructure(
+                                base_location=prod_base,
+                                structure_id=UnitID.ROBOTICSBAY,
+                                to_count=1,
+                            )
+                        )
+                        saving_for_tech = (
+                            not self.can_afford(UnitID.ROBOTICSBAY)
+                            and self.vespene >= 75
+                        )
+                    elif (
+                        UnitID.COLOSSUS in comp
+                        and self.structures(UnitID.ROBOTICSBAY).ready.idle
+                        and UpgradeId.EXTENDEDTHERMALLANCE
+                        not in self.state.upgrades
+                        and not self.already_pending_upgrade(
+                            UpgradeId.EXTENDEDTHERMALLANCE
+                        )
+                        and self.vespene >= 100
+                    ):
+                        saving_for_tech = not self.can_afford(
+                            UpgradeId.EXTENDEDTHERMALLANCE
+                        )
+
                 if not (
                     saving_for_observer
                     or saving_for_robo
+                    or saving_for_robo_unit
+                    or saving_for_tech
                     or (need_expand and self.minerals < 525)
                 ):
                     macro_plan.add(SpawnController(comp))
@@ -1214,12 +1351,9 @@ class PhoenixBot(AresBot):
                     and army_supply >= 16
                     and not self._all_in_read
                 ):
-                    upgrades = list(DESIRED_UPGRADES)
-                    if self.mediator.get_own_army_dict[UnitID.COLOSSUS]:
-                        upgrades.append(UpgradeId.EXTENDEDTHERMALLANCE)
                     macro_plan.add(
                         UpgradeController(
-                            upgrade_list=upgrades,
+                            upgrade_list=list(DESIRED_UPGRADES),
                             base_location=prod_base,
                         )
                     )
@@ -1286,6 +1420,7 @@ class PhoenixBot(AresBot):
         self.register_behavior(macro_plan)
 
         self._research_warpgate()
+        self._research_thermal_lance()
         self._chrono_production()
 
     def _research_warpgate(self) -> None:
@@ -1303,6 +1438,20 @@ class PhoenixBot(AresBot):
         if idle_cores:
             idle_cores.first.research(UpgradeId.WARPGATERESEARCH)
 
+    def _research_thermal_lance(self) -> None:
+        """Start Extended Thermal Lance (+2 Colossus range, 7 -> 9) as soon as
+        Robotics Bay completes instead of queuing it behind +3/+3 Forge
+        upgrades in DESIRED_UPGRADES."""
+        if (
+            UpgradeId.EXTENDEDTHERMALLANCE in self.state.upgrades
+            or self.already_pending_upgrade(UpgradeId.EXTENDEDTHERMALLANCE)
+            or not self.can_afford(UpgradeId.EXTENDEDTHERMALLANCE)
+        ):
+            return
+        idle_bays = self.structures(UnitID.ROBOTICSBAY).ready.idle
+        if idle_bays:
+            idle_bays.first.research(UpgradeId.EXTENDEDTHERMALLANCE)
+
     def _chrono_production(self) -> None:
         """Spend Nexus Chrono Boost energy across key bottlenecks instead of
         capping at 200 energy once Gateways become WarpGates."""
@@ -1310,6 +1459,7 @@ class PhoenixBot(AresBot):
         priority_types: list[UnitID] = [
             UnitID.CYBERNETICSCORE,
             UnitID.ROBOTICSFACILITY,
+            UnitID.ROBOTICSBAY,
             UnitID.FORGE,
             UnitID.TWILIGHTCOUNCIL,
             UnitID.GATEWAY,
