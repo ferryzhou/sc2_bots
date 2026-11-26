@@ -549,7 +549,15 @@ class PhoenixBot(AresBot):
                     or u.is_hallucination
                 ):
                     continue
+                if u.type_id in (UnitID.LOCUSTMP, UnitID.LOCUSTMPFLYING):
+                    light += 0.5
+                    continue
                 sup = self.calculate_supply_cost(u.type_id)
+                if u.type_id in (
+                    UnitID.SWARMHOSTMP,
+                    UnitID.SWARMHOSTBURROWEDMP,
+                ):
+                    light += sup
                 if u.is_armored:
                     armored += sup
                 elif u.is_light:
@@ -647,24 +655,49 @@ class PhoenixBot(AresBot):
         return ARMY_COMP
 
     def _counter_proxy_structures(self) -> None:
-        """Cannon-rush response: pull nearby probes onto proxy structures
-        while they're building (cannons finished = too late). The 2 cannon
-        losses ended with our supply collapsing 26->1 with zero response."""
+        """Cannon-rush / proxy-bunker response: pull nearby probes onto lethal
+        or production proxy structures while they're building (cannons finished
+        = too late). Ignore non-lethal Terran Supply Depots / Engineering Bays
+        (Mulebot pulled 8 probes onto a SupplyDepot, crashing income to 307/m)."""
+        lethal_proxies = {
+            UnitID.PHOTONCANNON,
+            UnitID.PYLON,
+            UnitID.BUNKER,
+            UnitID.SPINECRAWLER,
+            UnitID.SPORECRAWLER,
+            UnitID.HATCHERY,
+            UnitID.GATEWAY,
+            UnitID.BARRACKS,
+        }
         proxies = [
             s
             for s in self.enemy_structures
-            if any(s.distance_to(th) < 30.0 for th in self.townhalls)
+            if s.type_id in lethal_proxies
+            and any(s.distance_to(th) < 30.0 for th in self.townhalls)
         ]
         if not proxies or self.time > 420.0:
             return
-        # prioritise unfinished cannons, then pylons
-        proxies.sort(key=lambda s: (s.build_progress >= 1.0,
-                                    s.type_id != UnitID.PHOTONCANNON))
+        # prioritise unfinished cannons/bunkers, then pylons/production
+        proxies.sort(
+            key=lambda s: (
+                s.build_progress >= 1.0,
+                s.type_id not in (UnitID.PHOTONCANNON, UnitID.BUNKER),
+            )
+        )
         target = proxies[0]
-        pullers = self.workers.sorted_by_distance_to(target)[:8]
+        max_pull = (
+            8
+            if (
+                target.type_id in (UnitID.PHOTONCANNON, UnitID.BUNKER)
+                or target.distance_to(self.start_location) < 22.0
+            )
+            else 4
+        )
+        pullers = self.workers.sorted_by_distance_to(target)[:max_pull]
         for probe in pullers:
             if not probe.orders or probe.orders[0].ability.id not in (
-                AbilityId.ATTACK, AbilityId.ATTACK_ATTACK
+                AbilityId.ATTACK,
+                AbilityId.ATTACK_ATTACK,
             ):
                 probe.attack(target)
 
@@ -912,17 +945,26 @@ class PhoenixBot(AresBot):
                 if (
                     unrev_home
                     and obs_incoming
-                    and threat.distance_to(self.start_location) > 16.0
                     and not any(
                         any(obs.distance_to(u) < 12.5 for obs in observers)
                         for u in unrev_home
                     )
                 ):
-                    merge_pt = (
-                        observers.closest_to(threat).position
-                        if observers
-                        else self.main_base_ramp.top_center
-                    )
+                    if observers:
+                        merge_pt = observers.closest_to(threat).position
+                    else:
+                        safe_ths = [
+                            th
+                            for th in self.townhalls.ready
+                            if all(th.distance_to(u) > 14.0 for u in unrev_home)
+                        ]
+                        if safe_ths:
+                            merge_pt = safe_ths[0].position
+                        else:
+                            merge_pt = self.mediator.find_closest_safe_spot(
+                                from_pos=self.main_base_ramp.top_center,
+                                grid=self.mediator.get_ground_grid,
+                            )
                     target = merge_pt
                     hold_pos = merge_pt
                 else:
@@ -1539,12 +1581,44 @@ class PhoenixBot(AresBot):
                 continue
             if home_hidden and (obs.tag == home_obs_tag or len(observers) == 1):
                 t = home_hidden.closest_to(obs)
-                dest = t.position.towards(self.start_location, 9.2)
+                near_turret = any(
+                    t.distance_to(s) < 11.0 for s in aa_structures
+                )
+                hover = 8.5 if (obs.is_revealed or near_turret) else 2.5
+                dest = t.position.towards(self.start_location, hover)
             elif army_hidden and (
                 obs.tag != home_obs_tag or len(observers) == 1
             ):
                 t = army_hidden.closest_to(army_center)
-                dest = t.position.towards(self.start_location, 9.2)
+                near_turret = any(
+                    t.distance_to(s) < 11.0 for s in aa_structures
+                )
+                hover = 8.5 if (obs.is_revealed or near_turret) else 2.5
+                dest = t.position.towards(self.start_location, hover)
+            elif (
+                home_hidden
+                and len(observers) >= 2
+                and obs.tag != home_obs_tag
+                and any(
+                    u.distance_to(home_hidden.closest_to(observers.closest_to(home_hidden.center)))
+                    > 11.0
+                    for u in home_hidden
+                )
+            ):
+                # Cover a second cloaked raider splitting between main & natural
+                t = max(
+                    home_hidden,
+                    key=lambda u: u.distance_to(
+                        observers.find_by_tag(home_obs_tag).position
+                    )
+                    if observers.find_by_tag(home_obs_tag) is not None
+                    else 0.0,
+                )
+                near_turret = any(
+                    t.distance_to(s) < 11.0 for s in aa_structures
+                )
+                hover = 8.5 if (obs.is_revealed or near_turret) else 2.5
+                dest = t.position.towards(self.start_location, hover)
             elif (
                 self._obs_nat_check_active
                 and (not self._need_detection or len(observers) >= 2)
@@ -1850,9 +1924,10 @@ class PhoenixBot(AresBot):
             if not saving_for_observer and not saving_for_robo_unit:
                 self._train_observers(urgent_only=False)
 
-            # Rebuild CyberneticsCore immediately at a live base if lost
-            # (Arpy / DemsTossV2 froze for 4.5-5 min floating 3k+ when the
-            # single ramp CyberCore died).
+            # Rebuild CyberneticsCore immediately at a live base if lost or if
+            # an early emergency aborted SafeExpand before CyberCore started
+            # (Mulebot delayed CyberCore 01:19 -> 02:31).
+            saving_for_cyber = False
             if need_cyber_rebuild:
                 macro_plan.add(
                     BuildStructure(
@@ -1862,6 +1937,7 @@ class PhoenixBot(AresBot):
                         production=has_prod_3x3,
                     )
                 )
+                saving_for_cyber = self.minerals < 175
 
             # Build a Robotics Facility immediately when cloak/burrow is
             # scouted and we don't have one yet (Hestia Banshees, Lissy Lurkers,
@@ -1889,7 +1965,14 @@ class PhoenixBot(AresBot):
             # bank 400 (we are >=1.5x ahead by definition, so that is safe).
             posthold_expand = (
                 (self._emergency or self._all_in_read)
-                and self._won_the_hold()
+                and (
+                    self._won_the_hold()
+                    or (
+                        self.time >= 360.0
+                        and emerg_army_supply >= 14.0
+                        and not self._home_threat()
+                    )
+                )
                 and len(self.townhalls) < 2
                 and not self.already_pending(UnitID.NEXUS)
             )
@@ -1957,22 +2040,27 @@ class PhoenixBot(AresBot):
                 # units and production only - no expansions, no upgrades,
                 # no worker overinvestment until the rush is dead
                 if not (
-                    saving_for_observer
+                    saving_for_cyber
+                    or saving_for_observer
                     or saving_for_robo
                     or saving_for_robo_unit
                 ):
                     macro_plan.add(SpawnController(comp))
-                # Pause Probe production while urgently saving for our first
-                # detection Robo/Observer OR while actively defending our base
-                # with a tiny army (<12 supply) and >=16 working Probes.
+                # Pause Probe production while urgently saving for CyberCore or
+                # our first detection Robo/Observer, OR while actively defending
+                # our base with a tiny army (<12 supply) and >=16 working Probes.
                 pause_emerg_probes = (
-                    self._need_detection
-                    and (saving_for_robo or saving_for_observer)
-                    and self.workers.amount >= 8
-                ) or (
-                    bool(self._home_threat())
-                    and emerg_army_supply < 12.0
-                    and self.workers.amount >= 16
+                    (saving_for_cyber and self.workers.amount >= 14)
+                    or (
+                        self._need_detection
+                        and (saving_for_robo or saving_for_observer)
+                        and self.workers.amount >= 8
+                    )
+                    or (
+                        bool(self._home_threat())
+                        and emerg_army_supply < 12.0
+                        and self.workers.amount >= 16
+                    )
                 )
                 if not pause_emerg_probes:
                     emerg_worker_cap = (
@@ -1990,7 +2078,7 @@ class PhoenixBot(AresBot):
                             )
                         )
                     )
-                if not saving_for_robo:
+                if not saving_for_robo and not saving_for_cyber:
                     # Cap emergency Assimilators at 2 while gas is banked or
                     # workers < 32 so we never pull 6 mineral probes onto gas #3-4
                     # while starving Stalkers during an early rush (MicroMachine).
