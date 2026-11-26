@@ -57,6 +57,7 @@ from ares.consts import (
     UnitTreeQueryType,
 )
 from cython_extensions import cy_closest_to, cy_in_attack_range, cy_pick_enemy_target
+from sc2.data import Race
 from sc2.ids.buff_id import BuffId
 from sc2.ids.unit_typeid import UnitTypeId as UnitID
 from sc2.ids.upgrade_id import UpgradeId
@@ -127,10 +128,23 @@ MIXED_ROBO_COMP: dict[UnitID, dict] = {
 # (a real presence, not one stray unit) - keeps the opening on pure stalkers
 ARMORED_TRIGGER: float = 8.0
 LIGHT_TRIGGER: float = 8.0
-# enemy FLYING army supply past this (and outweighing their ground) locks the
-# comp to pure stalker - immortal/colossus can't shoot up (Arpy Void Rays,
-# who Tempests, Mulebot BCs)
-AIR_TRIGGER: float = 6.0
+# enemy FLYING combat army supply past this (and outweighing their ground)
+# locks the comp to pure stalker - immortal/colossus can't shoot up (Arpy Void
+# Rays, who Tempests, Mulebot BCs). Support flyers (Medivac/Raven/WarpPrism)
+# are excluded so Terran Bio+Medivac or 2 harassing Banshees (6 supply) don't
+# lock out Immortals/Colossi against Marines+Marauders+Tanks (MicroMachine).
+AIR_TRIGGER: float = 8.0
+SUPPORT_AIR_TYPES: set[UnitID] = {
+    UnitID.MEDIVAC,
+    UnitID.RAVEN,
+    UnitID.WARPPRISM,
+    UnitID.WARPPRISMPHASING,
+    UnitID.OBSERVER,
+    UnitID.OBSERVERSIEGEMODE,
+    UnitID.OVERSEER,
+    UnitID.OVERSEERSIEGEMODE,
+    UnitID.OVERLORDTRANSPORT,
+}
 
 # Cloak / burrow units and tech structures that require Observer detection
 # (2026-08-22 Hestia loss to 4 cloaked Banshees, Lissy 3-28 loss to burrowed
@@ -327,7 +341,11 @@ class PhoenixBot(AresBot):
             lambda s: s.type_id in (UnitID.BARRACKS, UnitID.BARRACKSFLYING)
         ).amount
         t_gas = self.enemy_structures(UnitID.REFINERY).amount
-        return rax >= ONE_BASE_MIN_GATES and t_gas >= ONE_BASE_MIN_GAS
+        return rax >= 3 or (
+            rax >= ONE_BASE_MIN_GATES
+            and t_gas >= ONE_BASE_MIN_GAS
+            and self.time >= 115.0
+        )
 
     def _enemy_proxy_aggression(self) -> bool:
         """Proxy all-in tell that _enemy_committed_one_base MISSES: proxy
@@ -448,11 +466,18 @@ class PhoenixBot(AresBot):
             return False
         if self._enemy_has_expanded or self.mediator.get_enemy_expanded:
             return False
-        # Already established on 3+ bases with 40+ probes, OR already won a
-        # 1-base hold and expanded onto 2+ bases: dropping back into 1-base
-        # emergency lockdown stops counter-attacks and upgrades (who 10:02).
-        if (len(self.townhalls) >= 3 and self.supply_workers >= 40) or (
-            self._posthold_logged and len(self.townhalls) >= 2
+        # Already established on 2+ bases in mid-game macro (34+ probes past
+        # 06:30, or 3+ bases with 40+ probes), OR already won a 1-base hold and
+        # expanded onto 2+ bases: dropping back into 1-base emergency lockdown
+        # stops probes, upgrades, and robo tech (MicroMachine 08:01, who 10:02).
+        if (
+            (len(self.townhalls) >= 3 and self.supply_workers >= 40)
+            or (
+                len(self.townhalls) >= 2
+                and self.supply_workers >= 30
+                and self.time >= 300.0
+            )
+            or (self._posthold_logged and len(self.townhalls) >= 2)
         ):
             return False
         enemy_army_supply = self.get_total_supply(
@@ -492,14 +517,15 @@ class PhoenixBot(AresBot):
         return armored, light
 
     def _enemy_air_supply(self) -> float:
-        """Scouted enemy FLYING army supply (overlords cost 0 so they don't
-        count). Drives the anti-air guard below."""
+        """Scouted enemy FLYING combat army supply (excludes overlords and
+        non-combat support flyers like Medivacs, Ravens, and Warp Prisms)."""
         air = 0.0
         for units in self.mediator.get_enemy_army_dict.values():
             for u in units:
                 if (
                     u.is_flying
                     and u.type_id not in WORKER_TYPES
+                    and u.type_id not in SUPPORT_AIR_TYPES
                     and not u.is_hallucination
                 ):
                     air += self.calculate_supply_cost(u.type_id)
@@ -590,6 +616,10 @@ class PhoenixBot(AresBot):
         1:45 probe missed a ~2:00 expansion (Rule 5: Scout constantly).
         Eliminates false EMERGENCY: one-base all-in alarms at 6:00-7:30 vs
         2-base macro opponents (seen in macroprotoss and macroterran)."""
+        is_terran = self.enemy_race == Race.Terran
+        start_t, end_t, abort_t = (
+            (255.0, 310.0, 350.0) if is_terran else (190.0, 260.0, 300.0)
+        )
         enemy_nat: Point2 = self.mediator.get_enemy_nat
         if self._nat_rescout_tag is not None:
             scout = self.workers.find_by_tag(self._nat_rescout_tag)
@@ -597,7 +627,7 @@ class PhoenixBot(AresBot):
                 scout is None
                 or self.mediator.get_enemy_expanded
                 or scout.distance_to(enemy_nat) < 8.0
-                or self.time > 300.0
+                or self.time > abort_t
             ):
                 if scout is not None:
                     self.mediator.assign_role(
@@ -613,7 +643,7 @@ class PhoenixBot(AresBot):
             self._nat_rescout_done
             or self._enemy_has_expanded
             or self.mediator.get_enemy_expanded
-            or not (190.0 <= self.time <= 260.0)
+            or not (start_t <= self.time <= end_t)
             or self.workers.amount < 20
             or bool(self._home_threat())
         ):
@@ -826,11 +856,29 @@ class PhoenixBot(AresBot):
                     self.game_info.map_center, 4.0
                 )
             grid: np.ndarray = self.mediator.get_ground_grid
+            attackable_enemy: Units = enemy_army.filter(
+                lambda u: not (u.is_cloaked or u.is_burrowed) or u.is_revealed
+            )
             for unit in forces:
+                maneuver: CombatManeuver = CombatManeuver()
+                has_action = False
+                # Fighting retreat: shoot pursuing enemies (e.g. fast Cyclones
+                # or Zerglings) whenever our weapon is off cooldown instead of
+                # blind move-commanding 60 tiles home while dying for 0 damage.
+                if attackable_enemy and (
+                    in_range := cy_in_attack_range(unit, attackable_enemy)
+                ):
+                    maneuver.add(
+                        ShootTargetInRange(unit=unit, targets=in_range)
+                    )
+                    has_action = True
                 if unit.distance_to(rally) > 8.0:
-                    maneuver: CombatManeuver = CombatManeuver()
-                    maneuver.add(PathUnitToTarget(unit=unit, grid=grid, target=rally))
+                    maneuver.add(
+                        PathUnitToTarget(unit=unit, grid=grid, target=rally)
+                    )
                     maneuver.add(AMove(unit=unit, target=rally))
+                    has_action = True
+                if has_action:
                     self.register_behavior(maneuver)
 
     async def on_unit_created(self, unit: Unit) -> None:
@@ -969,12 +1017,13 @@ class PhoenixBot(AresBot):
             target = 5
         return target
 
-    def _train_observers(self) -> bool:
+    def _train_observers(self, urgent_only: bool = False) -> bool:
         """Train Observers from ready idle Robotics Facilities.
 
-        Returns True when we urgently need our first Observer (cloak/burrow
-        threat scouted, 0 alive/pending, ready idle Robo) and are saving the
-        75 gas so SpawnController doesn't steal it for a Stalker.
+        With urgent_only=True, only ensures our first Observer (obs_total == 0)
+        so replacing a 2nd Observer doesn't starve Colossi/Immortals from a
+        single Robotics Facility. Returns True when urgently saving for
+        Observer #1 so SpawnController doesn't steal its 75 gas.
         """
         robos = self.structures(UnitID.ROBOTICSFACILITY).ready
         if not robos:
@@ -984,6 +1033,8 @@ class PhoenixBot(AresBot):
             if self._need_detection
             else (1 if (self.time >= 300.0 or self._emergency) else 0)
         )
+        if urgent_only:
+            want_obs = min(want_obs, 1)
         if want_obs == 0:
             return False
         obs_total = self.units(UnitID.OBSERVER).amount + self.already_pending(
@@ -1086,7 +1137,7 @@ class PhoenixBot(AresBot):
         elif (
             not self._obs_nat_check_active
             and not home_hidden
-            and not self._need_detection
+            and (not self._need_detection or len(observers) >= 2)
             and self.time >= 270.0
             and self.time - self._last_obs_nat_check >= 75.0
         ):
@@ -1114,15 +1165,64 @@ class PhoenixBot(AresBot):
         army_hidden = hidden.filter(
             lambda u: u.distance_to(army_center) < 25.0
         )
+        aa_threats = self.enemy_units.filter(
+            lambda u: not u.is_memory
+            and not u.is_hallucination
+            and (
+                u.can_attack_air
+                or u.type_id
+                in (UnitID.WIDOWMINE, UnitID.WIDOWMINEBURROWED, UnitID.AUTOTURRET)
+            )
+        )
+        aa_structures = self.enemy_structures.filter(
+            lambda s: s.can_attack_air and s.is_ready
+        )
+        widow_mines = self.enemy_units.filter(
+            lambda u: not u.is_memory
+            and u.type_id in (UnitID.WIDOWMINE, UnitID.WIDOWMINEBURROWED)
+        )
+        air_grid: np.ndarray = self.mediator.get_air_grid
         for idx, obs in enumerate(observers):
+            # Cloak-aware Observer survival: an Observer is cloaked, so
+            # Marines/Cyclones cannot see or shoot it unless obs.is_revealed
+            # (Scan/Raven/Turret/Overseer/Observer). Fleeing unrevealed
+            # Marines/Cyclones pulled Observers >11 tiles away from Cloaked
+            # Banshees (MicroMachine). Always dodge static detector turrets,
+            # Widow Mine splash (range 5), damage, or AA when revealed.
+            mine_danger = any(obs.distance_to(m) < 6.5 for m in widow_mines)
+            turret_danger = any(
+                obs.distance_to(s) < max(s.air_range, 7.0) + 2.0
+                for s in aa_structures
+            )
+            revealed_aa_danger = obs.is_revealed and any(
+                obs.distance_to(u)
+                < max(
+                    u.air_range,
+                    7.5 if u.type_id == UnitID.CYCLONE else 5.5,
+                )
+                + 2.5
+                for u in aa_threats
+            )
+            if (
+                mine_danger
+                or turret_danger
+                or revealed_aa_danger
+                or obs.shield_percentage < 0.8
+            ):
+                safe = self.mediator.find_closest_safe_spot(
+                    from_pos=obs.position, grid=air_grid
+                )
+                obs.move(safe)
+                continue
             if home_hidden and (obs.tag == home_obs_tag or len(observers) == 1):
                 t = home_hidden.closest_to(obs)
-                dest = t.position.towards(obs.position, 3.0)
+                anchor = forces.center if forces else self.start_location
+                dest = t.position.towards(anchor, 6.5)
             elif army_hidden and (
                 obs.tag != home_obs_tag or len(observers) == 1
             ):
                 t = army_hidden.closest_to(army_center)
-                dest = t.position.towards(army_center, 2.0)
+                dest = t.position.towards(army_center, 6.5)
             elif self._obs_nat_check_active and idx == len(observers) - 1:
                 dest = enemy_nat
                 if obs.distance_to(enemy_nat) < 9.0:
@@ -1131,7 +1231,7 @@ class PhoenixBot(AresBot):
                 (idx == 0 or (home_obs_tag is not None and obs.tag != home_obs_tag))
                 and forces
             ):
-                dest = army_center.towards(self.start_location, 1.0)
+                dest = army_center.towards(self.start_location, 3.5)
             elif self.townhalls:
                 # second observer guards our most exposed expansion
                 exposed = max(
@@ -1223,9 +1323,14 @@ class PhoenixBot(AresBot):
                 ):
                     comp = IMMORTAL_COMP
                 else:
+                    # Uncharged Zealots get kited by Terran Marines/Reapers/
+                    # Hellions and vaporized by Widow Mines (VeTerran 0.19 trade).
                     comp = (
                         ARMY_COMP
-                        if self._defense_opening
+                        if (
+                            self._defense_opening
+                            or self.enemy_race == Race.Terran
+                        )
                         else self._emergency_comp
                     )
             elif self._all_in_read:
@@ -1314,12 +1419,16 @@ class PhoenixBot(AresBot):
                     )
                 )
 
-            # Train Observers and Robo power units (Colossi/Immortals) ahead of
-            # SpawnController so Stalker warp-ins never drain the bank first.
-            saving_for_observer = self._train_observers()
+            # Train Observer #1 first when detection is needed, then Robo power
+            # units (Colossi/Immortals) ahead of Observer #2 so a single Robo
+            # doesn't spend 2 minutes replacing secondary Observers instead of
+            # building Colossi (MicroMachine 0 Colossi with 936 gas).
+            saving_for_observer = self._train_observers(urgent_only=True)
             saving_for_robo_unit = (
                 False if saving_for_observer else self._train_robo_units(comp)
             )
+            if not saving_for_observer and not saving_for_robo_unit:
+                self._train_observers(urgent_only=False)
 
             # Rebuild CyberneticsCore immediately at a live base if lost
             # (Arpy / DemsTossV2 froze for 4.5-5 min floating 3k+ when the
@@ -1435,6 +1544,12 @@ class PhoenixBot(AresBot):
                         BuildWorkers(to_count=min(28, 22 * len(self.townhalls)))
                     )
                 if not saving_for_robo:
+                    if self.structures(UnitID.CYBERNETICSCORE).amount > 0:
+                        macro_plan.add(
+                            GasBuildingController(
+                                to_count=len(self.townhalls) * 2
+                            )
+                        )
                     macro_plan.add(
                         ProductionController(
                             comp,
@@ -1443,8 +1558,8 @@ class PhoenixBot(AresBot):
                         )
                     )
                 # Bank-driven emergency Gateways: never float 1k+ minerals on 2
-                # gates during an emergency hold (Thssprtssbt 2-gate loss).
-                if self.minerals >= 400:
+                # gates during an emergency hold (Thssprtssbt / VeTerran).
+                if self.minerals >= 250 and not saving_for_robo:
                     gates = (
                         self.structures(UnitID.GATEWAY).amount
                         + self.structures(UnitID.WARPGATE).amount
@@ -1456,6 +1571,7 @@ class PhoenixBot(AresBot):
                             BuildStructure(
                                 base_location=prod_base,
                                 structure_id=UnitID.GATEWAY,
+                                production=has_prod_3x3,
                             )
                         )
                 # a battery at additional bases (main ramp battery already
@@ -1471,10 +1587,14 @@ class PhoenixBot(AresBot):
             else:
                 army_supply = self.supply_used - self.supply_workers
                 # mineral income was the true constraint in the Hestia loss
-                # (all minerals spent, army capped) - saturate up to 5 bases
-                macro_plan.add(
-                    BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
-                )
+                # (all minerals spent, army capped) - saturate up to 5 bases,
+                # but pause probe cuts while defending an active attack on our
+                # bases once we already have 36+ probes (MicroMachine built 16
+                # probes while our army dropped to 2 Stalkers).
+                if not (self._home_threat() and self.supply_workers >= 36):
+                    macro_plan.add(
+                        BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
+                    )
                 # Scheduled expansion reservation: when current bases are
                 # saturated and home is safe, place ExpansionController AHEAD
                 # of SpawnController so WarpGates don't pin minerals < 125
@@ -1621,34 +1741,42 @@ class PhoenixBot(AresBot):
                 # which left 3.4k minerals / 1.1k gas unspent at 10:00 on 5
                 # bases once gas throttling kicked in. Add Gateways/Robos
                 # whenever we're floating so our bank turns into max supply.
-                if self.minerals >= 600:
+                if self.minerals >= 350 and not need_expand:
                     gates = (
                         self.structures(UnitID.GATEWAY).amount
                         + self.structures(UnitID.WARPGATE).amount
                     )
                     pending_gates = self.already_pending(UnitID.GATEWAY)
-                    target_gates = min(14, max(4, 3 * len(self.townhalls)))
+                    per_base = (
+                        3 * len(self.townhalls)
+                        if army_supply >= 36.0
+                        else 2 * len(self.townhalls) + 1
+                    )
+                    target_gates = min(14, max(4, per_base))
                     if gates + pending_gates < target_gates and pending_gates < 2:
                         macro_plan.add(
                             BuildStructure(
                                 base_location=prod_base,
                                 structure_id=UnitID.GATEWAY,
+                                production=has_prod_3x3,
                             )
                         )
                 if (
-                    self.minerals >= 500
-                    and self.vespene >= 450
+                    self.minerals >= 250
+                    and self.vespene >= 350
+                    and not need_expand
                     and (UnitID.IMMORTAL in comp or UnitID.COLOSSUS in comp)
                     and self.structures(UnitID.CYBERNETICSCORE).ready
                 ):
                     robos = self.structures(UnitID.ROBOTICSFACILITY).amount
                     pending_robos = self.already_pending(UnitID.ROBOTICSFACILITY)
-                    target_robos = min(3, max(1, len(self.townhalls) - 1))
+                    target_robos = min(3, max(1, len(self.townhalls)))
                     if robos + pending_robos < target_robos and pending_robos == 0:
                         macro_plan.add(
                             BuildStructure(
                                 base_location=prod_base,
                                 structure_id=UnitID.ROBOTICSFACILITY,
+                                production=has_prod_3x3,
                             )
                         )
                 # shield battery at each base (auto-techs its prerequisites);
@@ -1660,11 +1788,24 @@ class PhoenixBot(AresBot):
                         shield_batteries_per_base=1,
                     )
                 )
-                # no new bases while a one-base all-in is inbound - units win
-                # that fight, a half-built nexus doesn't
-                if not self._all_in_read and not need_expand:
+                # Respect desired_bases so we don't drop an unprotected 4th
+                # Nexus at 08:00 with only 24 army supply (MicroMachine); allow
+                # expanding 1 ahead only when banking >=700m with a real army.
+                if (
+                    not self._all_in_read
+                    and not need_expand
+                    and not self._home_threat()
+                ):
+                    extra_expand = (
+                        1
+                        if (self.minerals >= 700 and army_supply >= 36.0)
+                        else 0
+                    )
                     macro_plan.add(
-                        ExpansionController(to_count=5, max_pending=1)
+                        ExpansionController(
+                            to_count=min(5, desired_bases + extra_expand),
+                            max_pending=1,
+                        )
                     )
                 # full gas geysers available; the dynamic gas throttle in
                 # Mining (above) prevents over-mining when we're floating
