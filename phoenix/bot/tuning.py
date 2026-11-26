@@ -46,11 +46,11 @@ class Param:
 # _load() clamps any persisted mean into [lo, hi], so the ladder's learned
 # 34.7 self-corrects up to >=50 on the next game.
 SCHEMA: list[Param] = [
-    Param("attack_at_supply", 26.0, 8.0, 8.0, 60.0),
-    Param("pressure_valve_supply", 60.0, 10.0, 50.0, 110.0),
-    Param("regroup_below_supply", 10.0, 4.0, 2.0, 24.0),
-    Param("emergency_exit_seconds", 45.0, 15.0, 10.0, 120.0),
-    Param("emergency_zealot_proportion", 0.5, 0.15, 0.1, 0.9),
+    Param("attack_at_supply", 25.0, 3.0, 22.0, 36.0),
+    Param("pressure_valve_supply", 72.0, 8.0, 62.0, 110.0),
+    Param("regroup_below_supply", 12.0, 2.5, 8.0, 20.0),
+    Param("emergency_exit_seconds", 45.0, 10.0, 25.0, 90.0),
+    Param("emergency_zealot_proportion", 0.4, 0.1, 0.15, 0.65),
 ]
 
 
