@@ -32,7 +32,7 @@ BOTS_DIR = Path(environ.get("ARENA_BOTS_DIR", "/root/arena_bots"))
 MANIFEST = REPO_ROOT / "results" / "opponents.json"
 BLOCKLIST = REPO_ROOT / "results" / "opponents_blocklist.json"
 RUNNABLE_TYPES = {"python", "cpplinux"}
-CURRENT_COMPETITION = 36
+CURRENT_COMPETITION = 38
 MIN_FREE_GB = 4.0
 
 

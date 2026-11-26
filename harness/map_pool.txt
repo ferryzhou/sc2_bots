@@ -1,10 +1,7 @@
 IncorporealAIE_v4
-LeyLinesAIE
 LeyLinesAIE_v3
-PersephoneAIE
+MagannathaAIE_v2
 PersephoneAIE_v4
-PylonAIE
 PylonAIE_v4
-TorchesAIE
 TorchesAIE_v4
-UltraloveAIE
+UltraloveAIE_v2
