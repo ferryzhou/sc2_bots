@@ -39,19 +39,16 @@ BuildChoices:
         BotName: RandomRace
         Cycle:
             - SafeExpand
-            - GateExpand
 
     Terran:
         BotName: TerranRace
         Cycle:
             - SafeExpand
-            - GateExpand
 
     Zerg:
         BotName: ZergRace
         Cycle:
             - SafeExpand
-            - GateExpand
 
 Builds:
     # units-first opening for rush-prone opponents: two gates and zealots

@@ -340,11 +340,18 @@ class PhoenixBot(AresBot):
         rax = self.enemy_structures.filter(
             lambda s: s.type_id in (UnitID.BARRACKS, UnitID.BARRACKSFLYING)
         ).amount
+        rax_techlabs = self.enemy_structures(UnitID.BARRACKSTECHLAB).amount
+        marauders = self.enemy_units(UnitID.MARAUDER).amount
         t_gas = self.enemy_structures(UnitID.REFINERY).amount
-        return rax >= 3 or (
-            rax >= ONE_BASE_MIN_GATES
-            and t_gas >= ONE_BASE_MIN_GAS
-            and self.time >= 115.0
+        return (
+            rax >= 3
+            or (rax >= ONE_BASE_MIN_GATES and rax_techlabs >= 2)
+            or (rax >= ONE_BASE_MIN_GATES and marauders >= 2)
+            or (
+                rax >= ONE_BASE_MIN_GATES
+                and t_gas >= ONE_BASE_MIN_GAS
+                and self.time >= 115.0
+            )
         )
 
     def _enemy_proxy_aggression(self) -> bool:
@@ -566,7 +573,9 @@ class PhoenixBot(AresBot):
         # robo mineral was wasted. Stalkers are our only scalable AA, so once
         # the enemy's air outweighs their ground army, stay on pure stalkers.
         air = self._enemy_air_supply()
-        if air >= AIR_TRIGGER and air > max(armored, light):
+        if (air >= AIR_TRIGGER and air > max(armored, light)) or (
+            air >= 16.0 and air >= 0.5 * (armored + light)
+        ):
             return ARMY_COMP
         # mixed armored + light army (e.g. Terran bio/tank or Zerg roach/ling/
         # hydra): build BOTH immortals and colossus splash instead of 0 splash
@@ -776,27 +785,42 @@ class PhoenixBot(AresBot):
             else:
                 # Full defense: during an early rush / 1-base hold, hold the
                 # ramp choke (don't chase down the ramp into the flood) unless
-                # enemies are already inside, we have a natural to defend, or
-                # our army already decisively outnumbers the local attackers
-                # (>=1.5x supply).
+                # enemies are already inside, we have a ready natural, or our
+                # army already decisively outnumbers the local attackers
+                # (>=1.5x supply). On 2+ ready bases in emergency, don't chase
+                # ranged kiting units 28 tiles out in open ground away from
+                # Shield Batteries (MicroMachine Zealots dying at (130, 95)).
                 target: Point2 = threat.position
                 hold_pos: Optional[Point2] = None
-                if (
-                    self._emergency
-                    and len(self.townhalls) == 1
-                    and threat.distance_to(self.start_location) > 18.0
-                ):
+                if self._emergency:
                     local_enemy = self.enemy_units.filter(
                         lambda u: u.type_id not in COMMON_UNIT_IGNORE_TYPES
                         and u.type_id not in WORKER_TYPES
                         and not u.is_memory
                         and not u.is_hallucination
-                        and u.distance_to(self.start_location) < 35.0
+                        and any(
+                            u.distance_to(th) < 35.0 for th in self.townhalls
+                        )
                     )
                     local_enemy_supply = self.get_total_supply(local_enemy)
                     if forces_supply < 1.5 * max(local_enemy_supply, 4.0):
-                        target = self.main_base_ramp.top_center
-                        hold_pos = self.main_base_ramp.top_center
+                        ready_th = self.townhalls.ready
+                        if (
+                            len(ready_th) <= 1
+                            and threat.distance_to(self.start_location) > 18.0
+                        ):
+                            target = self.main_base_ramp.top_center
+                            hold_pos = self.main_base_ramp.top_center
+                        elif (
+                            ready_th
+                            and ready_th.closest_distance_to(threat) > 16.0
+                        ):
+                            closest_th = ready_th.closest_to(threat)
+                            anchor = closest_th.position.towards(
+                                threat.position, 5.0
+                            )
+                            target = anchor
+                            hold_pos = anchor
                 self._micro(forces, target=target, hold_pos=hold_pos)
                 return
 
@@ -940,13 +964,48 @@ class PhoenixBot(AresBot):
         ]
         return len(combat) >= 3 or len(proxy) >= 1
 
+    def _intel_rush(self) -> bool:
+        """Race-aware early rush detection without ares's permanently latched
+        `time < 120 and barracks >= 2` clause, which false-triggered at 01:19
+        against 2-Rax macro Terrans (VeTerran-revived) and locked PhoenixBot on
+        1 base / 22 probes for 5+ minutes."""
+        m = self.mediator
+        if (
+            m.get_enemy_ling_rushed
+            or m.get_enemy_worker_rushed
+            or m.get_is_proxy_zealot
+            or m.get_enemy_ravager_rush
+            or m.get_enemy_roach_rushed
+            or m.get_enemy_four_gate
+            or (
+                m.get_enemy_went_marine_rush
+                and not self.get_enemy_proxies(15.0, m.get_own_nat)
+            )
+            or (
+                self.time < 240.0
+                and len(m.get_enemy_army_dict[UnitID.ROACH]) >= 3
+            )
+            or (
+                self.time < 105.0
+                and len(m.get_enemy_army_dict[UnitID.ZERGLING]) >= 1
+            )
+        ):
+            return True
+        if self._enemy_has_expanded or m.get_enemy_expanded:
+            return False
+        if m.get_enemy_marauder_rush:
+            return True
+        rax = self.enemy_structures.filter(
+            lambda s: s.type_id in (UnitID.BARRACKS, UnitID.BARRACKSFLYING)
+        ).amount
+        rax_tl = self.enemy_structures(UnitID.BARRACKSTECHLAB).amount
+        return (self.time < 120.0 and rax >= 3) or (
+            self.time < 150.0 and rax >= 2 and rax_tl >= 2
+        )
+
     def _update_emergency(self) -> None:
         """Rush defense mode: abort the opening, stop spending on greed."""
-        # ares intel detections (race-aware, timing-tuned) plus our own
-        # proximity heuristic as a catch-all
-        intel_rush: bool = bool(
-            self.mediator.get_did_enemy_rush or self.mediator.get_is_proxy_zealot
-        )
+        intel_rush: bool = self._intel_rush()
         # Two triggers: an EARLY rush (proximity / intel, <5min) OR a
         # mid-game ONE-BASE ALL-IN (_all_in_read, 3:30-11min). The latter
         # was the gap: one-base timings (ZEALOCALYPSE, OneBaseStalkerBot)
@@ -1361,12 +1420,24 @@ class PhoenixBot(AresBot):
                 + self.structures(UnitID.WARPGATE).amount
                 + self.already_pending(UnitID.GATEWAY)
             )
+            emerg_army_supply = self.supply_used - self.supply_workers
             need_emergency_robo = (
                 self._emergency
-                and self.time >= 180.0
-                and gates_total >= 4
                 and self.structures(UnitID.CYBERNETICSCORE).ready
                 and not self.structures(UnitID.ROBOTICSFACILITY)
+                and (
+                    (
+                        self.time >= 180.0
+                        and gates_total >= 4
+                        and emerg_army_supply >= 8.0
+                    )
+                    or (
+                        gates_total >= 2
+                        and emerg_army_supply >= 10.0
+                        and self.vespene >= 175
+                        and self._enemy_armored_light_supply()[0] >= 4.0
+                    )
+                )
             )
             need_detection_robo = (
                 self._need_detection
@@ -1482,17 +1553,23 @@ class PhoenixBot(AresBot):
             if posthold_expand:
                 macro_plan.add(ExpansionController(to_count=2, max_pending=1))
             elif self._emergency:
+                early_gate_priority = (
+                    bool(self.structures(UnitID.GATEWAY).ready.idle)
+                    and (self.supply_used - self.supply_workers) < 12.0
+                    and self.minerals < 225
+                )
                 # 1-base ramp Shield Battery: ProtossStaticDefence places its
                 # battery next to the Nexus (~12 range behind the ramp), so it
                 # healed 0 shields during the Thssprtssbt ramp siege. Place one
-                # right behind main_base_ramp.top_center first.
+                # right behind main_base_ramp.top_center first (also when our
+                # natural Nexus is still under construction).
                 ramp_top = self.main_base_ramp.top_center
                 has_ramp_battery = any(
                     s.distance_to(ramp_top) < 9.0
                     for s in self.structures(UnitID.SHIELDBATTERY)
                 )
                 if (
-                    len(self.townhalls) == 1
+                    len(self.townhalls.ready) <= 1
                     and self.structures(UnitID.CYBERNETICSCORE).ready
                     and not has_ramp_battery
                     and not self.already_pending(UnitID.SHIELDBATTERY)
@@ -1508,9 +1585,8 @@ class PhoenixBot(AresBot):
                             production=False,
                         )
                     )
-                # Break prolonged 1-base standoffs with a Robo once 4+ gates
-                # are down (gives Immortals vs Stalker/Marauder/Roach + an
-                # Observer by ~4:25 for DTs, hallucinations, and nat re-scout).
+                # Break prolonged 1-base standoffs or armored rushes with a Robo
+                # (gives Immortals vs Stalker/Marauder/Roach + an Observer).
                 if (
                     need_emergency_robo
                     and not need_detection_robo
@@ -1524,7 +1600,10 @@ class PhoenixBot(AresBot):
                             production=has_prod_3x3,
                         )
                     )
-                    saving_for_robo = self.minerals < 275 or self.vespene < 150
+                    if not self._home_threat():
+                        saving_for_robo = (
+                            self.minerals < 275 or self.vespene < 150
+                        )
                 # units and production only - no expansions, no upgrades,
                 # no worker overinvestment until the rush is dead
                 if not (
@@ -1533,23 +1612,42 @@ class PhoenixBot(AresBot):
                     or saving_for_robo_unit
                 ):
                     macro_plan.add(SpawnController(comp))
-                # Pause Probe replacement while urgently saving for our first
-                # detection Robo/Observer so dying Probes don't drain 50m/ea.
-                if not (
+                # Pause Probe production while urgently saving for our first
+                # detection Robo/Observer OR while actively defending our base
+                # with a tiny army (<12 supply) and >=16 working Probes.
+                pause_emerg_probes = (
                     self._need_detection
                     and (saving_for_robo or saving_for_observer)
                     and self.workers.amount >= 8
-                ):
+                ) or (
+                    bool(self._home_threat())
+                    and emerg_army_supply < 12.0
+                    and self.workers.amount >= 16
+                )
+                if not pause_emerg_probes:
                     macro_plan.add(
                         BuildWorkers(to_count=min(28, 22 * len(self.townhalls)))
                     )
                 if not saving_for_robo:
+                    # Cap emergency Assimilators at 2 while gas is banked or
+                    # workers < 32 so we never pull 6 mineral probes onto gas #3-4
+                    # while starving Stalkers during an early rush (MicroMachine).
                     if self.structures(UnitID.CYBERNETICSCORE).amount > 0:
-                        macro_plan.add(
-                            GasBuildingController(
-                                to_count=len(self.townhalls) * 2
+                        emerg_gas = (
+                            2
+                            if (
+                                self.vespene >= 100
+                                or self.supply_workers < 32
                             )
+                            else min(4, len(self.townhalls) * 2)
                         )
+                        if (
+                            not early_gate_priority
+                            or self.gas_buildings.amount < 2
+                        ):
+                            macro_plan.add(
+                                GasBuildingController(to_count=emerg_gas)
+                            )
                     macro_plan.add(
                         ProductionController(
                             comp,
@@ -1574,9 +1672,13 @@ class PhoenixBot(AresBot):
                                 production=has_prod_3x3,
                             )
                         )
-                # a battery at additional bases (main ramp battery already
-                # handled above when on 1 base)
-                if len(self.townhalls) > 1 or has_ramp_battery:
+                # Battery at ready expansions once not starving idle Gateways
+                # or dropping unfinished Batteries directly under enemy fire.
+                if (
+                    len(self.townhalls.ready) >= 2
+                    and not early_gate_priority
+                    and not self._home_threat()
+                ):
                     macro_plan.add(
                         ProtossStaticDefence(
                             pylons_per_base=1,
@@ -1780,14 +1882,21 @@ class PhoenixBot(AresBot):
                             )
                         )
                 # shield battery at each base (auto-techs its prerequisites);
-                # cannons skipped to avoid an early forge detour
-                macro_plan.add(
-                    ProtossStaticDefence(
-                        pylons_per_base=1,
-                        photon_cannons_per_base=0,
-                        shield_batteries_per_base=1,
-                    )
+                # cannons skipped to avoid an early forge detour. Don't steal
+                # 100m from idle early Gateways waiting on 125m Stalkers.
+                early_gate_priority = (
+                    bool(self.structures(UnitID.GATEWAY).ready.idle)
+                    and army_supply < 12.0
+                    and self.minerals < 225
                 )
+                if not early_gate_priority:
+                    macro_plan.add(
+                        ProtossStaticDefence(
+                            pylons_per_base=1,
+                            photon_cannons_per_base=0,
+                            shield_batteries_per_base=1,
+                        )
+                    )
                 # Respect desired_bases so we don't drop an unprotected 4th
                 # Nexus at 08:00 with only 24 army supply (MicroMachine); allow
                 # expanding 1 ahead only when banking >=700m with a real army.
@@ -1807,11 +1916,16 @@ class PhoenixBot(AresBot):
                             max_pending=1,
                         )
                     )
-                # full gas geysers available; the dynamic gas throttle in
-                # Mining (above) prevents over-mining when we're floating
-                macro_plan.add(
-                    GasBuildingController(to_count=len(self.townhalls) * 2)
+                # full gas geysers available once saturated; hold off taking
+                # natural gas #3-4 before 30 probes when gas is already banked
+                # so early mineral income funds Stalkers and Gateways.
+                gas_cap = (
+                    2
+                    if (self.supply_workers < 30 and self.vespene >= 100)
+                    else len(self.townhalls) * 2
                 )
+                if not early_gate_priority or self.gas_buildings.amount < 2:
+                    macro_plan.add(GasBuildingController(to_count=gas_cap))
         else:
             macro_plan.add(SpawnController(ARMY_COMP))
         self.register_behavior(macro_plan)
@@ -2144,11 +2258,26 @@ class PhoenixBot(AresBot):
                             min(8.0, unit.distance_to(enemy_target) - 2.5),
                         )
                     )
+                    and (
+                        (
+                            escort_cnt := sum(
+                                1
+                                for e in attackable_units
+                                if e.tag != enemy_target.tag
+                                and e.type_id not in WORKER_TYPES
+                                and e.distance_to(blink_pos) < 6.5
+                            )
+                        )
+                        < 4
+                        or sum(
+                            1 for f in forces if f.distance_to(unit) < 9.0
+                        )
+                        > escort_cnt + 2
+                    )
                 ):
                     # Offensive Blink-forward onto long-range siege units
                     # (Tempests / Sieged Tanks / Brood Lords / Warp Prisms)
-                    # so healthy Stalkers close into range 6 and delete them
-                    # before they kite away.
+                    # when unguarded or supported by a larger local force.
                     maneuver.add(
                         UseAbility(
                             AbilityId.EFFECT_BLINK_STALKER,
