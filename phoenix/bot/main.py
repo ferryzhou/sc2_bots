@@ -342,16 +342,10 @@ class PhoenixBot(AresBot):
         ).amount
         rax_techlabs = self.enemy_structures(UnitID.BARRACKSTECHLAB).amount
         marauders = self.enemy_units(UnitID.MARAUDER).amount
-        t_gas = self.enemy_structures(UnitID.REFINERY).amount
         return (
             rax >= 3
             or (rax >= ONE_BASE_MIN_GATES and rax_techlabs >= 2)
             or (rax >= ONE_BASE_MIN_GATES and marauders >= 2)
-            or (
-                rax >= ONE_BASE_MIN_GATES
-                and t_gas >= ONE_BASE_MIN_GAS
-                and self.time >= 115.0
-            )
         )
 
     def _enemy_proxy_aggression(self) -> bool:
@@ -480,9 +474,9 @@ class PhoenixBot(AresBot):
         if (
             (len(self.townhalls) >= 3 and self.supply_workers >= 40)
             or (
-                len(self.townhalls) >= 2
+                len(self.townhalls.ready) >= 2
                 and self.supply_workers >= 30
-                and self.time >= 300.0
+                and self.time >= 240.0
             )
             or (self._posthold_logged and len(self.townhalls) >= 2)
         ):
@@ -840,20 +834,38 @@ class PhoenixBot(AresBot):
                 workers_do_no_damage=True,
             )
 
+        # Anti-Armor Missile (-3 armor for 15s): never stand and trade into
+        # Stimmed Bio / Auto-Turrets while orange-debuffed (VeTerran 09:00
+        # lost 10 of 14 Stalkers). Pull back with fighting retreat until clear.
+        shredded_cnt = sum(
+            1
+            for u in forces
+            if u.has_buff(BuffId.RAVENSHREDDERMISSILEARMORREDUCTION)
+        )
+        army_shredded = bool(forces) and shredded_cnt >= max(
+            4, int(0.35 * len(forces))
+        )
+
         if self._commenced_attack:
-            if forces_supply < self._regroup_below_supply or (
-                fight is not None and fight in LOSS_CLOSE_OR_WORSE
+            if (
+                forces_supply < self._regroup_below_supply
+                or (fight is not None and fight in LOSS_CLOSE_OR_WORSE)
+                or (army_shredded and bool(enemy_army))
             ):
                 self._commenced_attack = False
         elif (
-            forces_supply >= self._attack_at_supply
-            or (forces_supply >= 18.0 and self._won_the_hold())
-        ) and (
-            fight is None
-            or fight in TIE_OR_BETTER
-            # pressure valve: near max supply nothing is gained by waiting -
-            # attack even into a predicted loss rather than starve at home
-            or forces_supply >= self._pressure_valve_supply
+            not army_shredded
+            and (
+                forces_supply >= self._attack_at_supply
+                or (forces_supply >= 18.0 and self._won_the_hold())
+            )
+            and (
+                fight is None
+                or fight in TIE_OR_BETTER
+                # pressure valve: near max supply nothing is gained by waiting -
+                # attack even into a predicted loss rather than starve at home
+                or forces_supply >= self._pressure_valve_supply
+            )
         ):
             # vs a one-base all-in, hold home-field advantage (wall +
             # batteries) until we've actually won the hold, then punish
@@ -1566,6 +1578,7 @@ class PhoenixBot(AresBot):
                 ramp_top = self.main_base_ramp.top_center
                 has_ramp_battery = any(
                     s.distance_to(ramp_top) < 9.0
+                    or s.distance_to(self.start_location) < 16.0
                     for s in self.structures(UnitID.SHIELDBATTERY)
                 )
                 if (
@@ -1774,6 +1787,14 @@ class PhoenixBot(AresBot):
                             UpgradeId.EXTENDEDTHERMALLANCE
                         )
 
+                saving_minerals = (
+                    saving_for_observer
+                    or saving_for_robo
+                    or saving_for_robo_unit
+                    or saving_for_tech
+                    or (need_expand and self.minerals < 525)
+                )
+
                 # Upgrades ahead of SpawnController once stable: previously
                 # WarpGates pinned minerals < 125 so +2/+2 and +3/+3 stalled
                 # until minute 21 (DemsTossV2 4v11, BioBot2.0 4v9, Lissy 5v14).
@@ -1792,14 +1813,16 @@ class PhoenixBot(AresBot):
                                 self.vespene >= 100
                                 and army_supply >= 22.0
                                 and not self._home_threat()
+                                and not saving_minerals
                             ),
                         )
                     )
                     if (
                         len(self.townhalls) >= 3
                         and self.time > 360.0
-                        and army_supply >= 20.0
+                        and army_supply >= 24.0
                         and not self._home_threat()
+                        and not saving_minerals
                         and self.structures(UnitID.FORGE).amount == 1
                         and not self.already_pending(UnitID.FORGE)
                         and not self.not_started_but_in_building_tracker(
@@ -1826,24 +1849,25 @@ class PhoenixBot(AresBot):
                     and self.minerals < 175
                     and not self._home_threat()
                 )
-                if not (
-                    saving_for_observer
-                    or saving_for_robo
-                    or saving_for_robo_unit
-                    or saving_for_tech
-                    or saving_for_upgrade_bldg
-                    or (need_expand and self.minerals < 525)
-                ):
+                if not (saving_minerals or saving_for_upgrade_bldg):
                     macro_plan.add(SpawnController(comp))
-                macro_plan.add(
-                    ProductionController(comp, base_location=prod_base)
-                )
+                # Pause competing mineral-draining buildings during short
+                # Robo/tech/expand reservations so reservations complete in
+                # 2-4s instead of freezing WarpGates for 60-96s (VeTerran).
+                if not saving_minerals:
+                    macro_plan.add(
+                        ProductionController(comp, base_location=prod_base)
+                    )
                 # Bank-driven production drain (Rule 3 & Rule 6): ares'
                 # ProductionController caps gateways/robos by current gas rate,
                 # which left 3.4k minerals / 1.1k gas unspent at 10:00 on 5
                 # bases once gas throttling kicked in. Add Gateways/Robos
                 # whenever we're floating so our bank turns into max supply.
-                if self.minerals >= 350 and not need_expand:
+                if (
+                    self.minerals >= 350
+                    and not need_expand
+                    and not saving_minerals
+                ):
                     gates = (
                         self.structures(UnitID.GATEWAY).amount
                         + self.structures(UnitID.WARPGATE).amount
@@ -1864,15 +1888,20 @@ class PhoenixBot(AresBot):
                             )
                         )
                 if (
-                    self.minerals >= 250
+                    self.minerals >= 325
                     and self.vespene >= 350
                     and not need_expand
+                    and not saving_minerals
                     and (UnitID.IMMORTAL in comp or UnitID.COLOSSUS in comp)
                     and self.structures(UnitID.CYBERNETICSCORE).ready
                 ):
                     robos = self.structures(UnitID.ROBOTICSFACILITY).amount
                     pending_robos = self.already_pending(UnitID.ROBOTICSFACILITY)
-                    target_robos = min(3, max(1, len(self.townhalls)))
+                    target_robos = min(3, max(1, len(self.townhalls) - 1))
+                    if army_supply < 28.0:
+                        target_robos = 1
+                    elif army_supply < 50.0:
+                        target_robos = min(target_robos, 2)
                     if robos + pending_robos < target_robos and pending_robos == 0:
                         macro_plan.add(
                             BuildStructure(
@@ -1883,13 +1912,13 @@ class PhoenixBot(AresBot):
                         )
                 # shield battery at each base (auto-techs its prerequisites);
                 # cannons skipped to avoid an early forge detour. Don't steal
-                # 100m from idle early Gateways waiting on 125m Stalkers.
+                # 100m from idle early Gateways or active mineral reservations.
                 early_gate_priority = (
                     bool(self.structures(UnitID.GATEWAY).ready.idle)
                     and army_supply < 12.0
                     and self.minerals < 225
                 )
-                if not early_gate_priority:
+                if not early_gate_priority and not saving_minerals:
                     macro_plan.add(
                         ProtossStaticDefence(
                             pylons_per_base=1,
@@ -1903,6 +1932,7 @@ class PhoenixBot(AresBot):
                 if (
                     not self._all_in_read
                     and not need_expand
+                    and not saving_minerals
                     and not self._home_threat()
                 ):
                     extra_expand = (
@@ -1924,7 +1954,9 @@ class PhoenixBot(AresBot):
                     if (self.supply_workers < 30 and self.vespene >= 100)
                     else len(self.townhalls) * 2
                 )
-                if not early_gate_priority or self.gas_buildings.amount < 2:
+                if (not early_gate_priority or self.gas_buildings.amount < 2) and (
+                    not saving_minerals or self.vespene < 150
+                ):
                     macro_plan.add(GasBuildingController(to_count=gas_cap))
         else:
             macro_plan.add(SpawnController(ARMY_COMP))
@@ -2223,17 +2255,20 @@ class PhoenixBot(AresBot):
                         self.register_behavior(maneuver)
                         continue
 
+                is_shredded = unit.has_buff(
+                    BuffId.RAVENSHREDDERMISSILEARMORREDUCTION
+                )
                 if unit.type_id == UnitID.ZEALOT:
                     # Zealots are melee: always close in and fight rather than
                     # kiting backwards away from enemies
                     maneuver.add(AMove(unit=unit, target=enemy_target.position))
                 elif (
                     unit.type_id == UnitID.STALKER
-                    and unit.shield_percentage < 0.3
+                    and unit.shield_percentage < (0.55 if is_shredded else 0.3)
                     and UpgradeId.BLINKTECH in self.state.upgrades
                     and self.time - self._blinked_at.get(unit.tag, -100.0) > 11.0
                 ):
-                    # Blink-back damaged stalker instantly out of danger
+                    # Blink-back damaged (or Anti-Armor debuffed) stalker out of danger
                     safe = self.mediator.find_closest_safe_spot(
                         from_pos=unit.position, grid=grid
                     )
@@ -2247,6 +2282,7 @@ class PhoenixBot(AresBot):
                     self._blinked_at[unit.tag] = self.time
                 elif (
                     unit.type_id == UnitID.STALKER
+                    and not is_shredded
                     and unit.shield_percentage >= 0.65
                     and enemy_target.type_id in SIEGE_BLINK_TARGETS
                     and UpgradeId.BLINKTECH in self.state.upgrades
@@ -2287,12 +2323,14 @@ class PhoenixBot(AresBot):
                     )
                     self._blinked_at[unit.tag] = self.time
                 elif (
-                    unit.shield_percentage < 0.1
-                    and unit.health_percentage < 0.75
+                    (
+                        unit.shield_percentage < 0.1
+                        and unit.health_percentage < 0.75
+                    )
+                    or (is_shredded and unit.shield_percentage < 0.25)
                 ):
                     # Only walk back on foot once shields are gone and hull is
-                    # taking real damage -- pulling out at 29% shields / 100% HP
-                    # lost even 11v11 Stalker fights 3-8 vs OneBaseStalkerBot
+                    # taking real damage (or earlier while -3 armor debuffed).
                     maneuver.add(KeepUnitSafe(unit=unit, grid=grid))
                 else:
                     # Ranged stutter: ONLY step back on cooldown when already in
