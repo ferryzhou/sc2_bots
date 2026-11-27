@@ -1991,6 +1991,40 @@ class PhoenixBot(AresBot):
                 comp = self._choose_army_comp()
 
             macro_plan.add(AutoSupply(base_location=prod_base))
+            if (
+                self.supply_cap < 200
+                and self.supply_used >= 44
+                and self.minerals >= 100
+            ):
+                pend_pylons = self.already_pending(UnitID.PYLON) + (
+                    1
+                    if self.not_started_but_in_building_tracker(UnitID.PYLON)
+                    else 0
+                )
+                supply_buf = min(
+                    16,
+                    4
+                    + 2 * len(self.townhalls.ready)
+                    + 2 * self.structures(UnitID.ROBOTICSFACILITY).ready.amount,
+                )
+                if (
+                    self.supply_left + 8 * pend_pylons < supply_buf
+                    and pend_pylons < 2
+                ):
+                    pylon_base = (
+                        prod_base
+                        if pend_pylons == 0 or len(self.townhalls.ready) <= 1
+                        else self.townhalls.ready.furthest_to(
+                            prod_base
+                        ).position
+                    )
+                    macro_plan.add(
+                        BuildStructure(
+                            base_location=pylon_base,
+                            structure_id=UnitID.PYLON,
+                            production=False,
+                        )
+                    )
 
             # Check whether a critical 3x3 tech/detection building is needed so
             # we can use non-production 3x3 slots or build a power Pylon at
@@ -3063,11 +3097,41 @@ class PhoenixBot(AresBot):
                         for u in in_attack_range
                         if u.type_id in CAPITAL_AIR_TYPES
                     ]
-                    shoot_targets = (
-                        [min(caps_in_range, key=lambda u: u.health + u.shield)]
-                        if caps_in_range
-                        else in_attack_range
+                    key_air_support = (
+                        [
+                            u
+                            for u in in_attack_range
+                            if u.type_id
+                            in (
+                                UnitID.RAVEN,
+                                UnitID.VIPER,
+                                UnitID.WARPPRISM,
+                                UnitID.WARPPRISMPHASING,
+                                UnitID.MEDIVAC,
+                            )
+                        ]
+                        if (not caps_in_range and unit.type_id == UnitID.STALKER)
+                        else []
                     )
+                    if caps_in_range:
+                        shoot_targets = [
+                            min(caps_in_range, key=lambda u: u.health + u.shield)
+                        ]
+                    elif key_air_support:
+                        shoot_targets = [
+                            min(
+                                key_air_support,
+                                key=lambda u: (
+                                    0
+                                    if u.type_id
+                                    in (UnitID.RAVEN, UnitID.VIPER)
+                                    else 1,
+                                    u.health + u.shield,
+                                ),
+                            )
+                        ]
+                    else:
+                        shoot_targets = in_attack_range
                     maneuver.add(
                         ShootTargetInRange(unit=unit, targets=shoot_targets)
                     )
