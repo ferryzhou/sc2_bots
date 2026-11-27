@@ -240,8 +240,8 @@ UPGRADES_AFTER: float = 275.0
 
 DESIRED_UPGRADES: list[UpgradeId] = [
     UpgradeId.WARPGATERESEARCH,
-    UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1,
     UpgradeId.BLINKTECH,
+    UpgradeId.PROTOSSGROUNDWEAPONSLEVEL1,
     UpgradeId.PROTOSSGROUNDARMORSLEVEL1,
     UpgradeId.PROTOSSGROUNDWEAPONSLEVEL2,
     UpgradeId.PROTOSSGROUNDARMORSLEVEL2,
@@ -2052,7 +2052,11 @@ class PhoenixBot(AresBot):
                         production=has_prod_3x3,
                     )
                 )
-                saving_for_cyber = self.minerals < 175
+                saving_for_cyber = self.minerals < 175 and not (
+                    self._emergency
+                    and (self.supply_used - self.supply_workers) < 6.0
+                    and bool(self.structures(UnitID.GATEWAY).ready.idle)
+                )
 
             # Build a Robotics Facility immediately when cloak/burrow is
             # scouted and we don't have one yet (Hestia Banshees, Lissy Lurkers,
@@ -2199,12 +2203,16 @@ class PhoenixBot(AresBot):
                     # while starving Stalkers during an early rush (MicroMachine).
                     if self.structures(UnitID.CYBERNETICSCORE).amount > 0:
                         emerg_gas = (
-                            2
-                            if (
-                                self.vespene >= 100
-                                or self.supply_workers < 32
+                            1
+                            if (self.time < 210.0 and emerg_army_supply < 8.0)
+                            else (
+                                2
+                                if (
+                                    self.vespene >= 100
+                                    or self.supply_workers < 32
+                                )
+                                else min(4, len(self.townhalls) * 2)
                             )
-                            else min(4, len(self.townhalls) * 2)
                         )
                         if (
                             not early_gate_priority
@@ -2213,22 +2221,48 @@ class PhoenixBot(AresBot):
                             macro_plan.add(
                                 GasBuildingController(to_count=emerg_gas)
                             )
-                    macro_plan.add(
-                        ProductionController(
-                            comp,
-                            base_location=prod_base,
-                            add_production_at_bank=(150, 0),
-                        )
+                    gates_now = (
+                        self.structures(UnitID.GATEWAY).amount
+                        + self.structures(UnitID.WARPGATE).amount
+                        + self.already_pending(UnitID.GATEWAY)
                     )
+                    early_1base_cap = (
+                        len(self.townhalls) <= 1
+                        and self.time < 240.0
+                        and gates_now >= 3
+                    )
+                    if (
+                        not early_gate_priority
+                        and self.supply_left >= 2
+                        and not early_1base_cap
+                    ):
+                        macro_plan.add(
+                            ProductionController(
+                                comp,
+                                base_location=prod_base,
+                                add_production_at_bank=(275, 0),
+                            )
+                        )
                 # Bank-driven emergency Gateways: never float 1k+ minerals on 2
-                # gates during an emergency hold (Thssprtssbt / VeTerran).
-                if self.minerals >= 250 and not saving_for_robo:
+                # gates during an emergency hold (Thssprtssbt / VeTerran), but
+                # never build Gateways #4-5 on 1 base while supply-blocked or
+                # while idle Gateways need Zealots (12PoolBot Persephone/Torches).
+                if (
+                    self.minerals >= 300
+                    and not saving_for_robo
+                    and not early_gate_priority
+                    and self.supply_left >= 2
+                ):
                     gates = (
                         self.structures(UnitID.GATEWAY).amount
                         + self.structures(UnitID.WARPGATE).amount
                     )
                     pending_gates = self.already_pending(UnitID.GATEWAY)
-                    target_gates = min(8, max(4, 3 * len(self.townhalls)))
+                    target_gates = (
+                        3
+                        if (len(self.townhalls) <= 1 and self.time < 240.0)
+                        else min(8, max(4, 3 * len(self.townhalls)))
+                    )
                     if gates + pending_gates < target_gates and pending_gates < 2:
                         macro_plan.add(
                             BuildStructure(
@@ -2744,7 +2778,10 @@ class PhoenixBot(AresBot):
             and UpgradeId.CHARGE not in self.state.upgrades
             and not self.already_pending_upgrade(UpgradeId.CHARGE)
             and len(self.townhalls) >= 2
-            and self._enemy_air_supply() < 12.0
+            and (
+                self._enemy_air_supply() < 16.0
+                or self._enemy_armored_light_supply()[0] >= 12.0
+            )
             and self.can_afford(UpgradeId.CHARGE)
         ):
             idle_twilights.first.research(UpgradeId.CHARGE)
