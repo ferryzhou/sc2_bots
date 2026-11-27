@@ -154,7 +154,7 @@ CHARGELOT_LATE_COMP: dict[UnitID, dict] = {
 # supply of scouted enemy armored / light army value that triggers the switch
 # (a real presence, not one stray unit) - keeps the opening on pure stalkers
 ARMORED_TRIGGER: float = 8.0
-LIGHT_TRIGGER: float = 7.0
+LIGHT_TRIGGER: float = 5.0
 # enemy FLYING combat army supply past this (and outweighing their ground)
 # locks the comp to pure stalker - immortal/colossus can't shoot up (Arpy Void
 # Rays, who Tempests, Mulebot BCs). Support flyers (Medivac/Raven/WarpPrism)
@@ -294,6 +294,8 @@ class PhoenixBot(AresBot):
         # per-stalker blink cooldown tracking (blink is ~11s; avoids an
         # async get_available_abilities call per unit each frame)
         self._blinked_at: dict[int, float] = {}
+        self._robo_save_since: float = 0.0
+        self._robo_save_cooldown_until: float = 0.0
 
     async def on_start(self) -> None:
         await super(PhoenixBot, self).on_start()
@@ -616,18 +618,34 @@ class PhoenixBot(AresBot):
         if self.time < 390.0:
             return False
         own = self.supply_used - self.supply_workers
+        own_val = sum(
+            self.calculate_unit_value(u.type_id).minerals
+            + self.calculate_unit_value(u.type_id).vespene
+            for u in self.units
+            if u.type_id not in WORKER_TYPES
+            and u.type_id not in COMMON_UNIT_IGNORE_TYPES
+        )
         enemy = 0.0
+        enemy_val = 0.0
         for units in self.mediator.get_enemy_army_dict.values():
             for u in units:
                 if u.type_id not in WORKER_TYPES and not u.is_hallucination:
                     enemy += self.calculate_supply_cost(u.type_id)
+                    val = self.calculate_unit_value(u.type_id)
+                    enemy_val += val.minerals + val.vespene
         if self.time < 420.0:
             return (
                 own >= 24.0
-                and own >= 2.0 * max(enemy, 1.0)
+                and (
+                    own >= 2.0 * max(enemy, 1.0)
+                    or own_val >= 2.0 * max(enemy_val, 1.0)
+                )
                 and not self._home_threat()
             )
-        return own >= 20.0 and own >= 1.5 * max(enemy, 1.0)
+        return own >= 18.0 and (
+            own >= 1.5 * max(enemy, 1.0)
+            or own_val >= 1.5 * max(enemy_val, 1.0)
+        )
 
     def _choose_army_comp(self) -> dict[UnitID, dict]:
         """Reactive composition: answer the scouted enemy army. Robo units are
@@ -1150,6 +1168,17 @@ class PhoenixBot(AresBot):
         # push into 2+ Siege Tanks with a small pure-Stalker army; stage until
         # we have Charge Zealots, 3+ Robo power units (Immortals/Colossi), or a
         # full mid-game deathball (>=44 supply). Home defense is unaffected.
+        sim_enemy_supply = sum(
+            self.calculate_supply_cost(u.type_id) for u in sim_enemy_army
+        )
+        vis_enemy_supply = sum(
+            self.calculate_supply_cost(u.type_id) for u in enemy_army
+        )
+        shredded_retreat = (
+            army_shredded
+            and bool(enemy_army)
+            and forces_supply < 1.8 * max(vis_enemy_supply, 1.0)
+        )
         siege_tanks = sum(
             1
             for u in sim_enemy_army
@@ -1157,6 +1186,7 @@ class PhoenixBot(AresBot):
         )
         has_tank_breakers = (
             forces_supply >= 44.0
+            or forces_supply >= 1.75 * max(sim_enemy_supply, 1.0)
             or (
                 UpgradeId.CHARGE in self.state.upgrades
                 and forces(UnitID.ZEALOT).amount >= 4
@@ -1177,13 +1207,13 @@ class PhoenixBot(AresBot):
             if (
                 forces_supply < self._regroup_below_supply
                 or (fight is not None and fight in LOSS_CLOSE_OR_WORSE)
-                or (army_shredded and bool(enemy_army))
+                or shredded_retreat
                 or (blind_to_cloak and forces_supply < self._pressure_valve_supply)
                 or (siege_tank_hold and bool(enemy_army))
             ):
                 self._commenced_attack = False
         elif (
-            not army_shredded
+            not shredded_retreat
             and not blind_to_cloak
             and not siege_tank_hold
             and (
@@ -1564,29 +1594,51 @@ class PhoenixBot(AresBot):
             target_unit = UnitID.COLOSSUS
         elif (
             want_immortal
+            and self.structures(UnitID.ROBOTICSBAY).ready
+            and immortals >= 2
+            and colossi < 2
+            and self._enemy_armored_light_supply()[1] >= 3.0
+        ):
+            target_unit = UnitID.COLOSSUS
+        elif (
+            want_immortal
             and immortals < 8
             and immortals / total < comp[UnitID.IMMORTAL]["proportion"]
         ):
             target_unit = UnitID.IMMORTAL
 
         if target_unit is None:
+            self._robo_save_since = 0.0
             return False
 
         supply_need = self.calculate_supply_cost(target_unit)
         if self.can_afford(target_unit) and self.supply_left >= supply_need:
             idle_robos.first.train(target_unit)
+            self._robo_save_since = 0.0
             return False
 
-        # Only pause Stalker warp-ins if we already have a real Stalker screen
-        # and enough gas on hand so we don't starve Stalkers down to 2-3 units.
+        # Only pause Gateway warp-ins if we already have a real Stalker screen
+        # and enough gas on hand, capped at 8s max (with 12s cooldown) so
+        # WarpGates can never freeze for 90s while saving for a Colossus.
         army_supply = self.supply_used - self.supply_workers
         min_gas = 120 if target_unit == UnitID.COLOSSUS else 50
-        return (
+        want_save = (
             army_supply >= 14.0
             and stalkers >= 6
             and self.vespene >= min_gas
             and self.supply_left >= supply_need
+            and self.time >= self._robo_save_cooldown_until
         )
+        if not want_save:
+            self._robo_save_since = 0.0
+            return False
+        if self._robo_save_since == 0.0:
+            self._robo_save_since = self.time
+        elif self.time - self._robo_save_since > 8.0:
+            self._robo_save_since = 0.0
+            self._robo_save_cooldown_until = self.time + 12.0
+            return False
+        return True
 
     def _micro_observers(self, forces: Units) -> None:
         """Keep Observers covering cloaked/burrowed threats, periodically
@@ -2082,6 +2134,20 @@ class PhoenixBot(AresBot):
             # the nexus never gets funded. While converting, the plan is ONLY
             # supply + expansion - army production pauses the ~40s it takes to
             # bank 400 (we are >=1.5x ahead by definition, so that is safe).
+            home_threat_pos = self._home_threat()
+            home_threat_supply = (
+                sum(
+                    self.calculate_supply_cost(u.type_id)
+                    for u in self.enemy_units
+                    if not u.is_memory
+                    and not u.is_hallucination
+                    and u.type_id not in WORKER_TYPES
+                    and u.type_id not in COMMON_UNIT_IGNORE_TYPES
+                    and any(u.distance_to(th) < 22.0 for th in self.townhalls)
+                )
+                if home_threat_pos is not None
+                else 0.0
+            )
             posthold_expand = (
                 (self._emergency or self._all_in_read)
                 and (
@@ -2089,7 +2155,13 @@ class PhoenixBot(AresBot):
                     or (
                         self.time >= 360.0
                         and emerg_army_supply >= 14.0
-                        and not self._home_threat()
+                        and (
+                            home_threat_pos is None
+                            or (
+                                emerg_army_supply >= 16.0
+                                and home_threat_supply < 0.35 * emerg_army_supply
+                            )
+                        )
                     )
                 )
                 and len(self.townhalls) < 2
@@ -2294,7 +2366,7 @@ class PhoenixBot(AresBot):
                 # probes while our army dropped to 2 Stalkers).
                 if not (
                     (self._home_threat() and self.supply_workers >= 36)
-                    or (saving_for_robo_unit and self.minerals >= 125)
+                    or saving_for_robo_unit
                 ):
                     macro_plan.add(
                         BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
@@ -2404,6 +2476,28 @@ class PhoenixBot(AresBot):
                     ):
                         saving_for_tech = not self.can_afford(
                             UpgradeId.EXTENDEDTHERMALLANCE
+                        )
+                    elif (
+                        self.time >= 300.0
+                        and len(self.townhalls.ready) >= 2
+                        and bool(self.structures(UnitID.ROBOTICSFACILITY))
+                        and not self.structures(UnitID.TWILIGHTCOUNCIL)
+                        and not self.already_pending(UnitID.TWILIGHTCOUNCIL)
+                        and not self.not_started_but_in_building_tracker(
+                            UnitID.TWILIGHTCOUNCIL
+                        )
+                        and not self._home_threat()
+                        and army_supply >= 12.0
+                        and self.vespene >= 150
+                        and self.minerals >= 150
+                    ):
+                        macro_plan.add(
+                            BuildStructure(
+                                base_location=prod_base,
+                                structure_id=UnitID.TWILIGHTCOUNCIL,
+                                to_count=1,
+                                production=False,
+                            )
                         )
 
                 saving_minerals = (
