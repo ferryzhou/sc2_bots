@@ -236,7 +236,7 @@ ONE_BASE_MIN_GATES: int = 2
 ONE_BASE_MIN_GAS: int = 2
 # don't spend on forge/twilight upgrades before this (a 2:32 forge+twilight
 # was the direct cause of rush losses - see the Chance loss analysis)
-UPGRADES_AFTER: float = 300.0
+UPGRADES_AFTER: float = 275.0
 
 DESIRED_UPGRADES: list[UpgradeId] = [
     UpgradeId.WARPGATERESEARCH,
@@ -784,16 +784,27 @@ class PhoenixBot(AresBot):
             and not u.is_hallucination
             and u.type_id not in WORKER_TYPES
             and u.type_id not in COMMON_UNIT_IGNORE_TYPES
-            and u.type_id not in SUPPORT_AIR_TYPES
+            and (
+                u.type_id not in SUPPORT_AIR_TYPES
+                or (
+                    u.type_id == UnitID.MEDIVAC
+                    and any(u.distance_to(th) < 8.5 for th in self.townhalls)
+                )
+            )
             and (
                 u.is_flying
                 or u.is_cloaked
                 or u.type_id
                 in (
                     UnitID.DARKTEMPLAR,
+                    UnitID.WIDOWMINE,
                     UnitID.WIDOWMINEBURROWED,
                     UnitID.LURKERMPBURROWED,
                     UnitID.BANELING,
+                    UnitID.HELLION,
+                    UnitID.HELLIONTANK,
+                    UnitID.THOR,
+                    UnitID.THORAP,
                 )
             )
             and (
@@ -804,6 +815,7 @@ class PhoenixBot(AresBot):
                     UnitID.WIDOWMINE,
                     UnitID.WIDOWMINEBURROWED,
                     UnitID.BANSHEE,
+                    UnitID.MEDIVAC,
                 )
             )
             and any(u.distance_to(th) < 11.0 for th in self.townhalls)
@@ -823,11 +835,16 @@ class PhoenixBot(AresBot):
                 )
             else:
                 nearest_r = raiders.closest_to(probe)
-                dest = (
-                    min(safe_ths, key=lambda th: th.distance_to(probe)).position
-                    if safe_ths
-                    else probe.position.towards(nearest_r.position, -8.0)
+                is_mine = nearest_r.type_id in (
+                    UnitID.WIDOWMINE,
+                    UnitID.WIDOWMINEBURROWED,
                 )
+                if safe_ths and not is_mine:
+                    dest = min(
+                        safe_ths, key=lambda th: th.distance_to(probe)
+                    ).position
+                else:
+                    dest = probe.position.towards(nearest_r.position, -9.0)
                 probe.move(dest)
 
         if not raiders:
@@ -839,15 +856,29 @@ class PhoenixBot(AresBot):
             return
         evacuated_tags: set[int] = set()
         for raider in raiders:
+            is_mine = raider.type_id in (
+                UnitID.WIDOWMINE,
+                UnitID.WIDOWMINEBURROWED,
+            )
             high_burst = raider.is_cloaked or raider.type_id in (
                 UnitID.BANSHEE,
                 UnitID.ORACLE,
                 UnitID.DARKTEMPLAR,
+                UnitID.WIDOWMINE,
                 UnitID.WIDOWMINEBURROWED,
                 UnitID.LURKERMPBURROWED,
                 UnitID.BANELING,
+                UnitID.HELLION,
+                UnitID.HELLIONTANK,
+                UnitID.THOR,
+                UnitID.THORAP,
+                UnitID.MEDIVAC,
             )
-            danger_radius = 7.5 if high_burst else 6.0
+            danger_radius = (
+                8.0
+                if is_mine
+                else (6.5 if raider.type_id == UnitID.MEDIVAC else (7.5 if high_burst else 6.0))
+            )
             for probe in gathering.closer_than(danger_radius, raider):
                 if probe.tag in evacuated_tags:
                     continue
@@ -858,11 +889,12 @@ class PhoenixBot(AresBot):
                 self.mediator.assign_role(
                     tag=probe.tag, role=UnitRole.CONTROL_GROUP_NINE
                 )
-                dest = (
-                    min(safe_ths, key=lambda th: th.distance_to(probe)).position
-                    if safe_ths
-                    else probe.position.towards(raider.position, -8.0)
-                )
+                if safe_ths and not is_mine:
+                    dest = min(
+                        safe_ths, key=lambda th: th.distance_to(probe)
+                    ).position
+                else:
+                    dest = probe.position.towards(raider.position, -9.0)
                 probe.move(dest)
 
     async def on_step(self, iteration: int) -> None:
@@ -1113,17 +1145,47 @@ class PhoenixBot(AresBot):
                     for u in unrevealed_dps
                 )
 
+        # Siege-Tank engagement discipline: ares's 1D combat sim underestimates
+        # Siege Tank splash & 13-tile siege range. Never launch an offensive
+        # push into 2+ Siege Tanks with a small pure-Stalker army; stage until
+        # we have Charge Zealots, 3+ Robo power units (Immortals/Colossi), or a
+        # full mid-game deathball (>=44 supply). Home defense is unaffected.
+        siege_tanks = sum(
+            1
+            for u in sim_enemy_army
+            if u.type_id in (UnitID.SIEGETANK, UnitID.SIEGETANKSIEGED)
+        )
+        has_tank_breakers = (
+            forces_supply >= 44.0
+            or (
+                UpgradeId.CHARGE in self.state.upgrades
+                and forces(UnitID.ZEALOT).amount >= 4
+            )
+            or (
+                forces(UnitID.IMMORTAL).amount
+                + forces(UnitID.COLOSSUS).amount
+                >= 3
+            )
+        )
+        siege_tank_hold = (
+            siege_tanks >= 2
+            and not has_tank_breakers
+            and forces_supply < self._pressure_valve_supply
+        )
+
         if self._commenced_attack:
             if (
                 forces_supply < self._regroup_below_supply
                 or (fight is not None and fight in LOSS_CLOSE_OR_WORSE)
                 or (army_shredded and bool(enemy_army))
                 or (blind_to_cloak and forces_supply < self._pressure_valve_supply)
+                or (siege_tank_hold and bool(enemy_army))
             ):
                 self._commenced_attack = False
         elif (
             not army_shredded
             and not blind_to_cloak
+            and not siege_tank_hold
             and (
                 forces_supply >= self._attack_at_supply
                 or (
@@ -2736,8 +2798,8 @@ class PhoenixBot(AresBot):
             UnitID.CYBERNETICSCORE,
             UnitID.ROBOTICSFACILITY,
             UnitID.ROBOTICSBAY,
-            UnitID.FORGE,
             UnitID.TWILIGHTCOUNCIL,
+            UnitID.FORGE,
             UnitID.GATEWAY,
         ]
         if (
