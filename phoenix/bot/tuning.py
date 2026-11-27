@@ -50,7 +50,7 @@ SCHEMA: list[Param] = [
     Param("pressure_valve_supply", 72.0, 8.0, 62.0, 110.0),
     Param("regroup_below_supply", 12.0, 2.5, 8.0, 20.0),
     Param("emergency_exit_seconds", 45.0, 10.0, 25.0, 90.0),
-    Param("emergency_zealot_proportion", 0.4, 0.1, 0.15, 0.65),
+    Param("emergency_zealot_proportion", 0.45, 0.08, 0.35, 0.65),
 ]
 
 
