@@ -124,6 +124,33 @@ MIXED_ROBO_COMP: dict[UnitID, dict] = {
     UnitID.IMMORTAL: {"proportion": 0.25, "priority": 1},
     UnitID.COLOSSUS: {"proportion": 0.20, "priority": 2},
 }
+# Charge-upgraded frontline variants (active ONLY after UpgradeId.CHARGE
+# completes, and never overriding the anti-air guard). Light Zealots (100m/0g)
+# soak Marauder (+10 vs Armored) and Siege Tank (+30 vs Armored) fire, force
+# Tank friendly-fire splash onto Bio, and spend late-game mineral float while
+# keeping 35-50% Stalkers for AA against Medivacs/Ravens/Vikings/Banshees.
+CHARGELOT_IMMORTAL_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.45, "priority": 0},
+    UnitID.ZEALOT: {"proportion": 0.25, "priority": 1},
+    UnitID.IMMORTAL: {"proportion": 0.30, "priority": 2},
+}
+CHARGELOT_COLOSSUS_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.50, "priority": 0},
+    UnitID.ZEALOT: {"proportion": 0.25, "priority": 1},
+    UnitID.COLOSSUS: {"proportion": 0.25, "priority": 2},
+}
+CHARGELOT_MIXED_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.35, "priority": 0},
+    UnitID.ZEALOT: {"proportion": 0.25, "priority": 1},
+    UnitID.IMMORTAL: {"proportion": 0.20, "priority": 2},
+    UnitID.COLOSSUS: {"proportion": 0.20, "priority": 3},
+}
+CHARGELOT_LATE_COMP: dict[UnitID, dict] = {
+    UnitID.IMMORTAL: {"proportion": 0.25, "priority": 0},
+    UnitID.COLOSSUS: {"proportion": 0.20, "priority": 1},
+    UnitID.STALKER: {"proportion": 0.35, "priority": 2},
+    UnitID.ZEALOT: {"proportion": 0.20, "priority": 3},
+}
 # supply of scouted enemy armored / light army value that triggers the switch
 # (a real presence, not one stray unit) - keeps the opening on pure stalkers
 ARMORED_TRIGGER: float = 8.0
@@ -633,16 +660,17 @@ class PhoenixBot(AresBot):
             or (capital_air >= 6.0 and own_aa_supply < 3.0 * capital_air)
         ):
             return ARMY_COMP
+        has_charge = UpgradeId.CHARGE in self.state.upgrades
         # mixed armored + light army (e.g. Terran bio/tank or Zerg roach/ling/
         # hydra): build BOTH immortals and colossus splash instead of 0 splash
         if armored >= ARMORED_TRIGGER and light >= LIGHT_TRIGGER:
-            return MIXED_ROBO_COMP
+            return CHARGELOT_MIXED_COMP if has_charge else MIXED_ROBO_COMP
         # armored takes precedence (immortals also beat the light-vs-colossus
         # case acceptably, and armored is the deadlier miss for stalkers)
         if armored >= ARMORED_TRIGGER and armored >= light:
-            return IMMORTAL_COMP
+            return CHARGELOT_IMMORTAL_COMP if has_charge else IMMORTAL_COMP
         if light >= LIGHT_TRIGGER and light > armored:
-            return COLOSSUS_COMP
+            return CHARGELOT_COLOSSUS_COMP if has_charge else COLOSSUS_COMP
         # no clear read yet: drain floating gas mid-game once established on
         # 2+ bases (36+ probes), else keep pumping Stalkers to punish post-hold
         if (
@@ -651,7 +679,7 @@ class PhoenixBot(AresBot):
             and self.supply_workers >= 32
             and self.vespene > 350
         ):
-            return LATE_COMP
+            return CHARGELOT_LATE_COMP if has_charge else LATE_COMP
         return ARMY_COMP
 
     def _counter_proxy_structures(self) -> None:
@@ -1400,7 +1428,7 @@ class PhoenixBot(AresBot):
         if self._need_detection:
             want_obs = 3 if (len(robos) >= 2 and army_supply >= 28.0) else 2
         else:
-            want_obs = 1 if (self.time >= 300.0 or self._emergency) else 0
+            want_obs = 1 if (self.time >= 260.0 or self._emergency) else 0
         if urgent_only:
             want_obs = min(want_obs, 2 if self._need_detection else 1)
         if want_obs == 0:
@@ -1456,10 +1484,13 @@ class PhoenixBot(AresBot):
                 idle_robos.first.train(UnitID.IMMORTAL)
             return False
 
+        zealots = self.units(UnitID.ZEALOT).amount + self.already_pending(
+            UnitID.ZEALOT
+        )
         colossi = self.units(UnitID.COLOSSUS).amount + self.already_pending(
             UnitID.COLOSSUS
         )
-        total = max(1, stalkers + immortals + colossi)
+        total = max(1, stalkers + zealots + immortals + colossi)
 
         target_unit: Optional[UnitID] = None
         if (
@@ -1812,6 +1843,7 @@ class PhoenixBot(AresBot):
         prod_base: Point2 = self._production_base()
         self._repair_unpowered_building_targets(prod_base)
         macro_plan: MacroPlan = MacroPlan()
+        saving_for_robo_unit = False
         if self.build_order_runner.build_completed:
             if self._emergency:
                 # rush defense: gateway units + batteries, plus Immortals once
@@ -2164,7 +2196,10 @@ class PhoenixBot(AresBot):
                 # but pause probe cuts while defending an active attack on our
                 # bases once we already have 36+ probes (MicroMachine built 16
                 # probes while our army dropped to 2 Stalkers).
-                if not (self._home_threat() and self.supply_workers >= 36):
+                if not (
+                    (self._home_threat() and self.supply_workers >= 36)
+                    or (saving_for_robo_unit and self.minerals >= 125)
+                ):
                     macro_plan.add(
                         BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
                     )
@@ -2196,9 +2231,9 @@ class PhoenixBot(AresBot):
                 )
                 macro_robo_ready = (
                     len(self.townhalls.ready) >= 2
-                    and self.time >= 270.0
-                    and self.supply_workers >= 28
-                    and self.vespene >= 150
+                    and self.time >= 240.0
+                    and self.supply_workers >= 22
+                    and self.vespene >= 100
                     and self._enemy_air_supply() < 8.0
                 )
                 want_robo = (
@@ -2223,7 +2258,7 @@ class PhoenixBot(AresBot):
                     (not need_expand or urgent_first_robo or urgent_robo_bay)
                     and not self._all_in_read
                     and (not self._home_threat() or army_supply >= 16.0)
-                    and army_supply >= 10.0
+                    and army_supply >= 6.0
                     and self.structures(UnitID.CYBERNETICSCORE).ready
                 ):
                     if want_robo and not self.structures(
@@ -2347,6 +2382,7 @@ class PhoenixBot(AresBot):
                     and not self._all_in_read
                     and not need_expand
                     and not saving_for_gate
+                    and not saving_for_robo_unit
                 ):
                     macro_plan.add(
                         UpgradeController(
@@ -2398,7 +2434,27 @@ class PhoenixBot(AresBot):
                     or saving_for_upgrade_bldg
                     or saving_for_gate
                 ):
-                    macro_plan.add(SpawnController(comp))
+                    # Robo units (Colossi/Immortals) are trained directly by
+                    # _train_robo_units() so SpawnController never steals an
+                    # idle Robo for 4-supply Immortals while saving 6 supply /
+                    # 300m/200g for our first Colossi (VeTerran 0-Colossus fix).
+                    gw_only = {
+                        k: v
+                        for k, v in comp.items()
+                        if k not in (UnitID.IMMORTAL, UnitID.COLOSSUS)
+                    }
+                    gw_sum = sum(v["proportion"] for v in gw_only.values())
+                    if gw_only and gw_sum > 0:
+                        spawn_comp = {
+                            k: {
+                                "proportion": v["proportion"] / gw_sum,
+                                "priority": v["priority"],
+                            }
+                            for k, v in gw_only.items()
+                        }
+                    else:
+                        spawn_comp = comp
+                    macro_plan.add(SpawnController(spawn_comp))
                 # Pause competing mineral-draining buildings during short
                 # Robo/tech/expand reservations so reservations complete in
                 # 2-4s instead of freezing WarpGates for 60-96s (VeTerran).
@@ -2517,7 +2573,8 @@ class PhoenixBot(AresBot):
 
         self._research_warpgate()
         self._research_thermal_lance()
-        self._research_forge_and_twilight()
+        if not saving_for_robo_unit:
+            self._research_forge_and_twilight()
         self._chrono_production()
 
     async def _fallback_build_robo(self) -> None:
@@ -2619,6 +2676,16 @@ class PhoenixBot(AresBot):
             and self.can_afford(UpgradeId.BLINKTECH)
         ):
             idle_twilights.first.research(UpgradeId.BLINKTECH)
+        elif (
+            idle_twilights
+            and UpgradeId.BLINKTECH in self.state.upgrades
+            and UpgradeId.CHARGE not in self.state.upgrades
+            and not self.already_pending_upgrade(UpgradeId.CHARGE)
+            and len(self.townhalls) >= 2
+            and self._enemy_air_supply() < 12.0
+            and self.can_afford(UpgradeId.CHARGE)
+        ):
+            idle_twilights.first.research(UpgradeId.CHARGE)
         idle_forges = self.structures(UnitID.FORGE).ready.idle
         if not idle_forges:
             return
@@ -2743,6 +2810,7 @@ class PhoenixBot(AresBot):
             )
             only_enemy_units: Units = all_close.filter(
                 lambda u: u.type_id not in ALL_STRUCTURES
+                or u.type_id == UnitID.AUTOTURRET
             )
             # Never pick an undetected cloaked/burrowed unit as enemy_target
             # (cy_attack_ready is always False, which previously caused
@@ -2820,6 +2888,7 @@ class PhoenixBot(AresBot):
                 )
                 structures_close: Units = all_close.filter(
                     lambda u: u.type_id in ALL_STRUCTURES
+                    and u.type_id != UnitID.AUTOTURRET
                     and (
                         unit.can_attack_air
                         if u.is_flying
