@@ -2956,12 +2956,26 @@ class PhoenixBot(AresBot):
                         self.register_behavior(maneuver)
                         continue
 
-                # shoot whatever is already in range (attackable units first)
+                # shoot whatever is already in range (attackable units first);
+                # focus-fire the single lowest-HP capital air ship in range so
+                # Stalkers delete Battlecruisers/Carriers before they escape or
+                # Tactical Jump to repair (MicroMachine 10:00: 18 Stalkers lost
+                # for 0 BC kills while spreading damage).
                 in_range_unit = False
                 if in_attack_range := cy_in_attack_range(unit, attackable_units):
                     in_range_unit = True
+                    caps_in_range = [
+                        u
+                        for u in in_attack_range
+                        if u.type_id in CAPITAL_AIR_TYPES
+                    ]
+                    shoot_targets = (
+                        [min(caps_in_range, key=lambda u: u.health + u.shield)]
+                        if caps_in_range
+                        else in_attack_range
+                    )
                     maneuver.add(
-                        ShootTargetInRange(unit=unit, targets=in_attack_range)
+                        ShootTargetInRange(unit=unit, targets=shoot_targets)
                     )
                 elif in_attack_range := cy_in_attack_range(unit, all_close):
                     maneuver.add(
@@ -3109,7 +3123,13 @@ class PhoenixBot(AresBot):
                     and not is_shredded
                     and not is_locked_on
                     and unit.shield_percentage >= 0.65
-                    and enemy_target.type_id in SIEGE_BLINK_TARGETS
+                    and (
+                        enemy_target.type_id in SIEGE_BLINK_TARGETS
+                        or (
+                            enemy_target.type_id == UnitID.BATTLECRUISER
+                            and enemy_target.health_percentage < 0.65
+                        )
+                    )
                     and UpgradeId.BLINKTECH in self.state.upgrades
                     and self.time - self._blinked_at.get(unit.tag, -100.0) > 11.0
                     and 6.5 <= unit.distance_to(enemy_target) <= 13.5
@@ -3181,7 +3201,7 @@ class PhoenixBot(AresBot):
                         and unit.health_percentage < 0.75
                     )
                     or (is_shredded and unit.shield_percentage < 0.7)
-                    or (is_locked_on and unit.shield_percentage < 0.7)
+                    or is_locked_on
                 ):
                     # Walk back when hull is taking damage, -3 armor debuffed,
                     # or tethered by Cyclone Lock-On (breaks 15-range tether).
@@ -3205,6 +3225,7 @@ class PhoenixBot(AresBot):
                     if (
                         in_range_unit
                         and enemy_target.type_id not in ALL_STRUCTURES
+                        and enemy_target.type_id != UnitID.BATTLECRUISER
                         and enemy_range <= own_range + 0.5
                     ):
                         maneuver.add(
