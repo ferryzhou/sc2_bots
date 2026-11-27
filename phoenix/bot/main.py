@@ -91,7 +91,7 @@ LATE_COMP: dict[UnitID, dict] = {
     UnitID.STALKER: {"proportion": 0.5, "priority": 2},
 }
 # switch to the gas-spending comp once we're mid-game and floating gas
-LATE_COMP_AFTER: float = 420.0  # 7:00
+LATE_COMP_AFTER: float = 360.0  # 6:00
 LATE_COMP_GAS_BANK: int = 300
 
 # Reactive robo composition (Plan A). Pure stalkers have no answer to the
@@ -648,8 +648,8 @@ class PhoenixBot(AresBot):
         if (
             self.time > LATE_COMP_AFTER
             and len(self.townhalls) >= 2
-            and self.supply_workers >= 36
-            and self.vespene > 400
+            and self.supply_workers >= 32
+            and self.vespene > 350
         ):
             return LATE_COMP
         return ARMY_COMP
@@ -967,6 +967,20 @@ class PhoenixBot(AresBot):
                             )
                     target = merge_pt
                     hold_pos = merge_pt
+                elif (
+                    bool(forces)
+                    and threat.distance_to(self.start_location) > 16.0
+                    and sum(
+                        1
+                        for u in forces
+                        if u.has_buff(
+                            BuffId.RAVENSHREDDERMISSILEARMORREDUCTION
+                        )
+                    )
+                    >= max(4, int(0.35 * len(forces)))
+                ):
+                    target = self.main_base_ramp.top_center
+                    hold_pos = self.main_base_ramp.top_center
                 else:
                     # Defender's advantage (Rule 7 & 9a): when outnumbered or
                     # roughly even, hold at our ramp / Shield Battery anchor
@@ -1330,11 +1344,18 @@ class PhoenixBot(AresBot):
                 if (not self.build_order_runner.build_completed
                         and not self._defense_opening):
                     self.build_order_runner.set_build_completed()
-        elif (
-            self._emergency
-            and self.time - self._last_threat_time > self._emergency_exit_seconds
-        ):
-            self._emergency = False
+        elif self._emergency:
+            exit_cd = (
+                min(self._emergency_exit_seconds, 15.0)
+                if (
+                    self.time >= EARLY_THREAT_UNTIL
+                    and not self._all_in_read
+                    and not self._home_threat()
+                )
+                else self._emergency_exit_seconds
+            )
+            if self.time - self._last_threat_time > exit_cd:
+                self._emergency = False
 
     def _desired_bases(self, army_supply: float) -> int:
         """Healthy target Nexus count based on game clock, worker saturation,
@@ -2173,16 +2194,38 @@ class PhoenixBot(AresBot):
                 can_pause_for_tech = (
                     not self._home_threat() or army_supply >= 20.0
                 )
+                macro_robo_ready = (
+                    len(self.townhalls.ready) >= 2
+                    and self.time >= 270.0
+                    and self.supply_workers >= 28
+                    and self.vespene >= 150
+                    and self._enemy_air_supply() < 8.0
+                )
+                want_robo = (
+                    UnitID.IMMORTAL in comp
+                    or UnitID.COLOSSUS in comp
+                    or macro_robo_ready
+                )
+                urgent_first_robo = (
+                    want_robo
+                    and not self.structures(UnitID.ROBOTICSFACILITY)
+                    and self.vespene >= 250
+                    and len(self.townhalls) >= 2
+                )
+                urgent_robo_bay = (
+                    UnitID.COLOSSUS in comp
+                    and bool(self.structures(UnitID.ROBOTICSFACILITY).ready)
+                    and not self.structures(UnitID.ROBOTICSBAY)
+                    and self.vespene >= 250
+                    and len(self.townhalls) >= 2
+                )
                 if (
-                    not need_expand
+                    (not need_expand or urgent_first_robo or urgent_robo_bay)
                     and not self._all_in_read
                     and (not self._home_threat() or army_supply >= 16.0)
                     and army_supply >= 10.0
                     and self.structures(UnitID.CYBERNETICSCORE).ready
                 ):
-                    want_robo = (
-                        UnitID.IMMORTAL in comp or UnitID.COLOSSUS in comp
-                    )
                     if want_robo and not self.structures(
                         UnitID.ROBOTICSFACILITY
                     ):
@@ -2969,7 +3012,7 @@ class PhoenixBot(AresBot):
                         unit.shield_percentage < 0.1
                         and unit.health_percentage < 0.75
                     )
-                    or (is_shredded and unit.shield_percentage < 0.25)
+                    or (is_shredded and unit.shield_percentage < 0.7)
                     or (is_locked_on and unit.shield_percentage < 0.7)
                 ):
                     # Walk back when hull is taking damage, -3 armor debuffed,
