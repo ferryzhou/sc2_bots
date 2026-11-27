@@ -670,10 +670,11 @@ class PhoenixBot(AresBot):
             self.units(UnitID.STALKER).amount
             + self.already_pending(UnitID.STALKER)
         )
+        ground = armored + light
         if (
-            (air >= AIR_TRIGGER and air > max(armored, light))
-            or (air >= 9.0 and air >= 0.75 * max(armored, light))
-            or (air >= 16.0 and air >= 0.5 * (armored + light))
+            (air >= AIR_TRIGGER and air > max(armored, light) and (ground < 8.0 or own_aa_supply < 2.2 * air))
+            or (air >= 9.0 and air >= 0.75 * max(armored, light) and (ground < 8.0 or own_aa_supply < 2.2 * air))
+            or (air >= 16.0 and air >= 0.5 * ground and (ground < 8.0 or own_aa_supply < 2.2 * air))
             or (air >= 6.0 and own_aa_supply < 1.5 * air)
             or (capital_air >= 6.0 and own_aa_supply < 3.0 * capital_air)
         ):
@@ -1179,14 +1180,19 @@ class PhoenixBot(AresBot):
             and bool(enemy_army)
             and forces_supply < 1.8 * max(vis_enemy_supply, 1.0)
         )
-        siege_tanks = sum(
+        heavy_siege = sum(
             1
             for u in sim_enemy_army
-            if u.type_id in (UnitID.SIEGETANK, UnitID.SIEGETANKSIEGED)
+            if u.type_id
+            in (
+                UnitID.SIEGETANK,
+                UnitID.SIEGETANKSIEGED,
+                UnitID.THOR,
+                UnitID.THORAP,
+            )
         )
         has_tank_breakers = (
             forces_supply >= 44.0
-            or forces_supply >= 1.75 * max(sim_enemy_supply, 1.0)
             or (
                 UpgradeId.CHARGE in self.state.upgrades
                 and forces(UnitID.ZEALOT).amount >= 4
@@ -1198,7 +1204,7 @@ class PhoenixBot(AresBot):
             )
         )
         siege_tank_hold = (
-            siege_tanks >= 2
+            heavy_siege >= 2
             and not has_tank_breakers
             and forces_supply < self._pressure_valve_supply
         )
