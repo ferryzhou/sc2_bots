@@ -151,6 +151,21 @@ CHARGELOT_LATE_COMP: dict[UnitID, dict] = {
     UnitID.STALKER: {"proportion": 0.35, "priority": 2},
     UnitID.ZEALOT: {"proportion": 0.20, "priority": 3},
 }
+# vs Capital Air (Battlecruisers, Carriers, Tempests, Brood Lords) ->
+# Stargate Void Rays (44.8 DPS with Prismatic Alignment vs Armored) + Stalkers.
+CAPITAL_AIR_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.55, "priority": 0},
+    UnitID.VOIDRAY: {"proportion": 0.45, "priority": 1},
+}
+CHARGELOT_CAPITAL_AIR_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.40, "priority": 0},
+    UnitID.VOIDRAY: {"proportion": 0.40, "priority": 1},
+    UnitID.ZEALOT: {"proportion": 0.20, "priority": 2},
+}
+CHARGELOT_AA_COMP: dict[UnitID, dict] = {
+    UnitID.STALKER: {"proportion": 0.75, "priority": 0},
+    UnitID.ZEALOT: {"proportion": 0.25, "priority": 1},
+}
 # supply of scouted enemy armored / light army value that triggers the switch
 # (a real presence, not one stray unit) - keeps the opening on pure stalkers
 ARMORED_TRIGGER: float = 8.0
@@ -294,8 +309,11 @@ class PhoenixBot(AresBot):
         # per-stalker blink cooldown tracking (blink is ~11s; avoids an
         # async get_available_abilities call per unit each frame)
         self._blinked_at: dict[int, float] = {}
+        self._aligned_at: dict[int, float] = {}
         self._robo_save_since: float = 0.0
         self._robo_save_cooldown_until: float = 0.0
+        self._stargate_save_since: float = 0.0
+        self._stargate_save_cooldown_until: float = 0.0
 
     async def on_start(self) -> None:
         await super(PhoenixBot, self).on_start()
@@ -546,7 +564,13 @@ class PhoenixBot(AresBot):
                 and self.supply_workers >= 30
                 and self.time >= 240.0
             )
-            or (self._posthold_logged and len(self.townhalls) >= 2)
+            or (
+                self._posthold_logged
+                and (
+                    len(self.townhalls) >= 2
+                    or (self.supply_used - self.supply_workers) >= 16.0
+                )
+            )
         ):
             return False
         enemy_army_supply = self.get_total_supply(
@@ -666,20 +690,55 @@ class PhoenixBot(AresBot):
             for u in units
             if u.type_id in CAPITAL_AIR_TYPES and not u.is_hallucination
         )
-        own_aa_supply = 2.0 * (
-            self.units(UnitID.STALKER).amount
-            + self.already_pending(UnitID.STALKER)
+        heavy_air = sum(
+            self.calculate_supply_cost(u.type_id)
+            for units in self.mediator.get_enemy_army_dict.values()
+            for u in units
+            if u.is_flying
+            and u.type_id not in WORKER_TYPES
+            and u.type_id not in SUPPORT_AIR_TYPES
+            and u.type_id not in (UnitID.MUTALISK, UnitID.PHOENIX)
+            and not u.is_hallucination
         )
+        has_charge = UpgradeId.CHARGE in self.state.upgrades
         ground = armored + light
+        capital_air_tech = (
+            capital_air >= 6.0
+            or heavy_air >= 9.0
+            or any(
+                s.type_id in (UnitID.FUSIONCORE, UnitID.FLEETBEACON)
+                for s in self.enemy_structures
+            )
+        )
+        if capital_air_tech:
+            return (
+                CHARGELOT_CAPITAL_AIR_COMP
+                if (has_charge and ground >= 8.0)
+                else CAPITAL_AIR_COMP
+            )
+        own_aa_supply = (
+            2.0
+            * (
+                self.units(UnitID.STALKER).amount
+                + self.already_pending(UnitID.STALKER)
+            )
+            + 4.0
+            * (
+                self.units(UnitID.VOIDRAY).amount
+                + self.already_pending(UnitID.VOIDRAY)
+            )
+        )
         if (
             (air >= AIR_TRIGGER and air > max(armored, light) and (ground < 8.0 or own_aa_supply < 2.2 * air))
             or (air >= 9.0 and air >= 0.75 * max(armored, light) and (ground < 8.0 or own_aa_supply < 2.2 * air))
             or (air >= 16.0 and air >= 0.5 * ground and (ground < 8.0 or own_aa_supply < 2.2 * air))
             or (air >= 6.0 and own_aa_supply < 1.5 * air)
-            or (capital_air >= 6.0 and own_aa_supply < 3.0 * capital_air)
         ):
-            return ARMY_COMP
-        has_charge = UpgradeId.CHARGE in self.state.upgrades
+            return (
+                CHARGELOT_AA_COMP
+                if (has_charge and ground >= 10.0)
+                else ARMY_COMP
+            )
         # mixed armored + light army (e.g. Terran bio/tank or Zerg roach/ling/
         # hydra): build BOTH immortals and colossus splash instead of 0 splash
         if armored >= ARMORED_TRIGGER and light >= LIGHT_TRIGGER:
@@ -1202,6 +1261,7 @@ class PhoenixBot(AresBot):
                 + forces(UnitID.COLOSSUS).amount
                 >= 3
             )
+            or forces(UnitID.VOIDRAY).amount >= 2
         )
         siege_tank_hold = (
             heavy_siege >= 2
@@ -1449,7 +1509,20 @@ class PhoenixBot(AresBot):
         # worker cap, zealot-heavy comp, no robo/upgrades) are what lost the
         # DemsTossV2-style grinds: we sat on 28 workers making zealots while
         # they macroed to 80 probes and teched immortals.
-        if self._won_the_hold():
+        army_supply = self.supply_used - self.supply_workers
+        scouted_enemy = sum(
+            self.calculate_supply_cost(u.type_id)
+            for units in self.mediator.get_enemy_army_dict.values()
+            for u in units
+            if u.type_id not in WORKER_TYPES and not u.is_hallucination
+        )
+        if self._won_the_hold() or (
+            self.time >= 300.0
+            and len(self.townhalls.ready) >= 2
+            and army_supply >= 16.0
+            and army_supply >= 1.8 * max(scouted_enemy, 1.0)
+            and not self._home_threat()
+        ):
             if self._emergency:
                 self._emergency = False
                 logger.warning(
@@ -1491,22 +1564,28 @@ class PhoenixBot(AresBot):
         target = 1
         if self.time >= 160.0 or self.supply_workers >= 18:
             target = 2
+        gates_total = (
+            self.structures(UnitID.GATEWAY).amount
+            + self.structures(UnitID.WARPGATE).amount
+            + self.already_pending(UnitID.GATEWAY)
+        )
         if (
-            self.time >= 330.0
-            and self.supply_workers >= 34
-            and army_supply >= 20.0
+            self.time >= 315.0
+            and self.supply_workers >= 30
+            and army_supply >= 16.0
+            and gates_total >= 3
         ):
             target = 3
         if (
-            self.time >= 510.0
+            self.time >= 540.0
             and self.supply_workers >= 54
-            and army_supply >= 28.0
+            and army_supply >= 34.0
         ):
             target = 4
         if (
             self.time >= 690.0
-            and self.supply_workers >= 70
-            and army_supply >= 40.0
+            and self.supply_workers >= 68
+            and army_supply >= 44.0
         ):
             target = 5
         return target
@@ -1526,7 +1605,7 @@ class PhoenixBot(AresBot):
         if self._need_detection:
             want_obs = 3 if (len(robos) >= 2 and army_supply >= 28.0) else 2
         else:
-            want_obs = 1 if (self.time >= 260.0 or self._emergency) else 0
+            want_obs = 1 if (self.time >= 245.0 or self._emergency) else 0
         if urgent_only:
             want_obs = min(want_obs, 2 if self._need_detection else 1)
         if want_obs == 0:
@@ -1646,6 +1725,46 @@ class PhoenixBot(AresBot):
             return False
         return True
 
+    def _train_stargate_units(self, comp: dict[UnitID, dict]) -> bool:
+        """Train Void Rays directly from idle Stargates when CAPITAL_AIR_COMP
+        is active (Battlecruisers, Carriers, Tempests, Brood Lords)."""
+        if UnitID.VOIDRAY not in comp:
+            self._stargate_save_since = 0.0
+            return False
+        idle_sgs = self.structures(UnitID.STARGATE).ready.idle
+        if not idle_sgs:
+            self._stargate_save_since = 0.0
+            return False
+        if self.can_afford(UnitID.VOIDRAY) and self.supply_left >= 4:
+            idle_sgs.first.train(UnitID.VOIDRAY)
+            self._stargate_save_since = 0.0
+            return False
+        army_supply = self.supply_used - self.supply_workers
+        stalkers = self.units(UnitID.STALKER).amount + self.already_pending(
+            UnitID.STALKER
+        )
+        void_rays = self.units(UnitID.VOIDRAY).amount + self.already_pending(
+            UnitID.VOIDRAY
+        )
+        want_save = (
+            army_supply >= 8.0
+            and stalkers >= 4
+            and self.vespene >= 100
+            and self.supply_left >= 4
+            and self.time >= self._stargate_save_cooldown_until
+        )
+        if not want_save:
+            self._stargate_save_since = 0.0
+            return False
+        max_wait = 14.0 if void_rays < 4 else 8.0
+        if self._stargate_save_since == 0.0:
+            self._stargate_save_since = self.time
+        elif self.time - self._stargate_save_since > max_wait:
+            self._stargate_save_since = 0.0
+            self._stargate_save_cooldown_until = self.time + 8.0
+            return False
+        return True
+
     def _micro_observers(self, forces: Units) -> None:
         """Keep Observers covering cloaked/burrowed threats, periodically
         checking the enemy natural while still on a 1-base read, or escorting
@@ -1756,7 +1875,8 @@ class PhoenixBot(AresBot):
                 near_turret = any(
                     t.distance_to(s) < 11.0 for s in aa_structures
                 )
-                hover = 8.5 if (obs.is_revealed or near_turret) else 2.5
+                near_aa = any(t.distance_to(u) < 12.0 for u in aa_threats)
+                hover = 8.5 if (obs.is_revealed or near_turret or near_aa) else 2.5
                 dest = t.position.towards(self.start_location, hover)
             elif army_hidden and (
                 obs.tag != home_obs_tag or len(observers) == 1
@@ -1765,7 +1885,8 @@ class PhoenixBot(AresBot):
                 near_turret = any(
                     t.distance_to(s) < 11.0 for s in aa_structures
                 )
-                hover = 8.5 if (obs.is_revealed or near_turret) else 2.5
+                near_aa = any(t.distance_to(u) < 12.0 for u in aa_threats)
+                hover = 8.5 if (obs.is_revealed or near_turret or near_aa) else 2.5
                 dest = t.position.towards(self.start_location, hover)
             elif (
                 home_hidden
@@ -1789,7 +1910,8 @@ class PhoenixBot(AresBot):
                 near_turret = any(
                     t.distance_to(s) < 11.0 for s in aa_structures
                 )
-                hover = 8.5 if (obs.is_revealed or near_turret) else 2.5
+                near_aa = any(t.distance_to(u) < 12.0 for u in aa_threats)
+                hover = 8.5 if (obs.is_revealed or near_turret or near_aa) else 2.5
                 dest = t.position.towards(self.start_location, hover)
             elif (
                 self._obs_nat_check_active
@@ -1803,7 +1925,12 @@ class PhoenixBot(AresBot):
                 (idx == 0 or (home_obs_tag is not None and obs.tag != home_obs_tag))
                 and forces
             ):
-                dest = army_center.towards(self.start_location, 3.5)
+                near_army_aa = any(
+                    army_center.distance_to(u) < 14.0 for u in aa_threats
+                )
+                dest = army_center.towards(
+                    self.start_location, 7.5 if near_army_aa else 3.5
+                )
             elif self.townhalls:
                 # second observer guards our most exposed expansion
                 exposed = max(
@@ -2067,6 +2194,12 @@ class PhoenixBot(AresBot):
                         and self.vespene >= 175
                         and self._enemy_armored_light_supply()[0] >= 4.0
                     )
+                    or (
+                        self.time >= 225.0
+                        and len(self.townhalls) >= 2
+                        and emerg_army_supply >= 6.0
+                        and self.enemy_race in (Race.Terran, Race.Protoss)
+                    )
                 )
             )
             need_detection_robo = (
@@ -2128,7 +2261,16 @@ class PhoenixBot(AresBot):
             saving_for_robo_unit = (
                 False if saving_for_observer else self._train_robo_units(comp)
             )
-            if not saving_for_observer and not saving_for_robo_unit:
+            saving_for_stargate_unit = (
+                False
+                if (saving_for_observer or saving_for_robo_unit)
+                else self._train_stargate_units(comp)
+            )
+            if (
+                not saving_for_observer
+                and not saving_for_robo_unit
+                and not saving_for_stargate_unit
+            ):
                 self._train_observers(urgent_only=False)
 
             # Rebuild CyberneticsCore immediately at a live base if lost or if
@@ -2407,6 +2549,7 @@ class PhoenixBot(AresBot):
                 if not (
                     (self._home_threat() and self.supply_workers >= 36)
                     or saving_for_robo_unit
+                    or saving_for_stargate_unit
                 ):
                     macro_plan.add(
                         BuildWorkers(to_count=min(80, 22 * len(self.townhalls)))
@@ -2439,7 +2582,12 @@ class PhoenixBot(AresBot):
                 )
                 macro_robo_ready = (
                     len(self.townhalls.ready) >= 2
-                    and self.time >= 240.0
+                    and self.time
+                    >= (
+                        225.0
+                        if self.enemy_race in (Race.Terran, Race.Protoss)
+                        else 240.0
+                    )
                     and self.supply_workers >= 22
                     and self.vespene >= 100
                     and self._enemy_air_supply() < 8.0
@@ -2518,6 +2666,27 @@ class PhoenixBot(AresBot):
                             UpgradeId.EXTENDEDTHERMALLANCE
                         )
                     elif (
+                        UnitID.VOIDRAY in comp
+                        and not self.structures(UnitID.STARGATE)
+                        and not self.already_pending(UnitID.STARGATE)
+                        and not self.not_started_but_in_building_tracker(
+                            UnitID.STARGATE
+                        )
+                    ):
+                        macro_plan.add(
+                            BuildStructure(
+                                base_location=prod_base,
+                                structure_id=UnitID.STARGATE,
+                                to_count=1,
+                                production=has_prod_3x3,
+                            )
+                        )
+                        saving_for_tech = (
+                            can_pause_for_tech
+                            and self.vespene >= 75
+                            and self.minerals < 200
+                        )
+                    elif (
                         self.time >= 300.0
                         and len(self.townhalls.ready) >= 2
                         and bool(self.structures(UnitID.ROBOTICSFACILITY))
@@ -2544,6 +2713,7 @@ class PhoenixBot(AresBot):
                     saving_for_observer
                     or saving_for_robo
                     or saving_for_robo_unit
+                    or saving_for_stargate_unit
                     or saving_for_tech
                     or (need_expand and self.minerals < 425)
                 )
@@ -2564,6 +2734,11 @@ class PhoenixBot(AresBot):
                     and not self._all_in_read
                 ):
                     if (
+                        self.supply_workers >= 66
+                        and len(self.townhalls.ready) >= 4
+                    ):
+                        min_gates = 10
+                    elif (
                         self.supply_workers >= 52
                         and len(self.townhalls.ready) >= 3
                     ):
@@ -2593,9 +2768,20 @@ class PhoenixBot(AresBot):
                     )
                 saving_for_gate = (
                     cur_gates + pend_gates < min_gates
-                    and self.not_started_but_in_building_tracker(UnitID.GATEWAY)
-                    and self.minerals < 175
+                    and pend_gates == 0
+                    and not need_expand
+                    and not saving_minerals
                     and not self._home_threat()
+                    and army_supply >= 8.0
+                    and (
+                        self.minerals < 160
+                        or (
+                            self.not_started_but_in_building_tracker(
+                                UnitID.GATEWAY
+                            )
+                            and self.minerals < 175
+                        )
+                    )
                 )
 
                 # Upgrades ahead of SpawnController once stable: previously
@@ -2671,7 +2857,12 @@ class PhoenixBot(AresBot):
                     gw_only = {
                         k: v
                         for k, v in comp.items()
-                        if k not in (UnitID.IMMORTAL, UnitID.COLOSSUS)
+                        if k
+                        not in (
+                            UnitID.IMMORTAL,
+                            UnitID.COLOSSUS,
+                            UnitID.VOIDRAY,
+                        )
                     }
                     gw_sum = sum(v["proportion"] for v in gw_only.values())
                     if gw_only and gw_sum > 0:
@@ -2741,6 +2932,25 @@ class PhoenixBot(AresBot):
                             BuildStructure(
                                 base_location=prod_base,
                                 structure_id=UnitID.ROBOTICSFACILITY,
+                                production=has_prod_3x3,
+                            )
+                        )
+                if (
+                    self.minerals >= 200
+                    and self.vespene >= 175
+                    and not need_expand
+                    and not saving_minerals
+                    and UnitID.VOIDRAY in comp
+                    and self.structures(UnitID.CYBERNETICSCORE).ready
+                ):
+                    sgs = self.structures(UnitID.STARGATE).amount
+                    pending_sgs = self.already_pending(UnitID.STARGATE)
+                    target_sgs = min(3, max(1, len(self.townhalls) - 1))
+                    if sgs + pending_sgs < target_sgs and pending_sgs == 0:
+                        macro_plan.add(
+                            BuildStructure(
+                                base_location=prod_base,
+                                structure_id=UnitID.STARGATE,
                                 production=has_prod_3x3,
                             )
                         )
@@ -2968,6 +3178,7 @@ class PhoenixBot(AresBot):
         priority_types: list[UnitID] = [
             UnitID.CYBERNETICSCORE,
             UnitID.ROBOTICSFACILITY,
+            UnitID.STARGATE,
             UnitID.ROBOTICSBAY,
             UnitID.TWILIGHTCOUNCIL,
             UnitID.FORGE,
@@ -3012,6 +3223,7 @@ class PhoenixBot(AresBot):
         )
         grid: np.ndarray = self.mediator.get_ground_grid
         clean_grid: np.ndarray = self.mediator.get_cached_ground_grid
+        air_grid: np.ndarray = self.mediator.get_air_grid
         hold_height: float = (
             self.get_terrain_height(hold_pos) if hold_pos is not None else 0.0
         )
@@ -3198,7 +3410,7 @@ class PhoenixBot(AresBot):
                         or (
                             unrevealed_threats
                             and unrevealed_threats.closest_distance_to(unit)
-                            < 5.5
+                            < 8.0
                         )
                         or (
                             unit.shield_percentage < 0.15
@@ -3258,6 +3470,32 @@ class PhoenixBot(AresBot):
                     # Zealots are melee: always close in and fight rather than
                     # kiting backwards away from enemies
                     maneuver.add(AMove(unit=unit, target=enemy_target.position))
+                elif unit.type_id == UnitID.VOIDRAY:
+                    if (
+                        in_range_unit
+                        and enemy_target.is_armored
+                        and not unit.has_buff(
+                            BuffId.VOIDRAYSWARMDAMAGEBOOST
+                        )
+                        and self.time - self._aligned_at.get(unit.tag, -100.0)
+                        > 43.0
+                    ):
+                        maneuver.add(
+                            UseAbility(
+                                AbilityId.EFFECT_VOIDRAYPRISMATICALIGNMENT,
+                                unit,
+                            )
+                        )
+                        self._aligned_at[unit.tag] = self.time
+                    if (
+                        unit.shield_percentage < 0.15
+                        and unit.health_percentage < 0.65
+                    ) or is_locked_on:
+                        maneuver.add(KeepUnitSafe(unit=unit, grid=air_grid))
+                    else:
+                        maneuver.add(
+                            AMove(unit=unit, target=enemy_target.position)
+                        )
                 elif (
                     unit.type_id == UnitID.STALKER
                     and (
@@ -3428,6 +3666,23 @@ class PhoenixBot(AresBot):
                 # doesn't arrive 10s early blind or piecemeal.
                 move_target = target
                 if (
+                    unit.type_id == UnitID.VOIDRAY
+                    and (
+                        ground_forces := forces.filter(
+                            lambda f: not f.is_flying
+                        )
+                    )
+                ):
+                    front_ground = cy_closest_to(target, ground_forces)
+                    if (
+                        unit.distance_to(target) + 4.0
+                        < front_ground.distance_to(target)
+                        and unit.distance_to(front_ground) > 7.0
+                    ):
+                        move_target = front_ground.position.towards(
+                            target, 2.0
+                        )
+                elif (
                     front_robo is not None
                     and unit.type_id in (UnitID.STALKER, UnitID.ZEALOT)
                     and unit.distance_to(target) + 8.0
@@ -3444,7 +3699,11 @@ class PhoenixBot(AresBot):
                 ):
                     move_target = escort_obs.position.towards(target, 6.0)
                 maneuver.add(
-                    PathUnitToTarget(unit=unit, grid=grid, target=move_target)
+                    PathUnitToTarget(
+                        unit=unit,
+                        grid=air_grid if unit.is_flying else grid,
+                        target=move_target,
+                    )
                 )
                 maneuver.add(AMove(unit=unit, target=move_target))
 
